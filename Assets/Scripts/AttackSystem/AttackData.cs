@@ -1,4 +1,4 @@
-namespace Attack
+namespace AttackSystem
 {
     public class AttackData
     {

@@ -1,6 +1,6 @@
 using Core;
 
-namespace Character
+namespace CharacterSystem
 {
     public class Enemy : Pawn
     {

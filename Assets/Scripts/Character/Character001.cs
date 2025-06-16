@@ -3,6 +3,7 @@ using Core;
 using System.Linq;
 using CharacterSystem;
 using AttackSystem;
+using Utils;
 
 namespace CharacterSystem
 {
@@ -15,7 +16,7 @@ namespace CharacterSystem
         protected override void Awake()
         {
             base.Awake();
-            initStat();
+            initBaseStat();
             Debug.Log("Character001 Awake.");
         }
 
@@ -23,13 +24,13 @@ namespace CharacterSystem
         {
             base.initBaseStat();
 
-            if (!statInfos.Any(s => s.name == "Attack"))
+            if (!statInfos.Any(s => s.type == StatType.AttackPower))
             {
-                statInfos.Add(new Utils.StatInfo("Attack", 20));
+                statInfos.Add(new StatInfo(StatType.AttackPower, 20));
             }
-            if (!statInfos.Any(s => s.name == "Defense"))
+            if (!statInfos.Any(s => s.type == StatType.Defense))
             {
-                statInfos.Add(new Utils.StatInfo("Defense", 10));
+                statInfos.Add(new StatInfo(StatType.Defense, 10));
             }
         }
 
@@ -38,9 +39,14 @@ namespace CharacterSystem
             // 먼저 부모 클래스의 이벤트 처리
             base.OnEvent(eventType, param);
 
-            // Character001만의 추가 이벤트 처리
+            // Character001 고유의 이벤트 처리
             switch (eventType)
             {
+                case Core.EventType.OnLevelUp:
+                    // 레벨업 시 스탯 증가
+                    IncreaseStatValue(StatType.AttackPower, 5);
+                    IncreaseStatValue(StatType.Defense, 3);
+                    break;
                 case Core.EventType.OnDeath:
                     if ((Object)param == this) // Object 타입으로 캐스팅하여 비교
                     {

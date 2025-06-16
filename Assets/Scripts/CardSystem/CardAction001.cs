@@ -1,5 +1,6 @@
 using UnityEngine;
 using CharacterSystem;
+using Utils;
 
 namespace CardSystem
 {
@@ -29,20 +30,20 @@ namespace CardSystem
         private void ApplyStatModification(Pawn target)
         {
             // 방어력 감소
-            var defenseStat = target.GetStat("Defense");
+            var defenseStat = target.GetStat(StatType.Defense);
             if (defenseStat != null)
             {
-                int reduction = (int)(defenseStat.statValue.value * DEFENSE_REDUCTION_PERCENT);
-                target.ModifyStat("Defense", -reduction);
+                int reduction = (int)(defenseStat.value * DEFENSE_REDUCTION_PERCENT);
+                target.ModifyStat(StatType.Defense, -reduction);
                 Debug.Log($"<color=blue>CardAction001: {target.gameObject.name}의 방어력이 {reduction:F1} 감소했습니다.</color>");
             }
 
             // 공격력 증가
-            var attackStat = target.GetStat("Attack");
+            var attackStat = target.GetStat(StatType.AttackPower);
             if (attackStat != null)
             {
-                int increase = (int)(attackStat.statValue.value * ATTACK_INCREASE_PERCENT);
-                target.ModifyStat("Attack", increase);
+                int increase = (int)(attackStat.value * ATTACK_INCREASE_PERCENT);
+                target.ModifyStat(StatType.AttackPower, increase);
                 Debug.Log($"<color=red>CardAction001: {target.gameObject.name}의 공격력이 {increase:F1} 증가했습니다.</color>");
             }
         }

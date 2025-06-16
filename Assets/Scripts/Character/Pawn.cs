@@ -54,34 +54,82 @@ namespace CharacterSystem
             boxCollider = GetComponent<BoxCollider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
-        }
 
-        public void initStat()
-        {
-            // Pawn의 기본 스탯을 초기화하고, 덱의 카드 스탯을 합산하여 적용합니다.
-            initBaseStat(); // Pawn의 초기 기본 스탯 설정 (구체적 구현은 Pawn을 상속하는 클래스에서)
-            ApplyDeckStatsToPawn();
+            initBaseStat();
         }
 
         protected virtual void initBaseStat()
         {
-            // Pawn 고유의 초기 스탯을 설정하는 로직 (하위 클래스에서 구현)
-            if (statInfos == null)
+            // 기본 스탯 초기화
+            if (!statInfos.Any(s => s.type == StatType.Health))
             {
-                statInfos = new List<StatInfo>();
+                statInfos.Add(new StatInfo(StatType.Health, 100));
             }
-            // 기본 Health 스탯 추가 (하위 클래스에서 오버라이드하여 실제 값 설정)
-            if (!statInfos.Any(s => s.name == "Health"))
+            if (!statInfos.Any(s => s.type == StatType.MoveSpeed))
             {
-                statInfos.Add(new Utils.StatInfo("Health", 100)); // 기본 체력 100
+                statInfos.Add(new StatInfo(StatType.MoveSpeed, moveSpeed));
             }
         }
 
-        public void ApplyDeckStatsToPawn()
+        /// <summary>
+        /// 특정 스탯의 값을 가져옵니다.
+        /// </summary>
+        /// <param name="statType">가져올 스탯 타입</param>
+        /// <returns>스탯 값, 없으면 0</returns>
+        public float GetStatValue(StatType statType)
         {
-            // 덱에서 계산된 스탯을 가져와 현재 Pawn의 스탯에 합산합니다.
-            // 기존 statInfos가 null일 경우 새로운 리스트로 초기화합니다.
-            statInfos = StatCalculator.AddStats(statInfos ?? new List<StatInfo>(), deck.CalcBaseStat());
+            var stat = statInfos.FirstOrDefault(s => s.type == statType);
+            return stat?.value ?? 0f;
+        }
+
+        /// <summary>
+        /// 특정 스탯의 값을 설정합니다.
+        /// </summary>
+        /// <param name="statType">설정할 스탯 타입</param>
+        /// <param name="value">설정할 값</param>
+        public void SetStatValue(StatType statType, float value)
+        {
+            var stat = statInfos.FirstOrDefault(s => s.type == statType);
+            if (stat != null)
+            {
+                stat.value = value;
+            }
+            else
+            {
+                statInfos.Add(new StatInfo(statType, value));
+            }
+        }
+
+        /// <summary>
+        /// 특정 스탯의 값을 증가시킵니다.
+        /// </summary>
+        /// <param name="statType">증가시킬 스탯 타입</param>
+        /// <param name="amount">증가시킬 양</param>
+        public void IncreaseStatValue(StatType statType, float amount)
+        {
+            var stat = statInfos.FirstOrDefault(s => s.type == statType);
+            if (stat != null)
+            {
+                stat.value += amount;
+            }
+            else
+            {
+                statInfos.Add(new StatInfo(statType, amount));
+            }
+        }
+
+        /// <summary>
+        /// 특정 스탯의 값을 감소시킵니다.
+        /// </summary>
+        /// <param name="statType">감소시킬 스탯 타입</param>
+        /// <param name="amount">감소시킬 양</param>
+        public void DecreaseStatValue(StatType statType, float amount)
+        {
+            var stat = statInfos.FirstOrDefault(s => s.type == statType);
+            if (stat != null)
+            {
+                stat.value -= amount;
+            }
         }
 
         /// <summary>
@@ -174,8 +222,8 @@ namespace CharacterSystem
 
         public virtual void Update() 
         {
-            StatInfo healthStat = statInfos.FirstOrDefault(s => s.name == "Health");
-            if (healthStat != null && healthStat.statValue.value <= 0 && !isDead)
+            StatInfo healthStat = statInfos.FirstOrDefault(s => s.type == StatType.Health);
+            if (healthStat != null && healthStat.value <= 0 && !isDead)
             {
                 isDead = true;
                 Debug.Log($"<color=red>{gameObject.name} has died. Triggering OnDeath event.</color>");
@@ -202,11 +250,11 @@ namespace CharacterSystem
         {
             if (isDead) return;
 
-            StatInfo healthStat = statInfos.FirstOrDefault(s => s.name == "Health");
+            StatInfo healthStat = statInfos.FirstOrDefault(s => s.type == StatType.Health);
             if (healthStat != null)
             {
-                healthStat.statValue.Add(val => val - damage); // 체력 감소
-                Debug.Log($"{gameObject.name} took {damage} damage. Current Health: {healthStat.statValue.value}");
+                healthStat.value -= damage; // 체력 감소
+                Debug.Log($"{gameObject.name} took {damage} damage. Current Health: {healthStat.value}");
             }
             // Update()에서 사망 여부를 체크하므로 여기서 별도로 사망 로직을 호출할 필요 없음
         }
@@ -311,29 +359,29 @@ namespace CharacterSystem
         /// <summary>
         /// 이름으로 스탯 정보를 가져옵니다.
         /// </summary>
-        /// <param name="statName">가져올 스탯의 이름</param>
+        /// <param name="statType">가져올 스탯의 타입</param>
         /// <returns>해당 StatInfo 객체, 없으면 null</returns>
-        public StatInfo GetStat(string statName)
+        public StatInfo GetStat(StatType statType)
         {
-            return statInfos.Find(s => s.name == statName);
+            return statInfos.Find(s => s.type == statType);
         }
 
         /// <summary>
         /// 특정 스탯의 값을 변경합니다.
         /// </summary>
-        /// <param name="statName">변경할 스탯의 이름</param>
+        /// <param name="statType">변경할 스탯의 타입</param>
         /// <param name="amount">변경할 값 (양수: 증가, 음수: 감소)</param>
-        public void ModifyStat(string statName, int amount)
+        public void ModifyStat(StatType statType, int amount)
         {
-            StatInfo stat = GetStat(statName);
+            StatInfo stat = GetStat(statType);
             if (stat != null)
             {
-                stat.statValue.value += amount;
-                Debug.Log($"{gameObject.name}: {statName} 스탯이 {amount}만큼 변경되어 {stat.statValue.value}이 되었습니다.");
+                stat.value += amount;
+                Debug.Log($"{gameObject.name}: {statType} 스탯이 {amount}만큼 변경되어 {stat.value}이 되었습니다.");
             }
             else
             {
-                Debug.LogWarning($"{gameObject.name}: {statName} 스탯을 찾을 수 없어 변경할 수 없습니다.");
+                Debug.LogWarning($"{gameObject.name}: {statType} 스탯을 찾을 수 없어 변경할 수 없습니다.");
             }
         }
 

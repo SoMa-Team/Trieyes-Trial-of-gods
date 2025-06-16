@@ -13,13 +13,14 @@ namespace CombatSystem
         public Difficulty difficulty; // 전투 난이도
         public List<Pawn> characters = new List<Pawn>(); // 플레이어 조종 캐릭터 후보군
         public List<Pawn> enemies = new List<Pawn>(); // 현재 전투에 참여하는 모든 적들
+        public bool isFirstCombat = true; // 첫 전투 여부
 
         [Header("Managers & Components")]
         public SpawnManager spawnManager; // 적 스폰 관리자
         public CombatStageView combatStageView; // 전투 씬 UI 및 시각적 요소 관리자
 
         [Header("Prefabs")]
-        public GameObject character001Prefab; // Character001 프리팹 할당용
+        public GameObject characterPrefab; // 선택된 캐릭터의 프리팹
 
         // 전투 시간 관리 (예시: 유니티의 시간 함수 등과 연동될 기준점 데이터)
         private float elapsedTime = 0f;
@@ -44,28 +45,47 @@ namespace CombatSystem
 
             Debug.Log("CombatStageManager Awake: Initializing battle stage.");
 
-            // Character001 생성
-            if (character001Prefab != null)
+            InitializeCharacters();
+        }
+
+        private void InitializeCharacters()
+        {
+            if (isFirstCombat)
             {
-                GameObject playerCharacterGO = Instantiate(character001Prefab);
-                Pawn playerPawn = playerCharacterGO.GetComponent<Pawn>();
-                if (playerPawn != null)
+                // 첫 전투에서는 프리팹으로 새로 생성
+                if (characterPrefab != null)
                 {
-                    characters.Add(playerPawn);
-                    Debug.Log($"Character001 '{playerCharacterGO.name}' created and added to characters list.");
+                    GameObject playerCharacterGO = Instantiate(characterPrefab);
+                    Pawn playerPawn = playerCharacterGO.GetComponent<Pawn>();
+                    if (playerPawn != null)
+                    {
+                        characters.Add(playerPawn);
+                        Debug.Log($"Selected character '{playerCharacterGO.name}' created and added to characters list.");
+                    }
+                    else
+                    {
+                        Debug.LogError($"Character prefab '{characterPrefab.name}' does not have a Pawn component.");
+                    }
                 }
                 else
                 {
-                    Debug.LogError($"Character001 prefab '{character001Prefab.name}' does not have a Pawn component.");
+                    Debug.LogError("Character Prefab is not assigned in CombatStageManager.");
                 }
             }
             else
             {
-                Debug.LogError("Character001 Prefab is not assigned in CombatStageManager.");
+                // 이후 전투에서는 풀링된 캐릭터 재사용
+                var pooledCharacters = CharacterPool.Instance.GetActiveCharacters();
+                if (pooledCharacters != null && pooledCharacters.Count > 0)
+                {
+                    characters.AddRange(pooledCharacters);
+                    Debug.Log($"Retrieved {pooledCharacters.Count} characters from pool.");
+                }
+                else
+                {
+                    Debug.LogError("No characters available in the pool for subsequent combat.");
+                }
             }
-
-            // 예시: 적 생성 (실제 구현은 SpawnManager와 EnemyFactory 사용)
-            // enemies.Add(Instantiate(someEnemyPrefab).GetComponent<Pawn>());
         }
 
         private void Update()
@@ -114,17 +134,22 @@ namespace CombatSystem
 
         private void OnDestroy()
         {
-            // 다이어그램: 전투 클리어 / 전투 패배 시 OnDestroy()에서 소유 객체 정리
-            // Pawn들은 InActive, Attack들도 InActive (풀링 개념)
+            // 전투 종료 시 캐릭터들을 풀에 반환
             foreach (var character in characters)
             {
-                if (character != null) character.gameObject.SetActive(false);
+                if (character != null)
+                {
+                    CharacterPool.Instance.ReturnToPool(character);
+                }
             }
+            characters.Clear();
+
+            // 적들 비활성화
             foreach (var enemy in enemies)
             {
                 if (enemy != null) enemy.gameObject.SetActive(false);
             }
-            // Attack 객체들도 관리하고 있다면 비활성화 로직 추가
+            enemies.Clear();
 
             Debug.Log("CombatStageManager OnDestroy: Cleaning up battle objects.");
 

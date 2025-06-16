@@ -16,14 +16,14 @@ namespace CardSystem
         public static List<StatInfo> AddStats(List<StatInfo> baseStats, List<StatInfo> additionalStats)
         {
             // Dictionary를 사용하여 스탯 이름별로 StatInfo를 관리하여 빠른 검색 및 업데이트를 가능하게 합니다.
-            Dictionary<string, StatInfo> combinedStats = new Dictionary<string, StatInfo>();
+            Dictionary<StatType, StatInfo> combinedStats = new Dictionary<StatType, StatInfo>();
 
             // 기준 스탯을 딕셔너리에 추가
             foreach (var stat in baseStats)
             {
                 if (stat != null)
                 {
-                    combinedStats[stat.name] = new StatInfo(stat.name, stat.statValue.value, stat.statValue.maxValue, stat.statValue.minValue);
+                    combinedStats[stat.type] = new StatInfo(stat.type, stat.value);
                 }
             }
 
@@ -32,15 +32,15 @@ namespace CardSystem
             {
                 if (stat != null)
                 {
-                    if (combinedStats.ContainsKey(stat.name))
+                    if (combinedStats.ContainsKey(stat.type))
                     {
                         // 기존 스탯이 있으면 값 합산
-                        combinedStats[stat.name].statValue.Add(val => val + stat.statValue.value);
+                        combinedStats[stat.type].value += stat.value;
                     }
                     else
                     {
                         // 새로운 스탯이면 추가
-                        combinedStats.Add(stat.name, new StatInfo(stat.name, stat.statValue.value, stat.statValue.maxValue, stat.statValue.minValue));
+                        combinedStats.Add(stat.type, new StatInfo(stat.type, stat.value));
                     }
                 }
             }
@@ -61,12 +61,10 @@ namespace CardSystem
             if (baseStat == null) return additionalStat; // baseStat이 없으면 additionalStat 반환
             if (additionalStat == null) return baseStat; // additionalStat이 없으면 baseStat 반환
 
-            if (baseStat.name == additionalStat.name)
+            if (baseStat.type == additionalStat.type)
             {
                 // 이름이 같으면 값 합산 후 새로운 StatInfo 반환
-                StatInfo newStat = new StatInfo(baseStat.name, baseStat.statValue.value, baseStat.statValue.maxValue, baseStat.statValue.minValue);
-                newStat.statValue.Add(val => val + additionalStat.statValue.value);
-                return newStat;
+                return new StatInfo(baseStat.type, baseStat.value + additionalStat.value);
             }
             else
             {

@@ -16,7 +16,7 @@ namespace CharacterSystem
         public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
         public List<StatInfo> statInfos = new(); // 여러 스탯 정보
 
-        public Relic[] relics = new Relic[3]; // 최대 3개의 유물 장착 가능
+        public List<Relic> relics = new(); // 장착 가능한 유물 리스트
 
         public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
 

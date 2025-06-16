@@ -5,9 +5,6 @@ namespace CardSystem
 {
     public class CardFactory : MonoBehaviour
     {
-        // NOTE: 실제 게임에서는 카드 데이터를 ScriptableObject나 JSON 등으로 관리하고 로드하는 로직이 필요합니다.
-        // 여기서는 예시를 위해 하드코딩된 데이터를 사용합니다.
-
         /// <summary>
         /// 주어진 카드 ID에 해당하는 Card 인스턴스를 생성하여 반환합니다.
         /// </summary>

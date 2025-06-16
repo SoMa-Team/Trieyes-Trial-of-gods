@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameFramework
 {
-    public class StoreStageManager
+    public class ShopStageManager
     {
         // 상점 레벨에서 관리할 필드 (예시)
         public List<Pawn> playerCharactersInStore = new List<Pawn>();

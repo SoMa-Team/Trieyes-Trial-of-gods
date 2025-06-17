@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Utils
+namespace Stats
 {
     /// <summary>
     /// 게임 내 스탯 정보를 담는 클래스입니다.

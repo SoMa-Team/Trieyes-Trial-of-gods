@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Utils
+namespace Stats
 {
     /// <summary>
     /// 스탯 계산을 담당하는 유틸리티 클래스입니다.

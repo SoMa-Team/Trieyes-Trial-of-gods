@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Utils
+namespace Stats
 {
     /// <summary>
     /// 정수형 스탯 값을 관리하는 구조체 또는 클래스입니다.

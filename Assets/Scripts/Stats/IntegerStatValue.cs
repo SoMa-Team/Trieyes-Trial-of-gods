@@ -18,8 +18,8 @@ namespace Stats
         // 최소 스탯 값 (선택 사항)
         public int? minValue;
 
-        // 현재 적용된 버프 힙
-        private StatBuffHeap activeBuffs = new StatBuffHeap();
+        // 현재 적용된 버프 리스트
+        private StatBuffList activeBuffs = new StatBuffList();
 
         /// <summary>
         /// IntegerStatValue의 새 인스턴스를 초기화합니다.
@@ -85,17 +85,7 @@ namespace Stats
         /// <param name="buff">추가할 버프 정보</param>
         public void AddBuff(StatBuff buff)
         {
-            activeBuffs.Push(buff);
-            RecalculateValue();
-        }
-
-        /// <summary>
-        /// 버프를 제거합니다.
-        /// </summary>
-        /// <param name="buffName">제거할 버프의 이름</param>
-        public void RemoveBuff(string buffName)
-        {
-            activeBuffs.Remove(buffName);
+            activeBuffs.Add(buff);
             RecalculateValue();
         }
 
@@ -109,19 +99,10 @@ namespace Stats
         }
 
         /// <summary>
-        /// 현재 적용된 모든 버프를 반환합니다.
-        /// </summary>
-        public List<StatBuff> GetActiveBuffs()
-        {
-            return activeBuffs.GetAllBuffs();
-        }
-
-        /// <summary>
         /// 버프의 지속 시간을 체크하고 만료된 버프를 제거합니다.
         /// </summary>
         public void UpdateBuffs()
         {
-            activeBuffs.RemoveExpiredBuffs();
             RecalculateValue();
         }
 
@@ -130,23 +111,7 @@ namespace Stats
         /// </summary>
         private void RecalculateValue()
         {
-            float additiveValue = 0f;
-            float multiplicativeValue = 1f;
-
-            foreach (var buff in activeBuffs.GetAllBuffs())
-            {
-                if (buff.operationType == BuffOperationType.Additive)
-                {
-                    additiveValue += buff.value;
-                }
-                else // Multiplicative
-                {
-                    multiplicativeValue *= (1f + buff.value);
-                }
-            }
-
-            // 최종 계산: (기본값 + 합연산 버프) * 곱연산 버프
-            value = Mathf.RoundToInt((Basicvalue + additiveValue) * multiplicativeValue);
+            value = activeBuffs.CalculateBuff(Basicvalue);
             ApplyMinMax();
         }
 

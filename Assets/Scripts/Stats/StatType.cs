@@ -1,4 +1,4 @@
-namespace Utils
+namespace Stats
 {
     /// <summary>
     /// 게임 내 스탯 타입을 정의하는 enum입니다.

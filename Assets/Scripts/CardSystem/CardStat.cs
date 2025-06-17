@@ -1,10 +1,15 @@
 using System.Collections.Generic;
-using Utils; // For StatInfo and IntegerStatValue
+using Utils;
+using Stats;
 
 namespace CardSystem
 {
+    /// <summary>
+    /// 카드의 속성별 스탯 정보를 관리하는 클래스
+    /// </summary>
     public class CardStat
     {
+        // ===== [기능 1] 카드 스탯 정보 및 생성 =====
         public Property PropertyType { get; private set; }
         public List<StatInfo> StatInfos { get; private set; }
 
@@ -20,6 +25,7 @@ namespace CardSystem
             SetStatInfo(property, level);
         }
 
+        // ===== [기능 2] 스탯 정보 설정 =====
         /// <summary>
         /// 주어진 속성과 레벨에 따라 StatInfo 목록을 설정합니다.
         /// 실제 스탯 계산 로직은 여기에 구현됩니다.

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CombatSystem
+namespace BattleSystem
 {
     public class Spawner : MonoBehaviour
     {

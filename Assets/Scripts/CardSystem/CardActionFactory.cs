@@ -1,4 +1,5 @@
-using Core; // For EventType
+using CardActions;
+using Utils; // For EventType
 using UnityEngine; // For Debug.LogWarning
 
 namespace CardSystem
@@ -10,6 +11,7 @@ namespace CardSystem
     /// </summary>
     public class CardActionFactory : MonoBehaviour
     {
+        // ===== [기능 1] CardAction 생성 =====
         /// <summary>
         /// 주어진 카드 액션 ID에 해당하는 CardAction 인스턴스를 생성하여 반환합니다.
         /// 이 메서드는 게임 내에서 특정 카드 액션이 필요할 때 호출됩니다.

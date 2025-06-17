@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace CombatSystem
 {
-    public class CombatStageView : MonoBehaviour
+    public class BattleStageView : MonoBehaviour
     {
         // 맵 디자인 프리팹 설정 등의 역할을 할 필드 (예시)
         public GameObject mapDesignPrefab;

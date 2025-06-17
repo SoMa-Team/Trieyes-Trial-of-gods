@@ -12,15 +12,13 @@ namespace CardSystem
         /// <returns>생성된 Card 인스턴스</returns>
         public Card GetCard(int cardId)
         {
-            // CardActionFactory가 필요하므로 여기에 참조를 가져오거나 매개변수로 받아야 합니다.
-            // 현재는 간단히 새로운 CardAction 인스턴스를 생성하는 것으로 가정합니다.
+            // ===== [기능 1] Card 생성 =====
             CardActionFactory cardActionFactory = GetComponent<CardActionFactory>();
             if (cardActionFactory == null)
             {
                 Debug.LogError("CardActionFactory not found on this GameObject.");
                 return null;
             }
-
             switch (cardId)
             {
                 case 1:
@@ -31,7 +29,7 @@ namespace CardSystem
                         initialLevel: 1,
                         initialExp: 0,
                         rarity: Rarity.Common,
-                        action: cardActionFactory.GetAction(1) // CardAction001에 해당
+                        action: cardActionFactory.GetAction(1)
                     );
                 case 2:
                     return new Card(
@@ -41,7 +39,7 @@ namespace CardSystem
                         initialLevel: 1,
                         initialExp: 0,
                         rarity: Rarity.Uncommon,
-                        action: cardActionFactory.GetAction(2) // CardAction002에 해당
+                        action: cardActionFactory.GetAction(2)
                     );
                 // ... 더 많은 카드 ID에 대한 케이스를 추가할 수 있습니다.
                 default:

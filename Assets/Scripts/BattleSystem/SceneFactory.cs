@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace CombatSystem
+namespace BattleSystem
 {
     public class SceneFactory : MonoBehaviour
     {

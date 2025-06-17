@@ -1,18 +1,16 @@
 using UnityEngine;
-using Core;
 using System.Linq;
-using CharacterSystem;
-using AttackSystem;
-using Utils;
+using Stats;
 
 namespace CharacterSystem
 {
     public class Character001 : Pawn
     {
-        // Character001 고유의 필드 또는 속성
+        // ===== [기능 1] 고유 필드 =====
         public int experience = 0;
         public int gold = 0;
 
+        // ===== [기능 2] 초기화 및 스탯 =====
         protected override void Awake()
         {
             base.Awake();
@@ -24,30 +22,28 @@ namespace CharacterSystem
         {
             base.initBaseStat();
 
-            if (!statInfos.Any(s => s.type == StatType.AttackPower))
+            if (!statInfos.Any(s => s.Type == StatType.AttackPower))
             {
                 statInfos.Add(new StatInfo(StatType.AttackPower, 20));
             }
-            if (!statInfos.Any(s => s.type == StatType.Defense))
+            if (!statInfos.Any(s => s.Type == StatType.Defense))
             {
                 statInfos.Add(new StatInfo(StatType.Defense, 10));
             }
         }
 
-        public override void OnEvent(Core.EventType eventType, object param)
+        // ===== [기능 3] 이벤트 처리 =====
+        public override void OnEvent(Utils.EventType eventType, object param)
         {
-            // 먼저 부모 클래스의 이벤트 처리
-            base.OnEvent(eventType, param);
-
             // Character001 고유의 이벤트 처리
             switch (eventType)
             {
-                case Core.EventType.OnLevelUp:
+                case Utils.EventType.OnLevelUp:
                     // 레벨업 시 스탯 증가
                     IncreaseStatValue(StatType.AttackPower, 5);
                     IncreaseStatValue(StatType.Defense, 3);
                     break;
-                case Core.EventType.OnDeath:
+                case Utils.EventType.OnDeath:
                     if ((Object)param == this) // Object 타입으로 캐스팅하여 비교
                     {
                         Debug.Log($"<color=yellow>{gameObject.name} (Character001) is performing its unique death action: Game Over!</color>");

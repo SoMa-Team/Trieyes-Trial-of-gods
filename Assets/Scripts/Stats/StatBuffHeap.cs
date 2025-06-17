@@ -63,25 +63,6 @@ namespace Stats
         }
 
         /// <summary>
-        /// 힙에서 특정 이름의 버프를 제거합니다.
-        /// </summary>
-        public bool Remove(string buffName)
-        {
-            int index = heap.FindIndex(buff => buff.buffName == buffName);
-            if (index == -1)
-                return false;
-
-            // 마지막 요소를 현재 위치로 이동
-            heap[index] = heap[heap.Count - 1];
-            heap.RemoveAt(heap.Count - 1);
-
-            if (index < heap.Count)
-                Heapify(index);
-
-            return true;
-        }
-
-        /// <summary>
         /// 힙에서 만료된 버프들을 제거합니다.
         /// </summary>
         public void RemoveExpiredBuffs()
@@ -92,23 +73,6 @@ namespace Stats
                 Pop();
             }
         }
-
-        /// <summary>
-        /// 힙의 모든 버프를 반환합니다.
-        /// </summary>
-        public List<StatBuff> GetAllBuffs()
-        {
-            return new List<StatBuff>(heap);
-        }
-
-        /// <summary>
-        /// 힙이 비어있는지 확인합니다.
-        /// </summary>
-        public bool IsEmpty()
-        {
-            return heap.Count == 0;
-        }
-
         /// <summary>
         /// 힙의 크기를 반환합니다.
         /// </summary>

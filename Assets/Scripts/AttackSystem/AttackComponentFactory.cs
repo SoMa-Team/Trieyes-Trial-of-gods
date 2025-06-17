@@ -2,6 +2,7 @@ namespace AttackSystem
 {
     public static class AttackComponentFactory
     {
+        // ===== [기능 1] AttackComponent 생성 =====
         public static AttackComponent CreateComponent(int compId)
         {
             switch (compId)

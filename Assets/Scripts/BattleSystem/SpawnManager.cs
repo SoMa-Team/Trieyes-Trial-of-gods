@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
-using GameFramework;
+using Utils;
 using CharacterSystem;
 
-namespace CombatSystem
+namespace BattleSystem
 {
     public class SpawnManager : MonoBehaviour
     {
@@ -52,7 +52,7 @@ namespace CombatSystem
                         // 난이도에 따른 스탯 배율 적용 (예시)
                         enemyPawn.ApplyStatMultiplier(difficulty.enemyStatMultiplier);
                     }
-                    CombatStageManager.Instance.enemies.Add(enemyPawn); // 전투 매니저의 적 리스트에 추가
+                    BattleStageManager.Instance.enemies.Add(enemyPawn); // 전투 매니저의 적 리스트에 추가
                     Debug.Log($"Spawned enemy {spawnedEnemyGO.name} at {spawnedEnemyGO.transform.position}");
                 }
             }

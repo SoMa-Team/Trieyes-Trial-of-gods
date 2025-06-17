@@ -4,118 +4,126 @@ using UnityEngine;
 
 namespace Stats
 {
-    /// <summary>
     /// 정수형 스탯 값을 관리하는 구조체 또는 클래스입니다.
-    /// </summary>
     public class IntegerStatValue
     {
         //기본 스탯 값
-        private int Basicvalue;
+        private int basicValue;
         //현재 스탯 값
-        private int Currentvalue;
+        private int currentValue;
         // 최대 스탯 값 (선택 사항)
         public int? maxValue;
         // 최소 스탯 값 (선택 사항)
         public int? minValue;
+        // 마지막 버프 리스트 크기
+        private int lastListSize;
+        // 기본 값이 변경되었는지 확인
+        private bool basicValueChanged;
 
         // 현재 적용된 버프 리스트
         private StatBuffList activeBuffs = new StatBuffList();
+        // 버프 힙
+        private StatBuffHeap buffHeap = new StatBuffHeap();
 
-        /// <summary>
         /// IntegerStatValue의 새 인스턴스를 초기화합니다.
-        /// </summary>
-        /// <param name="baseValue">기본 스탯 값</param>
-        /// <param name="max">최대 스탯 값 (선택 사항)</param>
-        /// <param name="min">최소 스탯 값 (선택 사항)</param>
         public IntegerStatValue(int baseValue, int? max = null, int? min = null)
         {
-            value = baseValue;
+            basicValue = baseValue;
             maxValue = max;
             minValue = min;
+            lastListSize = 0;
+            basicValueChanged = true;
         }
 
-        /// <summary>
         /// 스탯 값을 변경하고 최대/최소 값 범위 내로 유지합니다.
-        /// </summary>
-        /// <param name="amount">변경할 양</param>
         public void Add(int amount)
         {
-            value += amount;
-            ApplyMinMax();
+            basicValue += amount;
+            basicValueChanged = true;
         }
-
-        /// <summary>
         /// 스탯 값을 함수를 적용하여 변경하고 최대/최소 값 범위 내로 유지합니다.
-        /// </summary>
-        /// <param name="modifier">스탯 값을 변경할 함수</param>
-        public void Add(System.Func<int, int> modifier)
+        public void Multiply(int factor)
         {
-            value = modifier(value);
-            ApplyMinMax();
+            basicValue *= factor;
+            basicValueChanged = true;
         }
 
-        /// <summary>
         /// 스탯 값을 변경 후 최대/최소 값 범위 내로 조정합니다.
-        /// </summary>
         private void ApplyMinMax()
         {
             if (maxValue.HasValue)
             {
-                value = Mathf.Min(value, maxValue.Value);
+                basicValue = Mathf.Min(basicValue, maxValue.Value);
+                currentValue = Mathf.Min(currentValue, maxValue.Value);
             }
             if (minValue.HasValue)
             {
-                value = Mathf.Max(value, minValue.Value);
+                basicValue = Mathf.Max(basicValue, minValue.Value);
+                currentValue = Mathf.Max(currentValue, minValue.Value);
             }
         }
 
-        /// <summary>
         /// 스탯 값을 직접 설정합니다.
-        /// </summary>
-        /// <param name="newValue">설정할 새 값</param>
         public void Set(int newValue)
         {
-            value = newValue;
-            ApplyMinMax();
+            basicValue = newValue;
+            basicValueChanged = true;
         }
 
-        /// <summary>
         /// 새로운 버프를 추가합니다.
-        /// </summary>
-        /// <param name="buff">추가할 버프 정보</param>
         public void AddBuff(StatBuff buff)
         {
             activeBuffs.Add(buff);
-            RecalculateValue();
+            buffHeap.Push(buff);
         }
 
-        /// <summary>
         /// 모든 버프를 제거합니다.
-        /// </summary>
         public void ClearBuffs()
         {
             activeBuffs.Clear();
-            RecalculateValue();
+            buffHeap.Clear();
         }
 
-        /// <summary>
-        /// 버프의 지속 시간을 체크하고 만료된 버프를 제거합니다.
-        /// </summary>
-        public void UpdateBuffs()
-        {
-            RecalculateValue();
-        }
-
-        /// <summary>
         /// 기본값과 모든 버프를 고려하여 최종 값을 재계산합니다.
-        /// </summary>
         private void RecalculateValue()
         {
-            value = activeBuffs.CalculateBuff(Basicvalue);
+            currentValue = activeBuffs.CalculateBuff(basicValue);
             ApplyMinMax();
         }
 
+        public int GetCurrentValue(){
+            float currentTime = CombatStageManager.Instance.GetTime();
+            bool removedAny = false;
+
+            // 만료된 버프를 모두 제거
+            var top = buffHeap.Peek();
+            while (top != null && top.endTime < currentTime)
+            {
+                buffHeap.Pop();
+                removedAny = true;
+                top = buffHeap.Peek();
+            }
+
+            // 버프가 하나라도 빠졌으면 재계산
+            if (removedAny||lastListSize!=activeBuffs.Count||basicValueChanged)
+            {
+                RecalculateValue();
+                lastListSize = activeBuffs.Count;
+                basicValueChanged = false;
+            }
+
+            return currentValue;
+        }
+
+
+        public int GetBasicValue()
+        {
+            return basicValue;
+        }
+
+        //외부에서 값을 읽을 때는 항상 GetCurrentValue()가 호출되도록
+        public int Value => GetCurrentValue();
         // 암시적 int 변환 연산자 오버로드
-        public static implicit operator int(IntegerStatValue stat) => stat.value;
+        public static implicit operator int(IntegerStatValue stat) => stat.Value;   
     }
 } 

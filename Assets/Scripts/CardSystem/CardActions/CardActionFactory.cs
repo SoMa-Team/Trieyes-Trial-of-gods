@@ -2,7 +2,7 @@ using CardActions;
 using Utils; // For EventType
 using UnityEngine; // For Debug.LogWarning
 
-namespace CardSystem
+namespace CardActions
 {
     // --- CardActionFactory 클래스 ---
     /// <summary>

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using CharacterSystem;
 using Utils;
 using UnityEngine;
+using AttackComponents;
 
 namespace AttackSystem
 {

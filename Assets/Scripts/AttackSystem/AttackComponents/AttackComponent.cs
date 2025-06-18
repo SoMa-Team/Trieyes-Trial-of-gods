@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using Utils;
+using AttackSystem;
 
-namespace AttackSystem
+namespace AttackComponents
 {
     /// <summary>
     /// 공격 관련 컴포넌트의 기본 동작을 정의하는 추상 클래스입니다.

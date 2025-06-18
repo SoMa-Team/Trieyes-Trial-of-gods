@@ -1,4 +1,4 @@
-namespace AttackSystem
+namespace AttackComponents
 {
     public static class AttackComponentFactory
     {

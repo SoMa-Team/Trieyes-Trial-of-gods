@@ -20,7 +20,7 @@ namespace Stats
         public void Add(StatBuff buff)
         {
             if(!buff.canStack){
-                buffs.RemoveAll(b => b.key == buff.key);
+                buffs.RemoveAll(b => b.id == buff.id);
             }
             buffs.Add(buff);
         }

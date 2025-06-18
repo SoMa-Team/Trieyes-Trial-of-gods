@@ -1,11 +1,12 @@
 using System.Collections.Generic;
-using Core;
 using Utils;
+using Stats;
 
 namespace RelicSystem
 {
     public class Relic001 : Relic
     {
+        // ===== [기능 1] 생성자 및 이벤트 등록 =====
         public Relic001() : base(new RelicInfo 
         { 
             name = "신비한 검",
@@ -13,9 +14,22 @@ namespace RelicSystem
             compIds = new List<int> { 1, 2 } // 기본 공격과 스킬1에 영향을 줌
         })
         {
-            // 이벤트 핸들러 등록
-            RegisterEvent(EventType.OnLevelUp, OnLevelUpHandler);
-            RegisterEvent(EventType.OnStatChange, OnStatChangeHandler);
+            // 이벤트 핸들러 등록 코드 삭제됨
+        }
+
+        // ===== [기능 2] 이벤트 처리 =====
+        public override void OnEvent(EventType eventType, object param)
+        {
+            switch (eventType)
+            {
+                case EventType.OnLevelUp:
+                    // 레벨업 시 효과
+                    break;
+                case EventType.OnStatChange:
+                    // 스탯 변경 시 효과
+                    break;
+                // 기타 이벤트별 동작 추가
+            }
         }
 
         private void OnLevelUpHandler(object param)

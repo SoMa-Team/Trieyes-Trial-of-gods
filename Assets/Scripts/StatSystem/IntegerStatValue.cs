@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 
 namespace Stats
 {
@@ -105,7 +106,7 @@ namespace Stats
         }
 
         private int GetCurrentValue(){
-            float currentTime = CombatStageManager.Instance.GetTime();
+            float currentTime = BattleStageManager.Instance.GetTime();
 
             // 만료된 버프를 모두 제거
             var top = buffHeap.Peek();

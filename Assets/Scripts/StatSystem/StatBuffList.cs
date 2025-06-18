@@ -4,11 +4,15 @@ using CombatSystem;
 namespace Stats
 {
     /// <summary>
-    /// StatBuff를 순서대로 관리하고 계산하는 클래스
+    /// StatBuff를 순서대로 관리하고 계산하는 클래스입니다.
     /// </summary>
     public class StatBuffList
     {
+        // --- 필드 ---
+
         private List<StatBuff> buffs = new List<StatBuff>();
+
+        // --- 메서드 ---
 
         /// <summary>
         /// 버프를 리스트에 추가합니다.
@@ -26,8 +30,10 @@ namespace Stats
             buffs.Clear();
         }
 
+        /// <summary>
         /// 기본값에 모든 유효한 버프를 적용하여 최종 값을 계산합니다.
         /// 계산 전에 만료된 버프를 자동으로 제거합니다.
+        /// </summary>
         public int CalculateBuff(int basicValue)
         {
             // 만료된 버프 제거
@@ -42,17 +48,17 @@ namespace Stats
                 {
                     finalValue += buff.value;
                 }
-                else if(buff.operationType == BuffOperationType.Multiplicative) // Multiplicative
+                else if (buff.operationType == BuffOperationType.Multiplicative)
                 {
-                    finalValue = finalValue * (100 + buff.value)/100;//퍼센테이지로 계산
+                    // 퍼센트 버프 누적
+                    finalValue = finalValue * (100 + buff.value) / 100;
                 }
-                else if(buff.operationType == BuffOperationType.Set)
+                else if (buff.operationType == BuffOperationType.Set)
                 {
                     finalValue = buff.value;
                 }
             }
 
-            // 최종 계산: (기본값 + 합연산 버프) * 곱연산 버프
             return finalValue;
         }
 
@@ -64,4 +70,4 @@ namespace Stats
             return buffs.Count;
         }
     }
-} 
+}

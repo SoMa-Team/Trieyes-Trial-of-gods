@@ -10,7 +10,11 @@ namespace Utils
     /// <typeparam name="T">힙에 저장될 요소의 타입 (IComparable 구현 필요)</typeparam>
     public class MinHeap<T> where T : IComparable<T>
     {
+        // --- 필드 ---
+
         private List<T> _heap;
+
+        // --- 프로퍼티 ---
 
         /// <summary>
         /// 힙의 현재 요소 개수를 반환합니다.
@@ -21,6 +25,8 @@ namespace Utils
         /// 힙이 비어있는지 확인합니다.
         /// </summary>
         public bool IsEmpty => _heap.Count == 0;
+
+        // --- 생성자 ---
 
         /// <summary>
         /// 기본 생성자
@@ -38,6 +44,8 @@ namespace Utils
         {
             _heap = new List<T>(capacity);
         }
+
+        // --- 메서드 ---
 
         /// <summary>
         /// 힙에 새로운 요소를 추가합니다.
@@ -63,7 +71,7 @@ namespace Utils
 
             T min = _heap[0];
             int lastIndex = _heap.Count - 1;
-            
+
             // 마지막 요소를 루트로 이동
             _heap[0] = _heap[lastIndex];
             _heap.RemoveAt(lastIndex);
@@ -117,6 +125,8 @@ namespace Utils
         {
             return new List<T>(_heap);
         }
+
+        // --- private 메서드 ---
 
         /// <summary>
         /// 새로운 요소를 추가한 후 힙 속성을 복원합니다 (위로 올라가며 정렬).
@@ -207,4 +217,4 @@ namespace Utils
             return 2 * index + 2;
         }
     }
-} 
+}

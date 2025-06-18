@@ -40,6 +40,11 @@ namespace Stats
             basicValueChanged = true;
         }
 
+        // --- 프로퍼티 ---
+
+        // 암시적 int 변환 연산자 오버로드
+        public static implicit operator int(IntegerStatValue stat) => stat.Value;
+
         // --- public 메서드 ---
 
         /// 스탯 값을 변경하고 최대/최소 값 범위 내로 유지합니다.
@@ -121,10 +126,5 @@ namespace Stats
 
             return currentValue;
         }
-
-        // --- 프로퍼티 ---
-
-        // 암시적 int 변환 연산자 오버로드
-        public static implicit operator int(IntegerStatValue stat) => stat.Value;
     }
 } 

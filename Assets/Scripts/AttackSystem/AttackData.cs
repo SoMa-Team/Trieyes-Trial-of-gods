@@ -1,5 +1,6 @@
 namespace AttackSystem
 {
+    // ===== [기능 1] AttackData 정보 =====
     public class AttackData
     {
         public int attackId;
@@ -12,6 +13,7 @@ namespace AttackSystem
         // 기타 공격 관련 정보
     }
 
+    // ===== [기능 2] AttackType Enum =====
     public enum AttackType
     {
         Basic,

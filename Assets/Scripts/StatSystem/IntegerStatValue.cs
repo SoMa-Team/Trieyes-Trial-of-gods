@@ -70,7 +70,7 @@ namespace Stats
         public void AddBuff(StatBuff buff)
         {
             activeBuffs.Add(buff);
-            buffHeap.Push(buff.endTime);
+            if(!buff.isPermanent) buffHeap.Push(buff.endTime);
             buffListChanged = true;
         }
         /// 모든 버프를 제거합니다.

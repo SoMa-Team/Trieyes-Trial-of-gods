@@ -3,6 +3,7 @@ using BattleSystem;
 
 namespace Stats
 {
+    using KeyID = string;
     /// <summary>
     /// 버프의 연산 타입을 정의합니다.
     /// </summary>
@@ -20,7 +21,7 @@ namespace Stats
     {
         // --- 필드 ---
 
-        public string key;                          // 버프 고유 키
+        public KeyID key;                          // 버프 고유 키
         public int value;                           // 버프로 인한 수치 변화
         public BuffOperationType operationType;     // 버프 연산 타입
         public float endTime;                       // 버프 만료 시각

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CombatSystem;
+using BattleSystem;
 
 namespace Stats
 {
@@ -37,7 +37,7 @@ namespace Stats
         public int CalculateBuff(int basicValue)
         {
             // 만료된 버프 제거
-            float currentTime = CombatStageManager.Instance.GetTime();
+            float currentTime = BattleStageManager.Instance.GetTime();
             buffs.RemoveAll(buff => !buff.isPermanent && buff.endTime <= currentTime);
 
             int finalValue = basicValue;

@@ -1,5 +1,5 @@
 using UnityEngine;
-using CombatSystem;
+using BattleSystem;
 
 namespace Stats
 {
@@ -36,13 +36,13 @@ namespace Stats
             if(duration == 0f){
                 throw new ArgumentException("Duration cannot be 0. Use -1 for permanent buff.");
             }
-            if(CombatStageManager.Instance == null){
-                throw new Exception("CombatStageManager is not initialized.");
+            if(BattleStageManager.Instance == null){
+                throw new Exception("BattleStageManager is not initialized.");
             }
             value = buffValue;
             this.operationType = operationType;
             isPermanent = duration < 0f;
-            endTime = isPermanent ? float.MaxValue : CombatStageManager.Instance.GetTime() + duration;
+            endTime = isPermanent ? float.MaxValue : BattleStageManager.Instance.GetTime() + duration;
         }
 
         // --- 메서드 ---
@@ -52,7 +52,7 @@ namespace Stats
         /// </summary>
         public bool IsExpired()
         {
-            return !isPermanent && CombatStageManager.Instance.GetTime() >= endTime;
+            return !isPermanent && BattleStageManager.Instance.GetTime() >= endTime;
         }
     }
 }

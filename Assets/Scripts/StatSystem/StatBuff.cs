@@ -3,7 +3,7 @@ using BattleSystem;
 
 namespace Stats
 {
-    using KeyID = string;
+    using IDType = int;
     /// <summary>
     /// 버프의 연산 타입을 정의합니다.
     /// </summary>
@@ -20,8 +20,8 @@ namespace Stats
     public struct StatBuff
     {
         // --- 필드 ---
-
-        public KeyID key;                          // 버프 고유 키
+        private static int buffID = 1;
+        public IDType id;                          // 버프 고유 키
         public int value;                           // 버프로 인한 수치 변화
         public BuffOperationType operationType;     // 버프 연산 타입
         public float endTime;                       // 버프 만료 시각
@@ -34,7 +34,7 @@ namespace Stats
         /// StatBuff의 새 인스턴스를 초기화합니다.
         /// duration < 0이면 영구 버프로 간주합니다.
         /// </summary>
-        public StatBuff(string key, int buffValue, BuffOperationType operationType, bool canStack=true, float duration = -1f)
+        public StatBuff(KeyID key, int buffValue, BuffOperationType operationType, bool canStack=true, float duration = -1f)
         {
             if(duration == 0f){
                 throw new ArgumentException("Duration cannot be 0. Use -1 for permanent buff.");
@@ -42,7 +42,7 @@ namespace Stats
             if(BattleStageManager.Instance == null){
                 throw new Exception("BattleStageManager is not initialized.");
             }
-            this.key = key;
+            this.id = buffID++;
             this.value = buffValue;
             this.operationType = operationType;
             this.canStack = canStack;

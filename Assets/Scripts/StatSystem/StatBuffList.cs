@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CombatSystem;
+using BattleSystem;
 
 namespace Stats
 {

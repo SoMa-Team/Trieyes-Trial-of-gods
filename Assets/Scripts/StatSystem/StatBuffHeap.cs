@@ -61,18 +61,6 @@ namespace Stats
 
             return heap[0];
         }
-
-        /// <summary>
-        /// 힙에서 만료된 버프들을 제거합니다.
-        /// </summary>
-        public void RemoveExpiredBuffs()
-        {
-            float currentTime = CombatStageManager.Instance.GetTime();
-            while (heap.Count > 0 && !heap[0].isPermanent && heap[0].endTime <= currentTime)
-            {
-                Pop();
-            }
-        }
         /// <summary>
         /// 힙의 크기를 반환합니다.
         /// </summary>
@@ -80,7 +68,6 @@ namespace Stats
         {
             return heap.Count;
         }
-
         /// <summary>
         /// 힙을 비웁니다.
         /// </summary>

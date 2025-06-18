@@ -26,35 +26,34 @@ namespace Stats
             buffs.Clear();
         }
 
-        /// <summary>
         /// 기본값에 모든 유효한 버프를 적용하여 최종 값을 계산합니다.
         /// 계산 전에 만료된 버프를 자동으로 제거합니다.
-        /// </summary>
-        /// <param name="basicValue">기본 스탯 값</param>
-        /// <returns>버프가 적용된 최종 스탯 값</returns>
         public int CalculateBuff(int basicValue)
         {
             // 만료된 버프 제거
             float currentTime = CombatStageManager.Instance.GetTime();
             buffs.RemoveAll(buff => !buff.isPermanent && buff.endTime <= currentTime);
 
-            float additiveValue = 0f;
-            float multiplicativeValue = 1f;
+            int finalValue = basicValue;
 
             foreach (var buff in buffs)
             {
                 if (buff.operationType == BuffOperationType.Additive)
                 {
-                    additiveValue += buff.value;
+                    finalValue += buff.value;
                 }
-                else // Multiplicative
+                else if(buff.operationType == BuffOperationType.Multiplicative) // Multiplicative
                 {
-                    multiplicativeValue *= (1f + buff.value);
+                    finalValue *= (100 + buff.value)/100;//퍼센테이지로 계산
+                }
+                else if(buff.operationType == BuffOperationType.Set)
+                {
+                    finalValue = buff.value;
                 }
             }
 
             // 최종 계산: (기본값 + 합연산 버프) * 곱연산 버프
-            return UnityEngine.Mathf.RoundToInt((basicValue + additiveValue) * multiplicativeValue);
+            return finalValue;
         }
 
         /// <summary>

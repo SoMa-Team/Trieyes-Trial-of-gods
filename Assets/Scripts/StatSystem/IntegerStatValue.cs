@@ -127,6 +127,6 @@ namespace Stats
         // --- 프로퍼티 ---
 
         // 암시적 int 변환 연산자 오버로드
-        public static implicit operator int(IntegerStatValue stat) => stat.Value;   
+        public static implicit operator int(IntegerStatValue stat) => stat.Value;
     }
 } 

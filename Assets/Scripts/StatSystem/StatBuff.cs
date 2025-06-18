@@ -9,7 +9,8 @@ namespace Stats
     public enum BuffOperationType
     {
         Additive,    // 합연산 (수치 증가)
-        Multiplicative // 곱연산 (퍼센테이지 증가)
+        Multiplicative, // 곱연산 (퍼센테이지 증가)
+        Set // 설정 (수치 설정)
     }
 
     /// <summary>
@@ -17,15 +18,13 @@ namespace Stats
     /// </summary>
     public struct StatBuff
     {
-        public string buffName;        // 버프 이름
-        public float value;           // 버프로 인한 수치 변화
+        public int value;           // 버프로 인한 수치 변화
         public BuffOperationType operationType; // 버프 연산 타입
         public float endTime;         // 버프가 끝나는 시간
         public bool isPermanent;      // 영구 버프 여부
-
-        public StatBuff(string name, float buffValue, BuffOperationType operationType, float duration = -1f)
+        //duration < 0이면 해당 스테이지에서 영구 적용되는 버프(후에 전투 진입 전 카드 버프 적용 시 등)
+        public StatBuff(int buffValue, BuffOperationType operationType, float duration = -1f)
         {
-            buffName = name;
             value = buffValue;
             this.operationType = operationType;
             isPermanent = duration < 0f;

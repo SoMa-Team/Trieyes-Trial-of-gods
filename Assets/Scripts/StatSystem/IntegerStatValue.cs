@@ -26,7 +26,7 @@ namespace Stats
         // 현재 적용된 버프 리스트
         private StatBuffList activeBuffs = new StatBuffList();
         // 버프 힙
-        private StatBuffHeap buffHeap = new StatBuffHeap();
+        private MinHeap<float> buffHeap = new MinHeap<float>();
 
         // --- 생성자 ---
 
@@ -64,7 +64,7 @@ namespace Stats
         public void AddBuff(StatBuff buff)
         {
             activeBuffs.Add(buff);
-            buffHeap.Push(buff);
+            buffHeap.Push(buff.endTime);
             buffListChanged = true;
         }
         /// 모든 버프를 제거합니다.
@@ -84,12 +84,10 @@ namespace Stats
         {
             if (maxValue.HasValue)
             {
-                basicValue = Mathf.Min(basicValue, maxValue.Value);
                 currentValue = Mathf.Min(currentValue, maxValue.Value);
             }
             if (minValue.HasValue)
             {
-                basicValue = Mathf.Max(basicValue, minValue.Value);
                 currentValue = Mathf.Max(currentValue, minValue.Value);
             }
         }
@@ -106,7 +104,7 @@ namespace Stats
 
             // 만료된 버프를 모두 제거
             var top = buffHeap.Peek();
-            while (top != null && top.endTime < currentTime)
+            while (top != null && top < currentTime)
             {
                 buffHeap.Pop();
                 buffListChanged = true;

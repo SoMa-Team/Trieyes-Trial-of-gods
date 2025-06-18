@@ -6,11 +6,9 @@ namespace GameFramework
 {
     public class SceneChangeManager : MonoBehaviour
     {
+        // ===== [기능 1] 싱글턴 및 데이터 전달 =====
         public static SceneChangeManager Instance { get; private set; }
-
-        // 씬 전환 시 전달할 데이터 등을 위한 변수 (예시)
         public object dataToPass;
-
         private void Awake()
         {
             if (Instance == null)
@@ -23,19 +21,17 @@ namespace GameFramework
                 Destroy(gameObject);
             }
         }
+        public object GetData()
+        {
+            return dataToPass;
+        }
 
-        // 씬을 로드하는 메서드
+        // ===== [기능 2] 씬 전환 =====
         public void LoadScene(string sceneName, object data = null)
         {
             Debug.Log($"Loading scene: {sceneName}");
             dataToPass = data;
             SceneManager.LoadScene(sceneName);
-        }
-
-        // 로드된 씬에서 데이터를 가져오는 메서드 (필요시 구현)
-        public object GetData()
-        {
-            return dataToPass;
         }
     }
 } 

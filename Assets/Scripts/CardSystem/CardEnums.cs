@@ -1,5 +1,6 @@
 namespace CardSystem
 {
+    // ===== [기능 1] Rarity Enum =====
     public enum Rarity
     {
         Common,
@@ -9,6 +10,7 @@ namespace CardSystem
         Legendary
     }
 
+    // ===== [기능 2] Property Enum =====
     public enum Property
     {
         Attack,

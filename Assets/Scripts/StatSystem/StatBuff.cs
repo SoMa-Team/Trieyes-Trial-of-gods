@@ -33,6 +33,12 @@ namespace Stats
         /// </summary>
         public StatBuff(int buffValue, BuffOperationType operationType, float duration = -1f)
         {
+            if(duration == 0f){
+                throw new ArgumentException("Duration cannot be 0. Use -1 for permanent buff.");
+            }
+            if(CombatStageManager.Instance == null){
+                throw new Exception("CombatStageManager is not initialized.");
+            }
             value = buffValue;
             this.operationType = operationType;
             isPermanent = duration < 0f;

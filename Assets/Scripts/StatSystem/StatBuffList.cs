@@ -44,7 +44,7 @@ namespace Stats
                 }
                 else if(buff.operationType == BuffOperationType.Multiplicative) // Multiplicative
                 {
-                    finalValue *= (100 + buff.value)/100;//퍼센테이지로 계산
+                    finalValue = finalValue * (100 + buff.value)/100;//퍼센테이지로 계산
                 }
                 else if(buff.operationType == BuffOperationType.Set)
                 {

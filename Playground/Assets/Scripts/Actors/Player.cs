@@ -10,14 +10,14 @@ public class Player : Actor
     
     public static class PlayerStatPreset
     {
-        public const int Health = 1000;
+        public const int Health = 100000;
         public const int AttackPower = 35;
         public const int MoveSpeed = 8;
         public const int ProjectileCount = 1;
         public const int ProjectilePierce = 20;
         public const int AttackSpeed = 10;
         public const int AttackRange = 15;
-        public const int Defense = 100;
+        public const int Defense = 1000;
         public const int DefensePenetration = 10;
     }//스탯 초기값
     

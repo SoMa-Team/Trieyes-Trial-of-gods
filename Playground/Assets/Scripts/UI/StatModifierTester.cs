@@ -4,13 +4,13 @@ using Stats;
 
 public class StatModifierTester : MonoBehaviour
 {
-    public Player player; // Player 오브젝트 Drag & Drop
-    public Button flatBuffButton; // Button Drag & Drop
+    public Player player; 
+    public Button flatBuffButton; 
 
     private void Awake()
     {
         if (player == null)
-            player = FindObjectOfType<Player>();
+            player = Object.FindFirstObjectByType<Player>(); // 최신 방식
 
         if (flatBuffButton != null)
             flatBuffButton.onClick.AddListener(ApplyFlatBuff);

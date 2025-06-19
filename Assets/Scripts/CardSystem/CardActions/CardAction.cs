@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Utils; // For IEventHandler and EventType
 using UnityEngine;
+using CharacterSystem;
 
 namespace CardActions
 {
@@ -13,14 +14,26 @@ namespace CardActions
         // ===== [기능 1] 카드 액션 정보 및 생성 =====
         public int cardId { get; private set; }
         public string cardDescription { get; protected set; }
+        protected Pawn owner; // 카드 액션의 소유자 (Pawn)
         private Dictionary<Utils.EventType, List<EventDelegate>> eventHandlers = new();
+        
         protected CardAction(int id, string description = "")
         {
             cardId = id;
             cardDescription = description;
         }
 
-        // ===== [기능 2] 이벤트 처리(추상) =====
+        // ===== [기능 2] 소유자 설정 =====
+        /// <summary>
+        /// 카드 액션의 소유자를 설정합니다.
+        /// </summary>
+        /// <param name="pawn">카드 액션의 소유자</param>
+        public void SetOwner(Pawn pawn)
+        {
+            owner = pawn;
+        }
+
+        // ===== [기능 3] 이벤트 처리(추상) =====
         /// <summary>
         /// 이벤트를 처리하는 추상 메서드입니다.
         /// 상속받는 클래스에서 특정 이벤트(예: OnAttack, OnDeath) 발생 시 수행할 고유한 로직을 구현합니다.

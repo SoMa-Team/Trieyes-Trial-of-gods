@@ -78,5 +78,15 @@ namespace CardSystem
         {
             cardAction?.OnEvent(eventType, param);
         }
+
+        // ===== [기능 4] 카드 액션 소유자 설정 =====
+        /// <summary>
+        /// 카드 액션의 소유자를 설정합니다.
+        /// </summary>
+        /// <param name="pawn">카드 액션의 소유자</param>
+        public void SetOwner(CharacterSystem.Pawn pawn)
+        {
+            cardAction?.SetOwner(pawn);
+        }
     }
 } 

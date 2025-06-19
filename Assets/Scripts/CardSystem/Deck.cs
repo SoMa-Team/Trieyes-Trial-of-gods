@@ -25,6 +25,12 @@ namespace CardSystem
             this.owner = owner;
             this.isPersistent = isPersistent;
             Clear();
+            
+            // 모든 카드의 CardAction에 owner 설정
+            foreach (var card in cards)
+            {
+                card?.SetOwner(owner);
+            }
         }
 
         public void Clear()
@@ -99,6 +105,7 @@ namespace CardSystem
             if (card != null)
             {
                 cards.Add(card);
+                card.SetOwner(owner);
             }
         }
 

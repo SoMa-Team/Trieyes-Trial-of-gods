@@ -1,20 +1,99 @@
 using System.Collections.Generic;
 using Utils;
+using CharacterSystem;
 using Stats;
 using UnityEngine;
 
 namespace CardSystem
 {
+    /// <summary>
+    /// 카드 덱을 관리하는 클래스입니다.
+    /// 덱은 자체적으로 이벤트를 등록하고 처리할 수 있는 IEventHandler를 구현합니다.
+    /// </summary>
     public class Deck : IEventHandler
     {
-        // ===== [기능 1] 카드 리스트 및 생성 =====
-        public List<Card> cards = new List<Card>();
+        // ===== [기능 1] 덱 기본 정보 =====
+        public bool isPersistent { get; private set; }  // 덱이 영구적인지 여부 (메인 캐릭터의 덱은 true, 적의 덱은 false)
+        public Pawn owner { get; private set; }        // 덱의 소유자
 
-        public Deck()
+        // ===== [기능 2] 덱 상태 관리 =====
+        public List<Card> cards = new();               // 현재 덱의 카드들
+
+        // ===== [기능 3] 덱 초기화/정리 =====
+        public void Initialize(Pawn owner, bool isPersistent)
         {
-            // 생성자, 필요에 따라 초기화 로직 추가
+            this.owner = owner;
+            this.isPersistent = isPersistent;
+            Clear();
         }
 
+        public void Clear()
+        {
+            if (!isPersistent)
+            {
+                cards.Clear();
+
+            }
+        }
+
+        // ===== [기능 4] 이벤트 처리 =====
+        public virtual void OnEvent(Utils.EventType eventType, object param)
+        {
+            switch (eventType)
+            {
+                case Utils.EventType.OnBattleStart:
+                    HandleDeckWhenBattleStart();
+                    break;
+                case Utils.EventType.OnBattleEnd:
+                    HandleDeckWhenBattleEnd();
+                    break;
+                case Utils.EventType.OnCardPurchase:
+                    HandleCardPurchase(param);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void HandleDeckWhenBattleStart()
+        {
+            // 1. 덱의 기본 스탯 계산
+            List<StatInfo> deckStats = CalcBaseStat();
+            
+            // 2. Pawn에게 덱 스탯 더하고 전달
+            if (owner != null)
+            {
+                owner.statInfos = StatCalculator.AddStats(owner.statInfos, deckStats);
+            }
+            
+            // 3. 카드 액션 초기화
+            CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
+        }
+
+        private void HandleDeckWhenBattleEnd()
+        {
+            if (!isPersistent)
+            {
+                // 적의 덱은 전투 종료 시 정리
+                Clear();
+                owner.statInfos = new List<StatInfo>();
+            }
+            else
+            {
+                // 메인 캐릭터의 덱은 유지
+            }
+        }
+
+        private void HandleCardPurchase(object param)
+        {
+            if (param is Card purchasedCard && isPersistent)
+            {
+                // 상점에서 카드 구매 시 덱에 추가
+                cards.Add(purchasedCard);
+            }
+        }
+
+        // ===== [기능 1] 카드 리스트 및 생성 =====
         public void AddCard(Card card)
         {
             if (card != null)
@@ -64,68 +143,6 @@ namespace CardSystem
                 {
                     card.TriggerCardEvent(eventType, param);
                 }
-            }
-        }
-
-        // ===== [기능 3] 이벤트 핸들러 관리 =====
-        /// <summary>
-        /// 이 Deck 인스턴스에 등록된 이벤트 핸들러들을 관리하는 딕셔너리입니다.
-        /// 각 EventType에 대해 여러 개의 EventDelegate를 가질 수 있습니다.
-        /// </summary>
-        private Dictionary<Utils.EventType, List<EventDelegate>> eventHandlers = new();
-
-        /// <summary>
-        /// 특정 이벤트 타입에 대한 핸들러를 등록합니다.
-        /// 이 Deck 인스턴스가 해당 이벤트를 발동시켰을 때 handler 메서드가 호출됩니다.
-        /// </summary>
-        /// <param name="eventType">등록할 이벤트의 타입</param>
-        /// <param name="handler">이벤트 발생 시 호출될 델리게이트 (메서드)</param>
-        public virtual void RegisterEvent(Utils.EventType eventType, EventDelegate handler)
-        {
-            if (!eventHandlers.ContainsKey(eventType))
-                eventHandlers[eventType] = new List<EventDelegate>();
-            eventHandlers[eventType].Add(handler);
-        }
-
-        /// <summary>
-        /// 특정 이벤트 타입에 등록된 핸들러를 해제합니다.
-        /// 더 이상 해당 이벤트를 수신하지 않을 때 사용됩니다.
-        /// </summary>
-        /// <param name="eventType">해제할 이벤트의 타입</param>
-        /// <param name="handler">해제할 델리게이트 (메서드)</param>
-        public virtual void UnregisterEvent(Utils.EventType eventType, EventDelegate handler)
-        {
-            if (eventHandlers.ContainsKey(eventType))
-                eventHandlers[eventType].Remove(handler);
-        }
-
-        /// <summary>
-        /// 특정 이벤트 타입에 대한 이벤트를 발동시킵니다.
-        /// 이 Deck이 이벤트를 발생시키는 역할을 합니다. 등록된 모든 핸들러들이 호출됩니다.
-        /// </summary>
-        /// <param name="eventType">발동시킬 이벤트의 타입</param>
-        /// <param name="param">이벤트와 함께 전달될 추가 데이터 (선택 사항)</param>
-        public virtual void TriggerEvent(Utils.EventType eventType, object param = null)
-        {
-            if (eventHandlers.ContainsKey(eventType))
-            {
-                foreach (var handler in eventHandlers[eventType])
-                    handler?.Invoke(param);
-            }
-        }
-
-        /// <summary>
-        /// Deck 자체에서 이벤트를 처리할 때 호출됩니다.
-        /// 이 이벤트를 CardAction으로 전파하거나, Deck에 특정한 로직을 수행할 수 있습니다.
-        /// (이 메서드는 Deck이 IEventHandler로서 외부에 자신의 이벤트를 노출할 때 사용됩니다.)
-        /// </summary>
-        /// <param name="eventType">발동된 이벤트 타입</param>
-        /// <param name="param">이벤트 매개변수</param>
-        public virtual void OnEvent(Utils.EventType eventType, object param)
-        {
-            if (eventType == Utils.EventType.OnBattleStart) 
-            {
-                Debug.Log($"Deck: 전투 시작 이벤트 수신! 카드 액션 초기화.");
             }
         }
     }

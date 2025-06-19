@@ -20,16 +20,7 @@ namespace CharacterSystem
 
         protected override void initBaseStat()
         {
-            base.initBaseStat();
 
-            if (!statInfos.Any(s => s.Type == StatType.AttackPower))
-            {
-                statInfos.Add(new StatInfo(StatType.AttackPower, 20));
-            }
-            if (!statInfos.Any(s => s.Type == StatType.Defense))
-            {
-                statInfos.Add(new StatInfo(StatType.Defense, 10));
-            }
         }
 
         // ===== [기능 3] 이벤트 처리 =====

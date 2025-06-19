@@ -20,7 +20,7 @@ namespace CharacterSystem
         public Attack basicAttack; // 기본 공격
         public AttackData[] attackDataList; // 여러 공격 데이터
         public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
-        public List<StatInfo> statInfos = new(); // 여러 스탯 정보
+        public StatSheet statSheet = new(); // 여러 스탯 정보
         public List<Relic> relics = new(); // 장착 가능한 유물 리스트
         public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
 
@@ -53,18 +53,11 @@ namespace CharacterSystem
         }
         protected virtual void initBaseStat()
         {
-            if (!statInfos.Any(s => s.Type == StatType.Health))
-            {
-                statInfos.Add(new StatInfo(StatType.Health, 100));
-            }
-            if (!statInfos.Any(s => s.Type == StatType.MoveSpeed))
-            {
-                statInfos.Add(new StatInfo(StatType.MoveSpeed, moveSpeed));
-            }
+            
         }
         public virtual void Update() 
         {
-            StatInfo healthStat = statInfos.FirstOrDefault(s => s.Type == StatType.Health);
+            IntegerStatValue healthStat = statSheet[StatType.Health];
             if (healthStat != null && healthStat.Value <= 0 && !isDead)
             {
                 isDead = true;
@@ -78,12 +71,7 @@ namespace CharacterSystem
         }
         public virtual void TakeDamage(int damage)
         {
-            StatInfo healthStat = statInfos.FirstOrDefault(s => s.Type == StatType.Health);
-            if (healthStat != null)
-            {
-                healthStat.Value -= damage;
-                if (healthStat.Value < 0) healthStat.Value = 0;
-            }
+            
         }
         public virtual void Move(Vector2 direction)
         {
@@ -134,61 +122,29 @@ namespace CharacterSystem
         }
 
         // ===== [기능 4] 스탯 관련 =====
-        public float GetStatValue(StatType statType)
+        public int GetStatValue(StatType statType)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            return stat?.Value ?? 0f;
+            return statSheet[statType];
         }
         public void SetStatValue(StatType statType, float value)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            if (stat != null)
-            {
-                stat.Value = value;
-            }
-            else
-            {
-                statInfos.Add(new StatInfo(statType, value));
-            }
+
         }
         public void IncreaseStatValue(StatType statType, float amount)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            if (stat != null)
-            {
-                stat.Value += amount;
-            }
-            else
-            {
-                statInfos.Add(new StatInfo(statType, amount));
-            }
+            
         }
         public void DecreaseStatValue(StatType statType, float amount)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            if (stat != null)
-            {
-                stat.Value -= amount;
-            }
-        }
-        public StatInfo GetStat(StatType statType)
-        {
-            return statInfos.FirstOrDefault(s => s.Type == statType);
+            
         }
         public void ModifyStat(StatType statType, int amount)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            if (stat != null)
-            {
-                stat.Value += amount;
-            }
+
         }
         public void ApplyStatMultiplier(float difficultyEnemyStatMultiplier)
         {
-            foreach (var stat in statInfos)
-            {
-                stat.Value *= difficultyEnemyStatMultiplier;
-            }
+            
         }
 
         // ===== [기능 5] 덱 액션 트리거 =====

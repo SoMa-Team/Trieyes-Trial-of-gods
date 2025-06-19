@@ -44,10 +44,6 @@ namespace RelicSystem
         private void OnStatChangeHandler(object param)
         {
             // 스탯 변경 시 추가 효과
-            if (param is StatInfo statInfo)
-            {
-                // 스탯 수정 로직
-            }
         }
     }
 } 

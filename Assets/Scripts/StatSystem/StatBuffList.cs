@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using BattleSystem;
+using System;
 
 namespace Stats
 {
@@ -10,19 +11,19 @@ namespace Stats
     {
         // --- 필드 ---
 
-        private List<StatBuff> buffs = new List<StatBuff>();
+        private List<StatModifier> buffs = new List<StatModifier>();
 
         // --- 메서드 ---
 
         /// <summary>
         /// 버프를 리스트에 추가합니다.
         /// </summary>
-        public void Add(StatBuff buff)
+        public void Add(StatModifier modifier)
         {
-            if(!buff.canStack){
-                buffs.RemoveAll(b => b.id == buff.id);
+            if(!modifier.canStack){
+                buffs.RemoveAll(b => b.id == modifier.id);
             }
-            buffs.Add(buff);
+            buffs.Add(modifier);
         }
 
         /// <summary>
@@ -39,6 +40,9 @@ namespace Stats
         /// </summary>
         public int CalculateBuff(int basicValue)
         {
+            if(BattleStageManager.Instance == null){
+                throw new Exception("BattleStageManager is not initialized.");
+            }
             // 만료된 버프 제거
             float currentTime = BattleStageManager.Instance.GetTime();
             buffs.RemoveAll(buff => !buff.isPermanent && buff.endTime <= currentTime);

@@ -20,7 +20,7 @@ namespace Stats
     public struct StatModifier
     {
         // --- 필드 ---
-        private static int buffID = 1;
+        private static int modifierID = 1;
         public int id;                          // 버프 고유 키
         public int value;                           // 버프로 인한 수치 변화
         public BuffOperationType operationType;     // 버프 연산 타입
@@ -42,7 +42,7 @@ namespace Stats
             if(BattleStageManager.Instance == null){
                 throw new Exception("BattleStageManager is not initialized.");
             }
-            this.id = buffID++;
+            this.id = modifierID++;
             this.value = buffValue;
             this.operationType = operationType;
             this.canStack = canStack;

@@ -9,9 +9,9 @@ namespace CardActions
         {
         }
 
-        public override void OnEvent(Utils.EventType eventType, object param)
+        protected override void HandleOnBattleSceneChange(object param)
         {
-            if (eventType == Utils.EventType.OnBattleSceneChange && owner != null)
+            if (owner != null)
             {
                 // 모든 스탯을 2배로 증가
                 foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))

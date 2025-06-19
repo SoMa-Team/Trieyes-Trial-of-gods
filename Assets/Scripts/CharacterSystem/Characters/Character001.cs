@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using AttackSystem;
 using Stats;
 
 namespace CharacterSystem
@@ -57,6 +58,16 @@ namespace CharacterSystem
                     break;
                 // 필요한 다른 이벤트 케이스들을 여기에 추가
             }
+        }
+
+        public override void TakeAttack(Attack attack)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void PerformAttack(Pawn target, Attack attack)
+        {
+            throw new System.NotImplementedException();
         }
     }
 } 

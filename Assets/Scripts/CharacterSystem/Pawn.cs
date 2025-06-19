@@ -8,15 +8,35 @@ using UnityEngine;
 using CardSystem;
 using CardActions;
 using System.Linq;
+using System;
 
 namespace CharacterSystem
 {
     /// <summary>
-    /// 캐릭터의 기본 동작과 스탯, 덱, 유물 등을 관리하는 추상 클래스
+    /// 게임 내 모든 캐릭터의 기본이 되는 클래스입니다.
+    /// 캐릭터의 기본적인 속성과 동작을 정의합니다.
     /// </summary>
     public abstract class Pawn : MonoBehaviour, IEventHandler, IMovable
     {
-        // ===== [기능 1] 공격/스탯/유물/덱 관리 =====
+        // ===== [기능 1] 캐릭터 기본 정보 =====
+        public int pawnId { get; private set; }
+        public string pawnName { get; protected set; }
+        public int level { get; protected set; }
+        public int maxHp { get; protected set; }
+        public int currentHp { get; protected set; }
+
+        // ===== [기능 2] 스탯 시스템 =====
+        protected Dictionary<StatType, StatInfo> stats = new();
+
+        // ===== [기능 3] 이벤트 처리 =====
+        public abstract void OnEvent(Utils.EventType eventType, object param);
+
+        // ===== [기능 4] 공격 시스템 =====
+        public abstract void TakeAttack(Attack attack);
+
+        public abstract void PerformAttack(Pawn target, Attack attack);
+
+        // ===== [기능 5] 공격/스탯/유물/덱 관리 =====
         public Attack basicAttack; // 기본 공격
         public AttackData[] attackDataList; // 여러 공격 데이터
         public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
@@ -24,10 +44,7 @@ namespace CharacterSystem
         public List<Relic> relics = new(); // 장착 가능한 유물 리스트
         public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
 
-        // ===== [기능 2] 이벤트 핸들러 관리 =====
-        public abstract void OnEvent(Utils.EventType eventType, object param);
-
-        // ===== [기능 3] 이동 및 물리/애니메이션 관련 =====
+        // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
         [SerializeField] protected float moveSpeed = 5f;
         [SerializeField] protected float jumpForce = 5f;
         protected Vector2 moveDirection;
@@ -74,15 +91,6 @@ namespace CharacterSystem
                 if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
                 if (boxCollider != null) boxCollider.enabled = false; 
                 Destroy(gameObject, 0.01f); 
-            }
-        }
-        public virtual void TakeDamage(int damage)
-        {
-            StatInfo healthStat = statInfos.FirstOrDefault(s => s.Type == StatType.Health);
-            if (healthStat != null)
-            {
-                healthStat.Value -= damage;
-                if (healthStat.Value < 0) healthStat.Value = 0;
             }
         }
         public virtual void Move(Vector2 direction)
@@ -133,7 +141,7 @@ namespace CharacterSystem
             ChangeAnimationState(HIT_ANIM);
         }
 
-        // ===== [기능 4] 스탯 관련 =====
+        // ===== [기능 7] 스탯 관련 =====
         public float GetStatValue(StatType statType)
         {
             var stat = statInfos.FirstOrDefault(s => s.Type == statType);
@@ -191,7 +199,7 @@ namespace CharacterSystem
             }
         }
 
-        // ===== [기능 5] 덱 액션 트리거 =====
+        // ===== [기능 8] 덱 액션 트리거 =====
         public void TriggerDeckActionInit(Utils.EventType eventType, object param = null)
         {
             deck.CalcActionInitStat(eventType, param);

@@ -1,9 +1,9 @@
 using UnityEngine;
 using BattleSystem;
+using System;
 
 namespace Stats
 {
-    using IDType = int;
     /// <summary>
     /// 버프의 연산 타입을 정의합니다.
     /// </summary>
@@ -17,11 +17,11 @@ namespace Stats
     /// <summary>
     /// 스탯에 적용되는 버프 정보를 저장하는 구조체입니다.
     /// </summary>
-    public struct StatBuff
+    public struct StatModifier
     {
         // --- 필드 ---
         private static int buffID = 1;
-        public IDType id;                          // 버프 고유 키
+        public int id;                          // 버프 고유 키
         public int value;                           // 버프로 인한 수치 변화
         public BuffOperationType operationType;     // 버프 연산 타입
         public float endTime;                       // 버프 만료 시각
@@ -34,7 +34,7 @@ namespace Stats
         /// StatBuff의 새 인스턴스를 초기화합니다.
         /// duration < 0이면 영구 버프로 간주합니다.
         /// </summary>
-        public StatBuff(int buffValue, BuffOperationType operationType, bool canStack=true, float duration = -1f)
+        public StatModifier(int buffValue, BuffOperationType operationType, bool canStack=true, float duration = -1f)
         {
             if(duration == 0f){
                 throw new ArgumentException("Duration cannot be 0. Use -1 for permanent buff.");

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Utils;
+using BattleSystem;
 
 namespace Stats
 {
@@ -67,10 +68,10 @@ namespace Stats
             basicValueChanged = true;
         }
          /// 새로운 버프를 추가합니다.
-        public void AddBuff(StatBuff buff)
+        public void AddBuff(StatModifier modifier)
         {
-            activeBuffs.Add(buff);
-            if(!buff.isPermanent) buffHeap.Push(buff.endTime);
+            activeBuffs.Add(modifier);
+            if(!modifier.isPermanent) buffHeap.Push(modifier.endTime);
             buffListChanged = true;
         }
         /// 모든 버프를 제거합니다.
@@ -112,12 +113,10 @@ namespace Stats
             float currentTime = BattleStageManager.Instance.GetTime();
 
             // 만료된 버프를 모두 제거
-            var top = buffHeap.Peek();
-            while (top != null && top < currentTime)
+            while (!buffHeap.IsEmpty && buffHeap.Peek() < currentTime)
             {
                 buffHeap.Pop();
                 buffListChanged = true;
-                top = buffHeap.Peek();
             }
 
             // 버프 리스트에 변동이 생겼거나, 기본 값이 변경되었으면 재계산

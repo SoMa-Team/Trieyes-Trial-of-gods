@@ -58,7 +58,7 @@ public class Enemy : Actor
             {
                 lastDamageTime = Time.time;
 
-                // Enemy°¡ Player¿¡°Ô µ¥¹ÌÁö¸¦ ÁÜ
+                // Enemyï¿½ï¿½ Playerï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
                 player.TakeDamage(statManager.attakStats.attackDamage, statManager.attakStats.armorPenetration);
             }
         }

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Utils;
 using Stats;
+using CharacterSystem;
+using UnityEngine;
 
 namespace RelicSystem
 {
@@ -18,15 +20,18 @@ namespace RelicSystem
         }
 
         // ===== [기능 2] 이벤트 처리 =====
-        public override void OnEvent(EventType eventType, object param)
+        public override void OnEvent(Utils.EventType eventType, object param)
         {
             switch (eventType)
             {
-                case EventType.OnLevelUp:
-                    // 레벨업 시 효과
+                case Utils.EventType.OnLevelUp:
+                    OnLevelUpHandler(param);
                     break;
-                case EventType.OnStatChange:
-                    // 스탯 변경 시 효과
+                case Utils.EventType.OnStatChange:
+                    OnStatChangeHandler(param);
+                    break;
+                case Utils.EventType.OnAttack:
+                    OnAttackHandler(param);
                     break;
                 // 기타 이벤트별 동작 추가
             }
@@ -35,18 +40,28 @@ namespace RelicSystem
         private void OnLevelUpHandler(object param)
         {
             // 레벨업 시 공격력 증가
-            if (param is int level)
+            if (param is int level && owner != null)
             {
-                // AttackData의 스탯 수정 로직
+                owner.IncreaseStatValue(StatType.AttackPower, 5);
+                Debug.Log($"<color=purple>[RELIC001] {owner.gameObject.name} gained 5 AttackPower from level up</color>");
             }
         }
 
         private void OnStatChangeHandler(object param)
         {
             // 스탯 변경 시 추가 효과
-            if (param is StatInfo statInfo)
+            if (param is StatInfo statInfo && owner != null)
             {
-                // 스탯 수정 로직
+                Debug.Log($"<color=purple>[RELIC001] {owner.gameObject.name} stat changed: {statInfo.Type}</color>");
+            }
+        }
+
+        private void OnAttackHandler(object param)
+        {
+            // 공격 시 추가 효과
+            if (param is Pawn.AttackEventData attackData && owner != null)
+            {
+                Debug.Log($"<color=purple>[RELIC001] {owner.gameObject.name} attacked {attackData.target.gameObject.name}</color>");
             }
         }
     }

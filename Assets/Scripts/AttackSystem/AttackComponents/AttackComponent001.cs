@@ -31,7 +31,7 @@ namespace AttackComponents
                     {
                         Debug.Log($"AttackComponent001: {deadPawn.gameObject.name} 사망 이벤트 수신! 임시 공격 버프를 얻습니다.");
                         // StatSystem의 버프 시스템 활용
-                        var buff = new StatBuff(10, BuffOperationType.Additive, false, 5f);
+                        var buff = new StatModifier(10, BuffOperationType.Additive, false, 5f);
                         deadPawn.GetComponent<StatSheet>()[StatType.AttackPower].AddBuff(buff);
                     }
                     break;

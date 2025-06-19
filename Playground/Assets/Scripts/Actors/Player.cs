@@ -61,7 +61,6 @@ public class Player : Actor
     {
         if (!isLive) return;
         float moveSpeed = statSheet[StatType.MoveSpeed].Value; // StatSheet에서 이동속도 읽기
-        Debug.Log("moveSpeed : " + moveSpeed);
         Vector2 nextVec = inputVec * moveSpeed * Time.fixedDeltaTime;
         rigid.MovePosition(rigid.position + nextVec);
     }

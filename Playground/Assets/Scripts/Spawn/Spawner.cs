@@ -18,13 +18,11 @@ public class Spawner : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.instance.player == null || GameManager.instance.player.statManager == null)
+        if (GameManager.instance.player == null)
             return;
 
-        float multiplier = GameManager.instance.player.statManager.utilityStats.spawnQuantityMultiplier;
-
         timer += Time.deltaTime;
-        if (timer > baseInterval / multiplier)
+        if (timer > baseInterval)
         {
             timer = 0f;
             Spawn();

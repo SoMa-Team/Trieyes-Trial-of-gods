@@ -7,11 +7,11 @@ namespace Stats
     /// <summary>
     /// StatBuff를 순서대로 관리하고 계산하는 클래스입니다.
     /// </summary>
-    public class StatBuffList
+    public class StatModifierList
     {
         // --- 필드 ---
 
-        private List<StatModifier> buffs = new List<StatModifier>();
+        private List<StatModifier> modifiers = new List<StatModifier>();
 
         // --- 메서드 ---
 
@@ -21,9 +21,9 @@ namespace Stats
         public void Add(StatModifier modifier)
         {
             if(!modifier.canStack){
-                buffs.RemoveAll(b => b.id == modifier.id);
+                modifiers.RemoveAll(b => b.id == modifier.id);
             }
-            buffs.Add(modifier);
+            modifiers.Add(modifier);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Stats
         /// </summary>
         public void Clear()
         {
-            buffs.Clear();
+            modifiers.Clear();
         }
 
         /// <summary>
@@ -45,11 +45,11 @@ namespace Stats
             }
             // 만료된 버프 제거
             float currentTime = BattleStageManager.Instance.GetTime();
-            buffs.RemoveAll(buff => !buff.isPermanent && buff.endTime <= currentTime);
+            modifiers.RemoveAll(buff => !buff.isPermanent && buff.endTime <= currentTime);
 
             int finalValue = basicValue;
 
-            foreach (var buff in buffs)
+            foreach (var buff in modifiers)
             {
                 if (buff.operationType == BuffOperationType.Additive)
                 {
@@ -74,7 +74,7 @@ namespace Stats
         /// </summary>
         public int Count()
         {
-            return buffs.Count;
+            return modifiers.Count;
         }
     }
 }

@@ -21,34 +21,10 @@ namespace CardActions
             switch (eventType)
             {
                 case Utils.EventType.OnBattleSceneChange:
-                    // 1. 게임 진입 전: 덱의 모든 카드의 공격력 10% 증가
-                    if (param is CardSystem.Deck deck)
-                    {
-                        foreach (var card in deck.cards)
-                        {
-                            foreach (var stat in card.cardStats)
-                            {
-                                if (stat.PropertyType == CardSystem.Property.Attack)
-                                {
-                                    foreach (var statInfo in stat.StatInfos)
-                                    {
-                                        if (statInfo.Type == Stats.StatType.AttackPower)
-                                        {
-                                            statInfo.Value *= 1.1f; // 10% 증가
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
                     break;
 
                 case Utils.EventType.OnProjectileKill:
                     // 2. 적 처치 시: 공격력 1 증가
-                    if (param is CharacterSystem.Pawn pawn)
-                    {
-                        pawn.IncreaseStatValue(Stats.StatType.AttackPower, 1);
-                    }
                     break;
 
                 // 기타 이벤트별 동작 추가

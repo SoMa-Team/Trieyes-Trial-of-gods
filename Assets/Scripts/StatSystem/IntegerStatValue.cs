@@ -106,6 +106,9 @@ namespace Stats
         }
 
         private int GetCurrentValue(){
+            if(BattleStageManager.Instance == null){
+                throw new Exception("BattleStageManager is not initialized.");
+            }
             float currentTime = BattleStageManager.Instance.GetTime();
 
             // 만료된 버프를 모두 제거

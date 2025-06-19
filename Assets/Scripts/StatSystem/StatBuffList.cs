@@ -19,6 +19,9 @@ namespace Stats
         /// </summary>
         public void Add(StatBuff buff)
         {
+            if(!buff.canStack){
+                buffs.RemoveAll(b => b.id == buff.id);
+            }
             buffs.Add(buff);
         }
 

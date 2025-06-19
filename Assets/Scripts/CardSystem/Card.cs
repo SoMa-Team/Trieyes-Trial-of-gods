@@ -49,24 +49,6 @@ namespace CardSystem
             cardStats = stats.ToArray();
         }
 
-        // ===== [기능 2] 카드 스탯 관련 =====
-        /// <summary>
-        /// 이 카드가 가진 모든 스탯 정보를 합산하여 반환합니다.
-        /// </summary>
-        /// <returns>합산된 StatInfo 리스트</returns>
-        public List<StatInfo> getAllCardStatInfos()
-        {
-            List<StatInfo> allStats = new List<StatInfo>();
-            foreach (var cardStat in cardStats)
-            {
-                if (cardStat?.StatInfos != null)
-                {
-                    allStats = StatCalculator.AddStats(allStats, cardStat.StatInfos);
-                }
-            }
-            return allStats;
-        }
-
         // ===== [기능 3] 카드 액션 이벤트 트리거 =====
         /// <summary>
         /// 이 카드의 cardAction에 특정 이벤트를 발동시킵니다.

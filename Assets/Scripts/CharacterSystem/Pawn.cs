@@ -27,7 +27,7 @@ namespace CharacterSystem
         public int gold { get; protected set; } // 골드 시스템 추가
 
         // ===== [기능 2] 스탯 시스템 =====
-        protected Dictionary<StatType, StatInfo> stats = new();
+        public StatSheet statSheet = new(); // 여러 스탯 정보
 
         // ===== [기능 3] 이벤트 처리 =====
         public abstract void OnEvent(Utils.EventType eventType, object param);
@@ -41,7 +41,6 @@ namespace CharacterSystem
         public Attack basicAttack; // 기본 공격
         public AttackData[] attackDataList; // 여러 공격 데이터
         public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
-        public List<StatInfo> statInfos = new(); // 여러 스탯 정보
         public List<Relic> relics = new(); // 장착 가능한 유물 리스트
         public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
 
@@ -71,25 +70,11 @@ namespace CharacterSystem
         }
         protected virtual void initBaseStat()
         {
-            if (!statInfos.Any(s => s.Type == StatType.Health))
-            {
-                statInfos.Add(new StatInfo(StatType.Health, 100));
-            }
-            if (!statInfos.Any(s => s.Type == StatType.MoveSpeed))
-            {
-                statInfos.Add(new StatInfo(StatType.MoveSpeed, moveSpeed));
-            }
-            if (!statInfos.Any(s => s.Type == StatType.Evasion))
-            {
-                statInfos.Add(new StatInfo(StatType.Evasion, 5)); // 기본 회피율 5%
-            }
             
-            // 초기 골드 설정
-            gold = 0;
         }
         public virtual void Update() 
         {
-            StatInfo healthStat = statInfos.FirstOrDefault(s => s.Type == StatType.Health);
+            IntegerStatValue healthStat = statSheet[StatType.Health];
             if (healthStat != null && healthStat.Value <= 0 && !isDead)
             {
                 isDead = true;
@@ -100,6 +85,10 @@ namespace CharacterSystem
                 if (boxCollider != null) boxCollider.enabled = false; 
                 Destroy(gameObject, 0.01f); 
             }
+        }
+        public virtual void TakeDamage(int damage)
+        {
+            
         }
         public virtual void Move(Vector2 direction)
         {
@@ -141,61 +130,40 @@ namespace CharacterSystem
             ChangeAnimationState(HIT_ANIM);
         }
 
-        // ===== [기능 7] 스탯 관련 =====
-        public float GetStatValue(StatType statType)
+        // ===== [기능 4] 스탯 관련 =====
+        public int GetStatValue(StatType statType)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            return stat?.Value ?? 0f;
+            return statSheet[statType];
         }
-        public void SetStatValue(StatType statType, float value)
+        
+        public void SetStatValue(StatType statType, int value)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            if (stat != null)
-            {
-                stat.Value = value;
-            }
-            else
-            {
-                statInfos.Add(new StatInfo(statType, value));
-            }
+            statSheet[statType].SetBasicValue(value);
         }
-        public void IncreaseStatValue(StatType statType, float amount)
+        
+        public void IncreaseStatValue(StatType statType, int amount)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            if (stat != null)
-            {
-                stat.Value += amount;
-            }
-            else
-            {
-                statInfos.Add(new StatInfo(statType, amount));
-            }
+            statSheet[statType].AddToBasicValue(amount);
         }
-        public void DecreaseStatValue(StatType statType, float amount)
+        
+        public void DecreaseStatValue(StatType statType, int amount)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            if (stat != null)
-            {
-                stat.Value -= amount;
-            }
+            statSheet[statType].AddToBasicValue(-amount);
         }
-        public StatInfo GetStat(StatType statType)
-        {
-            return statInfos.FirstOrDefault(s => s.Type == statType);
-        }
+        
         public void ModifyStat(StatType statType, int amount)
         {
-            var stat = statInfos.FirstOrDefault(s => s.Type == statType);
-            if (stat != null)
-            {
-                stat.Value += amount;
-            }
+            statSheet[statType].AddToBasicValue(amount);
         }
+        
         public void ApplyStatMultiplier(float difficultyEnemyStatMultiplier)
         {
-            foreach (var stat in statInfos)
+            // 모든 스탯에 배율 적용
+            foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
             {
-                stat.Value *= difficultyEnemyStatMultiplier;
+                int currentValue = statSheet[statType].Value;
+                int newValue = Mathf.RoundToInt(currentValue * difficultyEnemyStatMultiplier);
+                statSheet[statType].SetBasicValue(newValue);
             }
         }
 
@@ -316,34 +284,27 @@ namespace CharacterSystem
         /// <param name="projectile">투사체 (선택사항)</param>
         protected virtual void CalculateAndApplyDamage(Pawn attacker, Attack projectile = null)
         {
-            if (projectile == null || projectile.projectileStats == null)
+            if (attacker == null)
             {
-                Debug.LogError($"<color=red>[ERROR] {gameObject.name} - CalculateAndApplyDamage: projectile is null</color>");
+                Debug.LogWarning($"<color=orange>[DAMAGE] Attacker is null for {gameObject.name}</color>");
                 return;
             }
 
             // 기본 공격력 가져오기
             float attackPower = 10f;
-            var attackPowerStat = projectile.projectileStats.FirstOrDefault(s => s.Type == StatType.AttackPower);
-            if (attackPowerStat != null)
+            if (projectile != null)
             {
-                attackPower = attackPowerStat.Value;
+                attackPower = projectile.projectileStats[StatType.AttackPower];
             }
 
             // 치명타 확률과 치명타 데미지 가져오기
             float criticalRate = 0f;
             float criticalDamage = 1.5f; // 기본 치명타 배율 1.5배
             
-            var criticalRateStat = projectile.projectileStats.FirstOrDefault(s => s.Type == StatType.CriticalRate);
-            if (criticalRateStat != null)
+            if (projectile != null)
             {
-                criticalRate = criticalRateStat.Value / 100f; // 퍼센트를 0~1 범위로 변환
-            }
-            
-            var criticalDamageStat = projectile.projectileStats.FirstOrDefault(s => s.Type == StatType.CriticalDamage);
-            if (criticalDamageStat != null)
-            {
-                criticalDamage = criticalDamageStat.Value / 100f; // 퍼센트를 배율로 변환
+                criticalRate = projectile.projectileStats[StatType.CriticalRate] / 100f; // 퍼센트를 0~1 범위로 변환
+                criticalDamage = projectile.projectileStats[StatType.CriticalDamage] / 100f; // 퍼센트를 배율로 변환
             }
 
             // 치명타 판정

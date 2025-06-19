@@ -13,10 +13,11 @@ namespace CardActions
         {
             if (eventType == Utils.EventType.OnBattleSceneChange && owner != null)
             {
-                // Call by Reference 방식: 기존 리스트의 요소들을 직접 수정
-                foreach (var stat in owner.statInfos)
+                // 모든 스탯을 2배로 증가
+                foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
                 {
-                    stat.Value *= 2; // 기존 StatInfo 객체의 Value를 직접 수정
+                    int currentValue = owner.statSheet[statType].Value;
+                    owner.statSheet[statType].SetBasicValue(currentValue * 2);
                 }
             }
         }

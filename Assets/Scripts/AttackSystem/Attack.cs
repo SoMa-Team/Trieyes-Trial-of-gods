@@ -18,7 +18,7 @@ namespace AttackSystem
         public Pawn attacker; // 공격자 (투사체를 발사한 캐릭터)
         public Attack parentAttack; // 부모 Attack (투사체가 다른 Attack의 하위인 경우)
         public List<AttackComponent> components = new List<AttackComponent>();
-        public List<StatInfo> projectileStats = new List<StatInfo>(); // 투사체가 가질 스탯 정보 (복사본)
+        public StatSheet projectileStats = new(); // 투사체가 가질 스탯 정보 (복사본)
         
         // ===== [기능 2] 투사체 관련 =====
         [SerializeField] protected int pierceCount = 1; // 관통 개수
@@ -106,15 +106,18 @@ namespace AttackSystem
         {
             if (pawn == null) return;
             
-            projectileStats.Clear();
-            
+            // StatSheet는 Dictionary 기반이므로 Clear() 대신 새로운 인스턴스 생성
+            projectileStats = new StatSheet();
+
             // Pawn의 모든 스탯을 깊은 복사
-            foreach (var stat in pawn.statInfos)
+            foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
             {
-                projectileStats.Add(new StatInfo(stat.Type, stat.Value));
+                // Pawn의 스탯 값을 가져와서 새로운 IntegerStatValue로 복사
+                int pawnStatValue = pawn.GetStatValue(statType);
+                projectileStats[statType].SetBasicValue(pawnStatValue);
             }
             
-            Debug.Log($"<color=green>[PROJECTILE] {gameObject.name} copied {projectileStats.Count} stats from {pawn.gameObject.name}</color>");
+            Debug.Log($"<color=green>[PROJECTILE] {gameObject.name} copied stats from {pawn.gameObject.name}</color>");
         }
 
         // ===== [기능 5] 충돌 처리 =====

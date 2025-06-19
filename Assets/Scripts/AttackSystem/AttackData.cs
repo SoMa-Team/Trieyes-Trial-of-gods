@@ -1,3 +1,5 @@
+using Stats;
+
 namespace AttackSystem
 {
     // ===== [기능 1] AttackData 정보 =====
@@ -7,9 +9,10 @@ namespace AttackSystem
         public string attackName;
         public string attackIcon;
         public AttackType attackType;
-        public float damage;
+        public int damage;
         public float cooldown;
         public bool bIsActivated;
+        public StatSheet statSheet;
         // 기타 공격 관련 정보
     }
 

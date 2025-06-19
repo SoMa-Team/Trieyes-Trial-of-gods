@@ -10,8 +10,8 @@ namespace CardSystem
 
         public CardEnhancement(int initialLevel, int initialExp, int maxLevel = 99, int maxExp = 100)
         {
-            level = new IntegerStatValue(initialLevel, maxLevel);
-            exp = new IntegerStatValue(initialExp, maxExp);
+            level = new IntegerStatValue(initialLevel, maxLevel, 1);
+            exp = new IntegerStatValue(initialExp, maxExp, 0);
         }
         
         // ===== [기능 2] 카드 합성 =====
@@ -19,22 +19,42 @@ namespace CardSystem
         /// 현재 카드에 다른 카드의 경험치를 합성합니다.
         /// </summary>
         /// <param name="otherCardEnhancement">합성할 다른 카드의 CardEnhancement 객체</param>
-        public void Composite(CardEnhancement otherCardEnhancement)
+        public void MergeCard(CardEnhancement otherCardEnhancement)
         {
-            // 경험치 추가
-            this.exp.Add(val => val + otherCardEnhancement.exp.value);
-
-            // 경험치가 MaxExp를 초과하면 레벨업 처리
-            while (this.exp.value >= this.exp.maxValue.Value && this.level.value < this.level.maxValue.Value)
-            {
-                this.exp.value -= this.exp.maxValue.Value;
-                this.level.Add(val => val + 1);
-                // TODO: 레벨업에 따른 MaxExp 증가 로직이 있다면 여기에 추가
-            }
+            if (otherCardEnhancement == null) return;
             
-            // 합성 후 경험치나 레벨이 Max 값을 초과하지 않도록 보장
-            this.exp.value = System.Math.Min(this.exp.value, this.exp.maxValue.Value);
-            this.level.value = System.Math.Min(this.level.value, this.level.maxValue.Value);
+            // 경험치 합성
+            int totalExp = exp.Value + otherCardEnhancement.exp.Value;
+            exp.SetBasicValue(totalExp);
+            
+            // 레벨업 체크
+            CheckLevelUp();
+        }
+        
+        /// <summary>
+        /// 경험치를 추가하고 레벨업을 체크합니다.
+        /// </summary>
+        /// <param name="expAmount">추가할 경험치</param>
+        public void AddExp(int expAmount)
+        {
+            exp.AddToBasicValue(expAmount);
+            CheckLevelUp();
+        }
+        
+        /// <summary>
+        /// 경험치가 충분한지 확인하고 레벨업을 수행합니다.
+        /// </summary>
+        private void CheckLevelUp()
+        {
+            int currentExp = exp.Value;
+            int requiredExp = level.Value * 10; // 레벨당 10 경험치 필요
+            
+            if (currentExp >= requiredExp)
+            {
+                level.AddToBasicValue(1);
+                exp.AddToBasicValue(-requiredExp);
+                CheckLevelUp(); // 재귀적으로 다음 레벨업 체크
+            }
         }
     }
 } 

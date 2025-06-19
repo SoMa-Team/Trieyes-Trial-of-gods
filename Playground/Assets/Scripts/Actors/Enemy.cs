@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using Stats;
 
 public class Enemy : Actor
 {
@@ -15,7 +16,8 @@ public class Enemy : Actor
     private void OnEnable()
     {
         isLive = true;
-        currentHealth = statManager.vitalStats.maxHealth;
+        // StatSheet 기반으로 초기화
+        currentHealth = statSheet[StatType.Health].Value;
 
         target = GameManager.instance.player.GetComponent<Rigidbody2D>();
         coll.enabled = true;
@@ -27,22 +29,19 @@ public class Enemy : Actor
     private void FixedUpdate()
     {
         if (!isLive || animator.GetCurrentAnimatorStateInfo(0).IsName("Hit"))
-        {
             return;
-        }
 
         Vector2 dirVec = target.position - rigid.position;
-        Vector2 nextVec = dirVec.normalized * statManager.utilityStats.moveSpeed * Time.fixedDeltaTime;
-        rigid.MovePosition(rigid.position+nextVec);
+        float moveSpeed = statSheet[StatType.MoveSpeed].Value;
+        Vector2 nextVec = dirVec.normalized * moveSpeed * Time.fixedDeltaTime;
+        rigid.MovePosition(rigid.position + nextVec);
         rigid.linearVelocity = Vector2.zero;
     }
 
     private void LateUpdate()
     {
         if (!isLive)
-        {
             return;
-        }
 
         spriter.flipX = target.position.x < rigid.position.x;
     }
@@ -58,12 +57,13 @@ public class Enemy : Actor
             {
                 lastDamageTime = Time.time;
 
-                // Enemy�� Player���� �������� ��
-                player.TakeDamage(statManager.attakStats.attackDamage, statManager.attakStats.armorPenetration);
+                // StatSheet에서 공격력과 방어관통력 가져오기
+                float attackDamage = statSheet[StatType.AttackPower].Value;
+                float armorPenetration = statSheet[StatType.DefensePenetration].Value;
+                player.TakeDamage(attackDamage, armorPenetration);
             }
         }
     }
-
 
     protected override void OnHit()
     {

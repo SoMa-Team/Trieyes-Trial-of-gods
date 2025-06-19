@@ -1,4 +1,5 @@
 using UnityEngine;
+using Stats; // StatSheet 네임스페이스
 
 public class Player : Actor
 {
@@ -13,13 +14,13 @@ public class Player : Actor
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
         inputVec = new Vector2(h, v).normalized;
-
     }
 
     void FixedUpdate()
     {
         if (!isLive) return;
-        Vector2 nextVec = inputVec * statManager.utilityStats.moveSpeed * Time.fixedDeltaTime;
+        float moveSpeed = statSheet[StatType.MoveSpeed].Value; // StatSheet에서 이동속도 읽기
+        Vector2 nextVec = inputVec * moveSpeed * Time.fixedDeltaTime;
         rigid.MovePosition(rigid.position + nextVec);
     }
 

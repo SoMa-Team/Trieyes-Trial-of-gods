@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Stats; // StatSheet 네임스페이스
 
 public class Bullet : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class Bullet : MonoBehaviour
     private Vector2 startPos;
 
     private Actor owner;
+
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -25,7 +27,7 @@ public class Bullet : MonoBehaviour
         range = attackRange;
 
         startPos = rigid.position;
-        rigid.linearVelocity = dir.normalized * speed;;
+        rigid.linearVelocity = dir.normalized * speed;
     }
 
     private void FixedUpdate()
@@ -37,7 +39,6 @@ public class Bullet : MonoBehaviour
         }
     }
 
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Actor hitActor = collision.GetComponent<Actor>();
@@ -45,8 +46,12 @@ public class Bullet : MonoBehaviour
         if (hitActor == null || hitActor == owner)
             return;
 
-        hitActor.TakeDamage(owner.statManager.attakStats.attackDamage, owner.statManager.attakStats.armorPenetration);
-        
+        // StatSheet 기반으로 공격력/방어관통 읽기
+        float attackDamage = owner.statSheet[StatType.AttackPower].Value;
+        float armorPenetration = owner.statSheet[StatType.DefensePenetration].Value;
+
+        hitActor.TakeDamage(attackDamage, armorPenetration);
+
         leftPenetration--;
 
         if (leftPenetration <= 0)

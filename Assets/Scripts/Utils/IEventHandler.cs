@@ -24,6 +24,7 @@ namespace Utils
         OnDefend, // 공격 방어 시 호출 되는 이벤트
         OnHit,    // 피격 이벤트
         OnBattleEnd,    // 전투 종료 이벤트
+        OnCardPurchase, // 상점에서 카드 구매시 발동하는 이벤트
         // ... 기타 이벤트
     }
 
@@ -37,6 +38,6 @@ namespace Utils
     // ===== [기능 3] 이벤트 핸들러 인터페이스 =====
     public interface IEventHandler
     {
-        void OnEvent(EventType eventType, object param);
+        abstract void OnEvent(EventType eventType, object param);
     }
 }

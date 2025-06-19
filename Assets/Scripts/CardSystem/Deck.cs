@@ -37,17 +37,10 @@ namespace CardSystem
         /// 이 합산된 스탯은 Pawn의 기본 스탯(statinfos)에 적용됩니다.
         /// </summary>
         /// <returns>합산된 StatInfo 리스트</returns>
-        public List<StatInfo> CalcBaseStat()
+        public StatSheet CalcBaseStat()
         {
-            List<StatInfo> totalDeckStats = new List<StatInfo>();
-            foreach (var card in cards)
-            {
-                if (card != null)
-                {
-                    totalDeckStats = StatCalculator.AddStats(totalDeckStats, card.getAllCardStatInfos());
-                }
-            }
-            return totalDeckStats;
+            StatSheet emptyStat = new();
+            return emptyStat;
         }
 
         /// <summary>

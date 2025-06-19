@@ -18,59 +18,12 @@ namespace CardActions
         // ===== [기능 2] 이벤트 처리 =====
         public override void OnEvent(Utils.EventType eventType, object param)
         {
-            switch (eventType)
-            {
-                case Utils.EventType.OnBattleSceneChange:
-                    // 1. 게임 진입 전: 덱의 모든 카드의 공격력 10% 증가
-                    if (param is CardSystem.Deck deck)
-                    {
-                        foreach (var card in deck.cards)
-                        {
-                            foreach (var stat in card.cardStats)
-                            {
-                                if (stat.PropertyType == CardSystem.Property.Attack)
-                                {
-                                    foreach (var statInfo in stat.StatInfos)
-                                    {
-                                        if (statInfo.Type == Stats.StatType.AttackPower)
-                                        {
-                                            statInfo.Value *= 1.1f; // 10% 증가
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-
-                case Utils.EventType.OnProjectileKill:
-                    // 2. 적 처치 시: 공격력 1 증가
-                    if (param is CharacterSystem.Pawn pawn)
-                    {
-                        pawn.IncreaseStatValue(Stats.StatType.AttackPower, 1);
-                    }
-                    break;
-
-                // 기타 이벤트별 동작 추가
-            }
+            
         }
 
         private void ApplyStatModification(Pawn target)
         {
-            var defenseStat = target.GetStat(StatType.Defense);
-            if (defenseStat != null)
-            {
-                int reduction = (int)(defenseStat.Value * DEFENSE_REDUCTION_PERCENT);
-                target.ModifyStat(StatType.Defense, -reduction);
-                Debug.Log($"<color=blue>CardAction001: {target.gameObject.name}의 방어력이 {reduction:F1} 감소했습니다.</color>");
-            }
-            var attackStat = target.GetStat(StatType.AttackPower);
-            if (attackStat != null)
-            {
-                int increase = (int)(attackStat.Value * ATTACK_INCREASE_PERCENT);
-                target.ModifyStat(StatType.AttackPower, increase);
-                Debug.Log($"<color=red>CardAction001: {target.gameObject.name}의 공격력이 {increase:F1} 증가했습니다.</color>");
-            }
+    
         }
     }
 } 

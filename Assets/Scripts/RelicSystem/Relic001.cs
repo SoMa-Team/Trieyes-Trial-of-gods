@@ -17,21 +17,7 @@ namespace RelicSystem
         }
 
         // ===== [기능 2] 이벤트 처리 =====
-        public override void OnEvent(EventType eventType, object param)
-        {
-            switch (eventType)
-            {
-                case EventType.OnLevelUp:
-                    // 레벨업 시 효과
-                    break;
-                case EventType.OnStatChange:
-                    // 스탯 변경 시 효과
-                    break;
-                // 기타 이벤트별 동작 추가
-            }
-        }
-
-        private void OnLevelUpHandler(object param)
+        protected override void HandleOnLevelUp(object param)
         {
             // 레벨업 시 공격력 증가
             if (param is int level)
@@ -40,7 +26,7 @@ namespace RelicSystem
             }
         }
 
-        private void OnStatChangeHandler(object param)
+        protected override void HandleOnStatChange(object param)
         {
             // 스탯 변경 시 추가 효과
         }

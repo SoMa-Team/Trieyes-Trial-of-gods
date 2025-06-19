@@ -37,13 +37,9 @@ namespace AttackComponents
             }
         }
 
-        public override void OnEvent(Utils.EventType eventType, object param)
+        protected override void HandleOnBattleStart(object param)
         {
-            // 필요시 이벤트별 추가 효과 구현
-            if (eventType == Utils.EventType.OnBattleStart)
-            {
-                Debug.Log("[AttackComponent003] 전투 시작: 검 휘두르기 준비 완료");
-            }
+            Debug.Log("[AttackComponent003] 전투 시작: 검 휘두르기 준비 완료");
         }
 
         // 디버그용: 에디터에서 범위 시각화

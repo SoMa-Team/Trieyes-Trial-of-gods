@@ -1,8 +1,9 @@
 using UnityEngine;
-using CombatSystem;
+using BattleSystem;
 
 namespace Stats
 {
+    using IDType = int;
     /// <summary>
     /// 버프의 연산 타입을 정의합니다.
     /// </summary>
@@ -19,11 +20,13 @@ namespace Stats
     public struct StatBuff
     {
         // --- 필드 ---
-
+        private static int buffID = 1;
+        public IDType id;                          // 버프 고유 키
         public int value;                           // 버프로 인한 수치 변화
         public BuffOperationType operationType;     // 버프 연산 타입
         public float endTime;                       // 버프 만료 시각
-        public bool isPermanent;                    // 영구 버프 여부
+        public bool isPermanent;                    // 영구 버프 여부   
+        public bool canStack;                       // 버프 중복 적용 가능 여부
 
         // --- 생성자 ---
 
@@ -31,12 +34,20 @@ namespace Stats
         /// StatBuff의 새 인스턴스를 초기화합니다.
         /// duration < 0이면 영구 버프로 간주합니다.
         /// </summary>
-        public StatBuff(int buffValue, BuffOperationType operationType, float duration = -1f)
+        public StatBuff(int buffValue, BuffOperationType operationType, bool canStack=true, float duration = -1f)
         {
-            value = buffValue;
+            if(duration == 0f){
+                throw new ArgumentException("Duration cannot be 0. Use -1 for permanent buff.");
+            }
+            if(BattleStageManager.Instance == null){
+                throw new Exception("BattleStageManager is not initialized.");
+            }
+            this.id = buffID++;
+            this.value = buffValue;
             this.operationType = operationType;
-            isPermanent = duration < 0f;
-            endTime = isPermanent ? float.MaxValue : CombatStageManager.Instance.GetTime() + duration;
+            this.canStack = canStack;
+            this.isPermanent = duration < 0f;
+            this.endTime = this.isPermanent ? float.MaxValue : BattleStageManager.Instance.GetTime() + duration;
         }
 
         // --- 메서드 ---
@@ -46,7 +57,7 @@ namespace Stats
         /// </summary>
         public bool IsExpired()
         {
-            return !isPermanent && CombatStageManager.Instance.GetTime() >= endTime;
+            return !isPermanent && BattleStageManager.Instance.GetTime() >= endTime;
         }
     }
 }

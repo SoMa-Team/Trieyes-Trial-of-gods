@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Utils;
 
 namespace Stats
 {
@@ -69,7 +70,7 @@ namespace Stats
         public void AddBuff(StatBuff buff)
         {
             activeBuffs.Add(buff);
-            buffHeap.Push(buff.endTime);
+            if(!buff.isPermanent) buffHeap.Push(buff.endTime);
             buffListChanged = true;
         }
         /// 모든 버프를 제거합니다.
@@ -105,7 +106,10 @@ namespace Stats
         }
 
         private int GetCurrentValue(){
-            float currentTime = CombatStageManager.Instance.GetTime();
+            if(BattleStageManager.Instance == null){
+                throw new Exception("BattleStageManager is not initialized.");
+            }
+            float currentTime = BattleStageManager.Instance.GetTime();
 
             // 만료된 버프를 모두 제거
             var top = buffHeap.Peek();

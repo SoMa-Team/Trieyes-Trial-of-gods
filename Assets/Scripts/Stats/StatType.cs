@@ -18,6 +18,7 @@ namespace Stats
         Defense,            // 방어력
         DefensePenetration, // 방어 관통력
         Reflect,            // 반사
+        Evasion,            // 회피율
         Health,             // 체력
         HealthRegen,        // 자연 회복
         MoveSpeed,          // 이동속도

@@ -6,6 +6,45 @@ public class Player : Actor
     public Vector2 inputVec;
 
     private Vector3 fixedDeathPosition;
+    
+    public static class PlayerStatPreset
+    {
+        public const int Health = 200;
+        public const int AttackPower = 35;
+        public const int MoveSpeed = 8;
+        public const int ProjectileCount = 1;
+        public const int ProjectilePierce = 2;
+        public const int AttackSpeed = 2;
+        public const int AttackRange = 15;
+        public const int Defense = 10;
+        public const int DefensePenetration = 10;
+    }//스탯 초기값
+    
+    protected override void Awake()
+    {
+        base.Awake();
+        InitializeStats();
+    }
+
+    private void InitializeStats()// 스탯 초기화 함수
+    {
+        if (statSheet == null)
+            statSheet = new StatSheet();
+
+        statSheet[StatType.Health].SetBasicValue(PlayerStatPreset.Health);
+        statSheet[StatType.AttackPower].SetBasicValue(PlayerStatPreset.AttackPower);
+        statSheet[StatType.MoveSpeed].SetBasicValue(PlayerStatPreset.MoveSpeed);
+        statSheet[StatType.ProjectileCount].SetBasicValue(PlayerStatPreset.ProjectileCount);
+        statSheet[StatType.ProjectilePierce].SetBasicValue(PlayerStatPreset.ProjectilePierce);
+        statSheet[StatType.AttackSpeed].SetBasicValue(PlayerStatPreset.AttackSpeed);
+        statSheet[StatType.AttackRange].SetBasicValue(PlayerStatPreset.AttackRange);
+        statSheet[StatType.Defense].SetBasicValue(PlayerStatPreset.Defense);
+        statSheet[StatType.DefensePenetration].SetBasicValue(PlayerStatPreset.DefensePenetration);
+
+        currentHealth = statSheet[StatType.Health].Value;
+        isLive = true;
+    }
+
 
     void Update()
     {

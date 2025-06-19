@@ -1,12 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using System.Collections.Generic;
-
 
 public class HUD : MonoBehaviour
 {
-    public enum InfoType {Time, Health, Kill};
+    public enum InfoType { Time, Health, Kill };
     public InfoType type;
 
     private Slider mySlider;
@@ -15,7 +13,7 @@ public class HUD : MonoBehaviour
     private void Awake()
     {
         myText = GetComponent<Text>();
-        mySlider = GetComponent<Slider>();        
+        mySlider = GetComponent<Slider>();
     }
 
     private void LateUpdate()
@@ -32,11 +30,11 @@ public class HUD : MonoBehaviour
                 break;
 
             case InfoType.Health:
-                if (player != null && player.statManager != null && mySlider != null)
+                if (player != null && player.statSheet != null && mySlider != null)
                 {
-                    float maxHp = player.statManager.vitalStats.maxHealth;
+                    float maxHp = player.statSheet[Stats.StatType.Health].Value;
                     float curHp = player.currentHealth;
-                    mySlider.value = Mathf.Clamp01(curHp / maxHp);
+                    mySlider.value = (maxHp > 0) ? Mathf.Clamp01(curHp / maxHp) : 0f;
                 }
                 break;
 

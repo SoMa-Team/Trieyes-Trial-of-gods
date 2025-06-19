@@ -1,4 +1,3 @@
-using Utils; // For EventType
 using UnityEngine; // For Debug.Log
 using AttackSystem;
 

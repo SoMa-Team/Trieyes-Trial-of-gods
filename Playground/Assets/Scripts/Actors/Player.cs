@@ -9,9 +9,11 @@ public class Player : Actor
     void Update()
     {
         if (!isLive) return;
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 dir = mousePos - transform.position;
-        inputVec = dir.normalized;
+        // 키보드 입력으로 방향벡터 계산
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+        inputVec = new Vector2(h, v).normalized;
+
     }
 
     void FixedUpdate()

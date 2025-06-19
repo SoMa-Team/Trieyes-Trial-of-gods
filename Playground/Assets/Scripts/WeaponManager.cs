@@ -6,12 +6,12 @@ public class WeaponManager : MonoBehaviour
     private float timer;
     private Camera mainCamera;
 
-    private Actor owner;
+    private Player owner;
 
     private void Awake()
     {
         mainCamera = Camera.main;
-        owner = GetComponentInParent<Actor>();
+        owner = GetComponentInParent<Player>();
     }
 
     private void Update()
@@ -27,10 +27,12 @@ public class WeaponManager : MonoBehaviour
     }
     void Fire()
     {
-        Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPos.z = 0f;
+        Vector2 inputVec = owner.inputVec;
+        
+        if (inputVec == Vector2.zero)
+            return;
 
-        Vector3 fireDir = mouseWorldPos - owner.transform.position;
+        Vector3 fireDir = new Vector3(inputVec.x, inputVec.y, 0f);
 
         GameObject bulletObj = GameManager.instance.poolManager.Get(prefabId);
         bulletObj.transform.position = owner.transform.position;

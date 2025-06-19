@@ -1,6 +1,7 @@
 using Utils; // For EventType
 using UnityEngine; // For Debug.Log
 using AttackSystem;
+using Stats;
 
 namespace AttackComponents
 {
@@ -9,9 +10,13 @@ namespace AttackComponents
         // ===== [기능 1] 공격 실행 및 관련 메소드 =====
         public override void Execute(Attack attack)
         {
-            // 공격 효과 구현 (예: 특정 상태 이상 적용)
-            Debug.Log($"AttackComponent002: 대상에게 특정 효과를 부여합니다.");
-            // 실제 효과 적용 로직은 Attack 클래스나 대상 Pawn에서 처리될 수 있습니다.
+            // StatSystem을 활용한 효과 적용
+            if (attack.attacker != null)
+            {
+                var buff = new StatBuff(20, BuffOperationType.Multiplicative, false, 3f);
+                attack.attacker.GetComponent<StatSheet>()[StatType.Defense].AddBuff(buff);
+                Debug.Log($"AttackComponent002: 대상에게 방어력 증가 효과를 부여합니다.");
+            }
         }
 
         // ===== [기능 2] 이벤트 처리 =====
@@ -25,10 +30,12 @@ namespace AttackComponents
             switch (eventType)
             {
                 case Utils.EventType.OnDeath:
-                    if (param is CharacterSystem.Pawn deadPawn)
+                    if (param is CharacterSystem.Pawn deadPawn && deadPawn.gameObject != null)
                     {
                         Debug.Log($"AttackComponent002: {deadPawn.gameObject.name} 사망 이벤트 수신! 임시 방어 버프를 얻습니다.");
-                        // 예시: 방어력 일시 증가 로직
+                        // StatSystem의 버프 시스템 활용
+                        var buff = new StatBuff(15, BuffOperationType.Multiplicative, false, 5f);
+                        deadPawn.GetComponent<StatSheet>()[StatType.Defense].AddBuff(buff);
                     }
                     break;
                 case Utils.EventType.OnBattleEnd:

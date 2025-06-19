@@ -4,6 +4,8 @@ using Utils;
 using UnityEngine;
 using AttackComponents;
 using Stats;
+using RelicSystem;
+using CardSystem;
 
 namespace AttackSystem
 {
@@ -85,6 +87,12 @@ namespace AttackSystem
             // 스탯 정보 복사 (깊은 복사)
             CopyStatsFromPawn(attacker);
             
+            // AttackComponent 조립 (Relic, CardAction에서 AttackComponent 추가)
+            AssembleAttackComponents();
+            
+            // AttackComponent의 colliderSizeDelta를 모두 합산하여 Collider 크기 조정
+            AdjustColliderSize();
+            
             // 투사체 이동 설정
             if (rb != null)
             {
@@ -96,6 +104,74 @@ namespace AttackSystem
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             
             Debug.Log($"<color=blue>[PROJECTILE] {gameObject.name} initialized by {attacker?.gameObject.name}</color>");
+        }
+
+        /// <summary>
+        /// Relic, CardAction을 조회하여 AttackComponent를 조립합니다.
+        /// </summary>
+        protected virtual void AssembleAttackComponents()
+        {
+            if (attacker == null) return;
+            
+            // 기존 AttackComponent 목록 초기화
+            components.Clear();
+            
+            // 기본 AttackComponent 추가 (이미 부착된 것들)
+            var existingComponents = GetComponents<AttackComponent>();
+            components.AddRange(existingComponents);
+            
+            // Relic에서 AttackComponent 추가
+            foreach (var relic in attacker.relics)
+            {
+                if (relic != null)
+                {
+                    // Relic이 AttackComponent를 제공하는 경우 추가
+                    var relicComponents = relic.GetAttackComponents();
+                    if (relicComponents != null)
+                    {
+                        components.AddRange(relicComponents);
+                    }
+                }
+            }
+            
+            // CardAction에서 AttackComponent 추가 (덱의 카드들)
+            foreach (var card in attacker.deck.cards)
+            {
+                if (card?.cardAction != null)
+                {
+                    var cardComponents = card.cardAction.GetAttackComponents();
+                    if (cardComponents != null)
+                    {
+                        components.AddRange(cardComponents);
+                    }
+                }
+            }
+            
+            Debug.Log($"<color=green>[PROJECTILE] {gameObject.name} assembled {components.Count} attack components</color>");
+        }
+
+        /// <summary>
+        /// AttackComponent의 colliderSizeDelta를 모두 합산하여 Collider 크기를 조정합니다.
+        /// </summary>
+        protected virtual void AdjustColliderSize()
+        {
+            if (attackCollider is BoxCollider2D boxCollider)
+            {
+                Vector2 baseSize = boxCollider.size;
+                Vector2 totalDelta = Vector2.zero;
+                
+                foreach (var comp in components)
+                {
+                    if (comp != null)
+                    {
+                        totalDelta += comp.colliderSizeDelta;
+                    }
+                }
+                
+                boxCollider.size = baseSize + totalDelta;
+                
+                Debug.Log($"<color=cyan>[PROJECTILE] {gameObject.name} collider size adjusted: {baseSize} + {totalDelta} = {boxCollider.size}</color>");
+            }
         }
 
         /// <summary>
@@ -177,13 +253,13 @@ namespace AttackSystem
             // 이미 맞은 대상으로 기록
             hitTargets.Add(hitObject);
             
-            // 이벤트 발생 순서: OnAttackHit → OnDamageHit → 회피 판정 → OnAttackMiss/OnAttack + OnEvaded/OnDamaged
+            // 이벤트 발생 순서: OnAttackHit → OnDamageHit → 회피 판정 → OnAttackMiss/OnAttack
             if (attacker != null)
             {
-                // 1. 공격자의 OnAttackHit 이벤트
+                // 1. 공격자의 OnAttackHit 이벤트 (유물, 카드 순회)
                 attacker.OnAttackHit(targetPawn);
                 
-                // 2. 피격자의 OnDamageHit 이벤트
+                // 2. 피격자의 OnDamageHit 이벤트 (회피 판정)
                 targetPawn.OnDamageHit(attacker);
                 
                 // 3. 회피 판정 (피격자에서)
@@ -197,9 +273,7 @@ namespace AttackSystem
                 }
                 else
                 {
-                    // 회피 실패: OnDamaged (피격자) + OnAttack (공격자)
-                    // 투사체 정보를 포함하여 이벤트 발생
-                    targetPawn.OnDamaged(attacker, this);
+                    // 회피 실패: OnAttack (공격자) - 데미지 계산 및 OnDamaged 호출
                     attacker.OnAttack(targetPawn);
                 }
             }

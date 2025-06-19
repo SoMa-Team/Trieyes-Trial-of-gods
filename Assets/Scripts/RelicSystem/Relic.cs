@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Utils;
 using UnityEngine;
+using CharacterSystem;
 
 namespace RelicSystem
 {
@@ -12,12 +13,24 @@ namespace RelicSystem
     {
         // ===== [기능 1] 유물 정보 및 생성 =====
         public RelicInfo info;
+        protected Pawn owner; // 유물의 소유자 (Pawn)
+        
         public Relic(RelicInfo info)
         {
             this.info = info;
         }
 
-        // ===== [기능 2] 이벤트 처리 =====
+        // ===== [기능 2] 소유자 설정 =====
+        /// <summary>
+        /// 유물의 소유자를 설정합니다.
+        /// </summary>
+        /// <param name="pawn">유물의 소유자</param>
+        public void SetOwner(Pawn pawn)
+        {
+            owner = pawn;
+        }
+
+        // ===== [기능 3] 이벤트 처리 =====
         public abstract void OnEvent(Utils.EventType eventType, object param);
     }
 } 

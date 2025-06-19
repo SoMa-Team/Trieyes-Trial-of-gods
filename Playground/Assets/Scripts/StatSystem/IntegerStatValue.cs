@@ -106,6 +106,11 @@ namespace Stats
         }
 
         private int GetCurrentValue(){
+            if (GameManager.instance == null)
+            {
+                Debug.LogWarning("GameManager.instance가 아직 생성되지 않았습니다!");
+                return basicValue; // 임시로 basicValue를 반환
+            }
             float currentTime = GameManager.instance.gameTime;
 
             // 만료된 버프를 모두 제거

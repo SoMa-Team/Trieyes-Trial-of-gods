@@ -26,9 +26,8 @@ public class Enemy : Actor
         public const int DefensePenetration = 0;
     }
 
-    protected override void Awake()
+    protected void Start()
     {
-        base.Awake();
         InitializeStats();
     }
 

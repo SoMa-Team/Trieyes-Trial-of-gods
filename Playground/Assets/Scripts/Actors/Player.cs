@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Stats; // StatSheet 네임스페이스
 
@@ -9,25 +10,26 @@ public class Player : Actor
     
     public static class PlayerStatPreset
     {
-        public const int Health = 200;
+        public const int Health = 1000;
         public const int AttackPower = 35;
         public const int MoveSpeed = 8;
         public const int ProjectileCount = 1;
-        public const int ProjectilePierce = 2;
-        public const int AttackSpeed = 2;
+        public const int ProjectilePierce = 20;
+        public const int AttackSpeed = 10;
         public const int AttackRange = 15;
-        public const int Defense = 10;
+        public const int Defense = 100;
         public const int DefensePenetration = 10;
     }//스탯 초기값
     
-    protected override void Awake()
+    protected void Start()
     {
-        base.Awake();
+        Debug.Log("Player Start 호출");
         InitializeStats();
     }
 
     private void InitializeStats()// 스탯 초기화 함수
     {
+        Debug.Log("Player InitializeStats 호출");
         if (statSheet == null)
             statSheet = new StatSheet();
 
@@ -59,6 +61,7 @@ public class Player : Actor
     {
         if (!isLive) return;
         float moveSpeed = statSheet[StatType.MoveSpeed].Value; // StatSheet에서 이동속도 읽기
+        Debug.Log("moveSpeed : " + moveSpeed);
         Vector2 nextVec = inputVec * moveSpeed * Time.fixedDeltaTime;
         rigid.MovePosition(rigid.position + nextVec);
     }

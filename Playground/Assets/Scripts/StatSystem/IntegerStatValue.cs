@@ -71,6 +71,7 @@ namespace Stats
         {
             activeModifiers.Add(modifier);
             if(!modifier.isPermanent) modifierHeap.Push(modifier.endTime);
+            Debug.Log("추가된 버프 : "+modifier.endTime+"id : "+modifier.id);
             modifierListChanged = true;
         }
         /// 모든 버프를 제거합니다.

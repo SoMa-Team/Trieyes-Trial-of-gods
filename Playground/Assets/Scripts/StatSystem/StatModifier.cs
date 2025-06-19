@@ -43,7 +43,12 @@ namespace Stats
             this.operationType = operationType;
             this.canStack = canStack;
             this.isPermanent = duration < 0f;
-            this.endTime = this.isPermanent ? float.MaxValue : GameManager.instance.gameTime + duration;
+            if(GameManager.instance==null)
+                this.endTime=duration;
+            else if (this.isPermanent)
+                this.endTime = float.MaxValue;
+            else
+                this.endTime = GameManager.instance.gameTime + duration;
         }
 
         // --- 메서드 ---

@@ -17,7 +17,7 @@ namespace Stats
     /// <summary>
     /// 스탯에 적용되는 버프 정보를 저장하는 구조체입니다.
     /// </summary>
-    public struct StatBuff
+    public struct StatModifier
     {
         // --- 필드 ---
         private static int buffID = 1;
@@ -34,7 +34,7 @@ namespace Stats
         /// StatBuff의 새 인스턴스를 초기화합니다.
         /// duration < 0이면 영구 버프로 간주합니다.
         /// </summary>
-        public StatBuff(int buffValue, BuffOperationType operationType, bool canStack=true, float duration = -1f)
+        public StatModifier(int buffValue, BuffOperationType operationType, bool canStack=true, float duration = -1f)
         {
             if(duration == 0f){
                 throw new ArgumentException("Duration cannot be 0. Use -1 for permanent buff.");

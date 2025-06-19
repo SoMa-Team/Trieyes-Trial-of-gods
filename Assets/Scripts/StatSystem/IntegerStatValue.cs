@@ -68,10 +68,10 @@ namespace Stats
             basicValueChanged = true;
         }
          /// 새로운 버프를 추가합니다.
-        public void AddBuff(StatBuff buff)
+        public void AddBuff(StatModifier modifier)
         {
-            activeBuffs.Add(buff);
-            if(!buff.isPermanent) buffHeap.Push(buff.endTime);
+            activeBuffs.Add(modifier);
+            if(!modifier.isPermanent) buffHeap.Push(modifier.endTime);
             buffListChanged = true;
         }
         /// 모든 버프를 제거합니다.

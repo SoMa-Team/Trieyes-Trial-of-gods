@@ -13,7 +13,7 @@ namespace AttackComponents
             // StatSystem을 활용한 효과 적용
             if (attack.attacker != null)
             {
-                var buff = new StatBuff(20, BuffOperationType.Multiplicative, false, 3f);
+                var buff = new StatModifier(20, BuffOperationType.Multiplicative, false, 3f);
                 attack.attacker.GetComponent<StatSheet>()[StatType.Defense].AddBuff(buff);
                 Debug.Log($"AttackComponent002: 대상에게 방어력 증가 효과를 부여합니다.");
             }
@@ -34,7 +34,7 @@ namespace AttackComponents
                     {
                         Debug.Log($"AttackComponent002: {deadPawn.gameObject.name} 사망 이벤트 수신! 임시 방어 버프를 얻습니다.");
                         // StatSystem의 버프 시스템 활용
-                        var buff = new StatBuff(15, BuffOperationType.Multiplicative, false, 5f);
+                        var buff = new StatModifier(15, BuffOperationType.Multiplicative, false, 5f);
                         deadPawn.GetComponent<StatSheet>()[StatType.Defense].AddBuff(buff);
                     }
                     break;

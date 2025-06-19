@@ -12,8 +12,6 @@ public class Actor : MonoBehaviour
     protected Rigidbody2D rigid;
     protected Collider2D coll;
     protected SpriteRenderer spriter;
-    
-    private int initHealth=100;
 
     protected virtual void Awake()
     {
@@ -24,8 +22,7 @@ public class Actor : MonoBehaviour
 
         // StatSheet 인스턴스 연결 (Inspector에서 주입 or 여기서 생성)
         if (statSheet == null)
-            statSheet = new StatSheet();
-        statSheet[StatType.Health].SetBasicValue(initHealth);
+            statSheet = new StatSheet(); 
         currentHealth = statSheet[StatType.Health].Value;
         isLive = true;
     }

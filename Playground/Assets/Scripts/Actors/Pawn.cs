@@ -1,5 +1,7 @@
 using UnityEngine;
 using Stats; // 새 StatSheet 네임스페이스
+using Utils;
+using CardSystem;
 
 namespace Actors
 {
@@ -10,6 +12,8 @@ namespace Actors
         public StatPresetSO statPresetSO;
         public float currentHealth;
         public bool isLive;
+        
+        public Deck deck = new Deck();
 
         protected Animator animator;
         protected Rigidbody2D rigid;

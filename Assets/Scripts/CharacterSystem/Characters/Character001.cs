@@ -37,9 +37,6 @@ namespace CharacterSystem
             switch (eventType)
             {
                 case Utils.EventType.OnLevelUp:
-                    // 레벨업 시 스탯 증가
-                    IncreaseStatValue(StatType.AttackPower, 5);
-                    IncreaseStatValue(StatType.Defense, 3);
                     break;
                 case Utils.EventType.OnDeath:
                     // Character001의 사망 이벤트는 base.OnEvent에서 이미 처리됨
@@ -50,16 +47,6 @@ namespace CharacterSystem
                     }
                     break;
             }
-        }
-
-        public override void TakeAttack(Attack attack)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void PerformAttack(Pawn target, Attack attack)
-        {
-            throw new System.NotImplementedException();
-        }                                                                  
+        }                                                               
     }
 } 

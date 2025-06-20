@@ -101,115 +101,43 @@ namespace AttackComponents
             if (owner != null)
             {
                 // 소유자의 OnAttackHit 이벤트
-                owner.OnAttackHit(targetPawn);
+                owner.OnEvent(Utils.EventType.OnAttackHit, targetPawn);
                 
                 // 피격자의 OnDamageHit 이벤트
-                targetPawn.OnDamageHit(owner);
+                targetPawn.OnEvent(Utils.EventType.OnDamageHit, owner);
             }
         }
 
         // ===== [기능 4] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
-            switch (eventType)
-            {
-                case Utils.EventType.OnDeath:
-                    HandleOnDeath(param);
-                    break;
-                case Utils.EventType.OnBattleStart:
-                    HandleOnBattleStart(param);
-                    break;
-                case Utils.EventType.OnBattleEnd:
-                    HandleOnBattleEnd(param);
-                    break;
-                case Utils.EventType.OnAttack:
-                    HandleOnAttack(param);
-                    break;
-                case Utils.EventType.OnCriticalAttack:
-                    HandleOnCriticalAttack(param);
-                    break;
-                case Utils.EventType.OnDamaged:
-                    HandleOnDamaged(param);
-                    break;
-                case Utils.EventType.OnAttackHit:
-                    HandleOnAttackHit(param);
-                    break;
-                case Utils.EventType.OnDamageHit:
-                    HandleOnDamageHit(param);
-                    break;
-                case Utils.EventType.OnAttackMiss:
-                    HandleOnAttackMiss(param);
-                    break;
-                case Utils.EventType.OnEvaded:
-                    HandleOnEvaded(param);
-                    break;
-                case Utils.EventType.OnKilled:
-                    HandleOnKilled(param);
-                    break;
-                case Utils.EventType.OnKilledByCritical:
-                    HandleOnKilledByCritical(param);
-                    break;
-                case Utils.EventType.OnSkillCooldownEnd:
-                    HandleOnSkillCooldownEnd(param);
-                    break;
-                case Utils.EventType.OnSkillInput:
-                    HandleOnSkillInput(param);
-                    break;
-                case Utils.EventType.OnHPUpdated:
-                    HandleOnHPUpdated(param);
-                    break;
-                case Utils.EventType.OnGoldUpdated:
-                    HandleOnGoldUpdated(param);
-                    break;
-                case Utils.EventType.OnLevelUp:
-                    HandleOnLevelUp(param);
-                    break;
-                case Utils.EventType.OnStatChange:
-                    HandleOnStatChange(param);
-                    break;
-                case Utils.EventType.OnDefend:
-                    HandleOnDefend(param);
-                    break;
-                case Utils.EventType.OnHit:
-                    HandleOnHit(param);
-                    break;
-                case Utils.EventType.OnCardPurchase:
-                    HandleOnCardPurchase(param);
-                    break;
-                case Utils.EventType.OnBattleSceneChange:
-                    HandleOnBattleSceneChange(param);
-                    break;
-                case Utils.EventType.CalcActionInitOrder:
-                    HandleCalcActionInitOrder(param);
-                    break;
-            }
+            // owner 참조가 없으면 자동으로 찾기
+            EnsureOwnerReference();
+
+            // 하위 클래스에서 이 메서드를 오버라이드하여
+            // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
         }
 
-        // ===== [기능 5] 이벤트 핸들러 메서드들 =====
-        
-        protected virtual void HandleOnDeath(object param) { }
-        protected virtual void HandleOnBattleStart(object param) { }
-        protected virtual void HandleOnBattleEnd(object param) { }
-        protected virtual void HandleOnAttack(object param) { }
-        protected virtual void HandleOnCriticalAttack(object param) { }
-        protected virtual void HandleOnDamaged(object param) { }
-        protected virtual void HandleOnAttackHit(object param) { }
-        protected virtual void HandleOnDamageHit(object param) { }
-        protected virtual void HandleOnAttackMiss(object param) { }
-        protected virtual void HandleOnEvaded(object param) { }
-        protected virtual void HandleOnKilled(object param) { }
-        protected virtual void HandleOnKilledByCritical(object param) { }
-        protected virtual void HandleOnSkillCooldownEnd(object param) { }
-        protected virtual void HandleOnSkillInput(object param) { }
-        protected virtual void HandleOnHPUpdated(object param) { }
-        protected virtual void HandleOnGoldUpdated(object param) { }
-        protected virtual void HandleOnLevelUp(object param) { }
-        protected virtual void HandleOnStatChange(object param) { }
-        protected virtual void HandleOnDefend(object param) { }
-        protected virtual void HandleOnHit(object param) { }
-        protected virtual void HandleOnCardPurchase(object param) { }
-        protected virtual void HandleOnBattleSceneChange(object param) { }
-        protected virtual void HandleCalcActionInitOrder(object param) { }
+        /// <summary>
+        /// owner 참조가 설정되어 있는지 확인하고, 없으면 자동으로 찾아서 설정합니다.
+        /// </summary>
+        protected void EnsureOwnerReference()
+        {
+            if (owner == null)
+            {
+                // 현재 씬에서 Pawn을 찾아서 owner 참조 설정
+                Pawn foundPawn = FindFirstObjectByType<Pawn>();
+                if (foundPawn != null)
+                {
+                    owner = foundPawn;
+                    Debug.Log($"<color=green>[AttackComponent] Found owner through scene search: {foundPawn.gameObject.name}</color>");
+                }
+                else
+                {
+                    Debug.LogError("<color=red>[AttackComponent] No Pawn found in scene!</color>");
+                }
+            }
+        }
 
         // ===== [기능 6] 공격 컴포넌트 실행 및 이벤트 반응 =====
         public abstract void Execute(Attack attack);

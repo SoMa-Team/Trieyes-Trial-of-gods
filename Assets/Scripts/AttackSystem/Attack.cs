@@ -96,7 +96,7 @@ namespace AttackSystem
             // 투사체 이동 설정
             if (rb != null)
             {
-                rb.velocity = direction.normalized * projectileSpeed;
+                rb.linearVelocity = direction.normalized * projectileSpeed;
             }
             
             // 투사체 회전 (이동 방향으로)
@@ -135,7 +135,7 @@ namespace AttackSystem
             }
             
             // CardAction에서 AttackComponent 추가 (덱의 카드들)
-            foreach (var card in attacker.deck.cards)
+            foreach (var card in attacker.deck.Cards)
             {
                 if (card?.cardAction != null)
                 {
@@ -257,10 +257,10 @@ namespace AttackSystem
             if (attacker != null)
             {
                 // 1. 공격자의 OnAttackHit 이벤트 (유물, 카드 순회)
-                attacker.OnAttackHit(targetPawn);
+                attacker.OnEvent(Utils.EventType.OnAttackHit, targetPawn);
                 
                 // 2. 피격자의 OnDamageHit 이벤트 (회피 판정)
-                targetPawn.OnDamageHit(attacker);
+                targetPawn.OnEvent(Utils.EventType.OnDamageHit, attacker);
                 
                 // 3. 회피 판정 (피격자에서)
                 bool isEvaded = CheckEvasion(targetPawn);
@@ -268,13 +268,13 @@ namespace AttackSystem
                 if (isEvaded)
                 {
                     // 회피 성공: OnEvaded (피격자) + OnAttackMiss (공격자)
-                    targetPawn.OnEvaded();
-                    attacker.OnAttackMiss(targetPawn);
+                    targetPawn.OnEvent(Utils.EventType.OnEvaded, null);
+                    attacker.OnEvent(Utils.EventType.OnAttackMiss, targetPawn);
                 }
                 else
                 {
                     // 회피 실패: OnAttack (공격자) - 데미지 계산 및 OnDamaged 호출
-                    attacker.OnAttack(targetPawn);
+                    attacker.OnEvent(Utils.EventType.OnAttack, targetPawn);
                 }
             }
             

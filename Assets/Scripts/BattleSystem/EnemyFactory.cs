@@ -9,11 +9,19 @@ namespace BattleSystem
 {
     using EnemyID = Int32;
     
+    /// <summary>
+    /// 적 캐릭터의 생성과 관리를 담당하는 팩토리 클래스
+    /// 싱글톤 패턴을 사용하여 전역적으로 접근 가능합니다.
+    /// </summary>
     public class EnemyFactory : MonoBehaviour
     {
-        // === 싱글톤 ===
+        // ===== 싱글톤 =====
         public static EnemyFactory Instance { private set; get; }
-
+        
+        /// <summary>
+        /// 싱글톤 패턴을 위한 초기화
+        /// 중복 인스턴스가 생성되지 않도록 합니다.
+        /// </summary>
         private void Awake()
         {
             if (Instance != null)
@@ -25,47 +33,65 @@ namespace BattleSystem
             Instance = this;
         }
 
-        // === Pawn 생성 ===
-        public GameObject[] enemyPrefabs;
+        // ===== 적 생성, 초기화, 비활성화 =====
         
         /// <summary>
-        /// CharacterID에 맞는 캐릭터 gameObject를 생성합니다.
+        /// EnemyID에 맞는 적 gameObject를 생성합니다.
         /// gameObject는 반드시 Pawn을 상속한 Unity Component가 부착되어 있습니다.
         /// </summary>
-        /// <param name="id">Character ID가 주어집니다</param>
-        /// <returns>gameObject에 부착된 Pawn 객체를 반환합니다.</returns>
+        /// <param name="id">생성할 적의 ID</param>
+        /// <returns>생성된 gameObject에 부착된 Pawn 객체</returns>
         public Pawn Create(EnemyID id)
         {
             var pawn = ClonePrefab(id);
             return pawn;
         }
+
+        /// <summary>적 프리팹 배열 (에디터에서 할당)</summary>
+        public GameObject[] enemyPrefabs;
         
+        /// <summary>
+        /// 적을 활성화합니다.</summary>
+        /// <param name="enemy">활성화할 적 Pawn</param>
+        public void Activate(Pawn enemy)
+        {
+            // TODO: 적 활성화 로직 구현 필요
+        }
+        
+        /// <summary>
+        /// 적을 비활성화합니다.</summary>
+        /// <param name="enemy">비활성화할 적 Pawn</param>
+        public void Deactivate(Pawn enemy)
+        {
+            // TODO: 적 비활성화 로직 구현 필요
+        }
+        
+        // ===== 내부 헬퍼 =====
+        
+        /// <summary>
+        /// ID에 해당하는 적 프리팹을 복제하여 Pawn 컴포넌트를 반환합니다.</summary>
+        /// <param name="id">적 ID</param>
+        /// <returns>생성된 Pawn 컴포넌트</returns>
         private Pawn ClonePrefab(EnemyID id)
         {
             var pawnObject = Instantiate(GetPrefabById(id));
-            var pawn = pawnObject.AddComponent<Pawn>();
+            var pawn = pawnObject.GetComponent<Pawn>();
             return pawn;
         }
 
+        /// <summary>
+        /// ID에 해당하는 적 프리팹을 반환합니다.</summary>
+        /// <param name="id">적 ID</param>
+        /// <returns>해당하는 GameObject 프리팹</returns>
         private GameObject GetPrefabById(EnemyID id)
         {
             return id switch
             {
                 0 => enemyPrefabs[0],
                 1 => enemyPrefabs[1],
-                // ...
+                // TODO: 더 많은 적 ID 추가 필요
                 _ => null
             };
-        }
-
-        public void Activate(Pawn enemy)
-        {
-            
-        }
-        
-        public void Deactivate(Pawn enemy)
-        {
-            
         }
     }
 }

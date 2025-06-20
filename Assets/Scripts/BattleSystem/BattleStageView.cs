@@ -1,36 +1,38 @@
+using System;
+using BattleSystem;
+using CharacterSystem;
 using UnityEngine;
+using Utils;
 
-namespace CombatSystem
+namespace BattleSystem
 {
+    /// <summary>
+    /// 전투 스테이지의 뷰 컴포넌트
+    /// BattleStage 데이터와 Unity GameObject를 연결하는 역할을 합니다.
+    /// </summary>
     public class BattleStageView : MonoBehaviour
     {
-        // 맵 디자인 프리팹 설정 등의 역할을 할 필드 (예시)
-        public GameObject mapDesignPrefab;
-
-        // 전투 UI 요소들에 대한 참조 (예시)
-        // public GameObject healthBarUI;
-        // public GameObject abilityButtonUI;
-
+        // ===== 뷰 데이터 =====
+        private BattleStage _battleStage;
+        
         /// <summary>
-        /// 맵 디자인 프리팹을 설정하고 초기화하는 메서드 (SceneFactory 등에서 호출될 수 있음)
+        /// BattleStage 데이터에 대한 접근자
+        /// 설정 시 양방향 연결을 자동으로 구성합니다.
         /// </summary>
-        /// <param name="mapPrefab">설정할 맵 프리팹</param>
-        public void SetMapDesign(GameObject mapPrefab)
+        public BattleStage BattleStage
         {
-            mapDesignPrefab = mapPrefab;
-            // 실제 맵 인스턴스화 및 설정 로직
-            Debug.Log($"CombatStageView: Setting map design to {mapPrefab.name}");
-        }
+            set
+            {
+                _battleStage = value;
+                _battleStage.View = this;
+                
+                // TODO: 데이터 UI 동기화 로직 구현 필요
+            }
 
-        /// <summary>
-        /// 전투 UI를 업데이트하는 메서드 (예: 캐릭터 스탯 변경 시)
-        /// </summary>
-        public void UpdateCombatUI()
-        {
-            // UI 업데이트 로직
-            // Debug.Log("CombatStageView: Updating combat UI.");
+            get
+            {
+                return _battleStage;
+            }
         }
-
-        // 기타 Unity 전용 함수 (예: 애니메이션, 이펙트 등) 구현 가능
     }
 } 

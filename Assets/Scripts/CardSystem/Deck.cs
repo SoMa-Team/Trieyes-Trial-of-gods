@@ -66,7 +66,7 @@ namespace CardSystem
                     foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
                     {
                         int deckStatValue = deckStats[statType].Value;
-                        owner.statSheet[statType].AddBuff(new StatModifier(deckStatValue, BuffOperationType.Additive);
+                        owner.statSheet[statType].AddBuff(new StatModifier(deckStatValue, BuffOperationType.Additive));
                     }
                 }
                 

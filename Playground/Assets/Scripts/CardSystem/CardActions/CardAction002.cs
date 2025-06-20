@@ -13,6 +13,7 @@ namespace CardActions
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
+                Debug.Log("CardAction002 OnBattleSceneChange Triggered!");
                 if (owner != null)
                 {
                     // Defense * 2

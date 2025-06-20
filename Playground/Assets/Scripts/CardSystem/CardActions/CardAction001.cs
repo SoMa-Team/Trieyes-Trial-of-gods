@@ -19,6 +19,7 @@ namespace CardActions
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
+                Debug.Log("CardAction001 OnBattleSceneChange Triggered!");
                 if (owner != null)
                 {
                     // AttackPower +10

@@ -31,15 +31,20 @@ namespace AttackComponents
                 if (targetPawn != null && targetPawn != attack.attacker)
                 {
                     // 데미지 적용 (OnDamaged 호출)
-                    targetPawn.OnDamaged(attack.attacker);
+                    targetPawn.OnEvent(Utils.EventType.OnDamaged, new Pawn.AttackEventData(attack.attacker, targetPawn));
                     Debug.Log($"<color=orange>[AttackComponent003] {attack.attacker.gameObject.name}가 {targetPawn.gameObject.name}에게 검 휘두르기({baseDamage}) 데미지!");
                 }
             }
         }
 
-        protected override void HandleOnBattleStart(object param)
+        public override void OnEvent(Utils.EventType eventType, object param)
         {
-            Debug.Log("[AttackComponent003] 전투 시작: 검 휘두르기 준비 완료");
+            base.OnEvent(eventType, param); // 부모 클래스의 OnEvent 호출
+
+            if (eventType == Utils.EventType.OnBattleStart)
+            {
+                Debug.Log("[AttackComponent003] 전투 시작: 검 휘두르기 준비 완료");
+            }
         }
 
         // 디버그용: 에디터에서 범위 시각화

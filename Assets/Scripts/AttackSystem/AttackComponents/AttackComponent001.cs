@@ -16,20 +16,25 @@ namespace AttackComponents
         }
 
         // ===== [기능 2] 이벤트 처리 =====
-        protected override void HandleOnDeath(object param)
+        public override void OnEvent(Utils.EventType eventType, object param)
         {
-            if (param is CharacterSystem.Pawn deadPawn && deadPawn.gameObject != null)
-            {
-                Debug.Log($"AttackComponent001: {deadPawn.gameObject.name} 사망 이벤트 수신! 임시 공격 버프를 얻습니다.");
-                // StatSystem의 버프 시스템 활용
-                var buff = new StatModifier(10, BuffOperationType.Additive, false, 5f);
-                deadPawn.statSheet[StatType.AttackPower].AddBuff(buff);
-            }
-        }
+            base.OnEvent(eventType, param); // 부모 클래스의 OnEvent 호출
 
-        protected override void HandleOnBattleStart(object param)
-        {
-            Debug.Log($"AttackComponent001: 전투 시작! 특정 공격 패턴 활성화.");
+            if (eventType == Utils.EventType.OnDeath)
+            {
+                if (param is CharacterSystem.Pawn deadPawn && deadPawn.gameObject != null)
+                {
+                    Debug.Log($"AttackComponent001: {deadPawn.gameObject.name} 사망 이벤트 수신! 임시 공격 버프를 얻습니다.");
+                    // StatSystem의 버프 시스템 활용
+                    var buff = new StatModifier(10, BuffOperationType.Additive, false, 5f);
+                    deadPawn.statSheet[StatType.AttackPower].AddBuff(buff);
+                }
+            }
+            
+            if (eventType == Utils.EventType.OnBattleStart)
+            {
+                Debug.Log($"AttackComponent001: 전투 시작! 특정 공격 패턴 활성화.");
+            }
         }
     }
 }

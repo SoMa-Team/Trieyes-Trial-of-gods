@@ -8,7 +8,8 @@ public class StatModifierTester : MonoBehaviour
 {
     public Player player; 
     public Button flatBuffButton; 
-    public Button uniqueBuffButton;
+    public Button uniqueFlatBuffButton;
+    public Button percentageBuffButton;
 
     private StatModifier uniqueBuff = new StatModifier(30, BuffOperationType.Additive, false, 5f);
     private void Awake()
@@ -19,8 +20,10 @@ public class StatModifierTester : MonoBehaviour
         if (flatBuffButton != null)
             flatBuffButton.onClick.AddListener(ApplyFlatBuff);
         
-        if (uniqueBuffButton != null)
-            uniqueBuffButton.onClick.AddListener(ApplyUniqueBuff);
+        if (uniqueFlatBuffButton != null)
+            uniqueFlatBuffButton.onClick.AddListener(ApplyUniqueBuff);
+        if(percentageBuffButton != null)
+            percentageBuffButton.onClick.AddListener(ApplyPercentageBuff);
     }
 
     public void ApplyFlatBuff()
@@ -37,5 +40,13 @@ public class StatModifierTester : MonoBehaviour
         uniqueBuff.endTime = GameManager.instance.gameTime + 5f;
         player.statSheet[StatType.AttackPower].AddBuff(uniqueBuff);
         Debug.Log("Unique Buff (+30 for 5s, canStack=false) applied!");
+    }
+
+    public void ApplyPercentageBuff()
+    {
+        var buff = new StatModifier(
+            10, BuffOperationType.Multiplicative, true, 5f);
+        player.statSheet[StatType.AttackPower].AddBuff(buff);
+        Debug.Log("Percentage Buff (+10 for 5s) applied!");
     }
 }

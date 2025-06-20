@@ -6,7 +6,8 @@ namespace Actors
     public class Pawn : MonoBehaviour
     {
         [Header("Stats")]
-        public StatSheet statSheet; // 새 구조 사용
+        public StatSheet statSheet;
+        public StatPresetSO statPresetSO;
         public float currentHealth;
         public bool isLive;
 
@@ -24,9 +25,19 @@ namespace Actors
 
             // StatSheet 인스턴스 연결 (Inspector에서 주입 or 여기서 생성)
             if (statSheet == null)
-                statSheet = new StatSheet(); 
+                statSheet = new StatSheet();
+            if(statPresetSO != null)
+                ApplyStatPresetSO(statPresetSO);
             currentHealth = statSheet[StatType.Health].Value;
             isLive = true;
+        }
+        
+        protected void ApplyStatPresetSO(StatPresetSO preset)
+        {
+            if (preset == null || preset.stats == null) return;
+
+            foreach (var pair in preset.stats)
+                statSheet[pair.type].SetBasicValue(pair.value);
         }
 
         public virtual void TakeDamage(float rawDamage, float armorPenetration)

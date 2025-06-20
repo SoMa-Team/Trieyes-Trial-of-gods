@@ -15,44 +15,6 @@ namespace Actors
 
         private float lastDamageTime = -Mathf.Infinity;
         private float contactDamageCooldown = 0.5f;
-        
-        public static class EnemyStatPreset
-        {
-            public const int Health = 100;
-            public const int AttackPower = 20;
-            public const int MoveSpeed = 5;
-            public const int ProjectileCount = 1;
-            public const int ProjectilePierce = 0;
-            public const int AttackSpeed = 1;
-            public const int AttackRange = 8;
-            public const int Defense = 3;
-            public const int DefensePenetration = 0;
-        }
-
-        protected void Start()
-        {
-            InitializeStats();
-        }
-
-        private void InitializeStats()
-        {
-            if (statSheet == null)
-                statSheet = new StatSheet();
-
-            statSheet[StatType.Health].SetBasicValue(EnemyStatPreset.Health);
-            statSheet[StatType.AttackPower].SetBasicValue(EnemyStatPreset.AttackPower);
-            statSheet[StatType.MoveSpeed].SetBasicValue(EnemyStatPreset.MoveSpeed);
-            statSheet[StatType.ProjectileCount].SetBasicValue(EnemyStatPreset.ProjectileCount);
-            statSheet[StatType.ProjectilePierce].SetBasicValue(EnemyStatPreset.ProjectilePierce);
-            statSheet[StatType.AttackSpeed].SetBasicValue(EnemyStatPreset.AttackSpeed);
-            statSheet[StatType.AttackRange].SetBasicValue(EnemyStatPreset.AttackRange);
-            statSheet[StatType.Defense].SetBasicValue(EnemyStatPreset.Defense);
-            statSheet[StatType.DefensePenetration].SetBasicValue(EnemyStatPreset.DefensePenetration);
-
-            currentHealth = statSheet[StatType.Health].Value;
-            isLive = true;
-        }
-
         private void OnEnable()
         {
             isLive = true;

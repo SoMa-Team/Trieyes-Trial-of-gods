@@ -19,6 +19,7 @@ namespace Stats
         // 방어 관련 스탯
         Defense,            // 방어력
         DefensePenetration, // 방어 관통력
+        Evasion,            // 회피율
         Reflect,            // 반사
 
         // 생명 관련 스탯

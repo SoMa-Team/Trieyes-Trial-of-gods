@@ -1,25 +1,123 @@
 using System.Collections.Generic;
 using Utils;
+using CharacterSystem;
 using Stats;
 using UnityEngine;
 
 namespace CardSystem
 {
-    public class Deck : IEventHandler
+    /// <summary>
+    /// 카드 덱을 관리하는 클래스입니다.
+    /// 덱은 자체적으로 이벤트를 등록하고 처리할 수 있는 IEventHandler를 구현합니다.
+    /// </summary>
+    public class Deck : MonoBehaviour, IEventHandler
     {
-        // ===== [기능 1] 카드 리스트 및 생성 =====
-        public List<Card> cards = new List<Card>();
+        [Header("Deck Setup")]
+        [SerializeField] private List<Card> cards = new();
+        public IReadOnlyList<Card> Cards => cards;
 
-        public Deck()
+        private Pawn owner;
+        private bool isPersistent;
+        
+        // ===== [기능 3] 카드 호출 순서 관리 =====
+        private List<int> cardCallCounts;
+        private List<int> cardCallOrder = new();
+        private int maxIterations;
+
+        public void Initialize(Pawn owner, bool isPersistent)
         {
-            // 생성자, 필요에 따라 초기화 로직 추가
+            this.owner = owner;
+            this.isPersistent = isPersistent;
+            
+            foreach (var card in cards)
+            {
+                card?.Initialize(owner);
+            }
+            Clear();
         }
 
+        public void Clear()
+        {
+            if (!isPersistent)
+            {
+                cards.Clear();
+            }
+            
+            cardCallCounts = new List<int>(new int[cards.Count]);
+            cardCallOrder.Clear();
+            maxIterations = cards.Count * 100;
+        }
+
+        // ===== [기능 4] 이벤트 처리 =====
+        public virtual void OnEvent(Utils.EventType eventType, object param)
+        {
+            if (eventType == Utils.EventType.OnBattleStart)
+            {
+                // 1. 카드 호출 순서 계산
+                CalcActionInitOrder();
+                
+                // 2. 덱의 기본 스탯 계산
+                StatSheet deckStats = CalcBaseStat();
+                
+                // 3. Pawn에게 덱 스탯 더하고 전달
+                if (owner != null)
+                {
+                    // 모든 스탯을 덱 스탯으로 덮어쓰기
+                    foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
+                    {
+                        int deckStatValue = deckStats[statType].Value;
+                        owner.statSheet[statType].SetBasicValue(deckStatValue);
+                    }
+                }
+                
+                // 4. 계산된 순서대로 카드 액션 초기화
+                CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
+            }
+            
+            if (eventType == Utils.EventType.OnBattleEnd)
+            {
+                // 전투 종료 시 덱 상태 초기화
+                cardCallOrder.Clear();
+                cardCallCounts = new List<int>(new int[cards.Count]); // 0으로 초기화
+
+                // 전투 종료 시 덱 스탯 초기화
+                StatSheet deckStats = CalcBaseStat();
+                if (owner != null)
+                {
+                    foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
+                    {
+                        int deckStatValue = deckStats[statType].Value;
+                        owner.statSheet[statType].SetBasicValue(deckStatValue);
+                    }
+                }
+            }
+            
+            if (eventType == Utils.EventType.OnCardPurchase)
+            {
+                // 카드 구매 시 덱에 추가
+                if (param is Card newCard)
+                {
+                    AddCard(newCard);
+                }
+            }
+
+            else
+            {
+                Debug.Log($"<color=red>[DECK] {owner?.gameObject.name} received event: {eventType}</color>");
+                foreach (var card in cards)
+                {
+                    card.cardAction.OnEvent(eventType, param);
+                }
+            }
+        }
+
+        // ===== [기능 1] 카드 리스트 및 생성 =====
         public void AddCard(Card card)
         {
             if (card != null)
             {
                 cards.Add(card);
+                card.Initialize(owner);
             }
         }
 
@@ -44,82 +142,172 @@ namespace CardSystem
         }
 
         /// <summary>
-        /// 덱의 모든 카드를 순회하며 특정 이벤트 타입에 해당하는 CardAction의 OnEvent를 발동합니다.
-        /// 이 메서드는 Pawn으로부터 특정 이벤트 (예: 사망)가 발생했음을 전달받아 덱 내의 카드 액션들이 반응하도록 합니다.
+        /// 카드 호출 순서를 계산합니다.
+        /// 각 카드의 CardAction에서 CalcActionInitOrder 이벤트를 받아 호출 순서를 결정합니다.
         /// </summary>
-        /// <param name="eventType">발동할 이벤트 타입 (예: Utils.EventType.OnBattleStart)</param>
+        public void CalcActionInitOrder()
+        {
+            if (cards.Count == 0) return;
+            
+            // 0으로 초기화된 리스트 생성
+            cardCallCounts = new List<int>(new int[cards.Count]);
+            cardCallOrder.Clear();
+            maxIterations = cards.Count * 100;
+            
+            // 모든 카드에 CalcActionInitOrder 이벤트 전송
+            int currentCardIndex = 0;
+            int iterationCount = 0;
+            
+            while (currentCardIndex < cards.Count && iterationCount < maxIterations)
+            {
+                cardCallCounts[currentCardIndex]++;
+                cardCallOrder.Add(currentCardIndex);
+                
+                if (cards[currentCardIndex]?.cardAction != null)
+                {
+                    cards[currentCardIndex].cardAction.OnEvent(Utils.EventType.CalcActionInitOrder, currentCardIndex);
+                }
+                currentCardIndex++;
+                iterationCount++;
+            }
+            
+            Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
+        }
+
+        /// <summary>
+        /// 계산된 순서대로 카드 액션의 이벤트를 발동합니다.
+        /// </summary>
+        /// <param name="eventType">발동할 이벤트 타입</param>
         /// <param name="param">이벤트 매개변수</param>
         public void CalcActionInitStat(Utils.EventType eventType, object param = null)
         {
-            foreach (var card in cards)
+            Debug.Log($"<color=lightblue>--- Calculating Stats for Event: {eventType} ---</color>");
+            foreach (int cardIndex in cardCallOrder)
             {
-                if (card != null && card.cardAction != null)
+                if (cardIndex < cards.Count && cards[cardIndex]?.cardAction != null)
                 {
-                    card.TriggerCardEvent(eventType, param);
+                    cards[cardIndex].cardAction.OnEvent(eventType, param);
+                    if (owner != null)
+                    {
+                        Debug.Log($"<color=white>After Card[{cardIndex}] ({cards[cardIndex].cardName}): " +
+                                  $"ATK={owner.statSheet[StatType.AttackPower].Value}, " +
+                                  $"DEF={owner.statSheet[StatType.Defense].Value}</color>");
+                    }
                 }
             }
+            Debug.Log($"<color=lightblue>--- Stat Calculation Finished ---</color>");
         }
 
-        // ===== [기능 3] 이벤트 핸들러 관리 =====
+        // ===== [기능 5] 카드 호출 횟수 관리 =====
+        
         /// <summary>
-        /// 이 Deck 인스턴스에 등록된 이벤트 핸들러들을 관리하는 딕셔너리입니다.
-        /// 각 EventType에 대해 여러 개의 EventDelegate를 가질 수 있습니다.
+        /// 특정 카드의 호출 횟수를 반환합니다.
         /// </summary>
-        private Dictionary<Utils.EventType, List<EventDelegate>> eventHandlers = new();
-
-        /// <summary>
-        /// 특정 이벤트 타입에 대한 핸들러를 등록합니다.
-        /// 이 Deck 인스턴스가 해당 이벤트를 발동시켰을 때 handler 메서드가 호출됩니다.
-        /// </summary>
-        /// <param name="eventType">등록할 이벤트의 타입</param>
-        /// <param name="handler">이벤트 발생 시 호출될 델리게이트 (메서드)</param>
-        public virtual void RegisterEvent(Utils.EventType eventType, EventDelegate handler)
+        /// <param name="cardIndex">카드 인덱스</param>
+        /// <returns>호출 횟수</returns>
+        public int GetCardCallCount(int cardIndex)
         {
-            if (!eventHandlers.ContainsKey(eventType))
-                eventHandlers[eventType] = new List<EventDelegate>();
-            eventHandlers[eventType].Add(handler);
-        }
-
-        /// <summary>
-        /// 특정 이벤트 타입에 등록된 핸들러를 해제합니다.
-        /// 더 이상 해당 이벤트를 수신하지 않을 때 사용됩니다.
-        /// </summary>
-        /// <param name="eventType">해제할 이벤트의 타입</param>
-        /// <param name="handler">해제할 델리게이트 (메서드)</param>
-        public virtual void UnregisterEvent(Utils.EventType eventType, EventDelegate handler)
-        {
-            if (eventHandlers.ContainsKey(eventType))
-                eventHandlers[eventType].Remove(handler);
-        }
-
-        /// <summary>
-        /// 특정 이벤트 타입에 대한 이벤트를 발동시킵니다.
-        /// 이 Deck이 이벤트를 발생시키는 역할을 합니다. 등록된 모든 핸들러들이 호출됩니다.
-        /// </summary>
-        /// <param name="eventType">발동시킬 이벤트의 타입</param>
-        /// <param name="param">이벤트와 함께 전달될 추가 데이터 (선택 사항)</param>
-        public virtual void TriggerEvent(Utils.EventType eventType, object param = null)
-        {
-            if (eventHandlers.ContainsKey(eventType))
+            if (cardIndex >= 0 && cardIndex < cardCallCounts.Count)
             {
-                foreach (var handler in eventHandlers[eventType])
-                    handler?.Invoke(param);
+                return cardCallCounts[cardIndex];
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// 특정 카드의 호출 횟수를 설정합니다.
+        /// </summary>
+        /// <param name="cardIndex">카드 인덱스</param>
+        /// <param name="count">설정할 호출 횟수</param>
+        public void SetCardCallCount(int cardIndex, int count)
+        {
+            if (cardIndex >= 0 && cardIndex < cardCallCounts.Count)
+            {
+                cardCallCounts[cardIndex] = count;
             }
         }
 
         /// <summary>
-        /// Deck 자체에서 이벤트를 처리할 때 호출됩니다.
-        /// 이 이벤트를 CardAction으로 전파하거나, Deck에 특정한 로직을 수행할 수 있습니다.
-        /// (이 메서드는 Deck이 IEventHandler로서 외부에 자신의 이벤트를 노출할 때 사용됩니다.)
+        /// 특정 카드의 호출 횟수를 증가시킵니다.
         /// </summary>
-        /// <param name="eventType">발동된 이벤트 타입</param>
-        /// <param name="param">이벤트 매개변수</param>
-        public virtual void OnEvent(Utils.EventType eventType, object param)
+        /// <param name="cardIndex">카드 인덱스</param>
+        /// <param name="increment">증가시킬 값</param>
+        public void IncrementCardCallCount(int cardIndex, int increment = 1)
         {
-            if (eventType == Utils.EventType.OnBattleStart) 
+            if (cardIndex >= 0 && cardIndex < cardCallCounts.Count)
             {
-                Debug.Log($"Deck: 전투 시작 이벤트 수신! 카드 액션 초기화.");
+                cardCallCounts[cardIndex] += increment;
             }
+        }
+
+        /// <summary>
+        /// 카드 호출 순서를 조정합니다.
+        /// </summary>
+        /// <param name="cardIndex">조정할 카드 인덱스</param>
+        /// <param name="newIndex">새로운 위치</param>
+        public void AdjustCardCallOrder(int cardIndex, int newIndex)
+        {
+            if (cardIndex >= 0 && cardIndex < cards.Count && newIndex >= 0 && newIndex < cards.Count)
+            {
+                // 호출 순서에서 해당 카드를 제거하고 새로운 위치에 삽입
+                cardCallOrder.Remove(cardIndex);
+                cardCallOrder.Insert(newIndex, cardIndex);
+            }
+        }
+
+        /// <summary>
+        /// 카드 호출 순서를 완전히 새로운 순서로 교체합니다.
+        /// CardAction에서 호출 순서를 직접 수정할 때 사용합니다.
+        /// </summary>
+        /// <param name="newCallOrder">새로운 호출 순서</param>
+        public void SetCallOrder(List<int> newCallOrder)
+        {
+            if (newCallOrder != null && newCallOrder.Count > 0)
+            {
+                cardCallOrder.Clear();
+                cardCallOrder.AddRange(newCallOrder);
+                
+                // cardCallCounts도 새로운 순서에 맞게 조정
+                cardCallCounts = new List<int>(new int[cards.Count]);
+                
+                Debug.Log($"<color=blue>[DECK] {owner?.gameObject.name} call order replaced: [{string.Join(", ", cardCallOrder)}]</color>");
+            }
+        }
+
+        /// <summary>
+        /// 특정 카드를 제외한 다른 모든 카드를 한 번 더 호출하도록 순서를 변경합니다.
+        /// CardAction003과 같은 카드에서 사용합니다.
+        /// </summary>
+        /// <param name="excludeCardIndex">제외할 카드의 인덱스</param>
+        public void AppendOtherCardsOnce(int excludeCardIndex)
+        {
+            if (cards.Count <= 1)
+            {
+                Debug.Log("<color=yellow>[DECK] Only one card in deck, no effect</color>");
+                return;
+            }
+
+            if (excludeCardIndex < 0 || excludeCardIndex >= cards.Count)
+            {
+                Debug.LogWarning($"<color=red>[DECK] Invalid card index: {excludeCardIndex}</color>");
+                return;
+            }
+
+            // 제외할 카드를 제외한 다른 모든 카드들을 한 번 더 추가
+            List<int> cardsToAppend = new List<int>();
+            
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (i != excludeCardIndex) // 자기 자신 제외
+                {
+                    cardsToAppend.Add(i);
+                }
+            }
+
+            // 기존 순서에 덧붙이기
+            cardCallOrder.AddRange(cardsToAppend);
+            
+            Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} appended other cards once (excluding {excludeCardIndex}): [{string.Join(", ", cardsToAppend)}]</color>");
         }
     }
 } 

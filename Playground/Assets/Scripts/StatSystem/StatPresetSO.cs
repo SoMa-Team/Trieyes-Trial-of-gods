@@ -10,5 +10,6 @@ public struct StatValuePair
 [CreateAssetMenu(menuName = "Stats/StatPreset")]
 public class StatPresetSO : ScriptableObject
 {
+    public string characterName;
     public List<StatValuePair> stats;
 }

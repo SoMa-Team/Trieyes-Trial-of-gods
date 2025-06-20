@@ -1,32 +1,40 @@
 using System;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Diagnostics;
 using CharacterSystem;
-using UnityEngine.TextCore.Text;
 
 namespace BattleSystem
 {
-    using EnemyID = Int32;
+    using CharacterID = Int32;
     
-    public class EnemyFactory : MonoBehaviour
+    public class CharacterFactory : MonoBehaviour
     {
         // === 싱글톤 ===
-        public static EnemyFactory Instance { private set; get; }
+        private static CharacterFactory _instance;
+        public static CharacterFactory Instance {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new GameObject("CharacterFactory").AddComponent<CharacterFactory>();
+                    DontDestroyOnLoad(_instance);
+                }
+                return _instance;
+            }
+        }
 
         private void Awake()
         {
-            if (Instance != null)
+            if (_instance != null)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            Instance = this;
+            _instance = this;
         }
 
         // === Pawn 생성 ===
-        public GameObject[] enemyPrefabs;
+        public GameObject[] characterPrefabs;
         
         /// <summary>
         /// CharacterID에 맞는 캐릭터 gameObject를 생성합니다.
@@ -34,38 +42,28 @@ namespace BattleSystem
         /// </summary>
         /// <param name="id">Character ID가 주어집니다</param>
         /// <returns>gameObject에 부착된 Pawn 객체를 반환합니다.</returns>
-        public Pawn Create(EnemyID id)
+        public Pawn Create(CharacterID id)
         {
             var pawn = ClonePrefab(id);
             return pawn;
         }
         
-        private Pawn ClonePrefab(EnemyID id)
+        private Pawn ClonePrefab(CharacterID id)
         {
             var pawnObject = Instantiate(GetPrefabById(id));
             var pawn = pawnObject.AddComponent<Pawn>();
             return pawn;
         }
 
-        private GameObject GetPrefabById(EnemyID id)
+        private GameObject GetPrefabById(CharacterID id)
         {
             return id switch
             {
-                0 => enemyPrefabs[0],
-                1 => enemyPrefabs[1],
+                0 => characterPrefabs[0],
+                1 => characterPrefabs[1],
                 // ...
                 _ => null
             };
-        }
-
-        public void Activate(Pawn enemy)
-        {
-            
-        }
-        
-        public void Deactivate(Pawn enemy)
-        {
-            
         }
     }
 }

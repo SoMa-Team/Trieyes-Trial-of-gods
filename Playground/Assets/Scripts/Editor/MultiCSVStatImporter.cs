@@ -66,7 +66,7 @@ namespace Editor
             }
 
             // ScriptableObject 생성
-            string outDir = "Assets/StatsPresets/";
+            string outDir = "Assets/Scripts/Actors/StatsPresets/";
             if (!Directory.Exists(outDir)) Directory.CreateDirectory(outDir);
 
             foreach (var pair in charStatDict)

@@ -1,16 +1,19 @@
 using UnityEngine;
 
-public class Follow : MonoBehaviour
+namespace Map
 {
-    RectTransform rect;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class Follow : MonoBehaviour
     {
-        rect = GetComponent<RectTransform>();
-    }
+        RectTransform rect;
+        // Start is called once before the first execution of Update after the MonoBehaviour is created
+        void Start()
+        {
+            rect = GetComponent<RectTransform>();
+        }
 
-    private void FixedUpdate()
-    {
-        rect.position = Camera.main.WorldToScreenPoint(GameManager.instance.player.transform.position);
+        private void FixedUpdate()
+        {
+            rect.position = Camera.main.WorldToScreenPoint(GameManager.instance.player.transform.position);
+        }
     }
 }

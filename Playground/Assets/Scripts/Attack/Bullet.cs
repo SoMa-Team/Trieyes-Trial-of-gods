@@ -2,62 +2,65 @@ using UnityEngine;
 using System.Collections.Generic;
 using Stats; // StatSheet 네임스페이스
 
-public class Bullet : MonoBehaviour
+namespace Attack
 {
-    private Rigidbody2D rigid;
-
-    private int leftPenetration;
-    private float speed;
-    private float range;
-    private Vector2 startPos;
-
-    private Actor owner;
-
-    private void Awake()
+    public class Bullet : MonoBehaviour
     {
-        rigid = GetComponent<Rigidbody2D>();
-    }
+        private Rigidbody2D rigid;
 
-    public void Init(Vector2 dir, int projectileCount, float projectileSpeed, float attackRange, Actor owner)
-    {
-        this.owner = owner;
+        private int leftPenetration;
+        private float speed;
+        private float range;
+        private Vector2 startPos;
 
-        leftPenetration = projectileCount;
-        speed = projectileSpeed;
-        range = attackRange;
+        private Pawn owner;
 
-        startPos = rigid.position;
-        rigid.linearVelocity = dir.normalized * speed;
-    }
-
-    private void FixedUpdate()
-    {
-        if (Vector2.Distance(startPos, rigid.position) > range)
+        private void Awake()
         {
-            rigid.linearVelocity = Vector2.zero;
-            gameObject.SetActive(false);
+            rigid = GetComponent<Rigidbody2D>();
         }
-    }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        Actor hitActor = collision.GetComponent<Actor>();
-
-        if (hitActor == null || hitActor == owner)
-            return;
-
-        // StatSheet 기반으로 공격력/방어관통 읽기
-        float attackDamage = owner.statSheet[StatType.AttackPower].Value;
-        float armorPenetration = owner.statSheet[StatType.DefensePenetration].Value;
-
-        hitActor.TakeDamage(attackDamage, armorPenetration);
-
-        leftPenetration--;
-
-        if (leftPenetration <= 0)
+        public void Init(Vector2 dir, int projectileCount, float projectileSpeed, float attackRange, Pawn owner)
         {
-            rigid.linearVelocity = Vector2.zero;
-            gameObject.SetActive(false);
+            this.owner = owner;
+
+            leftPenetration = projectileCount;
+            speed = projectileSpeed;
+            range = attackRange;
+
+            startPos = rigid.position;
+            rigid.linearVelocity = dir.normalized * speed;
         }
-    }
+
+        private void FixedUpdate()
+        {
+            if (Vector2.Distance(startPos, rigid.position) > range)
+            {
+                rigid.linearVelocity = Vector2.zero;
+                gameObject.SetActive(false);
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            Pawn hitPawn = collision.GetComponent<Pawn>();
+
+            if (hitPawn == null || hitPawn == owner)
+                return;
+
+            // StatSheet 기반으로 공격력/방어관통 읽기
+            float attackDamage = owner.statSheet[StatType.AttackPower].Value;
+            float armorPenetration = owner.statSheet[StatType.DefensePenetration].Value;
+
+            hitPawn.TakeDamage(attackDamage, armorPenetration);
+
+            leftPenetration--;
+
+            if (leftPenetration <= 0)
+            {
+                rigid.linearVelocity = Vector2.zero;
+                gameObject.SetActive(false);
+            }
+        }
+    }   
 }

@@ -2,38 +2,41 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class PoolManager : MonoBehaviour
+namespace Managers
 {
-    public GameObject[] prefabs;
-
-    List<GameObject>[] pools;
-    private void Awake()
+    public class PoolManager : MonoBehaviour
     {
-        pools = new List<GameObject>[prefabs.Length];
-        for(int i = 0;  i < pools.Length; i++)
-        {
-            pools[i] = new List<GameObject>();
-        }
-    }
+        public GameObject[] prefabs;
 
-    public GameObject Get(int index)
-    {
-        GameObject select = null;
-
-        foreach(GameObject prefab in pools[index])
+        List<GameObject>[] pools;
+        private void Awake()
         {
-            if (!prefab.activeSelf)
+            pools = new List<GameObject>[prefabs.Length];
+            for(int i = 0;  i < pools.Length; i++)
             {
-                select = prefab;
-                select.SetActive(true);
-                break;
+                pools[i] = new List<GameObject>();
             }
         }
-        if (!select)
+
+        public GameObject Get(int index)
         {
-            select = Instantiate(prefabs[index], transform);
-            pools[index].Add(select);
+            GameObject select = null;
+
+            foreach(GameObject prefab in pools[index])
+            {
+                if (!prefab.activeSelf)
+                {
+                    select = prefab;
+                    select.SetActive(true);
+                    break;
+                }
+            }
+            if (!select)
+            {
+                select = Instantiate(prefabs[index], transform);
+                pools[index].Add(select);
+            }
+            return select;
         }
-        return select;
     }
 }

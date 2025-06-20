@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Stats; // StatSheet 네임스페이스
 
-public class Player : Actor
+public class Player : Pawn
 {
     public Vector2 inputVec;
 
@@ -29,7 +29,7 @@ public class Player : Actor
 
     private void InitializeStats()// 스탯 초기화 함수
     {
-        Debug.Log("Player InitializeStats 호출");
+        Debug.Log("Player InitializeStats 호출"); 
         if (statSheet == null)
             statSheet = new StatSheet();
 

@@ -1,12 +1,15 @@
 using UnityEngine;
 
-public class SpawnConfig : MonoBehaviour
+namespace Spawn
 {
-    public float baseSpawnInterval;
-
-    public static SpawnConfig instance;
-    private void Awake()
+    public class SpawnConfig : MonoBehaviour
     {
-        instance = this;
+        public float baseSpawnInterval;
+
+        public static SpawnConfig instance;
+        private void Awake()
+        {
+            instance = this;
+        }
     }
 }

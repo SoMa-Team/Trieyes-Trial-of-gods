@@ -1,7 +1,7 @@
 using UnityEngine;
 using Stats; // 새 StatSheet 네임스페이스
 
-public class Actor : MonoBehaviour
+public class Pawn : MonoBehaviour
 {
     [Header("Stats")]
     public StatSheet statSheet; // 새 구조 사용

@@ -1,12 +1,15 @@
 using UnityEngine;
 
-public class MapConfig : MonoBehaviour
+namespace Map
 {
-    public int mapXSize;
-    public int mapYSize;
-    public static MapConfig instance;
-    private void Awake()
+    public class MapConfig : MonoBehaviour
     {
-        instance = this;
+        public int mapXSize;
+        public int mapYSize;
+        public static MapConfig instance;
+        private void Awake()
+        {
+            instance = this;
+        }
     }
 }

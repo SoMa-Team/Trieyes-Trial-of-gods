@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using Stats;
 
-public class Enemy : Actor
+public class Enemy : Pawn
 {
     public Rigidbody2D target;
     public float knockbackSize = 3;

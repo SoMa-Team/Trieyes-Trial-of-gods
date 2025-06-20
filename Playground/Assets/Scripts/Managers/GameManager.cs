@@ -1,26 +1,29 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+namespace Managers
 {
-    [Header("# Game Object")]
-    public Player player;
-    public PoolManager poolManager;
-
-    [Header("# Game Control")]
-    public float gameTime;
-    public int killCount;
-
-    public static GameManager instance;
-
-    private void Awake()
+    public class GameManager : MonoBehaviour
     {
-        instance = this;
-        killCount = 0;
-    }
+        [Header("# Game Object")]
+        public Player player;
+        public PoolManager poolManager;
 
-    private void Update()
-    {
-        gameTime += Time.deltaTime;
+        [Header("# Game Control")]
+        public float gameTime;
+        public int killCount;
+
+        public static GameManager instance;
+
+        private void Awake()
+        {
+            instance = this;
+            killCount = 0;
+        }
+
+        private void Update()
+        {
+            gameTime += Time.deltaTime;
+        }
     }
 }

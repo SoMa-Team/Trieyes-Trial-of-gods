@@ -42,15 +42,5 @@ namespace CharacterSystem
                 // 기타 이벤트별 동작 추가
             }
         }
-
-        public override void TakeAttack(Attack attack)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void PerformAttack(Pawn target, Attack attack)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 } 

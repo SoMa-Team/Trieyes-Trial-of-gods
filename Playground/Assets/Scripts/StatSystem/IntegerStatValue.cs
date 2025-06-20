@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Utils;
+using Managers;
 
 namespace Stats
 {
@@ -16,9 +15,9 @@ namespace Stats
         //현재 스탯 값
         private int currentValue;
         // 최대 스탯 값 (선택 사항)
-        public int? maxValue;
+        private int? maxValue;
         // 최소 스탯 값 (선택 사항)
-        public int? minValue;
+        private int? minValue;
         // 버프 리스트에 변동이 있는지 확인
         private bool modifierListChanged;
         // 기본 값이 변경되었는지 확인

@@ -1,5 +1,5 @@
-using Unity.Cinemachine;
 using UnityEngine;
+using Actors;
 
 namespace Managers
 {

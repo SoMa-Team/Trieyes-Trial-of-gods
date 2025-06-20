@@ -1,5 +1,5 @@
-using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
+using Managers;
 
 namespace Map
 {
@@ -15,10 +15,10 @@ namespace Map
         {
             if (!collision.CompareTag("Area")) return;
 
-            Vector3 PlayerPos = GameManager.instance.player.transform.position;
+            Vector3 playerPos = GameManager.instance.player.transform.position;
             Vector3 myPos = transform.position;
-            float diffX = Mathf.Abs(PlayerPos.x - myPos.x);
-            float diffY = Mathf.Abs(PlayerPos.y - myPos.y);
+            float diffX = Mathf.Abs(playerPos.x - myPos.x);
+            float diffY = Mathf.Abs(playerPos.y - myPos.y);
 
             Vector3 playerDir = GameManager.instance.player.inputVec;
             float dirX = playerDir.x < 0 ? -1 : 1;

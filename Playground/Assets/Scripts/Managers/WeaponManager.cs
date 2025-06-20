@@ -1,5 +1,7 @@
 using UnityEngine;
 using Stats;
+using Actors;
+using Attack;
 
 namespace Managers
 {

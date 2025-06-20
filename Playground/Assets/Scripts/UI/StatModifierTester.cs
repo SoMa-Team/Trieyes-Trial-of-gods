@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Stats;
+using Actors;
+using Managers;
 using Object = UnityEngine.Object;
 
 namespace UI

@@ -1,6 +1,6 @@
 using UnityEngine;
-using System.Collections.Generic;
-using Stats; // StatSheet 네임스페이스
+using Stats;
+using Actors;
 
 namespace Attack
 {

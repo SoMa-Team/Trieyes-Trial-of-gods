@@ -43,7 +43,7 @@ namespace Utils
             if (targetPawn != null)
             {
                 Debug.Log($"<color=green>[UI] Battle Start Button clicked! Calling OnBattleStart on {targetPawn.gameObject.name}</color>");
-                targetPawn.OnBattleStart();
+                targetPawn.OnEvent(Utils.EventType.OnBattleStart, targetPawn);
             }
             else
             {

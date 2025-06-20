@@ -54,7 +54,7 @@ namespace Utils
             {
                 if (pawn != null)
                 {
-                    pawn.OnBattleStart();
+                    pawn.OnEvent(Utils.EventType.OnBattleStart, pawn);
                 }
             }
         }

@@ -12,5 +12,10 @@ namespace Utils
         {
             Debug.Log("Applying base difficulty effects.");
         }
+
+        public static Difficulty GetByStageRound(int stageRound)
+        {
+            return new Difficulty();
+        }
     }
 }

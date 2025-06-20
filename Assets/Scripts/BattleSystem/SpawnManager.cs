@@ -52,7 +52,7 @@ namespace BattleSystem
                         // 난이도에 따른 스탯 배율 적용 (예시)
                         enemyPawn.ApplyStatMultiplier(difficulty.enemyStatMultiplier);
                     }
-                    BattleStageManager.Instance.enemies.Add(enemyPawn); // 전투 매니저의 적 리스트에 추가
+                    BattleStage.now.enemies.Add(enemyPawn); // 전투 매니저의 적 리스트에 추가
                     Debug.Log($"Spawned enemy {spawnedEnemyGO.name} at {spawnedEnemyGO.transform.position}");
                 }
             }

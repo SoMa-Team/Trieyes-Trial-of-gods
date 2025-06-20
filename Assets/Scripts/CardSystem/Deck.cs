@@ -100,6 +100,15 @@ namespace CardSystem
                     AddCard(newCard);
                 }
             }
+
+            else
+            {
+                Debug.Log($"<color=red>[DECK] {owner?.gameObject.name} received event: {eventType}</color>");
+                foreach (var card in cards)
+                {
+                    card.cardAction.OnEvent(eventType, param);
+                }
+            }
         }
 
         // ===== [기능 1] 카드 리스트 및 생성 =====

@@ -15,6 +15,15 @@ namespace BattleSystem
         // ===== 싱글톤 =====
         public static CharacterFactory Instance {private set; get;}
 
+        // ===== 캐릭터 프리팹 =====
+        public GameObject[] characterPrefabs;
+
+        // ===== 초기화 =====
+        
+        /// <summary>
+        /// 싱글톤 패턴을 위한 초기화
+        /// 중복 인스턴스가 생성되지 않도록 합니다.
+        /// </summary>
         void Awake()
         {
             if (Instance is not null)
@@ -26,10 +35,6 @@ namespace BattleSystem
             DontDestroyOnLoad(gameObject);
             Instance = this;
         }
-
-        // ===== 캐릭터 프리팹 =====
-        public GameObject[] characterPrefabs;
-
 
         // ===== 캐릭터 생성 =====
 
@@ -64,13 +69,16 @@ namespace BattleSystem
         /// <returns>해당하는 GameObject 프리팹</returns>
         private GameObject GetPrefabById(CharacterID id)
         {
-            return id switch
-            {
-                0 => characterPrefabs[0],
-                1 => characterPrefabs[1],
-                // TODO: 더 많은 캐릭터 ID 추가 필요
-                _ => null
-            };
+            // TODO: characterID와 characterPrefab 매칭 필요
+            return characterPrefabs[0];
+            
+            // return id switch
+            // {
+            //     0 => characterPrefabs[0],
+            //     1 => characterPrefabs[1],
+            //     // TODO: 더 많은 캐릭터 ID 추가 필요
+            //     _ => null
+            // };
         }
     }
 }

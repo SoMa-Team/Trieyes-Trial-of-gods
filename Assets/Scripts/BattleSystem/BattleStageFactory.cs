@@ -58,7 +58,7 @@ namespace BattleSystem
             return battleStage;
         }
 
-        // ===== 스테이지 활성화, 비활성화 =====
+        // ===== 스테이지 활성화/비활성화 =====
         
         /// <summary>
         /// 전투 스테이지를 활성화하고 초기 설정을 완료합니다.</summary>
@@ -80,30 +80,41 @@ namespace BattleSystem
             battleStage.difficulty = difficulty;
             battleStage.attacks = new List<Attack>();
             
-            // TODO: SpawnManager 구현 필요
-            battleStage.spawnManager = null;
+            // SpawnManager 초기화
+            battleStage.spawnManager = SpawnManager.Instance;
+            battleStage.spawnManager.Activate(difficulty);
             
             battleStage.Activate();
         }
 
         /// <summary>
         /// 전투 스테이지를 비활성화하고 리소스를 정리합니다.</summary>
-        /// <param name="battleSgage">비활성화할 BattleStage</param>
-        public void Deactivate(BattleStage battleSgage)
+        /// <param name="battleStage">비활성화할 BattleStage</param>
+        public void Deactivate(BattleStage battleStage)
         {
-            battleSgage.Deactivate();
+            battleStage.Deactivate();
 
             // 캐릭터 정리
-            foreach (var characters in battleSgage.characters)
+            foreach (var characters in battleStage.characters)
             {
-                // TODO: 캐릭터 정리 로직 구현 필요
+                // TODO: 캐릭터 전투 종료 로직 구현 필요
+                // 파괴는 하지 않는다는 사실을 기억하자!
             }
 
             // 적 정리
-            foreach (var enemy in battleSgage.enemies)
+            foreach (var enemy in battleStage.enemies)
             {
                 EnemyFactory.Instance.Deactivate(enemy);
             }
+            
+            // 공격 정리
+            foreach (var attack in battleStage.attacks)
+            {
+                // TODO: AttackFactory.Instance.Deactivate(attack);
+            }
+            
+            // SpawnManager 비활성화
+            battleStage.spawnManager.Deactivate();
         }
     }
 }

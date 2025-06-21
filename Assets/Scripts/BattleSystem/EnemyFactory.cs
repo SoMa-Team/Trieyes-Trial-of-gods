@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using CharacterSystem;
 using UnityEngine.TextCore.Text;
+using Debug = UnityEngine.Debug;
 
 namespace BattleSystem
 {
@@ -18,13 +19,18 @@ namespace BattleSystem
         // ===== 싱글톤 =====
         public static EnemyFactory Instance { private set; get; }
         
+        // ===== 적 프리팹 =====
+        public GameObject[] enemyPrefabs;
+
+        // ===== 초기화 =====
+        
         /// <summary>
         /// 싱글톤 패턴을 위한 초기화
         /// 중복 인스턴스가 생성되지 않도록 합니다.
         /// </summary>
         private void Awake()
         {
-            if (Instance != null)
+            if (Instance is not null)
             {
                 Destroy(gameObject);
                 return;
@@ -33,7 +39,7 @@ namespace BattleSystem
             Instance = this;
         }
 
-        // ===== 적 생성, 초기화, 비활성화 =====
+        // ===== 적 생성 =====
         
         /// <summary>
         /// EnemyID에 맞는 적 gameObject를 생성합니다.
@@ -43,18 +49,19 @@ namespace BattleSystem
         /// <returns>생성된 gameObject에 부착된 Pawn 객체</returns>
         public Pawn Create(EnemyID id)
         {
-            var pawn = ClonePrefab(id);
-            return pawn;
+            var enemy = ClonePrefab(id);
+            Activate(enemy);
+            return enemy;
         }
 
-        /// <summary>적 프리팹 배열 (에디터에서 할당)</summary>
-        public GameObject[] enemyPrefabs;
+        // ===== 적 활성화/비활성화 =====
         
         /// <summary>
         /// 적을 활성화합니다.</summary>
         /// <param name="enemy">활성화할 적 Pawn</param>
         public void Activate(Pawn enemy)
         {
+            Debug.Log($"enemy activated! {enemy}");
             // TODO: 적 활성화 로직 구현 필요
         }
         
@@ -74,9 +81,9 @@ namespace BattleSystem
         /// <returns>생성된 Pawn 컴포넌트</returns>
         private Pawn ClonePrefab(EnemyID id)
         {
-            var pawnObject = Instantiate(GetPrefabById(id));
-            var pawn = pawnObject.GetComponent<Pawn>();
-            return pawn;
+            var enemyObject = Instantiate(GetPrefabById(id));
+            var enemy = enemyObject.GetComponent<Pawn>();
+            return enemy;
         }
 
         /// <summary>
@@ -85,13 +92,16 @@ namespace BattleSystem
         /// <returns>해당하는 GameObject 프리팹</returns>
         private GameObject GetPrefabById(EnemyID id)
         {
-            return id switch
-            {
-                0 => enemyPrefabs[0],
-                1 => enemyPrefabs[1],
-                // TODO: 더 많은 적 ID 추가 필요
-                _ => null
-            };
+            // TODO: EnemyID와 prefab 매칭 필요
+            return enemyPrefabs[0];
+            
+            // return id switch
+            // {
+            //     0 => enemyPrefabs[0],
+            //     1 => enemyPrefabs[1],
+            //     // TODO: 더 많은 적 ID 추가 필요
+            //     _ => null
+            // };
         }
     }
 }

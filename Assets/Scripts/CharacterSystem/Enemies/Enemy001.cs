@@ -34,6 +34,7 @@ namespace CharacterSystem
         // ===== [기능 4] 이벤트 처리 =====
         public override void OnEvent(Utils.EventType eventType, object param)
         {
+            base.OnEvent(eventType, param);
             switch (eventType)
             {
                 case Utils.EventType.OnDeath:

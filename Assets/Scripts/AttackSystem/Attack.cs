@@ -13,7 +13,7 @@ namespace AttackSystem
     /// 게임 내 공격 행위를 정의하는 클래스입니다.
     /// 이 클래스는 IEventHandler를 구현하여 자체적으로 이벤트를 처리하고 발동시킬 수 있습니다.
     /// </summary>
-    public abstract class Attack : MonoBehaviour, IEventHandler
+    public class Attack : MonoBehaviour, IEventHandler
     {
         // ===== [기능 1] 공격 데이터 및 컴포넌트 관리 =====
         public AttackData attackData;
@@ -58,11 +58,11 @@ namespace AttackSystem
         protected virtual void Update()
         {
             // 투사체 거리 관리
-            currentDistance = Vector3.Distance(transform.position, spawnPosition);
-            if (currentDistance >= maxDistance)
-            {
-                DestroyProjectile();
-            }
+            // currentDistance = Vector3.Distance(transform.position, spawnPosition);
+            // if (currentDistance >= maxDistance)
+            // {
+            //     DestroyProjectile();
+            // }
         }
 
         // ===== [기능 4] 투사체 초기화 =====
@@ -248,7 +248,7 @@ namespace AttackSystem
         /// <param name="hitObject">충돌한 객체</param>
         protected virtual void ProcessAttackCollision(Pawn targetPawn, GameObject hitObject)
         {
-            Debug.Log($"<color=orange>[COLLISION] {gameObject.name} hit {targetPawn.gameObject.name}</color>");
+            Debug.Log($"<color=orange>[COLLISION] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             
             // 이미 맞은 대상으로 기록
             hitTargets.Add(hitObject);
@@ -256,9 +256,11 @@ namespace AttackSystem
             // 이벤트 발생 순서: OnAttackHit → OnDamageHit → 회피 판정 → OnAttackMiss/OnAttack
             if (attacker != null)
             {
+                Debug.Log($"<color=yellow>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackHit -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                 // 1. 공격자의 OnAttackHit 이벤트 (유물, 카드 순회)
                 attacker.OnEvent(Utils.EventType.OnAttackHit, targetPawn);
                 
+                Debug.Log($"<color=red>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnDamageHit <- Attacker {attacker.gameObject.name} ({attacker.GetType().Name})</color>");
                 // 2. 피격자의 OnDamageHit 이벤트 (회피 판정)
                 targetPawn.OnEvent(Utils.EventType.OnDamageHit, attacker);
                 
@@ -267,12 +269,15 @@ namespace AttackSystem
                 
                 if (isEvaded)
                 {
+                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnEvaded (SUCCESS)</color>");
+                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackMiss -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                     // 회피 성공: OnEvaded (피격자) + OnAttackMiss (공격자)
                     targetPawn.OnEvent(Utils.EventType.OnEvaded, null);
                     attacker.OnEvent(Utils.EventType.OnAttackMiss, targetPawn);
                 }
                 else
                 {
+                    Debug.Log($"<color=green>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttack -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                     // 회피 실패: OnAttack (공격자) - 데미지 계산 및 OnDamaged 호출
                     attacker.OnEvent(Utils.EventType.OnAttack, targetPawn);
                 }
@@ -346,6 +351,27 @@ namespace AttackSystem
         }
         
         // ===== [기능 8] 이벤트 처리 =====
-        public abstract void OnEvent(Utils.EventType eventType, object param);
+        public void OnEvent(Utils.EventType eventType, object param)
+        {
+            // 이벤트 처리 로직
+            Debug.Log($"<color=blue>[EVENT] {gameObject.name} received event: {eventType}</color>");
+            
+            // 이벤트 타입에 따른 처리
+            switch (eventType)
+            {
+                case Utils.EventType.OnAttackHit:
+                    // 공격 시작 이벤트 처리
+                    break;
+                case Utils.EventType.OnAttack:
+                    // 공격 종료 이벤트 처리
+                    break;
+                case Utils.EventType.OnDamageHit:
+                    // 타격 이벤트 처리
+                    break;
+                default:
+                    // 기본 이벤트 처리
+                    break;
+            }
+        }
     }
 } 

@@ -17,6 +17,11 @@ namespace CharacterSystem
             base.Awake();
         }
 
+        protected override void Start()
+        {
+            base.Start();
+        }
+
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -28,7 +33,6 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
-            initBaseStat();
             Debug.Log("Character001 Activated.");
         }
 

@@ -33,8 +33,12 @@ namespace RelicSystem
         // ===== [기능 3] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
-            // owner 참조가 없으면 자동으로 찾기
-            EnsureOwnerReference();
+            // owner 참조가 없으면 에러 발생
+            if (owner == null)
+            {
+                Debug.LogError($"<color=red>[Relic] {info?.name ?? "Unknown"} has no owner reference! Ensure SetOwner() is called before using this relic.</color>");
+                return;
+            }
 
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
@@ -42,8 +46,9 @@ namespace RelicSystem
 
         /// <summary>
         /// owner 참조가 설정되어 있는지 확인하고, 없으면 자동으로 찾아서 설정합니다.
+        /// [테스트용] - 프로덕션에서는 사용하지 말 것
         /// </summary>
-        protected void EnsureOwnerReference()
+        private void EnsureOwnerReference()
         {
             if (owner == null)
             {

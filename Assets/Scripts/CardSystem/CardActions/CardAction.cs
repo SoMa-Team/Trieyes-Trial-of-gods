@@ -18,6 +18,12 @@ namespace CardActions
         protected Pawn owner; // 카드 액션의 소유자 (Pawn)
         protected CardSystem.Deck deck; // 덱 참조 (카드 호출 순서 조정용)
 
+        // ===== [기능 1] 프로퍼티 =====
+        /// <summary>
+        /// 카드 액션의 소유자를 반환합니다.
+        /// </summary>
+        public Pawn Owner => owner;
+
         // ===== [기능 2] 소유자 설정 =====
         /// <summary>
         /// 카드 액션의 소유자를 설정합니다.
@@ -41,41 +47,15 @@ namespace CardActions
         /// <param name="param">이벤트와 함께 전달된 매개변수</param>
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
-            // deck 참조가 없으면 자동으로 찾기
-            EnsureDeckReference();
+            // deck 참조가 없으면 에러 발생
+            if (deck == null)
+            {
+                Debug.LogError($"<color=red>[CardAction] {GetType().Name} has no deck reference! Ensure SetOwner() is called before using this card action.</color>");
+                return;
+            }
             
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
-        }
-
-        /// <summary>
-        /// deck 참조가 설정되어 있는지 확인하고, 없으면 자동으로 찾아서 설정합니다.
-        /// </summary>
-        protected void EnsureDeckReference()
-        {
-            if (deck == null)
-            {
-                if (owner != null)
-                {
-                    deck = owner.deck;
-                    Debug.Log($"<color=green>[CardAction] Found deck through owner: {owner.gameObject.name}</color>");
-                }
-                else
-                {
-                    // owner도 없으면 현재 씬에서 Pawn을 찾아서 deck 참조 설정
-                    Pawn foundPawn = FindFirstObjectByType<Pawn>();
-                    if (foundPawn != null)
-                    {
-                        owner = foundPawn;
-                        deck = foundPawn.deck;
-                        Debug.Log($"<color=green>[CardAction] Found deck through scene search: {foundPawn.gameObject.name}</color>");
-                    }
-                    else
-                    {
-                        Debug.LogError("<color=red>[CardAction] No Pawn found in scene!</color>");
-                    }
-                }
-            }
         }
 
         // ===== [기능 4] AttackComponent 제공 =====

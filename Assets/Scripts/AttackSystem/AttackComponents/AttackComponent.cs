@@ -27,6 +27,11 @@ namespace AttackComponents
 
         protected virtual void Awake()
         {
+            // Awake에서는 아무것도 하지 않음
+        }
+
+        protected virtual void Start()
+        {
             Activate();
         }
 
@@ -42,6 +47,8 @@ namespace AttackComponents
         {
             // 부모 Attack 찾기
             parentAttack = GetComponent<Attack>();
+            
+            // owner 참조 설정
             if (parentAttack != null)
             {
                 owner = parentAttack.attacker;
@@ -59,11 +66,6 @@ namespace AttackComponents
             // 참조 정리
             parentAttack = null;
             owner = null;
-        }
-
-        protected virtual void Start()
-        {
-            hitTargets.Clear();
         }
 
         // ===== [기능 3] 충돌 처리 =====

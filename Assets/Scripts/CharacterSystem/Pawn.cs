@@ -58,6 +58,11 @@ namespace CharacterSystem
         
         protected virtual void Awake()
         {
+            // Awake에서는 아무것도 하지 않음
+        }
+
+        protected virtual void Start()
+        {
             Activate();
         }
 
@@ -76,6 +81,8 @@ namespace CharacterSystem
             boxCollider = GetComponent<BoxCollider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
+            
+            // 스탯 시트 초기화
             statSheet = new StatSheet();
             
             // Inspector에서 할당된 Deck을 사용하도록 수정
@@ -289,15 +296,6 @@ namespace CharacterSystem
             {
                 this.OnEvent(Utils.EventType.OnGoldUpdated, new StatUpdateEventData(this, preGold));
             }
-        }
-
-        /// <summary>
-        /// 골드를 획득합니다 (적 처치 시 호출).
-        /// </summary>
-        /// <param name="amount">획득할 골드 양</param>
-        public void EarnGold(int amount)
-        {
-            ChangeGold(amount);
         }
 
         // ===== [기능 9] 유물 관리 =====

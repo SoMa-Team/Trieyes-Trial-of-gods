@@ -52,13 +52,16 @@ namespace BattleSystem
         // ===== 적 관리 =====
         
         /// <summary>
-        /// 생성된 적을 스테이지에 연결하고 위치를 설정합니다.</summary>
+        /// 생성된 적을 스테이지에 연결하고 위치를 설정합니다.
+        /// 적을 enemies 리스트에 추가하여 관리합니다.
+        /// </summary>
         /// <param name="enemy">연결할 적 Pawn</param>
         /// <param name="spawnPoint">스폰 포인트 Transform</param>
         public void AttachEnemy(Pawn enemy, Transform spawnPoint)
         {
             enemy.transform.SetParent(View.transform);
             enemy.transform.position = spawnPoint.position;
+            enemies.Add(enemy);
         }
     }
 } 

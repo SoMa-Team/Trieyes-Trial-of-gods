@@ -13,7 +13,7 @@ namespace CardActions
     {
         [Header("CardAction003 Settings")]
         [SerializeField] private int cardId003 = 3;
-        [SerializeField] private string cardDescription = "다른 모든 카드를 다시 한 번 호출합니다";
+        [SerializeField] private new string cardDescription = "다른 모든 카드를 다시 한 번 호출합니다";
 
         private void Awake()
         {
@@ -41,10 +41,28 @@ namespace CardActions
         {
             if (param is int currentCardIndex)
             {
-                Debug.Log($"<color=cyan>[CardAction003] Requesting call order adjustment for card index: {currentCardIndex}</color>");
-                
-                // Deck에 호출 순서 조정 요청 - 자신을 제외한 다른 모든 카드를 한 번 더 호출
-                deck.AppendOtherCardsOnce(currentCardIndex);
+                if (deck.Cards.Count <= 1)
+                {
+                    Debug.Log("<color=yellow>[CardAction003] Only one card in deck, no effect</color>");
+                    return;
+                }
+
+                // 제외할 카드를 제외한 다른 모든 카드들을 한 번 더 추가
+                List<int> cardsToAppend = new List<int>();
+                List<int> callOrder = deck.GetCallOrder(); // Deck의 호출 순서 리스트 참조를 가져옵니다.
+            
+                for (int i = 0; i < deck.Cards.Count; i++)
+                {
+                    if (i != currentCardIndex) // 자기 자신 제외
+                    {
+                        cardsToAppend.Add(i);
+                    }
+                }
+
+                // 기존 순서에 덧붙여서 리스트를 직접 수정합니다.
+                callOrder.AddRange(cardsToAppend);
+            
+                Debug.Log($"<color=green>[CardAction003] {deck.GetOwner().gameObject.name} appended other cards once (excluding {currentCardIndex}): [{string.Join(", ", cardsToAppend)}]</color>");
             }
         }
     }

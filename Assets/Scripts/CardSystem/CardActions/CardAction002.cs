@@ -15,10 +15,17 @@ namespace CardActions
             {
                 if (owner != null)
                 {
-                    // Defense * 2
+                    // 현재 DEF 값 확인
+                    int currentDef = owner.statSheet[StatType.Defense].Value;
+                    Debug.Log($"<color=yellow>[CardAction002] Current DEF before buff: {currentDef}</color>");
+                    
+                    // Defense * 2 (100% 증가 = 2배)
                     var modifier = new StatModifier(100, BuffOperationType.Multiplicative);
                     owner.statSheet[StatType.Defense].AddBuff(modifier);
-                    Debug.Log($"<color=yellow>[CardAction002] Applied: DEF * 2. New Value: {owner.statSheet[StatType.Defense].Value}</color>");
+                    
+                    // 버프 적용 후 DEF 값 확인
+                    int newDef = owner.statSheet[StatType.Defense].Value;
+                    Debug.Log($"<color=yellow>[CardAction002] Applied: DEF * 2. New Value: {newDef}</color>");
                 }
             }
         }

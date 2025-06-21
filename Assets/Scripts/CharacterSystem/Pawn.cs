@@ -63,6 +63,21 @@ namespace CharacterSystem
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
             statSheet = new StatSheet();
+            
+            // Inspector에서 할당된 Deck을 사용하도록 수정
+            if (deck != null)
+            {
+                // Deck 초기화 (owner 참조 설정, 프리팹 데이터 보존)
+                deck.Initialize(this, true);
+            }
+            else
+            {
+                // Deck이 할당되지 않은 경우 경고를 표시하고, 빈 Deck을 생성합니다.
+                Debug.LogWarning($"<color=yellow>[PAWN] {gameObject.name}에 Deck이 할당되지 않았습니다. Inspector에서 Deck을 할당해주세요. 임시로 빈 Deck을 생성합니다.</color>");
+                deck = gameObject.AddComponent<Deck>();
+                deck.Initialize(this, true);
+            }
+            
             initBaseStat();
         }
         
@@ -168,11 +183,14 @@ namespace CharacterSystem
         /// <param name="eventType">발생한 이벤트 타입</param>
         protected virtual void ProcessAttackEventModifications(Pawn target, StatSheet tempStatSheet, Utils.EventType eventType)
         {
+            Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) processing {eventType} event with target {target?.gameObject.name}</color>");
+            
             // 유물들의 이벤트 처리 (StatSheet 수정)
             foreach (var relic in relics)
             {
                 if (relic != null)
                 {
+                    Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.info.name} processing {eventType}</color>");
                     relic.OnEvent(eventType, new AttackEventData(this, target));
                 }
             }
@@ -182,6 +200,7 @@ namespace CharacterSystem
             {
                 if (card?.cardAction != null)
                 {
+                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Card {card.cardAction.GetType().Name} processing {eventType}</color>");
                     card.cardAction.OnEvent(eventType, new AttackEventData(this, target));
                 }
             }
@@ -191,6 +210,7 @@ namespace CharacterSystem
             {
                 if (attackComp != null)
                 {
+                    Debug.Log($"<color=orange>[EVENT] {gameObject.name} ({GetType().Name}) -> AttackComponent {attackComp.GetType().Name} processing {eventType}</color>");
                     attackComp.OnEvent(eventType, new AttackEventData(this, target));
                 }
             }
@@ -388,19 +408,30 @@ namespace CharacterSystem
         // ===== [기능 3] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
+            Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
+            
             // Pawn 자체의 이벤트 처리
             if (eventType == Utils.EventType.OnAttack)
             {
-                if (param is Pawn target) ProcessAndTriggerDamage(target);
+                if (param is Pawn target) 
+                {
+                    Debug.Log($"<color=yellow>[EVENT] {gameObject.name} ({GetType().Name}) processing OnAttack against {target.gameObject.name} ({target.GetType().Name})</color>");
+                    ProcessAndTriggerDamage(target);
+                }
             }
             
             if (eventType == Utils.EventType.OnDamaged)
             {
-                if (param is AttackDamageInfo damageInfo) ApplyDamage(damageInfo);
+                if (param is AttackDamageInfo damageInfo) 
+                {
+                    Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDamaged from {damageInfo.attacker?.gameObject.name} ({damageInfo.attacker?.GetType().Name})</color>");
+                    ApplyDamage(damageInfo);
+                }
             }
             
             if (eventType == Utils.EventType.OnDeath)
             {
+                Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
                 HandleDeath(param as Pawn);
             }
 
@@ -409,6 +440,7 @@ namespace CharacterSystem
                 // 모든 AttackComponent의 이벤트 처리
                 foreach (var attackComp in attackComponentList)
                 {
+                    Debug.Log($"<color=orange>[EVENT] {gameObject.name} ({GetType().Name}) -> AttackComponent {attackComp.GetType().Name} processing {eventType}</color>");
                     attackComp.OnEvent(eventType, param);
                 }
 
@@ -418,11 +450,13 @@ namespace CharacterSystem
                 {
                     if (relic != null)
                     {
+                        Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.info.name} processing {eventType}</color>");
                         relic.OnEvent(eventType, param);
                     }
                 }
 
                 // 덱의 카드 액션들 처리
+                Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
             }
         }

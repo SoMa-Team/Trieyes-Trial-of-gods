@@ -16,6 +16,19 @@ namespace Utils
         
         private void Awake()
         {
+            Activate();
+        }
+        
+        private void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
             // Button 컴포넌트 가져오기
             button = GetComponent<Button>();
             
@@ -25,14 +38,21 @@ namespace Utils
                 button.onClick.AddListener(OnBattleStartButtonClicked);
             }
         }
-        
-        private void OnDestroy()
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
         {
             // 이벤트 연결 해제
             if (button != null)
             {
                 button.onClick.RemoveListener(OnBattleStartButtonClicked);
             }
+            
+            // 참조 정리
+            button = null;
+            targetPawn = null;
         }
         
         /// <summary>

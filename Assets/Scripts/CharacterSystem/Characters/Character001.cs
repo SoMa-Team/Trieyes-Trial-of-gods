@@ -15,8 +15,34 @@ namespace CharacterSystem
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public override void Activate()
+        {
+            base.Activate();
             initBaseStat();
-            Debug.Log("Character001 Awake.");
+            Debug.Log("Character001 Activated.");
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public override void Deactivate()
+        {
+            // Character001 고유 정리 로직
+            experience = 0;
+            gold = 0;
+            
+            base.Deactivate();
+            Debug.Log("Character001 Deactivated.");
         }
 
         protected override void initBaseStat()

@@ -43,9 +43,9 @@ namespace CharacterSystem
         // ===== [기능 2] 스탯 시스템 =====
         public Attack basicAttack; // 기본 공격
         public AttackData[] attackDataList; // 여러 공격 데이터
-        public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
-        public List<Relic> relics = new(); // 장착 가능한 유물 리스트
-        public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
+        public List<AttackComponent> attackComponentList; // 공격 컴포넌트 리스트
+        public List<Relic> relics; // 장착 가능한 유물 리스트
+        public Deck deck; // Pawn이 관리하는 Deck 인스턴스
 
         // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
         protected Vector2 moveDirection;
@@ -58,6 +58,20 @@ namespace CharacterSystem
         
         protected virtual void Awake()
         {
+            Activate();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
+            // 컴포넌트 초기화
             rb = GetComponent<Rigidbody2D>();
             boxCollider = GetComponent<BoxCollider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
@@ -79,6 +93,21 @@ namespace CharacterSystem
             }
             
             initBaseStat();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            // 이벤트 핸들러 정리
+            eventHandlers.Clear();
+            
+            // 리스트 초기화
+            if (attackComponentList != null)
+                attackComponentList.Clear();
+            if (relics != null)
+                relics.Clear();
         }
         
         protected virtual void initBaseStat()
@@ -146,8 +175,7 @@ namespace CharacterSystem
             ChangeAnimationState(HIT_ANIM);
         }
 
-        // ===== [기능 4] 스탯 관련 =====
-        // 많이 안쓰일 것 같다면 지워도 됨
+        // ===== [기능 4] 스탯 관련 ===== 많이 안쓰일 것 같다면 지워도 됨
         public int GetStatValue(StatType statType)
         {
             return statSheet[statType];
@@ -156,64 +184,6 @@ namespace CharacterSystem
         public void SetStatValue(StatType statType, int value)
         {
             statSheet[statType].SetBasicValue(value);
-        }
-        
-        public void ModifyStat(StatType statType, int amount)
-        {
-            statSheet[statType].AddToBasicValue(amount);
-        }
-
-        public void ApplyStatMultiplier(float difficultyEnemyStatMultiplier)
-        {
-            // 모든 스탯에 배율 적용
-            foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
-            {
-                int currentValue = statSheet[statType].Value;
-                int newValue = Mathf.RoundToInt(currentValue * difficultyEnemyStatMultiplier);
-                statSheet[statType].SetBasicValue(newValue);
-            }
-        }
-
-        // ===== [기능 8] 이벤트 발생 메서드들 =====
-        /// <summary>
-        /// 공격 이벤트 발생 시 유물, 카드, AttackComp를 순회하여 StatSheet를 수정합니다.
-        /// </summary>
-        /// <param name="target">공격 대상</param>
-        /// <param name="tempStatSheet">수정할 임시 StatSheet</param>
-        /// <param name="eventType">발생한 이벤트 타입</param>
-        protected virtual void ProcessAttackEventModifications(Pawn target, StatSheet tempStatSheet, Utils.EventType eventType)
-        {
-            Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) processing {eventType} event with target {target?.gameObject.name}</color>");
-            
-            // 유물들의 이벤트 처리 (StatSheet 수정)
-            foreach (var relic in relics)
-            {
-                if (relic != null)
-                {
-                    Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.info.name} processing {eventType}</color>");
-                    relic.OnEvent(eventType, new AttackEventData(this, target));
-                }
-            }
-            
-            // 덱의 카드들의 이벤트 처리 (StatSheet 수정)
-            foreach (var card in deck.Cards)
-            {
-                if (card?.cardAction != null)
-                {
-                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Card {card.cardAction.GetType().Name} processing {eventType}</color>");
-                    card.cardAction.OnEvent(eventType, new AttackEventData(this, target));
-                }
-            }
-            
-            // AttackComponent들의 이벤트 처리 (StatSheet 수정)
-            foreach (var attackComp in attackComponentList)
-            {
-                if (attackComp != null)
-                {
-                    Debug.Log($"<color=orange>[EVENT] {gameObject.name} ({GetType().Name}) -> AttackComponent {attackComp.GetType().Name} processing {eventType}</color>");
-                    attackComp.OnEvent(eventType, new AttackEventData(this, target));
-                }
-            }
         }
 
         /// <summary>
@@ -359,52 +329,6 @@ namespace CharacterSystem
             }
         }
 
-        // ===== [기능 6] 투사체 발사 =====
-        /// <summary>
-        /// 공격을 발사합니다. (모든 공격의 통합 엔트리 포인트)
-        /// </summary>
-        /// <param name="attackPrefab">발사할 Attack 프리팹</param>
-        /// <param name="direction">발사 방향</param>
-        /// <param name="parentAttack">부모 Attack (선택사항)</param>
-        public virtual void FireAttack(Attack attackPrefab, Vector2 direction, Attack parentAttack = null)
-        {
-            if (attackPrefab == null)
-            {
-                Debug.LogWarning($"<color=red>[PROJECTILE] {gameObject.name} - attackPrefab is null</color>");
-                return;
-            }
-
-            // 1. 연산을 통해 투사체가 가져야하는 스탯 정보를 갱신
-            // (이미 Pawn의 현재 스탯이 최신 상태이므로 별도 갱신 불필요)
-
-            // 2. 투사체를 몇개, 그리고 어떤 효과를 가지는 Comp를 몇개 만들어야 하는지 알아옴
-            // (현재는 단일 투사체, 향후 확장 가능)
-
-            // 3. Attack 객체를 만들고 쏨
-            Attack projectile = Instantiate(attackPrefab, transform.position, Quaternion.identity);
-            
-            // 투사체 초기화
-            projectile.InitializeProjectile(this, direction, parentAttack);
-            
-            Debug.Log($"<color=green>[PROJECTILE] {gameObject.name} fired attack {projectile.gameObject.name}</color>");
-        }
-
-        /// <summary>
-        /// 기본 공격을 발사합니다.
-        /// </summary>
-        /// <param name="direction">발사 방향</param>
-        public virtual void FireBasicAttack(Vector2 direction)
-        {
-            if (basicAttack != null)
-            {
-                FireAttack(basicAttack, direction);
-            }
-            else
-            {
-                Debug.LogWarning($"<color=red>[PROJECTILE] {gameObject.name} - basicAttack is null</color>");
-            }
-        }
-
         // ===== [기능 3] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
@@ -437,27 +361,38 @@ namespace CharacterSystem
 
             else
             {
-                // 모든 AttackComponent의 이벤트 처리
-                foreach (var attackComp in attackComponentList)
-                {
-                    Debug.Log($"<color=orange>[EVENT] {gameObject.name} ({GetType().Name}) -> AttackComponent {attackComp.GetType().Name} processing {eventType}</color>");
-                    attackComp.OnEvent(eventType, param);
-                }
-
-                // 모든 이벤트는 먼저 하위(유물, 카드 등)로 전파        
                 // 유물들의 이벤트 처리
-                foreach (var relic in relics)
+                if (relics != null)
                 {
-                    if (relic != null)
+                    foreach (var relic in relics)
                     {
-                        Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.info.name} processing {eventType}</color>");
-                        relic.OnEvent(eventType, param);
+                        if (relic != null)
+                        {
+                            Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.info.name} processing {eventType}</color>");
+                            relic.OnEvent(eventType, param);
+                        }
                     }
                 }
 
-                // 덱의 카드 액션들 처리
-                Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
-                deck.OnEvent(eventType, param);
+                // 덱의 카드 액션들 처리 (Deck을 통해)
+                if (deck != null)
+                {
+                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
+                    deck.OnEvent(eventType, param);
+                }
+
+                // 모든 AttackComponent의 이벤트 처리
+                if (attackComponentList != null)
+                {
+                    foreach (var attackComp in attackComponentList)
+                    {
+                        if (attackComp != null)
+                        {
+                            Debug.Log($"<color=orange>[EVENT] {gameObject.name} ({GetType().Name}) -> AttackComponent {attackComp.GetType().Name} processing {eventType}</color>");
+                            attackComp.OnEvent(eventType, param);
+                        }
+                    }
+                }
             }
         }
 
@@ -465,14 +400,13 @@ namespace CharacterSystem
         {
             StatSheet tempStatSheet = new StatSheet();
             tempStatSheet[StatType.AttackPower].SetBasicValue(GetStatValue(StatType.AttackPower));
-            ProcessAttackEventModifications(target, tempStatSheet, Utils.EventType.OnAttack);
+            OnEvent(Utils.EventType.OnAttack, new AttackEventData(this, target));
             
             bool isCritical = UnityEngine.Random.Range(0f, 1f) < (GetStatValue(StatType.CriticalRate) / 100f);
             
             if (isCritical)
             {
-                ProcessAttackEventModifications(target, tempStatSheet, Utils.EventType.OnCriticalAttack);
-                OnEvent(Utils.EventType.OnCriticalAttack, target);
+                OnEvent(Utils.EventType.OnCriticalAttack, new AttackEventData(this, target));
             }
             
             var damageInfo = new AttackDamageInfo(this, tempStatSheet);

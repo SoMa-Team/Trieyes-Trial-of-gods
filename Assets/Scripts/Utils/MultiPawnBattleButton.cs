@@ -18,6 +18,19 @@ namespace Utils
         
         private void Awake()
         {
+            Activate();
+        }
+        
+        private void OnDestroy()
+        {
+            Deactivate();
+        }
+        
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
             button = GetComponent<Button>();
             
             if (button != null)
@@ -31,13 +44,20 @@ namespace Utils
                 FindAllPawnsInScene();
             }
         }
-        
-        private void OnDestroy()
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
         {
             if (button != null)
             {
                 button.onClick.RemoveListener(OnBattleStartButtonClicked);
             }
+            
+            // 참조 정리
+            button = null;
+            targetPawns.Clear();
         }
         
         private void OnBattleStartButtonClicked()

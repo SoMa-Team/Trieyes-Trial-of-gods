@@ -38,13 +38,12 @@ namespace AttackSystem
 
         protected virtual void Awake()
         {
-            rb = GetComponent<Rigidbody2D>();
-            attackCollider = GetComponent<Collider2D>();
-            
-            if (rb != null)
-            {
-                rb.gravityScale = 0f; // 중력 비활성화
-            }
+            Activate();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            Deactivate();
         }
 
         protected virtual void Start()
@@ -318,7 +317,8 @@ namespace AttackSystem
         {
             Debug.Log($"<color=red>[PROJECTILE] {gameObject.name} destroyed</color>");
             
-            // 오브젝트 풀링을 위한 비활성화 (실제 구현에서는 풀로 반환)
+            // 오브젝트 풀링을 위한 비활성화
+            Deactivate();
             gameObject.SetActive(false);
             
             // 또는 완전히 파괴
@@ -332,16 +332,49 @@ namespace AttackSystem
             Debug.Log($"<color=yellow>[ATTACK] {gameObject.name} executing attack on {target.gameObject.name}</color>");
         }
 
-        public void Activate()
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
         {
-            Debug.Log("Attack Activated!");
-            // 공격 활성화 로직
+            // 컴포넌트 초기화
+            rb = GetComponent<Rigidbody2D>();
+            attackCollider = GetComponent<Collider2D>();
+            
+            if (rb != null)
+            {
+                rb.gravityScale = 0f; // 중력 비활성화
+            }
         }
 
-        public void Deactivate()
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
         {
-            Debug.Log("Attack Deactivated!");
-            // 공격 비활성화 로직
+            // 투사체 상태 초기화
+            currentPierceCount = 0;
+            currentLifetime = 0f;
+            currentDistance = 0f;
+            hitTargets.Clear();
+            
+            // 컴포넌트 정리
+            components.Clear();
+            
+            // 물리 속성 초기화
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+            }
+            
+            // 위치 및 회전 초기화
+            transform.position = Vector3.zero;
+            transform.rotation = Quaternion.identity;
+            
+            // 참조 정리
+            attacker = null;
+            parentAttack = null;
         }
 
         public void Execute()

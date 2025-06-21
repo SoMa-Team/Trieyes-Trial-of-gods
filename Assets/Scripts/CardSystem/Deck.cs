@@ -13,7 +13,7 @@ namespace CardSystem
     public class Deck : MonoBehaviour, IEventHandler
     {
         [Header("Deck Setup")]
-        [SerializeField] private List<Card> cards = new();
+        [SerializeField] private List<Card> cards;
         public IReadOnlyList<Card> Cards => cards;
 
         private Pawn owner;
@@ -21,7 +21,7 @@ namespace CardSystem
         
         // ===== [기능 3] 카드 호출 순서 관리 =====
         private List<int> cardCallCounts;
-        private List<int> cardCallOrder = new();
+        private List<int> cardCallOrder;
         private int maxIterations;
 
         public void Initialize(Pawn owner, bool isPersistent)
@@ -63,7 +63,17 @@ namespace CardSystem
             {
                 cardCallCounts = new List<int>();
             }
-            cardCallOrder.Clear();
+            
+            // cardCallOrder가 null이면 초기화
+            if (cardCallOrder == null)
+            {
+                cardCallOrder = new List<int>();
+            }
+            else
+            {
+                cardCallOrder.Clear();
+            }
+            
             maxIterations = cards.Count * 100;
         }
 
@@ -86,7 +96,14 @@ namespace CardSystem
             {
                 Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnBattleEnd</color>");
                 // 전투 종료 시 덱 상태 초기화
-                cardCallOrder.Clear();
+                if (cardCallOrder == null)
+                {
+                    cardCallOrder = new List<int>();
+                }
+                else
+                {
+                    cardCallOrder.Clear();
+                }
                 cardCallCounts = new List<int>(new int[cards.Count]); // 0으로 초기화
 
                 // 전투 종료 시 모든 버프 제거 (기본 스탯은 보존)
@@ -172,7 +189,17 @@ namespace CardSystem
             
             // 0으로 초기화된 리스트 생성
             cardCallCounts = new List<int>(new int[cards.Count]);
-            cardCallOrder.Clear();
+            
+            // cardCallOrder가 null이면 초기화
+            if (cardCallOrder == null)
+            {
+                cardCallOrder = new List<int>();
+            }
+            else
+            {
+                cardCallOrder.Clear();
+            }
+            
             maxIterations = cards.Count * 100;
             
             // 모든 카드에 CalcActionInitOrder 이벤트 전송
@@ -203,6 +230,15 @@ namespace CardSystem
         public void CalcActionInitStat(Utils.EventType eventType, object param = null)
         {
             Debug.Log($"<color=lightblue>--- Calculating Stats for Event: {eventType} ---</color>");
+            
+            // cardCallOrder가 null이면 초기화
+            if (cardCallOrder == null)
+            {
+                cardCallOrder = new List<int>();
+                Debug.LogWarning($"<color=yellow>[DECK] {owner?.gameObject.name} cardCallOrder was null, initialized empty list</color>");
+                return;
+            }
+            
             foreach (int cardIndex in cardCallOrder)
             {
                 if (cardIndex < cards.Count && cards[cardIndex]?.cardAction != null)

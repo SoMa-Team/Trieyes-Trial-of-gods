@@ -25,17 +25,7 @@ namespace Utils
         
         private void Awake()
         {
-            // 싱글톤 설정
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-                InitializeLogging();
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            Activate();
         }
         
         /// <summary>
@@ -212,22 +202,7 @@ namespace Utils
         
         private void OnDestroy()
         {
-            // 이벤트 해제
-            Application.logMessageReceived -= HandleLog;
-            
-            // StreamWriter 정리
-            if (logWriter != null)
-            {
-                try
-                {
-                    logWriter.Close();
-                    logWriter.Dispose();
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"<color=red>[LogToFile] Failed to close log writer: {e.Message}</color>");
-                }
-            }
+            Deactivate();
         }
         
         private void OnApplicationPause(bool pauseStatus)
@@ -245,6 +220,50 @@ namespace Utils
             if (!hasFocus && logWriter != null)
             {
                 logWriter.Flush();
+            }
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
+            // 싱글톤 설정
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+                InitializeLogging();
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            // 로그 이벤트 해제
+            Application.logMessageReceived -= HandleLog;
+            
+            // 파일 스트림 정리
+            if (logWriter != null)
+            {
+                logWriter.Close();
+                logWriter.Dispose();
+                logWriter = null;
+            }
+            
+            // 상태 초기화
+            isInitialized = false;
+            
+            // 싱글톤 참조 정리
+            if (Instance == this)
+            {
+                Instance = null;
             }
         }
     }

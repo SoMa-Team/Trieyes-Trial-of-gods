@@ -27,12 +27,38 @@ namespace AttackComponents
 
         protected virtual void Awake()
         {
+            Activate();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
             // 부모 Attack 찾기
             parentAttack = GetComponent<Attack>();
             if (parentAttack != null)
             {
                 owner = parentAttack.attacker;
             }
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            // 상태 초기화
+            hitTargets.Clear();
+            
+            // 참조 정리
+            parentAttack = null;
+            owner = null;
         }
 
         protected virtual void Start()

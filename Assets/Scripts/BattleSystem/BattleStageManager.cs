@@ -12,19 +12,7 @@ namespace BattleSystem
         public static BattleStageManager Instance { get; private set; }
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                // 이 GameObject가 씬이 변경되어도 파괴되지 않게 하려면 DontDestroyOnLoad(gameObject); 추가
-                // 하지만 전투 씬에 종속된다면 필요 없음. 다이어그램 상으로는 씬마다 생성될 것으로 보임.
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-
-            Debug.Log("BattleStageManager Awake: Initializing battle stage.");
-            InitializeCharacters();
+            Activate();
         }
         private void Update()
         {
@@ -33,20 +21,7 @@ namespace BattleSystem
         }
         private void OnDestroy()
         {
-            foreach (var character in characters)
-            {
-                if (character != null)
-                {
-                    CharacterPool.Instance.ReturnToPool(character);
-                }
-            }
-            characters.Clear();
-            foreach (var enemy in enemies)
-            {
-                if (enemy != null) enemy.gameObject.SetActive(false);
-            }
-            enemies.Clear();
-            Debug.Log("BattleStageManager OnDestroy: Cleaning up battle objects.");
+            Deactivate();
         }
 
         // ===== [기능 1] 전투 스테이지 데이터 및 캐릭터 관리 =====
@@ -119,6 +94,67 @@ namespace BattleSystem
         {
             Debug.Log("BattleStageManager: Battle Victory!");
             // 승리 UI 표시, 보상 지급, 씬 전환, 데이터 저장 등
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                // 이 GameObject가 씬이 변경되어도 파괴되지 않게 하려면 DontDestroyOnLoad(gameObject); 추가
+                // 하지만 전투 씬에 종속된다면 필요 없음. 다이어그램 상으로는 씬마다 생성될 것으로 보임.
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+
+            Debug.Log("BattleStageManager Activate: Initializing battle stage.");
+            InitializeCharacters();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            foreach (var character in characters)
+            {
+                if (character != null)
+                {
+                    // CharacterPool이 존재하는지 확인
+                    if (CharacterPool.Instance != null)
+                    {
+                        CharacterPool.Instance.ReturnToPool(character);
+                    }
+                    else
+                    {
+                        // CharacterPool이 없으면 단순히 비활성화
+                        character.gameObject.SetActive(false);
+                        Debug.LogWarning($"<color=yellow>[BattleStageManager] CharacterPool.Instance is null, deactivating character {character.gameObject.name} directly</color>");
+                    }
+                }
+            }
+            characters.Clear();
+            foreach (var enemy in enemies)
+            {
+                if (enemy != null) enemy.gameObject.SetActive(false);
+            }
+            enemies.Clear();
+            
+            // 시간 초기화
+            elapsedTime = 0f;
+            
+            // 싱글톤 참조 정리
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+            
+            Debug.Log("BattleStageManager Deactivate: Cleaning up battle objects.");
         }
     }
 } 

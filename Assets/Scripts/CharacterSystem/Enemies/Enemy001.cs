@@ -13,8 +13,33 @@ namespace CharacterSystem
         protected override void Awake()
         {
             base.Awake();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public override void Activate()
+        {
+            base.Activate();
             // TO-DO: AttackComponent 할당
-            Debug.Log("Enemy001 Awake.");
+            Debug.Log("Enemy001 Activated.");
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public override void Deactivate()
+        {
+            // Enemy001 고유 정리 로직
+            dropGold = 10; // 기본값으로 초기화
+            
+            base.Deactivate();
+            Debug.Log("Enemy001 Deactivated.");
         }
 
         // ===== [기능 3] 사망 이벤트 처리 =====

@@ -15,6 +15,11 @@ namespace CharacterSystem
             base.Awake();
         }
 
+        protected override void Start()
+        {
+            base.Start();
+        }
+
         protected override void OnDestroy()
         {
             base.OnDestroy();
@@ -51,7 +56,7 @@ namespace CharacterSystem
             // TODO: 실제로는 드롭 아이템 시스템을 통해 구현해야 함
             if (param is Pawn.AttackEventData attackData && attackData.attacker != null)
             {
-                attackData.attacker.EarnGold(dropGold);
+                attackData.attacker.ChangeGold(dropGold);
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {attackData.attacker.gameObject.name}</color>");
             }
         }

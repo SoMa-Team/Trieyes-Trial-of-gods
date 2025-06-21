@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using CharacterSystem;
 using System.Collections.Generic;
 
+// TODO: 테스트 완료 후 제거
 namespace Utils
 {
     /// <summary>

@@ -5,8 +5,6 @@ namespace CharacterSystem
 {
     public class Enemy001 : Pawn
     {
-        // ... existing code ...
-
         // ===== [기능 1] 초기화 =====
         protected override void Awake()
         {
@@ -32,7 +30,17 @@ namespace CharacterSystem
                 // 기타 이벤트별 동작 추가
             }
         }
+        
+        
+        // ===== 활성화/비활성화 =====
+        public override void Activate()
+        {
+            // TODO
+        }
 
-        // ... existing code ...
+        public override void Deactivate()
+        {
+            // TODO
+        }
     }
 } 

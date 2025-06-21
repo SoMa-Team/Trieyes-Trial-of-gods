@@ -62,7 +62,8 @@ namespace BattleSystem
         public void Activate(Pawn enemy)
         {
             Debug.Log($"enemy activated! {enemy}");
-            // TODO: 적 활성화 로직 구현 필요
+            enemy.Activate();
+            // TODO: 적 활성화 로직 구현 필요 + ObjectPooling
         }
         
         /// <summary>
@@ -70,7 +71,8 @@ namespace BattleSystem
         /// <param name="enemy">비활성화할 적 Pawn</param>
         public void Deactivate(Pawn enemy)
         {
-            // TODO: 적 비활성화 로직 구현 필요
+            enemy.Deactivate();
+            // TODO: 적 비활성화 로직 구현 필요 + ObjectPooling
         }
         
         // ===== 내부 헬퍼 =====

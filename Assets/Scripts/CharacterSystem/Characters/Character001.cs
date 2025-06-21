@@ -58,5 +58,16 @@ namespace CharacterSystem
                 // 필요한 다른 이벤트 케이스들을 여기에 추가
             }
         }
+        
+        // ===== 활성화/비활성화 =====
+        public override void Activate()
+        {
+            // TODO
+        }
+
+        public override void Deactivate()
+        {
+            // TODO
+        }
     }
 } 

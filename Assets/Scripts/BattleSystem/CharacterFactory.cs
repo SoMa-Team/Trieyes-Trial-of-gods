@@ -47,7 +47,30 @@ namespace BattleSystem
         public Pawn Create(CharacterID id)
         {
             var pawn = ClonePrefab(id);
+            Activate(pawn);
             return pawn;
+        }
+        
+        // ===== 캐릭터 활성화/비활성화 =====
+        
+        /// <summary>
+        /// 캐릭터를 활성화합니다.
+        /// Pawn의 Activate 메서드를 호출합니다.
+        /// </summary>
+        /// <param name="pawn">활성화할 캐릭터 Pawn</param>
+        public void Activate(Pawn pawn)
+        {
+            pawn.Activate();
+        }
+
+        /// <summary>
+        /// 캐릭터를 비활성화합니다.
+        /// Pawn의 Deactivate 메서드를 호출합니다.
+        /// </summary>
+        /// <param name="pawn">비활성화할 캐릭터 Pawn</param>
+        public void Deactivate(Pawn pawn)
+        {
+            pawn.Deactivate();
         }
         
         // ===== 내부 헬퍼 =====

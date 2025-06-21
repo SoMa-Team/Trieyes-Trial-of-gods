@@ -223,5 +223,17 @@ namespace CharacterSystem
             Debug.Log($"<color=blue>{gameObject.name} (Pawn) battle ended!</color>");
             // 기본 전투 종료 처리 로직
         }
+
+        // ===== [기능 6] 활성화/비활성화 =====
+        
+        /// <summary>
+        /// Pawn을 활성화합니다.
+        /// </summary>
+        abstract public void Activate();
+
+        /// <summary>
+        /// Pawn을 비활성화합니다.
+        /// </summary>
+        abstract public void Deactivate();
     }
 } 

@@ -47,10 +47,9 @@ namespace BattleSystem
                     spawnedEnemyGO.transform.position = spawner.GetSpawnPosition();
 
                     Pawn enemyPawn = spawnedEnemyGO.GetComponent<Pawn>();
-                    if (enemyPawn != null && difficulty != null)
+                    if (enemyPawn != null)
                     {
-                        // 난이도에 따른 스탯 배율 적용 (예시)
-                        enemyPawn.ApplyStatMultiplier(difficulty.enemyStatMultiplier);
+                        continue;
                     }
                     BattleStageManager.Instance.enemies.Add(enemyPawn); // 전투 매니저의 적 리스트에 추가
                     Debug.Log($"Spawned enemy {spawnedEnemyGO.name} at {spawnedEnemyGO.transform.position}");

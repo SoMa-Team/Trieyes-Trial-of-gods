@@ -17,7 +17,29 @@ namespace CardActions
 
         private void Awake()
         {
+            Activate();
+        }
+
+        private void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
             cardId = cardId003;
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            // CardAction003 고유 정리 로직
+            cardId = 0;
         }
 
         // ===== [기능 1] 이벤트 처리 =====

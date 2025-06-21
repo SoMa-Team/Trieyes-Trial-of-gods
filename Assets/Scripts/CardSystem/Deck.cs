@@ -29,21 +29,40 @@ namespace CardSystem
             this.owner = owner;
             this.isPersistent = isPersistent;
             
+            // 프리팹에서 설정한 카드들에 owner 참조 설정
             foreach (var card in cards)
             {
                 card?.Initialize(owner);
             }
+            
+            // 전투 관련 상태만 초기화 (카드 리스트는 보존)
             Clear();
+            
+            Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
         }
 
         public void Clear()
         {
+            // isPersistent이 false인 경우에만 카드 리스트를 초기화
             if (!isPersistent)
             {
+                Debug.Log($"<color=yellow>[DECK] {owner?.gameObject.name} clearing all cards (isPersistent: {isPersistent})</color>");
                 cards.Clear();
             }
+            else
+            {
+                Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} preserving {cards.Count} cards (isPersistent: {isPersistent})</color>");
+            }
             
-            cardCallCounts = new List<int>(new int[cards.Count]);
+            // 전투 관련 상태는 항상 초기화
+            if (cards.Count > 0)
+            {
+                cardCallCounts = new List<int>(new int[cards.Count]);
+            }
+            else
+            {
+                cardCallCounts = new List<int>();
+            }
             cardCallOrder.Clear();
             maxIterations = cards.Count * 100;
         }
@@ -51,49 +70,38 @@ namespace CardSystem
         // ===== [기능 4] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
+            Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) received {eventType} event</color>");
+            
             if (eventType == Utils.EventType.OnBattleStart)
             {
+                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnBattleStart</color>");
                 // 1. 카드 호출 순서 계산
                 CalcActionInitOrder();
                 
-                // 2. 덱의 기본 스탯 계산
-                StatSheet deckStats = CalcBaseStat();
-                
-                // 3. Pawn에게 덱 스탯 더하고 전달
-                if (owner != null)
-                {
-                    // 모든 스탯을 덱 스탯으로 덮어쓰기
-                    foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
-                    {
-                        int deckStatValue = deckStats[statType].Value;
-                        owner.statSheet[statType].SetBasicValue(deckStatValue);
-                    }
-                }
-                
-                // 4. 계산된 순서대로 카드 액션 초기화
+                // 2. 계산된 순서대로 카드 액션 초기화 (기본 스탯은 보존)
                 CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
             }
             
             if (eventType == Utils.EventType.OnBattleEnd)
             {
+                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnBattleEnd</color>");
                 // 전투 종료 시 덱 상태 초기화
                 cardCallOrder.Clear();
                 cardCallCounts = new List<int>(new int[cards.Count]); // 0으로 초기화
 
-                // 전투 종료 시 덱 스탯 초기화
-                StatSheet deckStats = CalcBaseStat();
+                // 전투 종료 시 모든 버프 제거 (기본 스탯은 보존)
                 if (owner != null)
                 {
                     foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
                     {
-                        int deckStatValue = deckStats[statType].Value;
-                        owner.statSheet[statType].SetBasicValue(deckStatValue);
+                        owner.statSheet[statType].ClearBuffs();
                     }
                 }
             }
             
             if (eventType == Utils.EventType.OnCardPurchase)
             {
+                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnCardPurchase</color>");
                 // 카드 구매 시 덱에 추가
                 if (param is Card newCard)
                 {
@@ -103,9 +111,10 @@ namespace CardSystem
 
             else
             {
-                Debug.Log($"<color=red>[DECK] {owner?.gameObject.name} received event: {eventType}</color>");
+                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) -> Processing {eventType} for {cards.Count} cards</color>");
                 foreach (var card in cards)
                 {
+                    Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) -> Card {card.cardAction.GetType().Name} processing {eventType}</color>");
                     card.cardAction.OnEvent(eventType, param);
                 }
             }
@@ -137,6 +146,18 @@ namespace CardSystem
         /// <returns>합산된 StatInfo 리스트</returns>
         public StatSheet CalcBaseStat()
         {
+            // 현재 Pawn의 기본 스탯을 반환 (카드 버프는 별도로 적용)
+            if (owner != null)
+            {
+                StatSheet currentStats = new StatSheet();
+                foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
+                {
+                    // 기본값만 가져오기 (버프 제외)
+                    currentStats[statType].SetBasicValue(owner.statSheet[statType].Value);
+                }
+                return currentStats;
+            }
+            
             StatSheet emptyStat = new();
             return emptyStat;
         }
@@ -239,75 +260,15 @@ namespace CardSystem
                 cardCallCounts[cardIndex] += increment;
             }
         }
-
-        /// <summary>
-        /// 카드 호출 순서를 조정합니다.
-        /// </summary>
-        /// <param name="cardIndex">조정할 카드 인덱스</param>
-        /// <param name="newIndex">새로운 위치</param>
-        public void AdjustCardCallOrder(int cardIndex, int newIndex)
+  
+        public List<int> GetCallOrder()
         {
-            if (cardIndex >= 0 && cardIndex < cards.Count && newIndex >= 0 && newIndex < cards.Count)
-            {
-                // 호출 순서에서 해당 카드를 제거하고 새로운 위치에 삽입
-                cardCallOrder.Remove(cardIndex);
-                cardCallOrder.Insert(newIndex, cardIndex);
-            }
+            return cardCallOrder;
         }
 
-        /// <summary>
-        /// 카드 호출 순서를 완전히 새로운 순서로 교체합니다.
-        /// CardAction에서 호출 순서를 직접 수정할 때 사용합니다.
-        /// </summary>
-        /// <param name="newCallOrder">새로운 호출 순서</param>
-        public void SetCallOrder(List<int> newCallOrder)
+        public Pawn GetOwner()
         {
-            if (newCallOrder != null && newCallOrder.Count > 0)
-            {
-                cardCallOrder.Clear();
-                cardCallOrder.AddRange(newCallOrder);
-                
-                // cardCallCounts도 새로운 순서에 맞게 조정
-                cardCallCounts = new List<int>(new int[cards.Count]);
-                
-                Debug.Log($"<color=blue>[DECK] {owner?.gameObject.name} call order replaced: [{string.Join(", ", cardCallOrder)}]</color>");
-            }
-        }
-
-        /// <summary>
-        /// 특정 카드를 제외한 다른 모든 카드를 한 번 더 호출하도록 순서를 변경합니다.
-        /// CardAction003과 같은 카드에서 사용합니다.
-        /// </summary>
-        /// <param name="excludeCardIndex">제외할 카드의 인덱스</param>
-        public void AppendOtherCardsOnce(int excludeCardIndex)
-        {
-            if (cards.Count <= 1)
-            {
-                Debug.Log("<color=yellow>[DECK] Only one card in deck, no effect</color>");
-                return;
-            }
-
-            if (excludeCardIndex < 0 || excludeCardIndex >= cards.Count)
-            {
-                Debug.LogWarning($"<color=red>[DECK] Invalid card index: {excludeCardIndex}</color>");
-                return;
-            }
-
-            // 제외할 카드를 제외한 다른 모든 카드들을 한 번 더 추가
-            List<int> cardsToAppend = new List<int>();
-            
-            for (int i = 0; i < cards.Count; i++)
-            {
-                if (i != excludeCardIndex) // 자기 자신 제외
-                {
-                    cardsToAppend.Add(i);
-                }
-            }
-
-            // 기존 순서에 덧붙이기
-            cardCallOrder.AddRange(cardsToAppend);
-            
-            Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} appended other cards once (excluding {excludeCardIndex}): [{string.Join(", ", cardsToAppend)}]</color>");
+            return owner;
         }
     }
 } 

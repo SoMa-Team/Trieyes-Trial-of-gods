@@ -7,6 +7,9 @@ namespace BattleSystem
 {
     public class SpawnManager : MonoBehaviour
     {
+        // ===== [기능 1] 싱글톤 패턴 =====
+        public static SpawnManager Instance { get; private set; }
+
         [Header("Spawn Settings")]
         public List<Spawner> spawners = new List<Spawner>(); // 스폰 지점 목록
         public Difficulty difficulty; // 현재 전투 난이도
@@ -14,6 +17,49 @@ namespace BattleSystem
 
         [Header("Enemy Prefabs")]
         public List<GameObject> enemyPrefabsToSpawn; // 실제 에디터에서 할당할 적 프리팹 리스트
+
+        private void Awake()
+        {
+            Activate();
+        }
+
+        private void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            // 리스트 초기화
+            spawners.Clear();
+            enemyPrefabsToSpawn.Clear();
+            prefabIDs.Clear();
+            
+            // 싱글톤 참조 정리
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
 
         /// <summary>
         /// 주어진 프리팹을 사용하여 오브젝트를 생성하거나 풀에서 불러와 활성화합니다.
@@ -47,10 +93,9 @@ namespace BattleSystem
                     spawnedEnemyGO.transform.position = spawner.GetSpawnPosition();
 
                     Pawn enemyPawn = spawnedEnemyGO.GetComponent<Pawn>();
-                    if (enemyPawn != null && difficulty != null)
+                    if (enemyPawn != null)
                     {
-                        // 난이도에 따른 스탯 배율 적용 (예시)
-                        enemyPawn.ApplyStatMultiplier(difficulty.enemyStatMultiplier);
+                        continue;
                     }
                     BattleStageManager.Instance.enemies.Add(enemyPawn); // 전투 매니저의 적 리스트에 추가
                     Debug.Log($"Spawned enemy {spawnedEnemyGO.name} at {spawnedEnemyGO.transform.position}");

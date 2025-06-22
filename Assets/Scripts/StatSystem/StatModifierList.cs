@@ -40,11 +40,11 @@ namespace Stats
         /// </summary>
         public int CalculateBuff(int basicValue)
         {
-            if(BattleStageManager.Instance == null){
+            if(BattleStage.now == null){
                 throw new Exception("BattleStageManager is not initialized.");
             }
             // 만료된 버프 제거
-            float currentTime = BattleStageManager.Instance.GetTime();
+            float currentTime = BattleStage.now.GetTime();
             modifiers.RemoveAll(buff => !buff.isPermanent && buff.endTime <= currentTime);
 
             int finalValue = basicValue;

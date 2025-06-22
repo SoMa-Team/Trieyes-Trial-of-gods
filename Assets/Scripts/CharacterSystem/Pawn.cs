@@ -29,7 +29,8 @@ namespace CharacterSystem
         public Animator animator;
         
         [Header("Stats")]
-        public StatSheet statSheet;
+        public StatSheet statSheet = new(); // 여러 스탯 정보
+        public StatPresetSO statPresetSO;
         
         // 이벤트 처리용
         private List<object> eventHandlers = new List<object>();
@@ -44,13 +45,8 @@ namespace CharacterSystem
         public Attack basicAttack; // 기본 공격
         public AttackData[] attackDataList; // 여러 공격 데이터
         public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
-        public StatSheet statSheet = new(); // 여러 스탯 정보
-        public StatPresetSO statPresetSO;
         public List<Relic> relics = new(); // 장착 가능한 유물 리스트
         public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
-
-        // ===== [기능 2] 이벤트 핸들러 관리 =====
-        public abstract void OnEvent(Utils.EventType eventType, object param);
 
         // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
         protected Vector2 moveDirection;

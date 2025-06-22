@@ -1,129 +1,109 @@
 using UnityEngine;
-using System.Collections.Generic;
 using Utils;
 using CharacterSystem;
 
 namespace BattleSystem
 {
+    /// <summary>
+    /// 난이도에 따라 적 스폰을 관리하는 매니저 클래스
+    /// EnemyFactory를 통해 적을 생성하고 BattleStage에 연결합니다.
+    /// </summary>
     public class SpawnManager : MonoBehaviour
     {
-        // ===== [기능 1] 싱글톤 패턴 =====
-        public static SpawnManager Instance { get; private set; }
+        // ===== 싱글톤 =====
+        public static SpawnManager Instance { private set; get; }
 
-        [Header("Spawn Settings")]
-        public List<Spawner> spawners = new List<Spawner>(); // 스폰 지점 목록
-        public Difficulty difficulty; // 현재 전투 난이도
-        public Dictionary<string, GameObject> prefabIDs = new Dictionary<string, GameObject>(); // ID에 따른 프리팹 맵핑 (에디터에서 할당하기 어려우므로 예시용)
+        // ===== 스폰 장소 설정 =====
+        public GameObject[] spawnPoints;
+        
+        // ===== 내부 상태 =====
+        private bool _isActivate = false;
+        private Difficulty _difficulty;
+        private float _elapsedTime;
 
-        [Header("Enemy Prefabs")]
-        public List<GameObject> enemyPrefabsToSpawn; // 실제 에디터에서 할당할 적 프리팹 리스트
-
-        private void Awake()
-        {
-            Activate();
-        }
-
-        private void OnDestroy()
-        {
-            Deactivate();
-        }
-
+        // ===== 초기화 =====
+        
         /// <summary>
-        /// 오브젝트 풀링을 위한 활성화 함수
+        /// 싱글톤 패턴을 위한 초기화
+        /// 중복 인스턴스가 생성되지 않도록 합니다.
         /// </summary>
-        public virtual void Activate()
+        void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
+            if (Instance is not null)
             {
                 Destroy(gameObject);
+                return;
             }
-        }
 
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        
+        // ===== 활성화/비활성화 =====
+        
         /// <summary>
-        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// 스폰 매니저를 활성화합니다.
+        /// BattleStage가 존재할 경우에만 동작합니다.
         /// </summary>
-        public virtual void Deactivate()
+        /// <param name="difficulty">스폰 난이도 설정</param>
+        public void Activate(Difficulty difficulty)
         {
-            // 리스트 초기화
-            spawners.Clear();
-            enemyPrefabsToSpawn.Clear();
-            prefabIDs.Clear();
+            _isActivate = true;
+            this._difficulty = difficulty;
+            _elapsedTime = 0f;
+        }
+        
+        /// <summary>
+        /// 스폰 매니저를 비활성화합니다.</summary>
+        public void Deactivate()
+        {
+            _isActivate = false;
+            _difficulty = null;
+        }
+        
+        // ===== 스폰 로직 =====
+        
+        /// <summary>
+        /// 매 프레임마다 스폰 조건을 확인하고 적을 생성합니다.</summary>
+        private void Update()
+        {
+            if (!_isActivate)
+                return;
             
-            // 싱글톤 참조 정리
-            if (Instance == this)
+            _elapsedTime += Time.deltaTime;
+
+            if (_elapsedTime >= _difficulty.SpawnInterval)
             {
-                Instance = null;
-            }
-        }
+                var spawnCount = (int)(_elapsedTime / _difficulty.SpawnInterval); 
+                _elapsedTime %= _difficulty.SpawnInterval;
 
-        /// <summary>
-        /// 주어진 프리팹을 사용하여 오브젝트를 생성하거나 풀에서 불러와 활성화합니다.
-        /// </summary>
-        /// <param name="prefab">생성할 GameObject 프리팹</param>
-        /// <returns>생성되거나 활성화된 GameObject 인스턴스</returns>
-        public GameObject Create(GameObject prefab)
-        {
-            GameObject instance = null;
-            // 여기서는 풀링 로직을 가정합니다.
-            // 풀에서 오브젝트를 가져오거나 새로 Instantiate 후 활성화 (SetActive(true))
-            instance = Instantiate(prefab); // 예시: 일단 Instantiate로 구현
-            instance.SetActive(true); // 활성화
-
-            Debug.Log($"SpawnManager: Created/Activated {instance.name}.");
-            return instance;
-        }
-
-        /// <summary>
-        /// 모든 스포너를 사용하여 적을 스폰하는 메서드 (예시)
-        /// </summary>
-        public void SpawnEnemies()
-        {
-            foreach (var spawner in spawners)
-            {
-                if (spawner != null && enemyPrefabsToSpawn.Count > 0)
+                for (int i = 0; i < spawnCount; i++)
                 {
-                    // 난이도에 따라 스폰할 적 결정 및 스탯 조절
-                    GameObject enemyPrefab = enemyPrefabsToSpawn[Random.Range(0, enemyPrefabsToSpawn.Count)];
-                    GameObject spawnedEnemyGO = Create(enemyPrefab);
-                    spawnedEnemyGO.transform.position = spawner.GetSpawnPosition();
-
-                    Pawn enemyPawn = spawnedEnemyGO.GetComponent<Pawn>();
-                    if (enemyPawn != null)
-                    {
-                        continue;
-                    }
-                    BattleStageManager.Instance.enemies.Add(enemyPawn); // 전투 매니저의 적 리스트에 추가
-                    Debug.Log($"Spawned enemy {spawnedEnemyGO.name} at {spawnedEnemyGO.transform.position}");
+                    var spawnPoint = GetRandomSpawnPoint();
+                    var enemy = SpawnEnemy();
+                    BattleStage.now.AttachEnemy(enemy, spawnPoint.transform);
                 }
             }
         }
 
+        // ===== 내부 헬퍼 =====
+        
         /// <summary>
-        /// 특정 ID에 해당하는 프리팹을 가져옵니다.
-        /// </summary>
-        /// <param name="id">프리팹의 ID</param>
-        /// <returns>해당하는 GameObject 프리팹</returns>
-        public GameObject GetPrefabByID(string id)
+        /// 랜덤한 스폰 포인트를 반환합니다.</summary>
+        /// <returns>선택된 스폰 포인트 GameObject</returns>
+        private GameObject GetRandomSpawnPoint()
         {
-            if (prefabIDs.ContainsKey(id))
-            {
-                return prefabIDs[id];
-            }
-            Debug.LogWarning($"Prefab with ID '{id}' not found in SpawnManager.");
-            return null;
+            // TODO: 랜덤 스폰 포인트 지정 로직 필요
+            return spawnPoints[0];
         }
 
-        // 여기에 풀링 관련 로직 (비활성화, 풀에 반환 등) 추가 가능
-        public void ReturnToPool(GameObject obj)
+        /// <summary>
+        /// 난이도에 따라 적을 생성합니다.</summary>
+        /// <returns>생성된 적 Pawn</returns>
+        private Pawn SpawnEnemy()
         {
-            obj.SetActive(false); // 비활성화
-            // 풀에 반환하는 실제 로직
-            Debug.Log($"SpawnManager: Returned {obj.name} to pool.");
+            var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
+            return enemy;
         }
     }
 } 

@@ -9,7 +9,7 @@ namespace CharacterSystem
     {
         // ===== [기능 1] 고유 필드 =====
         public int experience = 0;
-        public new int gold = 0;
+        public int gold = 0;
 
         // ===== [기능 2] 초기화 및 스탯 =====
         protected override void Awake()
@@ -25,28 +25,6 @@ namespace CharacterSystem
         protected override void OnDestroy()
         {
             base.OnDestroy();
-        }
-
-        /// <summary>
-        /// 오브젝트 풀링을 위한 활성화 함수
-        /// </summary>
-        public override void Activate()
-        {
-            base.Activate();
-            Debug.Log("Character001 Activated.");
-        }
-
-        /// <summary>
-        /// 오브젝트 풀링을 위한 비활성화 함수
-        /// </summary>
-        public override void Deactivate()
-        {
-            // Character001 고유 정리 로직
-            experience = 0;
-            gold = 0;
-            
-            base.Deactivate();
-            Debug.Log("Character001 Deactivated.");
         }
 
         protected override void initBaseStat()
@@ -77,6 +55,24 @@ namespace CharacterSystem
                     }
                     break;
             }
-        }                                                               
+        }
+        
+        // ===== 활성화/비활성화 =====
+        public override void Activate()
+        {
+            base.Activate();
+            Debug.Log("Character001 Activated.");
+        }
+
+        
+        public override void Deactivate()
+        {
+            // Character001 고유 정리 로직
+            experience = 0;
+            gold = 0;
+            
+            base.Deactivate();
+            Debug.Log("Character001 Deactivated.");
+        }
     }
 } 

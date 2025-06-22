@@ -1,53 +1,106 @@
+using System;
 using UnityEngine;
 using CharacterSystem;
-using System.Collections.Generic;
+using Debug = UnityEngine.Debug;
 
-namespace CombatSystem
+namespace BattleSystem
 {
+    using EnemyID = Int32;
+    
+    /// <summary>
+    /// 적 캐릭터의 생성과 관리를 담당하는 팩토리 클래스
+    /// 싱글톤 패턴을 사용하여 전역적으로 접근 가능합니다.
+    /// </summary>
     public class EnemyFactory : MonoBehaviour
     {
-        [Header("Enemy Prefabs")]
-        public List<GameObject> enemyPrefabs; // 에디터에서 할당할 적 프리팹 목록
+        // ===== 싱글톤 =====
+        public static EnemyFactory Instance { private set; get; }
+        
+        // ===== 적 프리팹 =====
+        public GameObject[] enemyPrefabs;
 
+        // ===== 초기화 =====
+        
         /// <summary>
-        /// 특정 타입 또는 ID의 적을 생성합니다.
-        /// 이 메서드는 풀링된 객체를 가져오거나 새로 인스턴스화하고 활성화(Active) 상태로 만듭니다.
+        /// 싱글톤 패턴을 위한 초기화
+        /// 중복 인스턴스가 생성되지 않도록 합니다.
         /// </summary>
-        /// <param name="enemyPrefab">생성할 적 프리팹 (선택 사항, 지정하지 않으면 목록에서 무작위 선택)</param>
-        /// <returns>생성된 적의 GameObject 인스턴스</returns>
-        public GameObject CreateEnemy(GameObject enemyPrefab = null)
+        private void Awake()
         {
-            GameObject prefabToUse = enemyPrefab;
-            if (prefabToUse == null && enemyPrefabs.Count > 0)
+            if (Instance is not null)
             {
-                prefabToUse = enemyPrefabs[Random.Range(0, enemyPrefabs.Count)];
+                Destroy(gameObject);
+                return;
             }
 
-            if (prefabToUse == null)
-            {
-                Debug.LogError("EnemyFactory: No enemy prefab available to create.");
-                return null;
-            }
+            Instance = this;
+        }
 
-            GameObject enemyInstance = Instantiate(prefabToUse);
-            enemyInstance.SetActive(true); // 불명 Active 선언 (활성화)
+        // ===== 적 생성 =====
+        
+        /// <summary>
+        /// EnemyID에 맞는 적 gameObject를 생성합니다.
+        /// gameObject는 반드시 Pawn을 상속한 Unity Component가 부착되어 있습니다.
+        /// </summary>
+        /// <param name="id">생성할 적의 ID</param>
+        /// <returns>생성된 gameObject에 부착된 Pawn 객체</returns>
+        public Pawn Create(EnemyID id)
+        {
+            var enemy = ClonePrefab(id);
+            Activate(enemy);
+            return enemy;
+        }
 
-            Debug.Log($"EnemyFactory: Created enemy '{enemyInstance.name}'.");
-            return enemyInstance;
+        // ===== 적 활성화/비활성화 =====
+        
+        /// <summary>
+        /// 적을 활성화합니다.</summary>
+        /// <param name="enemy">활성화할 적 Pawn</param>
+        public void Activate(Pawn enemy)
+        {
+            Debug.Log($"enemy activated! {enemy}");
+            enemy.Activate();
+            // TODO: 적 활성화 로직 구현 필요 + ObjectPooling
+        }
+        
+        /// <summary>
+        /// 적을 비활성화합니다.</summary>
+        /// <param name="enemy">비활성화할 적 Pawn</param>
+        public void Deactivate(Pawn enemy)
+        {
+            enemy.Deactivate();
+            // TODO: 적 비활성화 로직 구현 필요 + ObjectPooling
+        }
+        
+        // ===== 내부 헬퍼 =====
+        
+        /// <summary>
+        /// ID에 해당하는 적 프리팹을 복제하여 Pawn 컴포넌트를 반환합니다.</summary>
+        /// <param name="id">적 ID</param>
+        /// <returns>생성된 Pawn 컴포넌트</returns>
+        private Pawn ClonePrefab(EnemyID id)
+        {
+            var enemyObject = Instantiate(GetPrefabById(id));
+            var enemy = enemyObject.GetComponent<Pawn>();
+            return enemy;
         }
 
         /// <summary>
-        /// 생성된 적을 비활성화하고 (풀링 개념) 관리합니다.
-        /// </summary>
-        /// <param name="enemyGO">비활성화할 적 GameObject</param>
-        public void DeactivateEnemy(GameObject enemyGO)
+        /// ID에 해당하는 적 프리팹을 반환합니다.</summary>
+        /// <param name="id">적 ID</param>
+        /// <returns>해당하는 GameObject 프리팹</returns>
+        private GameObject GetPrefabById(EnemyID id)
         {
-            if (enemyGO != null)
-            {
-                enemyGO.SetActive(false); // 불명 Active 선언 (비활성화)
-                Debug.Log($"EnemyFactory: Deactivated enemy '{enemyGO.name}'.");
-                // 여기에 풀에 반환하는 로직 추가
-            }
+            // TODO: EnemyID와 prefab 매칭 필요
+            return enemyPrefabs[0];
+            
+            // return id switch
+            // {
+            //     0 => enemyPrefabs[0],
+            //     1 => enemyPrefabs[1],
+            //     // TODO: 더 많은 적 ID 추가 필요
+            //     _ => null
+            // };
         }
     }
-} 
+}

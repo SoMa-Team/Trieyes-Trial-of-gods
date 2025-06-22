@@ -10,7 +10,7 @@ namespace CardSystem
     {
         // ===== [기능 1] 카드 스탯 정보 및 생성 =====
         public Property PropertyType { get; private set; }
-        public List<StatInfo> StatInfos { get; private set; }
+        public StatSheet statSheet;
 
         /// <summary>
         /// CardStat의 새 인스턴스를 초기화합니다.
@@ -20,7 +20,7 @@ namespace CardSystem
         public CardStat(Property property, IntegerStatValue level)
         {
             PropertyType = property;
-            StatInfos = new List<StatInfo>();
+            statSheet = new StatSheet();
             SetStatInfo(property, level);
         }
 
@@ -34,7 +34,6 @@ namespace CardSystem
         private void SetStatInfo(Property property, IntegerStatValue level)
         {
             // 기존 StatInfos를 초기화합니다.
-            StatInfos.Clear();
 
             // 예시: 레벨에 따라 스탯 값을 계산합니다.
             // 실제 게임 디자인에 따라 복잡한 공식이 들어갈 수 있습니다.

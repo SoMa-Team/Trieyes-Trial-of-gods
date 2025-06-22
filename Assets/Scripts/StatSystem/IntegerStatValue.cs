@@ -21,14 +21,14 @@ namespace Stats
         // 최소 스탯 값 (선택 사항)
         public int? minValue;
         // 버프 리스트에 변동이 있는지 확인
-        private bool buffListChanged;
+        private bool modifierListChanged;
         // 기본 값이 변경되었는지 확인
         private bool basicValueChanged;
 
         // 현재 적용된 버프 리스트
-        private StatBuffList activeBuffs = new StatBuffList();
+        private StatModifierList activeModifiers = new StatModifierList();
         // 버프 힙
-        private MinHeap<float> buffHeap = new MinHeap<float>();
+        private MinHeap<float> modifierHeap = new MinHeap<float>();
 
         // --- 생성자 ---
 
@@ -38,7 +38,7 @@ namespace Stats
             basicValue = baseValue;
             maxValue = max;
             minValue = min;
-            buffListChanged = false;
+            modifierListChanged = false;
             basicValueChanged = true;
         }
 
@@ -70,16 +70,16 @@ namespace Stats
          /// 새로운 버프를 추가합니다.
         public void AddBuff(StatModifier modifier)
         {
-            activeBuffs.Add(modifier);
-            if(!modifier.isPermanent) buffHeap.Push(modifier.endTime);
-            buffListChanged = true;
+            activeModifiers.Add(modifier);
+            if(!modifier.isPermanent) modifierHeap.Push(modifier.endTime);
+            modifierListChanged = true;
         }
         /// 모든 버프를 제거합니다.
         public void ClearBuffs()
         {
-            activeBuffs.Clear();
-            buffHeap.Clear();
-            buffListChanged = true;
+            activeModifiers.Clear();
+            modifierHeap.Clear();
+            modifierListChanged = true;
         }
         //외부에서 값을 읽을 때는 항상 GetCurrentValue()가 호출되도록
         public int Value => GetCurrentValue();
@@ -102,7 +102,7 @@ namespace Stats
         /// 기본값과 모든 버프를 고려하여 최종 값을 재계산합니다.
         private void RecalculateValue()
         {
-            currentValue = activeBuffs.CalculateBuff(basicValue);
+            currentValue = activeModifiers.CalculateBuff(basicValue);
             ApplyMinMax();
         }
 
@@ -113,17 +113,17 @@ namespace Stats
             float currentTime = BattleStageManager.Instance.GetTime();
 
             // 만료된 버프를 모두 제거
-            while (!buffHeap.IsEmpty && buffHeap.Peek() < currentTime)
+            while (!modifierHeap.IsEmpty && modifierHeap.Peek() < currentTime)
             {
-                buffHeap.Pop();
-                buffListChanged = true;
+                modifierHeap.Pop();
+                modifierListChanged = true;
             }
 
             // 버프 리스트에 변동이 생겼거나, 기본 값이 변경되었으면 재계산
-            if (buffListChanged||basicValueChanged)
+            if (modifierListChanged||basicValueChanged)
             {
                 RecalculateValue();
-                buffListChanged = false;
+                modifierListChanged = false;
                 basicValueChanged = false;
             }
 

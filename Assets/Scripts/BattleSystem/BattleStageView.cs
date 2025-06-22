@@ -1,8 +1,4 @@
-using System;
-using BattleSystem;
-using CharacterSystem;
 using UnityEngine;
-using Utils;
 
 namespace BattleSystem
 {

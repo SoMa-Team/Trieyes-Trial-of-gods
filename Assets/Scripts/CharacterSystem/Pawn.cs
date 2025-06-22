@@ -43,9 +43,14 @@ namespace CharacterSystem
         // ===== [기능 2] 스탯 시스템 =====
         public Attack basicAttack; // 기본 공격
         public AttackData[] attackDataList; // 여러 공격 데이터
-        public List<AttackComponent> attackComponentList; // 공격 컴포넌트 리스트
-        public List<Relic> relics; // 장착 가능한 유물 리스트
-        public Deck deck; // Pawn이 관리하는 Deck 인스턴스
+        public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
+        public StatSheet statSheet = new(); // 여러 스탯 정보
+        public StatPresetSO statPresetSO;
+        public List<Relic> relics = new(); // 장착 가능한 유물 리스트
+        public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
+
+        // ===== [기능 2] 이벤트 핸들러 관리 =====
+        public abstract void OnEvent(Utils.EventType eventType, object param);
 
         // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
         protected Vector2 moveDirection;
@@ -119,7 +124,18 @@ namespace CharacterSystem
         
         protected virtual void initBaseStat()
         {
-            
+            if(statSheet == null)
+                statSheet = new StatSheet();
+            if(statPresetSO != null)
+                ApplyStatPresetSO(statPresetSO);
+            //TODO : 현재 체력 등 초기화
+        }
+        protected void ApplyStatPresetSO(StatPresetSO preset)
+        {
+            if (preset == null || preset.stats == null) return;
+
+            foreach (var pair in preset.stats)
+                statSheet[pair.type].SetBasicValue(pair.value);
         }
         
         public virtual void Update() 

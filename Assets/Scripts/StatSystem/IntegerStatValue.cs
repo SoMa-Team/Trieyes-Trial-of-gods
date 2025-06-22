@@ -107,10 +107,10 @@ namespace Stats
         }
 
         private int GetCurrentValue(){
-            if(BattleStageManager.Instance == null){
+            if(BattleStage.now == null){
                 throw new Exception("BattleStageManager is not initialized.");
             }
-            float currentTime = BattleStageManager.Instance.GetTime();
+            float currentTime = BattleStage.now.GetTime();
 
             // 만료된 버프를 모두 제거
             while (!modifierHeap.IsEmpty && modifierHeap.Peek() < currentTime)

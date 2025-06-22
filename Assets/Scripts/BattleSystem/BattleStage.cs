@@ -63,5 +63,11 @@ namespace BattleSystem
             enemy.transform.position = spawnPoint.position;
             enemies.Add(enemy);
         }
+
+        public float GetTime()
+        {
+            // TODO: 시간을 계산하는 기능 필요
+            return 0.0f;
+        }
     }
 } 

@@ -21,6 +21,7 @@ namespace CharacterSystem
         public AttackData[] attackDataList; // 여러 공격 데이터
         public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
         public StatSheet statSheet = new(); // 여러 스탯 정보
+        public StatPresetSO statPresetSO;
         public List<Relic> relics = new(); // 장착 가능한 유물 리스트
         public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
 
@@ -53,8 +54,20 @@ namespace CharacterSystem
         }
         protected virtual void initBaseStat()
         {
-            
+            if(statSheet == null)
+                statSheet = new StatSheet();
+            if(statPresetSO != null)
+                ApplyStatPresetSO(statPresetSO);
+            //TODO : 현재 체력 등 초기화
         }
+        protected void ApplyStatPresetSO(StatPresetSO preset)
+        {
+            if (preset == null || preset.stats == null) return;
+
+            foreach (var pair in preset.stats)
+                statSheet[pair.type].SetBasicValue(pair.value);
+        }
+        
         public virtual void Update() 
         {
             IntegerStatValue healthStat = statSheet[StatType.Health];

@@ -27,28 +27,6 @@ namespace CharacterSystem
             base.OnDestroy();
         }
 
-        /// <summary>
-        /// 오브젝트 풀링을 위한 활성화 함수
-        /// </summary>
-        public override void Activate()
-        {
-            base.Activate();
-            Debug.Log("Character001 Activated.");
-        }
-
-        /// <summary>
-        /// 오브젝트 풀링을 위한 비활성화 함수
-        /// </summary>
-        public override void Deactivate()
-        {
-            // Character001 고유 정리 로직
-            experience = 0;
-            gold = 0;
-            
-            base.Deactivate();
-            Debug.Log("Character001 Deactivated.");
-        }
-
         protected override void initBaseStat()
         {
             SetStatValue(StatType.AttackPower, 100);
@@ -82,12 +60,19 @@ namespace CharacterSystem
         // ===== 활성화/비활성화 =====
         public override void Activate()
         {
-            // TODO
+            base.Activate();
+            Debug.Log("Character001 Activated.");
         }
 
+        
         public override void Deactivate()
         {
-            // TODO
+            // Character001 고유 정리 로직
+            experience = 0;
+            gold = 0;
+            
+            base.Deactivate();
+            Debug.Log("Character001 Deactivated.");
         }
     }
 } 

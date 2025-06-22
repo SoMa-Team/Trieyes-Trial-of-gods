@@ -39,7 +39,7 @@ namespace Stats
             if(duration == 0f){
                 throw new ArgumentException("Duration cannot be 0. Use -1 for permanent buff.");
             }
-            if(BattleStageManager.Instance == null){
+            if(BattleStage.now == null){
                 throw new Exception("BattleStageManager is not initialized.");
             }
             this.id = modifierID++;
@@ -47,7 +47,7 @@ namespace Stats
             this.operationType = operationType;
             this.canStack = canStack;
             this.isPermanent = duration < 0f;
-            this.endTime = this.isPermanent ? float.MaxValue : BattleStageManager.Instance.GetTime() + duration;
+            this.endTime = this.isPermanent ? float.MaxValue : BattleStage.now.GetTime() + duration;
         }
 
         // --- 메서드 ---
@@ -57,7 +57,7 @@ namespace Stats
         /// </summary>
         public bool IsExpired()
         {
-            return !isPermanent && BattleStageManager.Instance.GetTime() >= endTime;
+            return !isPermanent && BattleStage.now.GetTime() >= endTime;
         }
     }
 }

@@ -20,14 +20,7 @@ namespace CardActions
         /// <returns>생성된 CardAction 인스턴스 (ID에 해당하는 액션이 없으면 null 반환)</returns>
         public CardAction GetAction(int cardActionId)
         {
-            switch (cardActionId)
-            {
-                case 1:
-                    return new CardAction001(cardActionId);
-                default:
-                    Debug.LogWarning($"CardAction with ID {cardActionId} not found.");
-                    return null;
-            }
+            return null;
         }
     }
 } 

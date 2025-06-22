@@ -13,6 +13,19 @@ namespace CombatSystem
 
         private void Awake()
         {
+            Activate();
+        }
+
+        private void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
             if (Instance == null)
             {
                 Instance = this;
@@ -21,6 +34,25 @@ namespace CombatSystem
             else
             {
                 Destroy(gameObject);
+            }
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            // 모든 캐릭터 정리
+            DeactivateAllCharacters();
+            
+            // 리스트 초기화
+            activeCharacters.Clear();
+            inactiveCharacters.Clear();
+            
+            // 싱글톤 참조 정리
+            if (Instance == this)
+            {
+                Instance = null;
             }
         }
 

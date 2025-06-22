@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Utils;
-using Stats;
 
 namespace RelicSystem
 {
@@ -18,35 +17,22 @@ namespace RelicSystem
         }
 
         // ===== [기능 2] 이벤트 처리 =====
-        public override void OnEvent(EventType eventType, object param)
+        public override void OnEvent(Utils.EventType eventType, object param)
         {
-            switch (eventType)
-            {
-                case EventType.OnLevelUp:
-                    // 레벨업 시 효과
-                    break;
-                case EventType.OnStatChange:
-                    // 스탯 변경 시 효과
-                    break;
-                // 기타 이벤트별 동작 추가
-            }
-        }
+            base.OnEvent(eventType, param); // 부모 클래스의 OnEvent 호출
 
-        private void OnLevelUpHandler(object param)
-        {
-            // 레벨업 시 공격력 증가
-            if (param is int level)
+            if (eventType == Utils.EventType.OnLevelUp)
             {
-                // AttackData의 스탯 수정 로직
+                // 레벨업 시 공격력 증가
+                if (param is int level)
+                {
+                    // AttackData의 스탯 수정 로직
+                }
             }
-        }
-
-        private void OnStatChangeHandler(object param)
-        {
-            // 스탯 변경 시 추가 효과
-            if (param is StatInfo statInfo)
+            
+            if (eventType == Utils.EventType.OnStatChange)
             {
-                // 스탯 수정 로직
+                // 스탯 변경 시 추가 효과
             }
         }
     }

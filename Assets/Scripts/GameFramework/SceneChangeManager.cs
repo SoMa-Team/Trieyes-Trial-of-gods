@@ -11,6 +11,19 @@ namespace GameFramework
         public object dataToPass;
         private void Awake()
         {
+            Activate();
+        }
+
+        private void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
             if (Instance == null)
             {
                 Instance = this;
@@ -19,6 +32,21 @@ namespace GameFramework
             else
             {
                 Destroy(gameObject);
+            }
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            // 데이터 정리
+            dataToPass = null;
+            
+            // 싱글톤 참조 정리
+            if (Instance == this)
+            {
+                Instance = null;
             }
         }
         public object GetData()

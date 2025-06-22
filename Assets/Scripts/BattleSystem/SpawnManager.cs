@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using System.Collections.Generic;
 using Utils;
 using CharacterSystem;
 
@@ -19,9 +17,9 @@ namespace BattleSystem
         public GameObject[] spawnPoints;
         
         // ===== 내부 상태 =====
-        private bool isActivate = false;
-        private Difficulty difficulty;
-        private float elapsedTime;
+        private bool _isActivate = false;
+        private Difficulty _difficulty;
+        private float _elapsedTime;
 
         // ===== 초기화 =====
         
@@ -50,17 +48,17 @@ namespace BattleSystem
         /// <param name="difficulty">스폰 난이도 설정</param>
         public void Activate(Difficulty difficulty)
         {
-            isActivate = true;
-            this.difficulty = difficulty;
-            elapsedTime = 0f;
+            _isActivate = true;
+            this._difficulty = difficulty;
+            _elapsedTime = 0f;
         }
         
         /// <summary>
         /// 스폰 매니저를 비활성화합니다.</summary>
         public void Deactivate()
         {
-            isActivate = false;
-            difficulty = null;
+            _isActivate = false;
+            _difficulty = null;
         }
         
         // ===== 스폰 로직 =====
@@ -69,20 +67,20 @@ namespace BattleSystem
         /// 매 프레임마다 스폰 조건을 확인하고 적을 생성합니다.</summary>
         private void Update()
         {
-            if (!isActivate)
+            if (!_isActivate)
                 return;
             
-            elapsedTime += Time.deltaTime;
+            _elapsedTime += Time.deltaTime;
 
-            if (elapsedTime >= difficulty.SpawnInterval)
+            if (_elapsedTime >= _difficulty.SpawnInterval)
             {
-                var spawnCount = (int)(elapsedTime / difficulty.SpawnInterval); 
-                elapsedTime %= difficulty.SpawnInterval;
+                var spawnCount = (int)(_elapsedTime / _difficulty.SpawnInterval); 
+                _elapsedTime %= _difficulty.SpawnInterval;
 
                 for (int i = 0; i < spawnCount; i++)
                 {
                     var spawnPoint = GetRandomSpawnPoint();
-                    var enemy = spawnEnemy();
+                    var enemy = SpawnEnemy();
                     BattleStage.now.AttachEnemy(enemy, spawnPoint.transform);
                 }
             }
@@ -102,9 +100,9 @@ namespace BattleSystem
         /// <summary>
         /// 난이도에 따라 적을 생성합니다.</summary>
         /// <returns>생성된 적 Pawn</returns>
-        private Pawn spawnEnemy()
+        private Pawn SpawnEnemy()
         {
-            var enemy = EnemyFactory.Instance.Create(difficulty.EnemyID);
+            var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
             return enemy;
         }
     }

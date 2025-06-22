@@ -1,9 +1,6 @@
 using System;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Diagnostics;
 using CharacterSystem;
-using UnityEngine.TextCore.Text;
 using Debug = UnityEngine.Debug;
 
 namespace BattleSystem

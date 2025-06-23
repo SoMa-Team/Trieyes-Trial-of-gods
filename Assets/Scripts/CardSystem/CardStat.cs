@@ -11,12 +11,7 @@ namespace CardSystem
         // ===== [기능 1] 카드 스탯 정보 및 생성 =====
         public StatSheet statSheet;
 
-        /// <summary>
-        /// CardStat의 새 인스턴스를 초기화합니다.
-        /// </summary>
-        /// <param name="property">이 CardStat이 대표하는 속성</param>
-        /// <param name="level">이 CardStat의 레벨. IntegerStatValue 타입.</param>
-        public CardStat(List<Property> properties, IntegerStatValue level)
+        public CardStat(Property[] properties, int level)
         {
             statSheet = new StatSheet();
             foreach(var property in properties){
@@ -25,8 +20,9 @@ namespace CardSystem
         }
 
         // ===== [기능 2] 속성과 레벨에 따른 스탯 추가=====
-        public void AddStat(Property property, IntegerStatValue level){
+        public void AddStat(Property property, int level){
             //TODO: 속성과 레벨에 따라 스탯 시트에 스탯을 추가하는 로직 구현
+            //아래는 임시 로직
             switch(property){
                 case Property.Attack:
                     statSheet[StatType.AttackPower].AddToBasicValue(level*10);

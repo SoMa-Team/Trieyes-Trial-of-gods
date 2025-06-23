@@ -15,6 +15,8 @@ namespace CardActions
         [Header("Action Info")]
         public int cardId;
         public Property[] properties;
+        public Rarity rarity;
+        public string cardName;
         public HashSet<Utils.EventType> EventTypes { get; protected set; } = new();//해당 카드 액션이 반응하는 이벤트 타입
         [System.NonSerialized] public string cardDescription;
 

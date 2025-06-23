@@ -10,7 +10,7 @@ namespace CardActions
     /// 카드 액션의 기본 동작을 정의하는 추상 클래스입니다.
     /// 모든 구체적인 카드 액션은 이 클래스를 상속받아 고유한 OnEvent 로직을 구현해야 합니다.
     /// </summary>
-    public abstract class CardAction : MonoBehaviour, IEventHandler
+    public abstract class CardAction : IEventHandler
     {
         [Header("Action Info")]
         public int cardId;

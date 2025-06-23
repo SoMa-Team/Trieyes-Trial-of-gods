@@ -52,6 +52,7 @@ namespace Utils
         OnDefend,             // 공격 방어 시 호출되는 이벤트
         OnHit,                // 피격 이벤트
         OnCardPurchase,       // 상점에서 카드 구매시 발동하는 이벤트
+        OnCardRemove,         // 덱에서 카드 제거시 발동하는 이벤트
     }
 
     /// <summary>

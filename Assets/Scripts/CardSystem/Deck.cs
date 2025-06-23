@@ -78,62 +78,67 @@ namespace CardSystem
         }
 
         // ===== [기능 4] 이벤트 처리 =====
-        public virtual void OnEvent(Utils.EventType eventType, object param)
+        public void OnEvent(Utils.EventType eventType, object param)
         {
             Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) received {eventType} event</color>");
-            
-            if (eventType == Utils.EventType.OnBattleStart)
-            {
-                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnBattleStart</color>");
-                // 1. 카드 호출 순서 계산
-                CalcActionInitOrder();
-                
-                // 2. 계산된 순서대로 카드 액션 초기화 (기본 스탯은 보존)
-                CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
-            }
-            
-            if (eventType == Utils.EventType.OnBattleEnd)
-            {
-                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnBattleEnd</color>");
-                // 전투 종료 시 덱 상태 초기화
-                if (cardCallOrder == null)
-                {
-                    cardCallOrder = new List<int>();
-                }
-                else
-                {
-                    cardCallOrder.Clear();
-                }
-                cardCallCounts = new List<int>(new int[cards.Count]); // 0으로 초기화
 
-                // 전투 종료 시 모든 버프 제거 (기본 스탯은 보존)
-                if (owner != null)
-                {
-                    foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
+            switch(eventType){
+                case Utils.EventType.OnBattleStart:
+                    Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnBattleStart</color>");
+                    CalcActionInitOrder();
+                    CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
+                    break;
+                case Utils.EventType.OnBattleEnd:
+                    Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnBattleEnd</color>");
+                    if (cardCallOrder == null)
                     {
-                        owner.statSheet[statType].ClearBuffs();
+                        cardCallOrder = new List<int>();
                     }
-                }
-            }
-            
-            if (eventType == Utils.EventType.OnCardPurchase)
-            {
-                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnCardPurchase</color>");
-                // 카드 구매 시 덱에 추가
-                if (param is Card newCard)
-                {
-                    AddCard(newCard);
-                }
-            }
+                    else
+                    {
+                        cardCallOrder.Clear();
+                    }
+                    cardCallCounts = new List<int>(new int[cards.Count]);
+                    if (owner != null)
+                    {
+                        foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
+                        {
+                            owner.statSheet[statType].ClearBuffs();
+                        }
+                    }
+                    break;
+                case Utils.EventType.OnCardPurchase:
+                    Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnCardPurchase</color>");
+                    if (param is Card newCard)
+                    {
+                        AddCard(newCard);
+                    }
+                    break;
+                case Utils.EventType.OnCardRemove:
+                    Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnCardRemove</color>");
+                    if (param is Card removedCard)
+                    {
+                        RemoveCard(removedCard);
+                    }
+                    break;
+                default://dictionary에 해당 이벤트가 있는지 확인하고, 있을 때에만 전파하는 최적화 로직을 구현
+                    if (eventTypeCount != null && !eventTypeCount.ContainsKey(eventType))
+                    {
+                        Debug.Log($"<color=grey>[DECK] {owner?.gameObject.name}: No card reacts to {eventType}, skipping.</color>");
+                        return;
+                    }
 
-            else
-            {
-                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) -> Processing {eventType} for {cards.Count} cards</color>");
-                foreach (var card in cards)
-                {
-                    Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) -> Card {card.cardAction.GetType().Name} processing {eventType}</color>");
-                    card.cardAction.OnEvent(eventType, param);
-                }
+                    Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} -> Processing {eventType} for {cards.Count} cards</color>");
+                    foreach (var card in cards)
+                    {
+                        // 이 카드의 액션이 해당 이벤트에 반응하는 경우에만 호출!
+                        if (card.cardAction != null && card.cardAction.EventTypes.Contains(eventType))
+                        {
+                            Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} -> Card {card.cardAction.GetType().Name} processing {eventType}</color>");
+                            card.cardAction.OnEvent(eventType, param);
+                        }
+                    }
+                    break;
             }
         }
 
@@ -262,7 +267,7 @@ namespace CardSystem
                     cards[cardIndex].cardAction.OnEvent(eventType, param);
                     if (owner != null)
                     {
-                        Debug.Log($"<color=white>After Card[{cardIndex}] ({cards[cardIndex].cardName}): " +
+                        Debug.Log($"<color=white>After Card[{cardIndex}] ({cards[cardIndex].cardAction.cardName}): " +
                                   $"ATK={owner.statSheet[StatType.AttackPower].Value}, " +
                                   $"DEF={owner.statSheet[StatType.Defense].Value}</color>");
                     }

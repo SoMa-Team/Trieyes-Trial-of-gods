@@ -13,6 +13,7 @@ namespace CardActions
     {
         [Header("Action Info")]
         public int cardId;
+        public HashSet<Utils.EventType> EventTypes { get; protected set; } = new();//해당 카드 액션이 반응하는 이벤트 타입
         [System.NonSerialized] public string cardDescription;
 
         protected Pawn owner; // 카드 액션의 소유자 (Pawn)
@@ -40,13 +41,13 @@ namespace CardActions
 
         public virtual void Activate()
         {
-            // Activate logic, e.g., subscribing to events
-        }
+            
+        }//허위 클래스에서 해당 메소드를 오버라이드하여 활성화로직을 구현합니다.
 
         public virtual void Deactivate()
         {
-            // Deactivate logic, e.g., unsubscribing from events
-        }
+            
+        }//허위 클래스에서 해당 메소드를 오버라이드하여 활성화로직을 구현합니다.
 
         // ===== [기능 3] 이벤트 처리(추상) =====
         /// <summary>

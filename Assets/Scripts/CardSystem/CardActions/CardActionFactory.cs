@@ -14,19 +14,19 @@ namespace CardActions
     /// </summary>
     public class CardActionFactory : MonoBehaviour, IFactory<CardAction>
     {
-        public static CardActionFactory instance { private set; get; }
+        public static CardActionFactory Instance { private set; get; } //싱글톤은 첫문자 대문자로 한다길래 이렇게 일단 했습니다.
 
         public List<GameObject> cardPrefabs;
 
         private void Awake()
         {
-            if (instance is not null)
+            if (Instance is not null)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            instance = this;
+            Instance = this;
         }
 
         /// <summary>
@@ -64,6 +64,11 @@ namespace CardActions
         private CardAction ClonePrefab(CardActionID actionId)
         {
             var prefab = Instantiate(GetPrefabById(actionId));
+            if (prefab == null)
+            {
+                Debug.LogWarning($"프리팹이 null입니다. actionId={actionId}");
+                return null;
+            }
             var action = prefab.GetComponent<CardAction>();
             if (action == null)
             {
@@ -78,6 +83,11 @@ namespace CardActions
         private GameObject GetPrefabById(CardActionID actionId)
         {
             //임시 actionID를 인덱스로 사용하여 반환
+            if (actionId < 0 || actionId >= cardPrefabs.Count)
+            {
+                Debug.LogWarning($"유효하지 않은 actionId: {actionId}");
+                return null;
+            }
             return cardPrefabs[actionId];
         }
     }

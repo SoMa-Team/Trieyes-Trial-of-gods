@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Utils; // For IEventHandler and EventType
 using UnityEngine;
 using CharacterSystem;
+using CardSystem;
 
 namespace CardActions
 {
@@ -13,6 +14,7 @@ namespace CardActions
     {
         [Header("Action Info")]
         public int cardId;
+        public Property[] properties;
         public HashSet<Utils.EventType> EventTypes { get; protected set; } = new();//해당 카드 액션이 반응하는 이벤트 타입
         [System.NonSerialized] public string cardDescription;
 

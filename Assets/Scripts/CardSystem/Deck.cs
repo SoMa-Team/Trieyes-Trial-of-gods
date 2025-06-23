@@ -3,14 +3,13 @@ using Utils;
 using CharacterSystem;
 using Stats;
 using UnityEngine;
-
 namespace CardSystem
 {
     /// <summary>
     /// 카드 덱을 관리하는 클래스입니다.
     /// 덱은 자체적으로 이벤트를 등록하고 처리할 수 있는 IEventHandler를 구현합니다.
     /// </summary>
-    public class Deck : MonoBehaviour, IEventHandler
+    public class Deck : IEventHandler
     {
         [Header("Deck Setup")]
         [SerializeField] private List<Card> cards;
@@ -18,6 +17,7 @@ namespace CardSystem
 
         private Pawn owner;
         private bool isPersistent;
+        private Dictionary<Utils.EventType, int> eventTypeCount = new();//이벤트 타입별 해당 이벤트를 갖고 있는 카드의 개수
         
         // ===== [기능 3] 카드 호출 순서 관리 =====
         private List<int> cardCallCounts;
@@ -32,7 +32,7 @@ namespace CardSystem
             // 프리팹에서 설정한 카드들에 owner 참조 설정
             foreach (var card in cards)
             {
-                card?.Initialize(owner);
+                card?.SetOwner(owner);
             }
             
             // 전투 관련 상태만 초기화 (카드 리스트는 보존)
@@ -143,15 +143,31 @@ namespace CardSystem
             if (card != null)
             {
                 cards.Add(card);
-                card.Initialize(owner);
+                card.SetOwner(owner);
+                foreach (var evt in card.cardAction.EventTypes)
+                {
+                    if (eventTypeCount.ContainsKey(evt))
+                        eventTypeCount[evt]++;
+                    else
+                        eventTypeCount[evt] = 1;
+                }
             }
         }
 
         public void RemoveCard(Card card)
         {
-            if (card != null)
+            if (card != null && cards.Remove(card))
             {
-                cards.Remove(card);
+                foreach (var evt in card.cardAction.EventTypes)
+                {
+                    if (eventTypeCount.TryGetValue(evt, out int count))
+                    {
+                        if (count <= 1)
+                            eventTypeCount.Remove(evt);
+                        else
+                            eventTypeCount[evt] = count - 1;
+                    }
+                }
             }
         }
 

@@ -1,26 +1,84 @@
 using CardActions;
-using Utils; // For EventType
-using UnityEngine; // For Debug.LogWarning
+using System.Collections.Generic;
+using Utils;
+using UnityEngine;
+using System;
 
 namespace CardActions
 {
-    // --- CardActionFactory 클래스 ---
+    using CardActionID = Int32;
+
     /// <summary>
     /// 다양한 CardAction 인스턴스를 생성하는 팩토리 클래스입니다.
     /// 각 CardAction은 특정 게임 이벤트에 반응하는 고유한 로직을 캡슐화합니다.
     /// </summary>
-    public class CardActionFactory : MonoBehaviour
+    public class CardActionFactory : MonoBehaviour, IFactory<CardAction>
     {
-        // ===== [기능 1] CardAction 생성 =====
-        /// <summary>
-        /// 주어진 카드 액션 ID에 해당하는 CardAction 인스턴스를 생성하여 반환합니다.
-        /// 이 메서드는 게임 내에서 특정 카드 액션이 필요할 때 호출됩니다.
-        /// </summary>
-        /// <param name="cardActionId">생성할 카드 액션의 고유 ID</param>
-        /// <returns>생성된 CardAction 인스턴스 (ID에 해당하는 액션이 없으면 null 반환)</returns>
-        public CardAction GetAction(int cardActionId)
+        public static CardActionFactory instance { private set; get; }
+
+        public List<GameObject> cardPrefabs;
+
+        private void Awake()
         {
-            return null;
+            if (instance is not null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+        }
+
+        /// <summary>
+        /// CardActionID에 해당하는 CardAction을 생성합니다.
+        /// </summary>
+        public CardAction Create(CardActionID actionId)
+        {
+            var action = ClonePrefab(actionId);
+            Activate(action);
+            return action;
+        }
+
+        /// <summary>
+        /// CardAction을 활성화합니다.
+        /// </summary>
+        public void Activate(CardAction action)
+        {
+            Debug.Log($"CardAction activated! {action}");
+            action.Activate();
+            // TODO: 풀링 등 추가
+        }
+
+        /// <summary>
+        /// CardAction을 비활성화합니다.
+        /// </summary>
+        public void Deactivate(CardAction action)
+        {
+            action.Deactivate();
+            // TODO: 풀링 등 추가
+        }
+
+        /// <summary>
+        /// 프리팹 복제 및 CardAction 컴포넌트 반환
+        /// </summary>
+        private CardAction ClonePrefab(CardActionID actionId)
+        {
+            var prefab = Instantiate(GetPrefabById(actionId));
+            var action = prefab.GetComponent<CardAction>();
+            if (action == null)
+            {
+                Debug.LogWarning($"CardAction 컴포넌트가 프리팹에 없습니다. actionId={actionId}");
+            }
+            return action;
+        }
+
+        /// <summary>
+        /// ID에 맞는 카드 액션 프리팹 반환
+        /// </summary>
+        private GameObject GetPrefabById(CardActionID actionId)
+        {
+            //임시 actionID를 인덱스로 사용하여 반환
+            return cardPrefabs[actionId];
         }
     }
-} 
+}

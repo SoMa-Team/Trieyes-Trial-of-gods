@@ -38,6 +38,16 @@ namespace CardActions
             }
         }
 
+        public virtual void Activate()
+        {
+            // Activate logic, e.g., subscribing to events
+        }
+
+        public virtual void Deactivate()
+        {
+            // Deactivate logic, e.g., unsubscribing from events
+        }
+
         // ===== [기능 3] 이벤트 처리(추상) =====
         /// <summary>
         /// 이벤트를 처리하는 추상 메서드입니다.

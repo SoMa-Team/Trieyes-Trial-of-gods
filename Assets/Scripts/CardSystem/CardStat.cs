@@ -16,12 +16,15 @@ namespace CardSystem
         /// </summary>
         /// <param name="property">이 CardStat이 대표하는 속성</param>
         /// <param name="level">이 CardStat의 레벨. IntegerStatValue 타입.</param>
-        public CardStat(Property property, IntegerStatValue level)
+        public CardStat(List<Property> properties, IntegerStatValue level)
         {
             statSheet = new StatSheet();
+            foreach(var property in properties){
+                AddStat(property, level);
+            }
         }
 
-        // ===== [기능 2] 스탯 정보 설정 =====
+        // ===== [기능 2] 속성과 레벨에 따른 스탯 추가=====
         public void AddStat(Property property, IntegerStatValue level){
             //TODO: 속성과 레벨에 따라 스탯 시트에 스탯을 추가하는 로직 구현
             switch(property){

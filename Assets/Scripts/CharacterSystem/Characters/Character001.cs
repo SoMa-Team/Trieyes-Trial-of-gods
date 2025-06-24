@@ -9,12 +9,12 @@ namespace CharacterSystem
     {
         // ===== [기능 1] 고유 필드 =====
         public int experience = 0;
-        public int gold = 0;
 
         // ===== [기능 2] 초기화 및 스탯 =====
         protected override void Awake()
         {
             base.Awake();
+            this.gold = 1000;
         }
 
         protected override void Start()
@@ -25,15 +25,6 @@ namespace CharacterSystem
         protected override void OnDestroy()
         {
             base.OnDestroy();
-        }
-
-        protected override void initBaseStat()
-        {
-            SetStatValue(StatType.AttackPower, 100);
-            SetStatValue(StatType.Defense, 100);
-            SetStatValue(StatType.Health, 100);
-            SetStatValue(StatType.CriticalRate, 5);
-            SetStatValue(StatType.CriticalDamage, 150);
         }
 
         // ===== [기능 3] 이벤트 처리 =====

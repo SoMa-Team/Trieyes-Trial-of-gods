@@ -63,7 +63,7 @@ namespace CardActions
         {
             if (param is int currentCardIndex)
             {
-                if (deck.Cards.Count <= 1)
+                if (deck.GetCurrentDeckSize() <= 1)
                 {
                     Debug.Log("<color=yellow>[CardAction003] Only one card in deck, no effect</color>");
                     return;
@@ -73,14 +73,13 @@ namespace CardActions
                 List<int> cardsToAppend = new List<int>();
                 List<int> callOrder = deck.GetCallOrder(); // Deck의 호출 순서 리스트 참조를 가져옵니다.
             
-                for (int i = 0; i < deck.Cards.Count; i++)
+                for (int i = 0; i < deck.GetCurrentDeckSize(); i++)
                 {
                     if (i != currentCardIndex) // 자기 자신 제외
                     {
                         cardsToAppend.Add(i);
                     }
                 }
-
                 // 기존 순서에 덧붙여서 리스트를 직접 수정합니다.
                 callOrder.AddRange(cardsToAppend);
             

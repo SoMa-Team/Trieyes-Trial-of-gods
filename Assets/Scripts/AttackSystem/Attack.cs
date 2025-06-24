@@ -134,7 +134,7 @@ namespace AttackSystem
             }
             
             // CardAction에서 AttackComponent 추가 (덱의 카드들)
-            foreach (var card in attacker.deck.Cards)
+            foreach (var card in attacker.deck.GetCards())
             {
                 if (card?.cardAction != null)
                 {

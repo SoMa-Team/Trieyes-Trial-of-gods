@@ -10,14 +10,40 @@ namespace CardSystem
     /// 카드 덱을 관리하는 클래스입니다.
     /// 덱은 자체적으로 이벤트를 등록하고 처리할 수 있는 IEventHandler를 구현합니다.
     /// </summary>
-    public class Deck : MonoBehaviour, IEventHandler
+    public class Deck : IEventHandler
     {
-        [Header("Deck Setup")]
-        [SerializeField] private List<Card> cards;
-        public IReadOnlyList<Card> Cards => cards;
-
         private Pawn owner;
         private bool isPersistent;
+        private List<Card> cards = new List<Card>();
+
+        public List<Card> GetCards()
+        {
+            return cards;
+        }
+
+        // ===== [기능 1] 덱의 기본 정보 =====
+        private int maxDeckSize = 5;
+        private int currentDeckSize = 0;
+
+        public int GetMaxDeckSize()
+        {
+            return maxDeckSize;
+        }
+
+        public void SetMaxDeckSize(int size)
+        {
+            maxDeckSize = size;
+        }
+
+        public int GetCurrentDeckSize()
+        {
+            return currentDeckSize;
+        }
+
+        public void SetCurrentDeckSize(int size)
+        {
+            currentDeckSize = size;
+        }
         
         // ===== [기능 3] 카드 호출 순서 관리 =====
         private List<int> cardCallCounts;

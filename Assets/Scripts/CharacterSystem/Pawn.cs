@@ -9,6 +9,7 @@ using CardSystem;
 using CardActions;
 using System.Linq;
 using System;
+using System.IO.Compression;
 
 namespace CharacterSystem
 {
@@ -24,8 +25,9 @@ namespace CharacterSystem
         public float moveSpeed = 5f;
         
         [Header("Components")]
+        public SpriteRenderer spriteRenderer;
         public Rigidbody2D rb;
-        public BoxCollider2D boxCollider;
+        public CapsuleCollider2D capsuleCollider;
         public Animator animator;
         
         [Header("Stats")]
@@ -50,7 +52,6 @@ namespace CharacterSystem
 
         // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
         protected Vector2 moveDirection;
-        [SerializeField] protected SpriteRenderer spriteRenderer;
         protected string currentAnimationState;
         protected const string IDLE_ANIM = "Idle";
         protected const string WALK_ANIM = "Walk";
@@ -78,9 +79,9 @@ namespace CharacterSystem
         public virtual void Activate()
         {
             // 컴포넌트 초기화
-            rb = GetComponent<Rigidbody2D>();
-            boxCollider = GetComponent<BoxCollider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
+            rb = GetComponent<Rigidbody2D>();
+            capsuleCollider = GetComponent<CapsuleCollider2D>();
             animator = GetComponent<Animator>();
             
             // 스탯 시트 초기화
@@ -96,7 +97,7 @@ namespace CharacterSystem
             {
                 // Deck이 할당되지 않은 경우 경고를 표시하고, 빈 Deck을 생성합니다.
                 Debug.LogWarning($"<color=yellow>[PAWN] {gameObject.name}에 Deck이 할당되지 않았습니다. Inspector에서 Deck을 할당해주세요. 임시로 빈 Deck을 생성합니다.</color>");
-                deck = gameObject.AddComponent<Deck>();
+                deck = new Deck();
                 deck.Initialize(this, true);
             }
             
@@ -113,25 +114,35 @@ namespace CharacterSystem
             
             // 리스트 초기화
             if (attackComponentList != null)
+            {
                 attackComponentList.Clear();
+            }
             if (relics != null)
+            {
                 relics.Clear();
+            }
         }
         
-        protected virtual void initBaseStat()
+        protected void initBaseStat()
         {
             if(statSheet == null)
-                statSheet = new StatSheet();
+            {
+                throw new Exception("statSheet is null");
+            }
             if(statPresetSO != null)
+            {
                 ApplyStatPresetSO(statPresetSO);
-            //TODO : 현재 체력 등 초기화
+            }
         }
         protected void ApplyStatPresetSO(StatPresetSO preset)
         {
             if (preset == null || preset.stats == null) return;
 
             foreach (var pair in preset.stats)
+            {
                 statSheet[pair.type].SetBasicValue(pair.value);
+                Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
+            }
         }
         
         public virtual void Update() 
@@ -451,7 +462,7 @@ namespace CharacterSystem
             Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             ChangeAnimationState("Die"); 
             if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
-            if (boxCollider != null) boxCollider.enabled = false; 
+            if (capsuleCollider != null) capsuleCollider.enabled = false; 
             Destroy(gameObject, 2f);
         }
 

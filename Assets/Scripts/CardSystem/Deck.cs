@@ -61,6 +61,25 @@ namespace CardSystem
                 card?.Initialize(owner);
             }
             
+            // 기존 카드들의 이벤트를 owner의 cardAcceptedEvents에 등록
+            if (owner != null)
+            {
+                foreach (var card in cards)
+                {
+                    if (card?.cardAction != null)
+                    {
+                        var cardEvents = card.cardAction.GetAcceptedEvents();
+                        if (cardEvents != null)
+                        {
+                            foreach (var eventType in cardEvents)
+                            {
+                                owner.GetCardAcceptedEvents().Add(eventType);
+                            }
+                        }
+                    }
+                }
+            }
+            
             // 전투 관련 상태만 초기화 (카드 리스트는 보존)
             Clear();
             
@@ -98,6 +117,12 @@ namespace CardSystem
             else
             {
                 cardCallOrder.Clear();
+            }
+
+            // Owner 카드 이벤트 초기화
+            if (owner != null)
+            {
+                owner.ClearCardAcceptedEvents();
             }
             
             maxIterations = cards.Count * 100;
@@ -170,6 +195,20 @@ namespace CardSystem
             {
                 cards.Add(card);
                 card.Initialize(owner);
+                
+                // 카드의 이벤트 셋을 owner의 cardAcceptedEvents에 합치기
+                if (owner != null && card.cardAction != null)
+                {
+                    var cardEvents = card.cardAction.GetAcceptedEvents();
+                    if (cardEvents != null)
+                    {
+                        foreach (var eventType in cardEvents)
+                        {
+                            owner.GetCardAcceptedEvents().Add(eventType);
+                        }
+                        Debug.Log($"<color=cyan>[DECK] {owner.gameObject.name} added card events from {card.cardAction.GetType().Name}</color>");
+                    }
+                }
             }
         }
 
@@ -178,6 +217,18 @@ namespace CardSystem
             if (card != null)
             {
                 cards.Remove(card);
+                if (owner != null && card.cardAction != null)
+                {
+                    var cardEvents = card.cardAction.GetAcceptedEvents();
+                    if (cardEvents != null)
+                    {
+                        foreach (var eventType in cardEvents)
+                        {
+                            owner.GetCardAcceptedEvents().Remove(eventType);
+                        }
+                        Debug.Log($"<color=cyan>[DECK] {owner.gameObject.name} removed card events from {card.cardAction.GetType().Name}</color>");
+                    }
+                }
             }
         }
 

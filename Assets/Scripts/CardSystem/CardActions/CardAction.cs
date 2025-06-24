@@ -15,6 +15,9 @@ namespace CardActions
         public int cardId;
         [System.NonSerialized] public string cardDescription;
 
+        [Header("Event Filtering")]
+        public List<Utils.EventType> acceptedEvents = new List<Utils.EventType>();
+
         protected Pawn owner; // 카드 액션의 소유자 (Pawn)
         protected CardSystem.Deck deck; // 덱 참조 (카드 호출 순서 조정용)
 
@@ -67,6 +70,17 @@ namespace CardActions
         public virtual List<AttackComponents.AttackComponent> GetAttackComponents()
         {
             return null; // 기본적으로는 AttackComponent를 제공하지 않음
+        }
+
+        // ===== [기능 5] 이벤트 필터링 =====
+        /// <summary>
+        /// 이 카드 액션이 받을 이벤트 목록을 반환합니다.
+        /// 기본적으로는 빈 HashSet을 반환하며, 하위 클래스에서 오버라이드하여 구현합니다.
+        /// </summary>
+        /// <returns>받을 이벤트들의 HashSet</returns>
+        public virtual HashSet<Utils.EventType> GetAcceptedEvents()
+        {
+            return new HashSet<Utils.EventType>(acceptedEvents);
         }
     }
 } 

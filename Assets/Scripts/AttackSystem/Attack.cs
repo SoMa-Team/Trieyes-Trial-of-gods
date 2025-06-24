@@ -66,6 +66,28 @@ namespace AttackSystem
 
         // ===== [기능 4] 투사체 초기화 =====
         /// <summary>
+        /// Attack 컴포넌트를 초기화합니다. Pawn에서 호출됩니다.
+        /// </summary>
+        /// <param name="attacker">공격자</param>
+        public virtual void Initialize(Pawn attacker)
+        {
+            this.attacker = attacker;
+            
+            // 컴포넌트 초기화
+            rb = GetComponent<Rigidbody2D>();
+            attackCollider = GetComponent<Collider2D>();
+
+            // attacker의 스탯 정보를 기반으로 공격 데이터 초기화
+            // attackData = new AttackData(attacker.statSheet);
+            
+            // 기본 AttackComponent들 초기화
+            var existingComponents = GetComponents<AttackComponent>();
+            components.AddRange(existingComponents);
+            
+            Debug.Log($"<color=blue>[ATTACK] {gameObject.name} initialized for {attacker?.gameObject.name}</color>");
+        }
+
+        /// <summary>
         /// 투사체를 초기화합니다.
         /// </summary>
         /// <param name="attacker">공격자</param>
@@ -404,7 +426,7 @@ namespace AttackSystem
                 default:
                     // 기본 이벤트 처리
                     break;
-        }
+            }
         }
     }
 } 

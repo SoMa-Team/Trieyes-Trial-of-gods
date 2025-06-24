@@ -12,7 +12,7 @@ namespace RelicSystem
     public abstract class Relic : IEventHandler
     {
         // ===== [기능 1] 유물 정보 및 생성 =====
-        public RelicInfo info;
+        protected RelicInfo info;
         protected Pawn owner; // 유물의 소유자 (Pawn)
         
         public Relic(RelicInfo info)
@@ -28,6 +28,16 @@ namespace RelicSystem
         public void SetOwner(Pawn pawn)
         {
             owner = pawn;
+        }
+
+        public RelicInfo GetInfo()
+        {
+            return info;
+        }
+
+        public List<Utils.EventType> GetEventType()
+        {
+            return info.acceptedEvents;
         }
 
         // ===== [기능 3] 이벤트 처리 =====
@@ -75,6 +85,21 @@ namespace RelicSystem
         public virtual List<AttackComponents.AttackComponent> GetAttackComponents()
         {
             return null; // 기본적으로는 AttackComponent를 제공하지 않음
+        }
+
+        // ===== [기능 6] 이벤트 필터링 =====
+        /// <summary>
+        /// 이 유물이 받을 이벤트 목록을 반환합니다.
+        /// 기본적으로는 빈 HashSet을 반환하며, 하위 클래스에서 오버라이드하여 구현합니다.
+        /// </summary>
+        /// <returns>받을 이벤트들의 HashSet</returns>
+        public virtual HashSet<Utils.EventType> GetAcceptedEvents()
+        {
+            if (info != null && info.acceptedEvents != null)
+            {
+                return new HashSet<Utils.EventType>(info.acceptedEvents);
+            }
+            return new HashSet<Utils.EventType>(); // 기본적으로는 모든 이벤트를 받지 않음
         }
     }
 } 

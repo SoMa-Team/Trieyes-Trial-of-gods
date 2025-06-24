@@ -28,6 +28,21 @@ namespace CharacterSystem
         protected override void Start()
         {
             base.Start();
+            
+            // Character001만 받을 특별한 이벤트들 등록
+            RegisterAcceptedEvents(
+                Utils.EventType.OnLevelUp
+            );
+            
+            // Character001의 카드들이 받을 특별한 이벤트들 등록
+            RegisterCardAcceptedEvents(
+                Utils.EventType.OnLevelUp
+            );
+            
+            // Character001의 유물들이 받을 특별한 이벤트들 등록
+            RegisterRelicAcceptedEvents(
+                Utils.EventType.OnLevelUp
+            );
         }
 
         protected override void OnDestroy()
@@ -38,12 +53,21 @@ namespace CharacterSystem
         // ===== [기능 3] 이벤트 처리 =====
         public override void OnEvent(Utils.EventType eventType, object param)
         {
-            base.OnEvent(eventType, param); // 부모의 이벤트 전파 로직 먼저 호출
+            // 이벤트 필터링: Character001이 받지 않는 이벤트는 무시
+            if (!IsEventAccepted(eventType))
+            {
+                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} (Character001) ignoring event: {eventType} (not in accepted events)</color>");
+                return;
+            }
+
+            // 부모의 이벤트 전파 로직 호출 (필터링 적용됨)
+            base.OnEvent(eventType, param);
 
             // Character001 고유의 이벤트 처리
             switch (eventType)
             {
                 case Utils.EventType.OnLevelUp:
+                    Debug.Log($"<color=yellow>{gameObject.name} (Character001) gained a level!</color>");
                     break;
                 case Utils.EventType.OnDeath:
                     // Character001의 사망 이벤트는 base.OnEvent에서 이미 처리됨

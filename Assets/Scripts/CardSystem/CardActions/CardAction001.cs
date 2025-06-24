@@ -20,12 +20,12 @@ namespace CardActions
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
                 if (owner != null)
-                {
+                    {
                     // AttackPower +10
                     var modifier = new StatModifier(10, BuffOperationType.Additive);
                     owner.statSheet[StatType.AttackPower].AddBuff(modifier);
                     Debug.Log($"<color=yellow>[CardAction001] Applied: ATK +10. New Value: {owner.statSheet[StatType.AttackPower].Value}</color>");
-                }
+                    }
             }
         }
 

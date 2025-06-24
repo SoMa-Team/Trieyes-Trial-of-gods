@@ -404,7 +404,7 @@ namespace AttackSystem
                 default:
                     // 기본 이벤트 처리
                     break;
-            }
+        }
         }
     }
 } 

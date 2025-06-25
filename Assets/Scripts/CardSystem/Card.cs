@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Stats;
 using CardActions;
 using System;
+using CharacterSystem;
 
 namespace CardSystem
 {
@@ -12,47 +13,41 @@ namespace CardSystem
         private static int idCounter = 0;
         [Header("Card Info")]
         public CardID cardId;
-
-        [Header("Enhancement")]
-        public CardEnhancement cardEnhancement;
-
-        [Header("Stats & Action")]
+        public CardAction cardActionSO;     // ScriptableObject 참조!
         public CardStat cardStats;
-        public CardAction cardAction;
-
-        private CharacterSystem.Pawn owner;
+        public CardEnhancement cardEnhancement;
+         Pawn owner;
 
         public Card(){
             this.cardId = idCounter++;
         }
         
-        public void Activate(int level, int CardActionID){
+        public void Activate(int level, int CardActionID, Pawn owner = null){
             if(CardActionFactory.Instance == null){
                 Debug.LogWarning("CardActionFactory가 초기화되지 않았습니다.");
                 return;
             }
-            cardAction = CardActionFactory.Instance.Create(CardActionID);
-            if(cardAction == null) {
+            cardActionSO = CardActionFactory.Instance.Create(CardActionID);
+            if(cardActionSO == null) {
                 Debug.LogWarning($"CardAction 생성 실패! CardActionID={CardActionID}");
                 return;
             }
-            cardStats = new CardStat(cardAction.properties, level);
+            cardStats = new CardStat(cardActionSO.properties, level);
             cardEnhancement = new CardEnhancement(level, 0);
         }
 
         public void Deactivate(){
-            CardActionFactory.Instance.Deactivate(cardAction);
+            
         }
 
         public void TriggerCardEvent(Utils.EventType eventType, object param = null)
         {
-            cardAction?.OnEvent(eventType, param);
+            cardActionSO?.OnEvent(owner, null, eventType, param);
         }
         
         public void SetOwner(CharacterSystem.Pawn pawn)
         {
             owner = pawn;
-            cardAction?.SetOwner(pawn);
         }
     }
 } 

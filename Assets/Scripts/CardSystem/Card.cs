@@ -34,15 +34,16 @@ namespace CardSystem
             }
             cardStats = new CardStat(cardActionSO.properties, level);
             cardEnhancement = new CardEnhancement(level, 0);
+            SetOwner(owner);
         }
 
         public void Deactivate(){
             
         }
 
-        public void TriggerCardEvent(Utils.EventType eventType, object param = null)
+        public void TriggerCardEvent(Utils.EventType eventType, CardSystem.Deck deck, object param = null)
         {
-            cardActionSO?.OnEvent(owner, null, eventType, param);
+            cardActionSO?.OnEvent(owner, deck, eventType, param);
         }
         
         public void SetOwner(CharacterSystem.Pawn pawn)

@@ -16,6 +16,13 @@ namespace CardSystem
         private bool isPersistent;
         private List<Card> cards = new List<Card>();
 
+        private HashSet<Utils.EventType> acceptedEvents = new HashSet<Utils.EventType>();
+
+        public HashSet<Utils.EventType> GetAcceptedEvents()
+        {
+            return acceptedEvents;
+        }
+
         public List<Card> GetCards()
         {
             return cards;
@@ -180,6 +187,7 @@ namespace CardSystem
             else
             {
                 Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) -> Processing {eventType} for {cards.Count} cards</color>");
+                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} card accepted events: {string.Join(", ", owner?.GetCardAcceptedEvents())}</color>");
                 foreach (var card in cards)
                 {
                     Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) -> Card {card.cardAction.GetType().Name} processing {eventType}</color>");

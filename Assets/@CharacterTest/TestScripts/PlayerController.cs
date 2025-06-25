@@ -23,14 +23,13 @@ namespace CharacterSystem
             }
         }
 
-        public override void ProcessInput()
+        public override void ProcessInput() // To-Do: 이름 변경
         {
             Vector2 moveDir = Vector2.zero;
             if (moveAction != null)
             {
                 moveDir = moveAction.action.ReadValue<Vector2>();
             }
-
             if (owner != null)
             {
                 owner.Move(moveDir);

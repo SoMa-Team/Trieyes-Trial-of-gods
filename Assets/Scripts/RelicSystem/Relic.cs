@@ -50,6 +50,8 @@ namespace RelicSystem
                 return;
             }
 
+            Debug.Log($"<color=purple>[Relic] {info?.name ?? "Unknown"} received event: {eventType} (accepted events: {string.Join(", ", info?.acceptedEvents)})</color>");
+
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
         }

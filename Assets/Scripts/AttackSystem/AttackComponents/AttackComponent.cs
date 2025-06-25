@@ -169,5 +169,18 @@ namespace AttackComponents
 
         // ===== [기능 6] 공격 컴포넌트 실행 및 이벤트 반응 =====
         public abstract void Execute(Attack attack);
+        
+        // ===== [기능 7] 투사체 스탯 수정 =====
+        /// <summary>
+        /// 투사체의 스탯을 수정합니다.
+        /// 하위 클래스에서 오버라이드하여 구체적인 스탯 수정 로직을 구현합니다.
+        /// </summary>
+        /// <param name="projectileStats">수정할 투사체 스탯</param>
+        public virtual void ModifyProjectileStats(Stats.StatSheet projectileStats)
+        {
+            // 기본적으로는 아무것도 하지 않음
+            // 하위 클래스에서 오버라이드하여 구현
+            Debug.Log($"<color=cyan>[AttackComponent] {GetType().Name} modifying projectile stat sheet</color>");
+        }
     }
 } 

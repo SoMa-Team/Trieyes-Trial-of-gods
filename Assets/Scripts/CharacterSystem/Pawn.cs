@@ -44,9 +44,7 @@ namespace CharacterSystem
         public int gold { get; protected set; } // 골드 시스템 추가
 
         // ===== [기능 2] 스탯 시스템 =====
-        public Attack basicAttack; // 기본 공격
-        public AttackData[] attackDataList; // 여러 공격 데이터
-        public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
+        public Attack basicAttack; // 기본 공격이자 관리자 공격
         public List<Relic> relics = new(); // 장착 가능한 유물 리스트
         public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
 
@@ -155,10 +153,10 @@ namespace CharacterSystem
         // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
         protected Vector2 moveDirection;
         protected string currentAnimationState;
-        protected const string IDLE_ANIM = "Idle";
-        protected const string WALK_ANIM = "Walk";
-        protected const string ATTACK_ANIM = "Attack";
-        protected const string HIT_ANIM = "Hit";
+        protected const string IDLE_ANIM = "char001_walk";  // 임시로 walk 상태 사용
+        protected const string WALK_ANIM = "char001_walk";
+        protected const string ATTACK_ANIM = "char001_walk";  // 임시로 walk 상태 사용
+        protected const string HIT_ANIM = "char001_walk";     // 임시로 walk 상태 사용
         
         protected virtual void Awake()
         {
@@ -233,10 +231,6 @@ namespace CharacterSystem
             eventHandlers.Clear();
             
             // 리스트 초기화
-            if (attackComponentList != null)
-            {
-                attackComponentList.Clear();
-            }
             if (relics != null)
             {
                 relics.Clear();
@@ -269,6 +263,9 @@ namespace CharacterSystem
         {
             HandleMovement();
             HandleAnimation();
+            
+            // 자동공격 수행
+            PerformAutoAttack();
         }
         
         public virtual void TakeDamage(int damage)
@@ -310,8 +307,28 @@ namespace CharacterSystem
         {
             if (animator != null && currentAnimationState != newState)
             {
-                animator.Play(newState);
-                currentAnimationState = newState;
+                // 애니메이터가 null이 아니고 상태가 존재하는지 확인
+                if (animator.HasState(0, Animator.StringToHash(newState)))
+                {
+                    animator.Play(newState);
+                    currentAnimationState = newState;
+                    Debug.Log($"<color=green>[ANIMATION] {gameObject.name} changed to {newState}</color>");
+                }
+                else
+                {
+                    // 상태가 없으면 기본 상태로 대체
+                    string fallbackState = "char001_walk"; // 현재 컨트롤러에 있는 상태
+                    if (animator.HasState(0, Animator.StringToHash(fallbackState)))
+                    {
+                        animator.Play(fallbackState);
+                        currentAnimationState = fallbackState;
+                        Debug.LogWarning($"<color=yellow>[ANIMATION] {gameObject.name} animation state '{newState}' not found, using fallback '{fallbackState}'</color>");
+                    }
+                    else
+                    {
+                        Debug.LogError($"<color=red>[ANIMATION] {gameObject.name} no valid animation states found in animator</color>");
+                    }
+                }
             }
         }
         
@@ -334,6 +351,28 @@ namespace CharacterSystem
         public void SetStatValue(StatType statType, int value)
         {
             statSheet[statType].SetBasicValue(value);
+        }
+
+        /// <summary>
+        /// 공격에 필요한 스탯 정보를 수집합니다.
+        /// Relic, Card의 영향을 포함한 최종 스탯을 반환합니다.
+        /// </summary>
+        /// <returns>공격용 스탯 정보</returns>
+        public virtual StatSheet CollectAttackStats()
+        {
+            // 기본 스탯 복사
+            StatSheet attackStats = new StatSheet();
+            
+            // Pawn의 모든 스탯을 복사
+            foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
+            {
+                int statValue = GetStatValue(statType);
+                attackStats[statType].SetBasicValue(statValue);
+            }
+            
+            Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
+            
+            return attackStats;
         }
 
         /// <summary>
@@ -498,7 +537,7 @@ namespace CharacterSystem
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
             if (!IsEventAccepted(eventType))
             {
-                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events)</color>");
+                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
                 return;
             }
 
@@ -532,6 +571,7 @@ namespace CharacterSystem
             // 유물들의 이벤트 처리 (필터링 적용)
             if (relics != null && IsRelicEventAccepted(eventType))
             {
+                Debug.Log($"<color=purple>[EVENT_FILTER] {gameObject.name} processing {eventType} for {relics.Count} relics (relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
                 foreach (var relic in relics)
                 {
                     if (relic != null)
@@ -541,25 +581,21 @@ namespace CharacterSystem
                     }
                 }
             }
+            else if (relics != null && !IsRelicEventAccepted(eventType))
+            {
+                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring {eventType} for relics (not in relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
+            }
 
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
+                Debug.Log($"<color=cyan>[EVENT_FILTER] {gameObject.name} processing {eventType} for deck (card events: {string.Join(", ", cardAcceptedEvents)})</color>");
                 Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
             }
-
-            // 모든 AttackComponent의 이벤트 처리
-            if (attackComponentList != null)
+            else if (deck != null && !IsCardEventAccepted(eventType))
             {
-                foreach (var attackComp in attackComponentList)
-                {
-                    if (attackComp != null)
-                    {
-                        Debug.Log($"<color=orange>[EVENT] {gameObject.name} ({GetType().Name}) -> AttackComponent {attackComp.GetType().Name} processing {eventType}</color>");
-                        attackComp.OnEvent(eventType, param);
-                    }
-                }
+                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring {eventType} for deck (not in card events: {string.Join(", ", cardAcceptedEvents)})</color>");
             }
         }
 
@@ -621,6 +657,86 @@ namespace CharacterSystem
             {
                 this.attacker = attacker;
                 this.finalStatSheet = statSheet;
+            }
+        }
+
+        // ===== [기능 12] 자동공격 시스템 =====
+        protected float lastAttackTime = 0f; // 마지막 공격 시간
+        protected float attackCooldown = 0f; // 공격 쿨다운 시간
+        
+        /// <summary>
+        /// 공격속도 스탯을 기반으로 공격 쿨다운을 계산합니다.
+        /// 공격속도 10 = 60fps 기준 1초에 1개 발사
+        /// </summary>
+        protected virtual void CalculateAttackCooldown()
+        {
+            int attackSpeed = GetStatValue(StatType.AttackSpeed);
+            // 공격속도 10을 기준으로 1초에 1개 발사
+            // 공격속도가 높을수록 쿨다운이 짧아짐
+            attackCooldown = 1f / (attackSpeed / 10f);
+            
+            Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
+        }
+        
+        /// <summary>
+        /// 자동공격을 수행합니다.
+        /// </summary>
+        protected virtual void PerformAutoAttack()
+        {
+            if (Time.time - lastAttackTime >= attackCooldown)
+            {
+                // 공격 쿨다운 계산 (스탯 변경 시 대응)
+                CalculateAttackCooldown();
+                
+                // 공격 수행
+                ExecuteAttack();
+                
+                // 마지막 공격 시간 업데이트
+                lastAttackTime = Time.time;
+            }
+        }
+        
+        /// <summary>
+        /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack 관리자에게 전달합니다.
+        /// </summary>
+        protected virtual void ExecuteAttack()
+        {
+            try
+            {
+                if (basicAttack == null)
+                {
+                    Debug.LogWarning($"<color=yellow>[AUTO_ATTACK] {gameObject.name} has no basicAttack component!</color>");
+                    return;
+                }
+                
+                Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
+                
+                // 1단계: 스탯 정보 수집 (Pawn에서 수행)
+                StatSheet attackStats = CollectAttackStats();
+                
+                // Attack 관리자에게 공격 실행 요청
+                int projectileCount = attackStats[Stats.StatType.ProjectileCount].Value;
+                float spreadAngle = attackStats[Stats.StatType.ProjectileSpread].Value;
+                if (projectileCount <= 1)
+                {
+                    Vector2 direction = Vector2.right;
+                    basicAttack.CreateSingleProjectile(direction, basicAttack.attackData, statSheet);
+                }
+                else
+                {
+                    float angleStep = spreadAngle / (projectileCount - 1);
+                    float startAngle = -spreadAngle / 2f;
+                    for (int i = 0; i < projectileCount; i++)
+                    {
+                        float angle = startAngle + (angleStep * i);
+                        Vector2 direction = Quaternion.Euler(0, 0, angle) * Vector2.right;
+                        basicAttack.CreateSingleProjectile(direction, basicAttack.attackData, statSheet);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[ERROR] ExecuteAttack 예외: {ex}");
             }
         }
     }

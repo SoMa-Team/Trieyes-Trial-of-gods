@@ -186,8 +186,7 @@ namespace Utils
             attackData.attackId = 1;
             attackData.attackName = "DefaultAttack";
             attackData.attackType = AttackType.Basic;
-            attackData.damage = 50;
-            attackData.cooldown = 1f;
+            attackData.cooldown = 10f;
             attackData.bIsActivated = true;
             attackData.statSheet = new StatSheet();
             

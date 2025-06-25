@@ -11,6 +11,8 @@ namespace Stats
         AttackRange,        // 공격 범위
         ProjectileCount,    // 투사체 개수
         ProjectilePierce,   // 투사체 관통 개수
+        ProjectileSpeed,    // 투사체 속도
+        ProjectileSpread,   // 투사체 분산각도
         CriticalRate,       // 치명타 확률
         CriticalDamage,     // 치명타 데미지
         LifeSteal,          // 흡혈 계수

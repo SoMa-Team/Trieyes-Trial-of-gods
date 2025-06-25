@@ -9,10 +9,10 @@ namespace CardSystem
     /// 카드 덱을 관리하는 클래스입니다.
     /// 덱은 자체적으로 이벤트를 등록하고 처리할 수 있는 IEventHandler를 구현합니다.
     /// </summary>
-    public class Deck : IEventHandler
+    public class Deck : MonoBehaviour, IEventHandler
     {
         [Header("Deck Setup")]
-        [SerializeField] private List<Card> cards;
+        private List<Card> cards;
         public IReadOnlyList<Card> Cards => cards;
 
         private Pawn owner;

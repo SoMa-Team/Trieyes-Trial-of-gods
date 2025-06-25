@@ -134,17 +134,17 @@ namespace AttackSystem
             }
             
             // CardAction에서 AttackComponent 추가 (덱의 카드들)
-            foreach (var card in attacker.deck.Cards)
-            {
-                if (card?.cardAction != null)
-                {
-                    var cardComponents = card.cardAction.GetAttackComponents();
-                    if (cardComponents != null)
-                    {
-                        components.AddRange(cardComponents);
-                    }
-                }
-            }
+            // foreach (var card in attacker.deck.Cards)
+            // {
+            //     if (card?.cardActionSO != null)
+            //     {
+            //         var cardComponents = card.cardActionSO.GetAttackComponents();
+            //         if (cardComponents != null)
+            //         {
+            //             components.AddRange(cardComponents);
+            //         }
+            //     }
+            // }
             
             Debug.Log($"<color=green>[PROJECTILE] {gameObject.name} assembled {components.Count} attack components</color>");
         }

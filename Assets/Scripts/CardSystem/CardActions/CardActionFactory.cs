@@ -1,94 +1,58 @@
-using CardActions;
 using System.Collections.Generic;
-using Utils;
 using UnityEngine;
 using System;
+using CardActions;
+using Utils;
 
 namespace CardActions
 {
     using CardActionID = Int32;
 
     /// <summary>
-    /// 다양한 CardAction 인스턴스를 생성하는 팩토리 클래스입니다.
-    /// 각 CardAction은 특정 게임 이벤트에 반응하는 고유한 로직을 캡슐화합니다.
+    /// 다양한 CardAction SO를 관리하고 반환하는 팩토리 클래스입니다.
+    /// 카드 ID를 통해 CardAction ScriptableObject를 반환합니다.
     /// </summary>
-    public class CardActionFactory : MonoBehaviour, IFactory<CardAction>
+    public class CardActionFactory : MonoBehaviour
     {
-        public static CardActionFactory Instance { private set; get; } //싱글톤은 첫문자 대문자로 한다길래 이렇게 일단 했습니다.
+        public static CardActionFactory Instance { get; private set; }
 
-        public List<GameObject> cardPrefabs;
+        [Header("등록된 카드 액션 SO 리스트")]
+        public List<CardAction> cardActionSOs = new(); // SO 리스트로 변경
 
         private void Awake()
         {
-            if (Instance is not null)
+            if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-
             Instance = this;
         }
 
         /// <summary>
-        /// CardActionID에 해당하는 CardAction을 생성합니다.
+        /// CardActionID(=인덱스)로 CardAction SO를 반환
         /// </summary>
         public CardAction Create(CardActionID actionId)
         {
-            var action = ClonePrefab(actionId);
-            Activate(action);
-            return action;
-        }
-
-        /// <summary>
-        /// CardAction을 활성화합니다.
-        /// </summary>
-        public void Activate(CardAction action)
-        {
-            Debug.Log($"CardAction activated! {action}");
-            action.Activate();
-            // TODO: 풀링 등 추가
-        }
-
-        /// <summary>
-        /// CardAction을 비활성화합니다.
-        /// </summary>
-        public void Deactivate(CardAction action)
-        {
-            action.Deactivate();
-            // TODO: 풀링 등 추가
-        }
-
-        /// <summary>
-        /// 프리팹 복제 및 CardAction 컴포넌트 반환
-        /// </summary>
-        private CardAction ClonePrefab(CardActionID actionId)
-        {
-            var prefab = Instantiate(GetPrefabById(actionId));
-            if (prefab == null)
-            {
-                Debug.LogWarning($"프리팹이 null입니다. actionId={actionId}");
-                return null;
-            }
-            var action = prefab.GetComponent<CardAction>();
+            var action = GetCardActionById(actionId);
             if (action == null)
             {
-                Debug.LogWarning($"CardAction 컴포넌트가 프리팹에 없습니다. actionId={actionId}");
+                Debug.LogWarning($"[CardActionFactory] 유효하지 않은 actionId: {actionId}");
             }
             return action;
         }
 
         /// <summary>
-        /// ID에 맞는 카드 액션 프리팹 반환
+        /// ID에 맞는 CardAction SO 반환
         /// </summary>
-        private GameObject GetPrefabById(CardActionID actionId)
+        public CardAction GetCardActionById(CardActionID actionId)
         {
-            //임시 actionID를 인덱스로 사용하여 반환
-            if (actionId < 0 || actionId >= cardPrefabs.Count)
+            if (actionId < 0 || actionId >= cardActionSOs.Count)
             {
-                Debug.LogWarning($"유효하지 않은 actionId: {actionId}");
+                Debug.LogWarning($"[CardActionFactory] 유효하지 않은 actionId: {actionId}");
                 return null;
             }
-            return cardPrefabs[actionId];
+            return cardActionSOs[actionId];
         }
     }
 }

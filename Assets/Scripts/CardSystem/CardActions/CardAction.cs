@@ -13,13 +13,12 @@ namespace CardActions
     public abstract class CardAction : ScriptableObject
     {
         [Header("Action Info")]
-        public int cardId;
         public Property[] properties;
         public Rarity rarity;
         public string cardName;
         public Sprite illustration;
         [TextArea] public string cardDescription;
-        public List<Utils.EventType> EventTypes = new();//해당 카드 액션이 반응하는 이벤트 타입
+        public List<Utils.EventType> eventTypes = new();//해당 카드 액션이 반응하는 이벤트 타입
         
         public virtual void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {

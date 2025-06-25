@@ -22,6 +22,7 @@ namespace CardActions
 
         public virtual void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
+            Debug.Log($"CardAction.OnEvent: {eventType}");
         }
     }
 } 

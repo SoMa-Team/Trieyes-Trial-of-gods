@@ -66,7 +66,7 @@ namespace CardSystem
             switch (eventType)
             {
                 case Utils.EventType.OnBattleStart:
-                    CalcBaseStat();
+                    //CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     break;
@@ -187,6 +187,7 @@ namespace CardSystem
         /// </summary>
         public void CalcActionInitStat(Utils.EventType eventType, object param = null)
         {
+            Debug.Log("CalcActionInitStat!!");
             if (cardCallOrder == null)
             {
                 cardCallOrder = new List<int>();
@@ -198,6 +199,7 @@ namespace CardSystem
             {
                 if (cardIndex < cards.Count)
                 {
+                    Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardActionSO.cardName}");
                     cards[cardIndex]?.TriggerCardEvent(eventType, this, param);
                 }
             }

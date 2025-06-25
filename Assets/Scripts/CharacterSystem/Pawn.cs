@@ -46,7 +46,7 @@ namespace CharacterSystem
         public AttackData[] attackDataList; // 여러 공격 데이터
         public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
         public List<Relic> relics = new(); // 장착 가능한 유물 리스트
-        public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
+        public Deck deck; // Pawn이 관리하는 Deck 인스턴스
 
         // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
         protected Vector2 moveDirection;
@@ -82,6 +82,7 @@ namespace CharacterSystem
             boxCollider = GetComponent<BoxCollider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
+            deck = GetComponent<Deck>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();

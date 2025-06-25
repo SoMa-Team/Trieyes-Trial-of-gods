@@ -26,6 +26,8 @@ namespace BattleSystem
         public List<Pawn> enemies = new List<Pawn>();
         public List<Attack> attacks = new List<Attack>();
         public SpawnManager spawnManager;
+        
+        private float time;
 
         // ===== 스테이지 활성화, 비활성화 =====
         
@@ -40,6 +42,7 @@ namespace BattleSystem
                 throw new Exception("There must be exactly one BattleStage.");
             }
             now = this;
+            time = 0.0f;
         }
 
         /// <summary>
@@ -64,10 +67,15 @@ namespace BattleSystem
             enemies.Add(enemy);
         }
 
+        public void Update()
+        {
+            time += Time.deltaTime;
+        }
+
         public float GetTime()
         {
             // TODO: 시간을 계산하는 기능 필요
-            return 0.0f;
+            return time;
         }
     }
 } 

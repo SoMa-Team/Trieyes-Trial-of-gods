@@ -3,6 +3,7 @@ using CharacterSystem;
 using CardSystem;
 using Stats;
 using System.Collections.Generic;
+using BattleSystem;
 
 namespace CardActions
 {
@@ -23,7 +24,9 @@ namespace CardActions
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
+                Debug.Log($"PreparingMarch.OnEvent: OnBattleSceneChange");
                 var modifier = new StatModifier(attackPowerIncrease, BuffOperationType.Additive);
+                Debug.Log("modifier Created");
                 owner.statSheet[StatType.AttackPower].AddBuff(modifier);
                 Debug.Log($"<color=yellow>[PreparingMarch] ATK +{attackPowerIncrease}. New Value: {owner.statSheet[StatType.AttackPower].Value}</color>");
             }

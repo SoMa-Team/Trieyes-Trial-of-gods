@@ -28,6 +28,15 @@ namespace Stats
             }
         }
 
+        // --- 메서드 ---
+        public void ClearBuffs()
+        {
+            foreach (var stat in stats)
+            {
+                stat.Value.ClearBuffs();
+            }
+        }
+
         // --- 인덱서 ---
 
         /// StatType으로 해당 스탯 값을 조회합니다.

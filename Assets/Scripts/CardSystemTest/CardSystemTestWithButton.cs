@@ -4,7 +4,6 @@ using CardSystem;
 using CharacterSystem;
 using Stats;
 using BattleSystem;
-using CharacterSystem;
 using Utils;
 public class TestCardSpawnerWithButton : MonoBehaviour
 {

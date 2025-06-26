@@ -9,7 +9,7 @@ namespace CardSystem
     /// <summary>
     /// 카드 덱을 관리하는 클래스입니다.
     /// </summary>
-    public class Deck : MonoBehaviour, IEventHandler
+    public class Deck : IEventHandler
     {
         [Header("Deck Setup")]
         private List<Card> cards = new();

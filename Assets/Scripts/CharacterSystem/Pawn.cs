@@ -82,24 +82,11 @@ namespace CharacterSystem
             boxCollider = GetComponent<BoxCollider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
-            deck = GetComponent<Deck>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
-            
-            // Inspector에서 할당된 Deck을 사용하도록 수정
-            if (deck != null)
-            {
-                // Deck 초기화 (owner 참조 설정, 프리팹 데이터 보존)
-                deck.Initialize(this, true);
-            }
-            else
-            {
-                // Deck이 할당되지 않은 경우 경고를 표시하고, 빈 Deck을 생성합니다.
-                Debug.LogWarning($"<color=yellow>[PAWN] {gameObject.name}에 Deck이 할당되지 않았습니다. Inspector에서 Deck을 할당해주세요. 임시로 빈 Deck을 생성합니다.</color>");
-                deck = gameObject.AddComponent<Deck>();
-                deck.Initialize(this, true);
-            }
+
+            deck = new Deck();
             
             initBaseStat();
         }

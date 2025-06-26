@@ -52,6 +52,8 @@ namespace BattleSystem
             var battleStageView = battleStageGameObject.GetComponent<BattleStageView>();
             var battleStage = new BattleStage();
 
+            Debug.Log($"BattleStageFactory.Create: {battleStageID}");
+
             battleStageView.BattleStage = battleStage;
             
             Activate(battleStage, mainCharacter, difficulty);

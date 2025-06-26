@@ -42,7 +42,6 @@ namespace Stats
             if(BattleStage.now == null){
                 throw new Exception("BattleStageManager is not initialized.");
             }
-            Debug.Log($"StatModifier Creation Start");
             this.id = modifierID++;
             this.value = buffValue;
             this.operationType = operationType;

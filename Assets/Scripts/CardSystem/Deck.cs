@@ -24,7 +24,7 @@ namespace CardSystem
         private List<int> cardCallOrder;
         private int maxIterations;
 
-        public void Initialize(Pawn owner, bool isPersistent)
+        public void Activate(Pawn owner, bool isPersistent)
         {
             this.owner = owner;
             this.isPersistent = isPersistent;

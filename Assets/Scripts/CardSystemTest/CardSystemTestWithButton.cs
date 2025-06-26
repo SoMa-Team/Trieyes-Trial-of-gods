@@ -53,8 +53,8 @@ public class TestCardSpawnerWithButton : MonoBehaviour
         Debug.Log($"[TEST] 2. Deck 카드 개수: {pawn.deck.Cards.Count}");
 
         // 3. 덱 초기화
-        Debug.Log("[TEST] 3. Deck.Initialize() 실행 (owner/persistent 재설정)");
-        pawn.deck.Initialize(pawn, isPersistent: true);
+        Debug.Log("[TEST] 3. Deck.Activate() 실행 (owner/persistent 재설정)");
+        pawn.deck.Activate(pawn, isPersistent: true);
         Debug.Log("[TEST] 3. Deck 초기화 완료");
 
         // 4. 전투 시작 이벤트 발동

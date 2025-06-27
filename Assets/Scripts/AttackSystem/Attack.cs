@@ -23,13 +23,13 @@ namespace AttackSystem
         public AttackData attackData; // 기획적으로 논의 필요
         public Pawn attacker; // 공격자 (투사체를 발사한 캐릭터)
         public Attack parentAttack; // 부모 Attack (null이면 관리자, 아니면 투사체)
-        public List<AttackComponent> components = new List<AttackComponent>();
+        public List<GameObject> componentPrefabs = new List<GameObject>();
         public Stats.StatSheet projectileStats = new(); // 투사체가 가질 스탯 정보 (복사본)
         
         // ===== [기능 2] 투사체 관련 (투사체일 때만 사용) =====
         [SerializeField] protected int pierceCount = 1; // 관통 개수
         [SerializeField] protected float projectileSpeed = 10f; // 투사체 속도
-        [SerializeField] protected float maxDistance = 20f; // 최대 이동 거리
+        [SerializeField] protected float maxDistance = 2f; // 최대 이동 거리
         protected int currentPierceCount = 0; // 현재 관통 횟수
         protected float currentDistance = 0f; // 현재 이동 거리
         protected Vector3 spawnPosition; // 발사 위치
@@ -50,6 +50,7 @@ namespace AttackSystem
         /// 이 Attack이 투사체인지 확인합니다.
         /// </summary>
         public bool IsProjectile => parentAttack != null;
+        public List<GameObject> projectiles = new List<GameObject>();
 
         protected virtual void Awake()
         {
@@ -91,14 +92,6 @@ namespace AttackSystem
                     Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} reached max distance ({maxDistance})</color>");
                     DestroyProjectile();
                 }
-                
-                // 투사체 수명 관리
-                currentLifetime += Time.deltaTime;
-                if (currentLifetime > 10f) // 10초 후 자동 파괴
-                {
-                    Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} lifetime expired</color>");
-                    DestroyProjectile();
-                }
             }
         }
 
@@ -116,10 +109,6 @@ namespace AttackSystem
             rb = GetComponent<Rigidbody2D>();
             attackCollider = GetComponent<Collider2D>();
             
-            // 기본 AttackComponent들 초기화
-            var existingComponents = GetComponents<AttackComponent>();
-            components.AddRange(existingComponents);
-            
             Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} initialized as manager for {attacker?.gameObject.name}</color>");
         }
 
@@ -131,82 +120,7 @@ namespace AttackSystem
         /// <param name="parentAttack">부모 Attack (관리자)</param>
         public virtual void InitializeProjectile(Pawn attacker, Vector2 direction, Attack parentAttack = null)
         {
-            this.attacker = attacker;
-            this.parentAttack = parentAttack; // 투사체임을 명시
-            this.spawnPosition = transform.position; // 발사 위치 저장
-            
-            // 부모 Attack에서 공격자 정보 가져오기
-            if (parentAttack != null && this.attacker == null)
-            {
-                this.attacker = parentAttack.attacker;
-            }
-            
-            // 투사체 전용 컴포넌트 초기화
-            rb = GetComponent<Rigidbody2D>();
-            attackCollider = GetComponent<Collider2D>();
-            
-            // AttackComponent 조립 (Relic, CardAction에서 AttackComponent 추가)
-            AssembleAttackComponents();
-            
-            // AttackComponent의 colliderSizeDelta를 모두 합산하여 Collider 크기 조정
-            AdjustColliderSize();
-            
-            // 투사체 이동 설정 (자동 움직임 활성화)
-            if (rb != null)
-            {
-                rb.linearVelocity = direction.normalized * projectileSpeed;
-                rb.gravityScale = 0f; // 중력 비활성화
-            }
-            
-            // 투사체 회전 (이동 방향으로)
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            
-            Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} initialized as projectile by {attacker?.gameObject.name}, moving at {projectileSpeed} speed</color>");
-        }
-
-        /// <summary>
-        /// Relic, CardAction을 조회하여 AttackComponent를 조립합니다.
-        /// </summary>
-        protected virtual void AssembleAttackComponents()
-        {
-            if (attacker == null) return;
-            
-            // 기존 AttackComponent 목록 초기화
-            components.Clear();
-            
-            // 기본 AttackComponent 추가 (이미 부착된 것들)
-            var existingComponents = GetComponents<AttackComponent>();
-            components.AddRange(existingComponents);
-            
-            // Relic에서 AttackComponent 추가
-            foreach (var relic in attacker.relics)
-            {
-                if (relic != null)
-                {
-                    // Relic이 AttackComponent를 제공하는 경우 추가
-                    var relicComponents = relic.GetAttackComponents();
-                    if (relicComponents != null)
-                    {
-                        components.AddRange(relicComponents);
-                    }
-                }
-            }
-            
-            // CardAction에서 AttackComponent 추가 (덱의 카드들)
-            foreach (var card in attacker.deck.GetCards())
-            {
-                if (card?.cardAction != null)
-                {
-                    var cardComponents = card.cardAction.GetAttackComponents();
-                    if (cardComponents != null)
-                    {
-                        components.AddRange(cardComponents);
-                    }
-                }
-            }
-            
-            Debug.Log($"<color=green>[PROJECTILE] {gameObject.name} assembled {components.Count} attack components</color>");
+            Debug.LogError("Attack.InitializeProjectile is not implemented");
         }
 
         /// <summary>
@@ -219,11 +133,11 @@ namespace AttackSystem
                 Vector2 baseSize = boxCollider.size;
                 Vector2 totalDelta = Vector2.zero;
                 
-                foreach (var comp in components)
+                foreach (var comp in componentPrefabs)
                 {
                     if (comp != null)
                     {
-                        totalDelta += comp.colliderSizeDelta;
+                        totalDelta += comp.GetComponent<AttackComponent>().colliderSizeDelta;
                     }
                 }
                 
@@ -287,7 +201,7 @@ namespace AttackSystem
         }
 
         /// <summary>
-        /// 공격 충돌을 처리합니다. (투사체 전용)
+        /// 공격 성공 시 충돌을 처리합니다. (투사체 전용)
         /// </summary>
         /// <param name="targetPawn">피격 대상</param>
         /// <param name="hitObject">충돌한 객체</param>
@@ -363,12 +277,11 @@ namespace AttackSystem
         {
             Debug.Log($"<color=red>[ATTACK_PROJECTILE] {gameObject.name} destroyed</color>");
             
-            // 오브젝트 풀링을 위한 비활성화
-            Deactivate();
-            gameObject.SetActive(false);
-            
-            // 또는 완전히 파괴
-            Destroy(gameObject);
+            // 자기 자식 컴포넌트 삭제
+            foreach (var component in componentPrefabs)
+            {
+                Destroy(component);
+            }
         }
 
         // ===== [기능 8] 공격 실행 =====
@@ -405,7 +318,7 @@ namespace AttackSystem
             hitTargets.Clear();
             
             // 컴포넌트 정리
-            components.Clear();
+            componentPrefabs.Clear();
             
             // 물리 속성 초기화
             if (rb != null)
@@ -421,12 +334,6 @@ namespace AttackSystem
             // 참조 정리
             attacker = null;
             parentAttack = null;
-        }
-
-        public void Execute()
-        {
-            foreach (var comp in components)
-                comp.Execute(this);
         }
         
         // ===== [기능 9] 이벤트 처리 =====
@@ -486,142 +393,39 @@ namespace AttackSystem
             }
         }
 
-        // ===== [기능 10] 공격 실행 (관리자 전용) =====
-        /// <summary>
-        /// 스탯 정보를 받아서 공격을 실행합니다. (관리자 전용)
-        /// </summary>
-        /// <param name="attackStats">공격에 사용할 스탯 정보</param>
-        public virtual void ExecuteAttackWithStats(Stats.StatSheet attackStats)
-        {
-            if (!IsManager)
-            {
-                Debug.LogWarning($"<color=yellow>[ATTACK_MANAGER] {gameObject.name} is not a manager, cannot execute attack</color>");
-                return;
-            }
-            
-            Debug.Log($"<color=green>[ATTACK_MANAGER] {gameObject.name} executing attack with stats</color>");
-            
-            // 2단계: AttackData와 StatSheet를 기반으로 투사체 생성
-            CreateProjectiles(attackData, attackStats);
-        }
-        
-        /// <summary>
-        /// 투사체들을 생성합니다.
-        /// </summary>
-        /// <param name="data">공격 데이터</param>
-        /// <param name="attackStats">공격 스탯</param>
-        protected virtual void CreateProjectiles(AttackData data, Stats.StatSheet attackStats)
-        {
-            if (data == null || data.statSheet == null)
-            {
-                Debug.LogWarning($"<color=yellow>[ATTACK_MANAGER] {gameObject.name} has no attack data or statSheet</color>");
-                return;
-            }
-            int projectileCount = data.statSheet[Stats.StatType.ProjectileCount].Value;
-            float spreadAngle = data.statSheet[Stats.StatType.ProjectileSpread].Value;
-            if (projectileCount <= 1)
-            {
-                Vector2 direction = Vector2.right;
-                CreateSingleProjectile(direction, data, attackStats);
-            }
-            else
-            {
-                float angleStep = spreadAngle / (projectileCount - 1);
-                float startAngle = -spreadAngle / 2f;
-                for (int i = 0; i < projectileCount; i++)
-                {
-                    float angle = startAngle + (angleStep * i);
-                    Vector2 direction = Quaternion.Euler(0, 0, angle) * Vector2.right;
-                    CreateSingleProjectile(direction, data, attackStats);
-                }
-            }
-        }
-        
+        // ===== [기능 10] 공격 실행 (관리자 전용) =====      
         /// <summary>
         /// 단일 투사체를 생성합니다.
         /// </summary>
         /// <param name="direction">발사 방향</param>
         /// <param name="data">공격 데이터</param>
         /// <param name="attackStats">공격 스탯</param>
-        public virtual void CreateSingleProjectile(Vector2 direction, AttackData data, Stats.StatSheet attackStats)
+        public virtual void CreateSingleProjectile(Vector2 direction, Stats.StatSheet attackStats)
         {
-            // 투사체 프리팹 생성 (임시로 현재 오브젝트를 복제)
-            // TO-DO : 화살 같은 투사체 프리팹 만들어서 여기에 넣기
-            GameObject projectileObj = Instantiate(gameObject, transform.position, Quaternion.identity);
-            Attack projectile = projectileObj.GetComponent<Attack>();
-            
-            if (projectile != null)
+            foreach (var componentPrefab in componentPrefabs)
             {
-                // 3단계: 기본 투사체 초기화
-                projectile.InitializeProjectile(attacker, direction, this);
-                
-                // 투사체 스탯 설정 (ProjectileInfo 사용)
-                projectile.SetProjectileStats(attackStats, data);
-                
-                // 4단계: AssembleAttackComponents 실행
-                projectile.AssembleAttackComponents();
-                
-                // 5단계: 투사체 스탯 업데이트
-                projectile.UpdateProjectileStatsFromComponents();
-                
-                Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} created projectile {projectileObj.name}</color>");
-            }
-            else
-            {
-                Debug.LogError($"<color=red>[ATTACK_MANAGER] {gameObject.name} failed to create projectile</color>");
-                Destroy(projectileObj);
-            }
-        }
-        
-        /// <summary>
-        /// 투사체 스탯을 설정합니다. (투사체 전용)
-        /// </summary>
-        /// <param name="baseStats">기본 스탯</param>
-        /// <param name="data">공격 데이터</param>
-        public virtual void SetProjectileStats(Stats.StatSheet baseStats, AttackData data)
-        {
-            if (!IsProjectile) return;
-            
-            // 기본 스탯 복사
-            projectileStats = new Stats.StatSheet();
-            foreach (Stats.StatType statType in System.Enum.GetValues(typeof(Stats.StatType)))
-            {
-                projectileStats[statType].SetBasicValue(baseStats[statType].Value);
-            }
-            
-            // StatSheet에서 투사체 전용 스탯 설정
-            pierceCount = baseStats[Stats.StatType.ProjectilePierce].Value;
-            projectileSpeed = baseStats[Stats.StatType.ProjectileSpeed].Value;
-            
-            Debug.Log($"<color=cyan>[ATTACK_PROJECTILE] {gameObject.name} stats set: pierce={pierceCount}, speed={projectileSpeed}</color>");
-        }
-        
-        /// <summary>
-        /// AttackComponents에서 투사체 스탯을 업데이트합니다. (투사체 전용)
-        /// </summary>
-        public virtual void UpdateProjectileStatsFromComponents()
-        {
-            if (!IsProjectile) return;
-            
-            // AttackComponents에서 스탯 수정
-            foreach (var component in components)
-            {
-                if (component != null)
+                if (componentPrefab != null && componentPrefab.GetComponent<AttackComponent>() != null)
                 {
-                    component.ModifyProjectileStats(projectileStats);
+                    // 프리팹에서 인스턴스 생성
+                    GameObject projectileObj = Instantiate(componentPrefab, attacker.transform.position, Quaternion.identity);
+                    projectiles.Add(projectileObj);
+                    projectileObj.GetComponent<AttackComponent>().SetParentAttack(this);
+
+                    var newComp = projectileObj.GetComponent<AttackComponent>();
+                    if (newComp != null)
+                    {
+                        newComp.Execute(this);
+                    }
+                    else
+                    {
+                        Debug.LogError($"[Attack] {componentPrefab.name}에 AttackComponent가 없습니다!");
+                    }
+                }
+                else if (componentPrefab != null)
+                {
+                    Debug.LogError($"[Attack] {componentPrefab.GetType().Name}의 prefab이 할당되어 있지 않습니다!");
                 }
             }
-            
-            // 최종 스탯 적용
-            pierceCount = projectileStats[Stats.StatType.ProjectilePierce].Value;
-            projectileSpeed = projectileStats[Stats.StatType.ProjectileSpeed].Value;
-            
-            Debug.Log($"<color=cyan>[ATTACK_PROJECTILE] {gameObject.name} final stats: pierce={pierceCount}, speed={projectileSpeed}</color>");
         }
-
-        protected const string IDLE_ANIM = "char001_stand";
-        protected const string WALK_ANIM = "char001_walk";
-        protected const string ATTACK_ANIM = "char001_stand"; // 공격 애니메이션이 따로 없으면 임시로 stand 사용
-        protected const string HIT_ANIM = "char001_stand";    // 피격 애니메이션이 따로 없으면 임시로 stand 사용
     }
 } 

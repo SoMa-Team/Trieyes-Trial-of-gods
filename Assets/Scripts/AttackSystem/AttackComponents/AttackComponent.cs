@@ -3,6 +3,7 @@ using Utils;
 using AttackSystem;
 using UnityEngine;
 using CharacterSystem;
+using System;
 
 namespace AttackComponents
 {
@@ -14,7 +15,18 @@ namespace AttackComponents
     {
         // ===== [기능 1] 기본 정보 =====
         protected Attack parentAttack; // 부모 Attack
+
+        public void SetParentAttack(Attack attack)
+        {
+            parentAttack = attack;
+        }
+
         protected Pawn owner; // 소유자 (Attack의 attacker)
+
+        public GameObject prefab;
+        protected Rigidbody2D rb;
+        protected Animator animator;
+        protected SpriteRenderer spriteRenderer;
         
         // ===== [기능 2] 충돌 처리 =====
         protected HashSet<GameObject> hitTargets = new HashSet<GameObject>(); // 이미 맞은 대상들
@@ -24,6 +36,8 @@ namespace AttackComponents
         /// (0,0)이면 크기 변화 없음, 값이 있으면 해당 값만큼 Collider 크기 증감
         /// </summary>
         public Vector2 colliderSizeDelta = Vector2.zero;
+
+        protected float maxDistance = 5f;
 
         protected virtual void Awake()
         {
@@ -40,19 +54,32 @@ namespace AttackComponents
             Deactivate();
         }
 
+        protected virtual void Update()
+        {
+            // 기존 Update 유지
+            // ... existing code ...
+
+            // owner와의 거리 체크 및 Destroy
+            if (owner != null)
+            {
+                float dist = Vector3.Distance(transform.position, owner.transform.position);
+                if (dist > maxDistance && parentAttack != null && parentAttack.projectiles != null)
+                {
+                    // attack의 Projectiles 리스트에서 자신을 제거
+                    parentAttack.projectiles.Remove(gameObject);
+                    Destroy(gameObject);
+                }
+            }
+        }
+
         /// <summary>
         /// 오브젝트 풀링을 위한 활성화 함수
         /// </summary>
         public virtual void Activate()
         {
-            // 부모 Attack 찾기
-            parentAttack = GetComponent<Attack>();
-            
-            // owner 참조 설정
-            if (parentAttack != null)
-            {
-                owner = parentAttack.attacker;
-            }
+            rb = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Animator>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         /// <summary>
@@ -181,6 +208,22 @@ namespace AttackComponents
             // 기본적으로는 아무것도 하지 않음
             // 하위 클래스에서 오버라이드하여 구현
             Debug.Log($"<color=cyan>[AttackComponent] {GetType().Name} modifying projectile stat sheet</color>");
+        }
+
+        // ===== [기능 8] 투사체 시각 효과 제공 =====
+        public virtual Sprite GetProjectileSprite(Vector2 direction)
+        {
+            return null;
+        }
+
+        public virtual RuntimeAnimatorController GetProjectileAnimator(Vector2 direction)
+        {
+            return null;
+        }
+
+        public void SetOwner(Pawn attacker)
+        {
+            owner = attacker;
         }
     }
 } 

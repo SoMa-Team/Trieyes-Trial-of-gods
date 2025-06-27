@@ -1,40 +1,54 @@
-using UnityEngine; // For Debug.Log
+using UnityEngine;
 using AttackSystem;
-using Stats;
+using CharacterSystem;
+using Utils;
+using System.Linq;
 
 namespace AttackComponents
 {
     public class AttackComponent001 : AttackComponent
     {
-        // ===== [기능 1] 공격 실행 및 관련 메소드 =====
-        public override void Execute(Attack attack)
+        public float throwForce = 10f;    // 던지는 힘
+        private Vector2 throwDir;
+        
+        protected override void Start()
         {
-            // StatSystem을 활용한 데미지 계산
-            int finalDamage = attack.attackData.statSheet[StatType.AttackPower].Value;
-            Debug.Log($"AttackComponent001: {finalDamage} 데미지를 가합니다.");
-            // 실제 데미지 적용 로직은 Attack 클래스나 대상 Pawn에서 처리될 수 있습니다.
+            base.Start();
+            prefab = Resources.Load<GameObject>("@/CharacterTest/Prefabs/Attack/Attack001Prefab");
         }
 
-        // ===== [기능 2] 이벤트 처리 =====
-        public override void OnEvent(Utils.EventType eventType, object param)
+        protected override void Update()
         {
-            base.OnEvent(eventType, param); // 부모 클래스의 OnEvent 호출
-
-            if (eventType == Utils.EventType.OnDeath)
+            base.Update();
+            if (rb != null)
             {
-                if (param is CharacterSystem.Pawn deadPawn && deadPawn.gameObject != null)
+                rb.linearVelocity = throwDir * throwForce;
+            }
+        }
+
+        // 이 함수는 Attack 트리거 시 호출된다고 가정
+        public override void Execute(Attack attack)
+        {
+            parentAttack = attack;
+            owner = parentAttack.attacker;
+
+            // Attack(GameObject)의 projectiles 리스트에 자신을 추가 (SetParent는 하지 않음)
+            if (parentAttack != null)
+            {
+                if (parentAttack.projectiles != null && !parentAttack.projectiles.Contains(gameObject))
                 {
-                    Debug.Log($"AttackComponent001: {deadPawn.gameObject.name} 사망 이벤트 수신! 임시 공격 버프를 얻습니다.");
-                    // StatSystem의 버프 시스템 활용
-                    var buff = new StatModifier(10, BuffOperationType.Additive, false, 5f);
-                    deadPawn.statSheet[StatType.AttackPower].AddBuff(buff);
+                    parentAttack.projectiles.Add(gameObject);
                 }
             }
-            
-            if (eventType == Utils.EventType.OnBattleStart)
-            {
-                Debug.Log($"AttackComponent001: 전투 시작! 특정 공격 패턴 활성화.");
-            }
+
+            // 기존 세팅
+            rb = GetComponent<Rigidbody2D>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            throwDir = owner.IsFacingRight() ? owner.transform.right : -owner.transform.right;
+            if (spriteRenderer != null)
+                spriteRenderer.flipX = throwDir.x >= 0;
+            if (rb != null)
+                rb.linearVelocity = throwDir * throwForce;
         }
     }
 }

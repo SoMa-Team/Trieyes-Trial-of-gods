@@ -59,6 +59,8 @@ public class TestCardSpawnerWithButton : MonoBehaviour
         // 4. 전투 시작 이벤트 발동
         Debug.Log("[TEST] 4. Deck.OnEvent(OnBattleStart) 호출 (카드 효과 발동)");
         pawn.deck.OnEvent(Utils.EventType.OnBattleStart, null);
+        Debug.Log("[TEST] 4. Deck.OnEvent(OnBattleSceneChange) 호출 (카드 효과 발동)");
+        pawn.deck.OnEvent(Utils.EventType.OnBattleSceneChange, null);
         Debug.Log("Test4 종료");
 
         // 5. Pawn 스탯 결과 확인

@@ -12,7 +12,7 @@ public static class CSVToCardInfoSOImporter
     public static void ImportFromCSV()
     {
         // 1. CSV 파일 선택
-        string csvPath = "Assets/Scripts/CardInfos/cardInfoData.csv";
+        string csvPath = "Assets/Scripts/CardSystem/CardInfos/cardInfoData.csv";
 
         // 2. SO 저장 폴더 선택
         string soOutputPath = "Assets/CardSystem/CardInfos/CardInfoSO";

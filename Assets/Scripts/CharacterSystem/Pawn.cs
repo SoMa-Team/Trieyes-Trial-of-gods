@@ -46,7 +46,7 @@ namespace CharacterSystem
         public AttackData[] attackDataList; // 여러 공격 데이터
         public List<AttackComponent> attackComponentList = new(); // 공격 컴포넌트 리스트
         public List<Relic> relics = new(); // 장착 가능한 유물 리스트
-        public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
+        public Deck deck; // Pawn이 관리하는 Deck 인스턴스
 
         // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
         protected Vector2 moveDirection;
@@ -85,20 +85,8 @@ namespace CharacterSystem
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
-            
-            // Inspector에서 할당된 Deck을 사용하도록 수정
-            if (deck != null)
-            {
-                // Deck 초기화 (owner 참조 설정, 프리팹 데이터 보존)
-                deck.Initialize(this, true);
-            }
-            else
-            {
-                // Deck이 할당되지 않은 경우 경고를 표시하고, 빈 Deck을 생성합니다.
-                Debug.LogWarning($"<color=yellow>[PAWN] {gameObject.name}에 Deck이 할당되지 않았습니다. Inspector에서 Deck을 할당해주세요. 임시로 빈 Deck을 생성합니다.</color>");
-                deck = gameObject.AddComponent<Deck>();
-                deck.Initialize(this, true);
-            }
+
+            deck = new Deck();
             
             initBaseStat();
         }

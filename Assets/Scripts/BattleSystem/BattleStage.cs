@@ -12,7 +12,7 @@ namespace BattleSystem
     /// 전투 스테이지의 핵심 데이터와 상태를 관리하는 클래스
     /// 현재 활성화된 전투 스테이지의 정보를 담고 있습니다.
     /// </summary>
-    public class BattleStage
+    public class BattleStage : MonoBehaviour
     {
         // ===== 전역 스테이지 관리 =====
         [CanBeNull] public static BattleStage now;
@@ -26,13 +26,27 @@ namespace BattleSystem
         public List<Pawn> enemies = new List<Pawn>();
         public List<Attack> attacks = new List<Attack>();
         public SpawnManager spawnManager;
+        
+        private float time;
 
         // ===== 스테이지 활성화, 비활성화 =====
-        
+
         /// <summary>
         /// 전투 스테이지를 활성화합니다.
         /// 동시에 하나의 스테이지만 활성화될 수 있습니다.
         /// </summary>
+        private void Awake()
+        {
+            if (now is not null)
+            {
+                Destroy(this);
+                return;
+            }
+            
+            DontDestroyOnLoad(gameObject);
+            now = this;
+        }
+        
         public void Activate()
         {
             if (now is not null)
@@ -40,6 +54,7 @@ namespace BattleSystem
                 throw new Exception("There must be exactly one BattleStage.");
             }
             now = this;
+            time = 0.0f;
         }
 
         /// <summary>
@@ -67,7 +82,7 @@ namespace BattleSystem
         public float GetTime()
         {
             // TODO: 시간을 계산하는 기능 필요
-            return 0.0f;
+            return time;
         }
     }
 } 

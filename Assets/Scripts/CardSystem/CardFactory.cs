@@ -76,7 +76,7 @@ namespace CardSystem
                 default:
                     break;
             }
-            card?.Activate();
+            card?.Activate(level);
         }
         
         private void InitCardInfo(Card card, CardInfo info)

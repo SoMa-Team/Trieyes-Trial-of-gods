@@ -26,9 +26,6 @@ namespace CardSystem
         private static int idCounter = 0;
 
         [Header("Card Info")]
-        /// <summary>
-        /// 카드의 고유 식별자입니다.
-        /// </summary>
         public CardID cardId;
         
         public Property[] properties;
@@ -83,12 +80,11 @@ namespace CardSystem
         /// <param name="level">카드의 초기 레벨</param>
         /// <param name="CardActionID">생성할 CardAction의 ID</param>
         /// <param name="owner">카드를 소유할 캐릭터 (선택사항)</param>
-        public void Activate(int level, int CardActionID, Pawn owner = null)
+        public void Activate(int level)
         {
             // 스탯과 강화 정보 초기화
             cardStats = new CardStat(properties, level);
             cardEnhancement = new CardEnhancement(level, 0);
-            SetOwner(owner);
         }
 
         /// <summary>

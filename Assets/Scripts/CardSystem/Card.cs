@@ -139,7 +139,7 @@ namespace CardSystem
         /// <param name="param">이벤트와 함께 전달될 추가 매개변수 (선택사항)</param>
         public void TriggerCardEvent(Utils.EventType eventType, CardSystem.Deck deck, object param = null)
         {
-            cardAction?.OnEvent(owner, deck, eventType, param);
+            cardAction.OnEvent(owner, deck, eventType, param);
         }
 
         /// <summary>

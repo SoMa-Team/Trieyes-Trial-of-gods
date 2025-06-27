@@ -107,10 +107,10 @@ namespace Stats
         }
 
         private int GetCurrentValue(){
-             if(BattleStage.now == null){
-                 throw new Exception("BattleStageManager is not initialized.");
-             }
-             float currentTime = BattleStage.now.GetTime();
+            if(BattleStage.now == null){
+                throw new Exception("BattleStageManager is not initialized.");
+            }
+            float currentTime = BattleStage.now.GetTime();
 
             // 만료된 버프를 모두 제거
             while (!modifierHeap.IsEmpty && modifierHeap.Peek() < currentTime)
@@ -126,7 +126,6 @@ namespace Stats
                 modifierListChanged = false;
                 basicValueChanged = false;
             }
-
             return currentValue;
         }
     }

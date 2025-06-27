@@ -1,15 +1,16 @@
+using UnityEngine;
 using Stats;
 
 namespace AttackSystem
 {
     // ===== [기능 1] AttackData 정보 =====
-    public class AttackData
+    [CreateAssetMenu(fileName = "AttackData", menuName = "Attack/AttackData", order = 1)]
+    public class AttackData : ScriptableObject
     {
         public int attackId;
         public string attackName;
         public string attackIcon;
         public AttackType attackType;
-        public int damage;
         public float cooldown;
         public bool bIsActivated;
         public StatSheet statSheet;

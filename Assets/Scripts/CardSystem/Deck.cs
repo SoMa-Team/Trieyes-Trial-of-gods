@@ -40,7 +40,8 @@ namespace CardSystem
         /// 이벤트 처리 최적화를 위해 사용됩니다.
         /// </summary>
         private Dictionary<Utils.EventType, int> eventTypeCount = new();
-
+        public IReadOnlyDictionary<Utils.EventType, int> EventTypeCount => eventTypeCount;
+        
         // ===== [기능 3] 카드 호출 순서 관리 =====
         /// <summary>
         /// 각 카드의 호출 횟수를 추적하는 리스트입니다.
@@ -110,7 +111,6 @@ namespace CardSystem
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     break;
                 case Utils.EventType.OnBattleEnd:
-                    cardCallOrder ??= new List<int>();
                     cardCallOrder.Clear();
                     cardCallCounts = new List<int>(new int[cards.Count]);
                     owner?.statSheet.ClearBuffs();

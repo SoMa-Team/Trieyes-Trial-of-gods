@@ -3,6 +3,7 @@ using Utils;
 using AttackSystem;
 using UnityEngine;
 using CharacterSystem;
+using System;
 
 namespace AttackComponents
 {
@@ -14,7 +15,18 @@ namespace AttackComponents
     {
         // ===== [기능 1] 기본 정보 =====
         protected Attack parentAttack; // 부모 Attack
+
+        public void SetParentAttack(Attack attack)
+        {
+            parentAttack = attack;
+        }
+
         protected Pawn owner; // 소유자 (Attack의 attacker)
+
+        public GameObject prefab;
+        protected Rigidbody2D rb;
+        protected Animator animator;
+        protected SpriteRenderer spriteRenderer;
         
         // ===== [기능 2] 충돌 처리 =====
         protected HashSet<GameObject> hitTargets = new HashSet<GameObject>(); // 이미 맞은 대상들
@@ -25,10 +37,7 @@ namespace AttackComponents
         /// </summary>
         public Vector2 colliderSizeDelta = Vector2.zero;
 
-        protected virtual void Awake()
-        {
-            // Awake에서는 아무것도 하지 않음
-        }
+        protected float maxDistance = 5f;
 
         protected virtual void Start()
         {
@@ -40,19 +49,32 @@ namespace AttackComponents
             Deactivate();
         }
 
+        protected virtual void Update()
+        {
+            // 기존 Update 유지
+            // ... existing code ...
+
+            // owner와의 거리 체크 및 Destroy
+            if (owner != null)
+            {
+                float dist = Vector3.Distance(transform.position, owner.transform.position);
+                if (dist > maxDistance && parentAttack != null && parentAttack.projectiles != null)
+                {
+                    // attack의 Projectiles 리스트에서 자신을 제거
+                    parentAttack.projectiles.Remove(gameObject);
+                    Destroy(gameObject);
+                }
+            }
+        }
+
         /// <summary>
         /// 오브젝트 풀링을 위한 활성화 함수
         /// </summary>
         public virtual void Activate()
         {
-            // 부모 Attack 찾기
-            parentAttack = GetComponent<Attack>();
-            
-            // owner 참조 설정
-            if (parentAttack != null)
-            {
-                owner = parentAttack.attacker;
-            }
+            rb = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Animator>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         /// <summary>
@@ -139,35 +161,24 @@ namespace AttackComponents
         // ===== [기능 4] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
-            // owner 참조가 없으면 자동으로 찾기
-            EnsureOwnerReference();
-
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
         }
 
-        /// <summary>
-        /// owner 참조가 설정되어 있는지 확인하고, 없으면 자동으로 찾아서 설정합니다.
-        /// </summary>
-        protected void EnsureOwnerReference()
-        {
-            if (owner == null)
-            {
-                // 현재 씬에서 Pawn을 찾아서 owner 참조 설정
-                Pawn foundPawn = FindFirstObjectByType<Pawn>();
-                if (foundPawn != null)
-                {
-                    owner = foundPawn;
-                    Debug.Log($"<color=green>[AttackComponent] Found owner through scene search: {foundPawn.gameObject.name}</color>");
-                }
-                else
-                {
-                    Debug.LogError("<color=red>[AttackComponent] No Pawn found in scene!</color>");
-                }
-            }
-        }
-
         // ===== [기능 6] 공격 컴포넌트 실행 및 이벤트 반응 =====
-        public abstract void Execute(Attack attack);
+        public abstract void Execute(Attack attack, Vector2 direction);
+        
+        // ===== [기능 7] 투사체 스탯 수정 =====
+        /// <summary>
+        /// 투사체의 스탯을 수정합니다.
+        /// 하위 클래스에서 오버라이드하여 구체적인 스탯 수정 로직을 구현합니다.
+        /// </summary>
+        /// <param name="projectileStats">수정할 투사체 스탯</param>
+        public virtual void ModifyProjectileStats(Stats.StatSheet projectileStats)
+        {
+            // 기본적으로는 아무것도 하지 않음
+            // 하위 클래스에서 오버라이드하여 구현
+            Debug.Log($"<color=cyan>[AttackComponent] {GetType().Name} modifying projectile stat sheet</color>");
+        }
     }
 } 

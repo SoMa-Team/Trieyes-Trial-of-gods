@@ -195,12 +195,13 @@ namespace CardSystem
             {
                 owner.statSheet.ClearBuffs();
                 foreach (Card card in cards){
-                    foreach (StatType statType in System.Enum.GetValues(typeof(StatType))){
-                        int value = card.cardStats.statSheet[statType].Value;
-                        if (value == 0) continue; // 0은 굳이 버프로 추가하지 않아도 됨
+                    foreach (var statPair in card.cardStats.stats)
+                    {
+                        int value = statPair.value.Value;
+                        if (value == 0) continue; // 0이면 버프 필요 없음
 
                         var buff = new StatModifier(value, BuffOperationType.Additive);
-                        owner.statSheet[statType].AddBuff(buff);
+                        owner.statSheet[statPair.type].AddBuff(buff);
                     }
                 }
             }

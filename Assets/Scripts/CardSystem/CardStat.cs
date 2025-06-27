@@ -3,6 +3,18 @@ using Stats;
 
 namespace CardSystem
 {
+    [System.Serializable]
+    public struct StatValuePair
+    {
+        public StatType type;
+        public IntegerStatValue value;
+
+        public StatValuePair(StatType type, IntegerStatValue value)
+        {
+            this.type = type;
+            this.value = value;
+        }
+    }
     /// <summary>
     /// 카드의 속성별 스탯 정보를 관리하는 클래스입니다.
     /// 카드의 속성(Property)과 레벨에 따라 스탯을 계산하고 관리합니다.
@@ -15,10 +27,7 @@ namespace CardSystem
         /// <summary>
         /// 카드의 모든 스탯 정보를 담고 있는 StatSheet 객체입니다.
         /// </summary>
-        public StatSheet statSheet;
-        // 스티커를 처리하기 힘들 거 같다라는 얘기가 나와서
-        // 공격력 +10 공격력 +10 -> 공격력 +20
-        // 몇번 인덱스의 인티저밸류스탯밸류에다가 스티커를 적용했는지를 저장
+        public List<StatValuePair> stats;
 
         // --- 생성자 ---
 
@@ -30,7 +39,7 @@ namespace CardSystem
         /// <param name="level">카드의 레벨</param>
         public CardStat(Property[] properties, int level)
         {
-            statSheet = new StatSheet();
+            stats = new List<StatValuePair>();
             foreach (var property in properties)
             {
                 AddStat(property, level);
@@ -48,26 +57,49 @@ namespace CardSystem
         /// <param name="level">카드의 레벨</param>
         public void AddStat(Property property, int level)
         {
-            // TODO: 속성과 레벨에 따라 스탯 시트에 스탯을 추가하는 로직 구현
-            // 아래는 임시 로직
+            StatType targetStat = GetStatType(property);
+            var statValue = new IntegerStatValue(level * 10);
+            
+            stats.Add(new StatValuePair(targetStat, statValue));
+        }
+        
+        private StatType GetStatType(Property property)
+        {
             switch (property)
             {
                 case Property.Attack:
-                    statSheet[StatType.AttackPower].AddToBasicValue(level * 10);
-                    break;
+                    return StatType.AttackPower;
                 case Property.Defense:
-                    statSheet[StatType.Defense].AddToBasicValue(level * 10);
-                    break;
+                    return StatType.Defense;
                 case Property.Health:
-                    statSheet[StatType.Health].AddToBasicValue(level * 10);
-                    break;
+                    return StatType.Health;
                 case Property.MoveSpeed:
-                    statSheet[StatType.MoveSpeed].AddToBasicValue(level * 10);
-                    break;
+                    return StatType.MoveSpeed;
                 default:
-                    statSheet[StatType.AttackSpeed].AddToBasicValue(level * 10);
-                    break;
+                    return StatType.AttackSpeed;
             }
+        }
+        
+        public int GetSumValue(StatType type)
+        {
+            int sum = 0;
+            foreach (var pair in stats)
+            {
+                if (pair.type == type)
+                    sum += pair.value.Value;
+            }
+            return sum;
+        }
+        
+        public List<IntegerStatValue> GetAllValues(StatType type)
+        {
+            var list = new List<IntegerStatValue>();
+            foreach (var pair in stats)
+            {
+                if (pair.type == type)
+                    list.Add(pair.value);
+            }
+            return list;
         }
     }
 } 

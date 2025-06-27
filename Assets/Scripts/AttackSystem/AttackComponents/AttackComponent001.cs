@@ -27,7 +27,7 @@ namespace AttackComponents
         }
 
         // 이 함수는 Attack 트리거 시 호출된다고 가정
-        public override void Execute(Attack attack)
+        public override void Execute(Attack attack, Vector2 direction)
         {
             parentAttack = attack;
             owner = parentAttack.attacker;
@@ -44,7 +44,11 @@ namespace AttackComponents
             // 기존 세팅
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
-            throwDir = owner.IsFacingRight() ? owner.transform.right : -owner.transform.right;
+
+
+            // direction이 0이 아니면 그 방향 벡터로, 0이면 소유자의 방향 벡터로
+            throwDir = direction.magnitude > 0 ? direction : owner.IsFacingRight() ? Vector2.right : Vector2.left;
+
             if (spriteRenderer != null)
                 spriteRenderer.flipX = throwDir.x >= 0;
             if (rb != null)

@@ -725,26 +725,17 @@ namespace CharacterSystem
                 
                 Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
                 
-                // 1단계: 스탯 정보 수집 (Pawn에서 수행)
                 StatSheet attackStats = CollectAttackStats();
 
-                // Attack 관리자의 AttackCompList에 지금 발사해야 하는 투사체들에 어떤 Component가 있는지 확인
-                foreach (var componentPrefab in basicAttack.GetComponent<Attack>().componentPrefabs)
-                {
-                    if (componentPrefab != null)
-                    {
-                        Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} component: {componentPrefab.GetType().Name}</color>");
-                    }
-                }
-                
-                // Attack 관리자에게 공격 실행 요청
                 int projectileCount = attackStats[Stats.StatType.ProjectileCount].Value;
                 float spreadAngle = attackStats[Stats.StatType.ProjectileSpread].Value;
 
+                // === 여기서 방향 결정 ===
+                Vector2 baseDir = playerController.moveDir.normalized;
+
                 if (projectileCount <= 1)
                 {
-                    Vector2 direction = Vector2.right;
-                    basicAttack.GetComponent<Attack>().CreateSingleProjectile(direction, statSheet);
+                    basicAttack.GetComponent<Attack>().CreateSingleProjectile(baseDir, statSheet);
                 }
                 else
                 {
@@ -753,11 +744,10 @@ namespace CharacterSystem
                     for (int i = 0; i < projectileCount; i++)
                     {
                         float angle = startAngle + (angleStep * i);
-                        Vector2 direction = Quaternion.Euler(0, 0, angle) * Vector2.right;
+                        Vector2 direction = Quaternion.Euler(0, 0, angle) * baseDir;
                         basicAttack.GetComponent<Attack>().CreateSingleProjectile(direction, statSheet);
                     }
                 }
-                // 애니메이션 실행
                 ChangeAnimationState("ATTACK");
             }
             catch (Exception ex)

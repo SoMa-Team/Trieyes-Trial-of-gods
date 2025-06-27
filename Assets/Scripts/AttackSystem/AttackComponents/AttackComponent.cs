@@ -166,7 +166,7 @@ namespace AttackComponents
         }
 
         // ===== [기능 6] 공격 컴포넌트 실행 및 이벤트 반응 =====
-        public abstract void Execute(Attack attack);
+        public abstract void Execute(Attack attack, Vector2 direction);
         
         // ===== [기능 7] 투사체 스탯 수정 =====
         /// <summary>

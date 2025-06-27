@@ -7,6 +7,8 @@ namespace CharacterSystem
     {
         public InputActionReference moveAction; // 에디터에서 할당
         public InputActionReference attackAction; // 에디터에서 할당
+        
+        public Vector2 moveDir = Vector2.zero;
 
         private void OnEnable()
         {
@@ -28,17 +30,20 @@ namespace CharacterSystem
             }
         }
 
+        private void Update()
+        {
+            moveDir = moveAction.action.ReadValue<Vector2>();
+        }
+
         public override void ProcessInput() // To-Do: 이름 변경
         {
             if (owner == null)
             {
                 return;
             }
-
-            Vector2 moveDir = Vector2.zero;
+            
             if (moveAction != null)
             {
-                moveDir = moveAction.action.ReadValue<Vector2>();
                 owner.Move(moveDir);
             }
 

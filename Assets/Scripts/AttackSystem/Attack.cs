@@ -358,7 +358,7 @@ namespace AttackSystem
                     var newComp = projectileObj.GetComponent<AttackComponent>();
                     if (newComp != null)
                     {
-                        newComp.Execute(this);
+                        newComp.Execute(this, direction);
                     }
                     else
                     {

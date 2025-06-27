@@ -30,11 +30,21 @@ namespace CardSystem
         /// 카드의 고유 식별자입니다.
         /// </summary>
         public CardID cardId;
+        
+        public Property[] properties;
+        
+        public Rarity rarity;
+        
+        public string cardName;
+        
+        public Sprite illustration;
+
+        [TextArea] public string cardDescription;
 
         /// <summary>
         /// 카드의 액션을 정의하는 ScriptableObject 참조입니다.
         /// </summary>
-        public CardAction cardActionSO;
+        public CardAction cardAction;
 
         /// <summary>
         /// 카드의 스탯 정보를 관리하는 객체입니다.

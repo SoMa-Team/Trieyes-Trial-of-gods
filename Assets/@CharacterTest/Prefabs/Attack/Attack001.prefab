@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3321765285221051951
+--- !u!1 &8016258422780310161
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,47 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2483259497174319218}
-  - component: {fileID: 8246877577602740545}
+  - component: {fileID: 4759455234147747726}
+  - component: {fileID: 1094119204650362320}
   m_Layer: 0
-  m_Name: Attack001Base
+  m_Name: Attack001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2483259497174319218
+--- !u!4 &4759455234147747726
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3321765285221051951}
+  m_GameObject: {fileID: 8016258422780310161}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.37019905, y: 1.0366654, z: -0.037213266}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8246877577602740545
+--- !u!114 &1094119204650362320
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3321765285221051951}
+  m_GameObject: {fileID: 8016258422780310161}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b23f8b8598d416c4e943f79cd079a333, type: 3}
+  m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: 02261820b851d104d97927215f3014c7, type: 2}
   attacker: {fileID: 0}
   parentAttack: {fileID: 0}
-  components:
-  - {fileID: 1815619839633603690, guid: 44fa97c7e8c4d0044b83f22d142f9ad8, type: 3}
+  componentPrefabs:
+  - {fileID: 8522635983962218255, guid: 32215e6c83dca2048b00e3c132532a55, type: 3}
   pierceCount: 1
   projectileSpeed: 10
-  maxDistance: 20
+  maxDistance: 2
+  projectiles: []

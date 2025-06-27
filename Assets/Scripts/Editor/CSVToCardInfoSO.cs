@@ -8,7 +8,7 @@ using CardSystem;
 
 public class CSVToCardInfoSO : EditorWindow
 {
-    private string csvPath = "Assets/card_data.csv";
+    private string csvPath = "Assets/CardInfos/cardInfoData.csv";
     private string soOutputPath = "Assets/CardSystem/CardInfos/CardInfoSO";
 
     [MenuItem("Tools/CSVToStatPreset")]

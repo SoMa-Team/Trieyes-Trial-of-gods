@@ -6,16 +6,27 @@ using UnityEngine;
 
 namespace CardActions
 {
+    /// <summary>
+    /// 앉기(Crouch) 카드 액션을 구현하는 클래스입니다.
+    /// OnBattleSceneChange 이벤트 발생 시 캐릭터의 방어력을 증가시킵니다.
+    /// 방어 자세를 취하여 적의 공격으로부터 보호하는 방어적 카드입니다.
+    /// </summary>
     public class Crouch : CardAction
     {
         // --- 필드 ---
-        public int defensePowerIncrease=10;
+
+        /// <summary>
+        /// 이 카드가 OnBattleSceneChange 이벤트에서 제공하는 방어력 증가 수치입니다.
+        /// 기본값은 10으로 설정되어 있으며, 캐릭터의 방어력을 이만큼 증가시킵니다.
+        /// </summary>
+        public int defensePowerIncrease = 10;
 
         // --- public 메서드 ---
 
         /// <summary>
         /// 카드 액션이 이벤트에 반응할 때 호출되는 메서드입니다.
         /// OnBattleSceneChange 이벤트 발생 시 캐릭터의 방어력을 증가시킵니다.
+        /// 전투 장면이 변경될 때마다 방어력 버프를 적용합니다.
         /// </summary>
         /// <param name="owner">카드를 소유한 캐릭터</param>
         /// <param name="deck">카드가 속한 덱</param>

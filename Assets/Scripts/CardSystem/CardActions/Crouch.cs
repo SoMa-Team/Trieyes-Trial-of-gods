@@ -15,14 +15,7 @@ namespace CardActions
     public class Crouch : CardAction
     {
         // --- 필드 ---
-
-        [Header("카드 고유 설정")]
-        /// <summary>
-        /// 이 카드가 OnBattleSceneChange 이벤트에서 제공하는 방어력 증가 수치입니다.
-        /// Unity 에디터에서 설정 가능합니다.
-        /// </summary>
-        [Tooltip("이 카드가 OnBattleSceneChange에서 올려주는 방어력 수치")]
-        public int defensePowerIncrease;
+        public int defensePowerIncrease=10;
 
         // --- public 메서드 ---
 

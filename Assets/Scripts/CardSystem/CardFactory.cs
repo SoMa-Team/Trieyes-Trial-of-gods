@@ -56,7 +56,7 @@ namespace CardSystem
         /// <param name="card">활성화할 카드</param>
         /// <param name="level">카드의 레벨</param>
         /// <param name="CardActionID">설정할 CardAction의 ID</param>
-        public void Activate(Card card, int level, int CardActionID)
+        private void Activate(Card card, int level, int CardActionID)
         {
             card.Activate(level, CardActionID);
         }

@@ -16,6 +16,9 @@ namespace CardSystem
         /// 카드의 모든 스탯 정보를 담고 있는 StatSheet 객체입니다.
         /// </summary>
         public StatSheet statSheet;
+        // 스티커를 처리하기 힘들 거 같다라는 얘기가 나와서
+        // 공격력 +10 공격력 +10 -> 공격력 +20
+        // 몇번 인덱스의 인티저밸류스탯밸류에다가 스티커를 적용했는지를 저장
 
         // --- 생성자 ---
 

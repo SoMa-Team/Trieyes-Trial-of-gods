@@ -36,7 +36,7 @@ namespace CardSystem
         private bool isPersistent;
 
         /// <summary>
-        /// 이벤트 타입별로 해당 이벤트를 갖고 있는 카드의 개수를 관리하는 딕셔너리입니다.
+        /// 이벤트 타입별로 해당 이벤트를 갖고 있는 카드들의 개수를 관리하는 딕셔너리입니다.
         /// 이벤트 처리 최적화를 위해 사용됩니다.
         /// </summary>
         private Dictionary<Utils.EventType, int> eventTypeCount = new();
@@ -104,8 +104,8 @@ namespace CardSystem
 
             switch (eventType)
             {
-                case Utils.EventType.OnBattleStart:
-                    //CalcBaseStat();
+                case Utils.EventType.OnBattleSceneChange:
+                    CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     break;
@@ -122,12 +122,12 @@ namespace CardSystem
                     if (param is Card removedCard) RemoveCard(removedCard);
                     break;
                 default:
-                    // 이벤트 처리 최적화
-                    if (eventTypeCount != null && !eventTypeCount.ContainsKey(eventType))
-                    {
-                        Debug.Log($"<color=grey>[DECK] {owner?.gameObject.name}: No card reacts to {eventType}, skipping.</color>");
-                        return;
-                    }
+                    // // 이벤트 처리 최적화
+                    // if (eventTypeCount != null && !eventTypeCount.ContainsKey(eventType))
+                    // {
+                    //     Debug.Log($"<color=grey>[DECK] {owner?.gameObject.name}: No card reacts to {eventType}, skipping.</color>");
+                    //     return;
+                    // }
                     foreach (var card in cards)
                     {
                         // 이 카드가 해당 이벤트에 반응할 때만 호출!

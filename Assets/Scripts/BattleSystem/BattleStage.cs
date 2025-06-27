@@ -67,11 +67,6 @@ namespace BattleSystem
             enemies.Add(enemy);
         }
 
-        public void Update()
-        {
-            time += Time.deltaTime;
-        }
-
         public float GetTime()
         {
             // TODO: 시간을 계산하는 기능 필요

@@ -12,7 +12,7 @@ namespace Editor
         static void ImportMultipleCSVs()
         {
             // 다중 파일 선택
-            string folderPath = "Assets/StatPresetsData";
+            string folderPath = "Assets/Scripts/StatSystem/StatPresetsData";
             if (string.IsNullOrEmpty(folderPath)) return;
 
             string[] csvPaths = Directory.GetFiles(folderPath, "*.csv");

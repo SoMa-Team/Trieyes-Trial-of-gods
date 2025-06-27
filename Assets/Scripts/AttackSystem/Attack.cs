@@ -22,6 +22,12 @@ namespace AttackSystem
         // ===== [기능 1] 공격 데이터 및 컴포넌트 관리 =====
         public AttackData attackData; // 기획적으로 논의 필요
         public Pawn attacker; // 공격자 (투사체를 발사한 캐릭터)
+
+        public void SetAttacker(Pawn attacker)
+        {
+            this.attacker = attacker;
+        }
+
         public Attack parentAttack; // 부모 Attack (null이면 관리자, 아니면 투사체)
         public List<GameObject> componentPrefabs = new List<GameObject>();
         public Stats.StatSheet projectileStats = new(); // 투사체가 가질 스탯 정보 (복사본)
@@ -62,24 +68,6 @@ namespace AttackSystem
             Deactivate();
         }
 
-        protected virtual void Start()
-        {
-            // 투사체일 때만 초기화
-            if (IsProjectile)
-            {
-                // 투사체 초기화
-                currentPierceCount = 0;
-                currentLifetime = 0f;
-                hitTargets.Clear();
-                
-                Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} started as projectile</color>");
-            }
-            else
-            {
-                Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} started as manager</color>");
-            }
-        }
-
         protected virtual void Update()
         {
             // 투사체일 때만 Update 처리
@@ -92,58 +80,6 @@ namespace AttackSystem
                     Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} reached max distance ({maxDistance})</color>");
                     DestroyProjectile();
                 }
-            }
-        }
-
-        // ===== [기능 5] 초기화 =====
-        /// <summary>
-        /// Attack 컴포넌트를 초기화합니다. Pawn에서 호출됩니다. (관리자용)
-        /// </summary>
-        /// <param name="attacker">공격자</param>
-        public virtual void Initialize(Pawn attacker)
-        {
-            this.attacker = attacker;
-            this.parentAttack = null; // 관리자임을 명시
-            
-            // 컴포넌트 초기화
-            rb = GetComponent<Rigidbody2D>();
-            attackCollider = GetComponent<Collider2D>();
-            
-            Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} initialized as manager for {attacker?.gameObject.name}</color>");
-        }
-
-        /// <summary>
-        /// 투사체를 초기화합니다. (투사체용)
-        /// </summary>
-        /// <param name="attacker">공격자</param>
-        /// <param name="direction">발사 방향</param>
-        /// <param name="parentAttack">부모 Attack (관리자)</param>
-        public virtual void InitializeProjectile(Pawn attacker, Vector2 direction, Attack parentAttack = null)
-        {
-            Debug.LogError("Attack.InitializeProjectile is not implemented");
-        }
-
-        /// <summary>
-        /// AttackComponent의 colliderSizeDelta를 모두 합산하여 Collider 크기를 조정합니다.
-        /// </summary>
-        protected virtual void AdjustColliderSize()
-        {
-            if (attackCollider is BoxCollider2D boxCollider)
-            {
-                Vector2 baseSize = boxCollider.size;
-                Vector2 totalDelta = Vector2.zero;
-                
-                foreach (var comp in componentPrefabs)
-                {
-                    if (comp != null)
-                    {
-                        totalDelta += comp.GetComponent<AttackComponent>().colliderSizeDelta;
-                    }
-                }
-                
-                boxCollider.size = baseSize + totalDelta;
-                
-                Debug.Log($"<color=cyan>[PROJECTILE] {gameObject.name} collider size adjusted: {baseSize} + {totalDelta} = {boxCollider.size}</color>");
             }
         }
 
@@ -254,7 +190,7 @@ namespace AttackSystem
         }
 
         /// <summary>
-        /// 회피 판정을 수행합니다.
+        /// 회피 판정을 수행합니다. 이 부분은 Pawn으로 가도 될 것 같긴 한데, Flow를 한번에 보여주려면 여기에 적는게 낫습니다.
         /// </summary>
         /// <param name="targetPawn">피격 대상</param>
         /// <returns>회피 성공 여부</returns>
@@ -277,18 +213,11 @@ namespace AttackSystem
         {
             Debug.Log($"<color=red>[ATTACK_PROJECTILE] {gameObject.name} destroyed</color>");
             
-            // 자기 자식 컴포넌트 삭제
+            // 자기 자식 컴포넌트들 삭제
             foreach (var component in componentPrefabs)
             {
                 Destroy(component);
             }
-        }
-
-        // ===== [기능 8] 공격 실행 =====
-        public virtual void Execute(Pawn target)
-        {
-            // 공격 실행 로직
-            Debug.Log($"<color=yellow>[ATTACK] {gameObject.name} executing attack on {target.gameObject.name}</color>");
         }
 
         /// <summary>
@@ -296,6 +225,21 @@ namespace AttackSystem
         /// </summary>
         public virtual void Activate()
         {
+            // 투사체일 때만 초기화
+            if (IsProjectile)
+            {
+                // 투사체 초기화
+                currentPierceCount = 0;
+                currentLifetime = 0f;
+                hitTargets.Clear();
+                
+                Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} started as projectile</color>");
+            }
+            else
+            {
+                Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} started as manager</color>");
+            }
+
             // 컴포넌트 초기화
             rb = GetComponent<Rigidbody2D>();
             attackCollider = GetComponent<Collider2D>();

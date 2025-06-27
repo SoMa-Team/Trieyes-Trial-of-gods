@@ -246,7 +246,7 @@ namespace CharacterSystem
             attackObj.transform.localRotation = Quaternion.identity;
 
             basicAttack = attackObj;
-            basicAttack.GetComponent<Attack>().Initialize(this);
+            basicAttack.GetComponent<Attack>().SetAttacker(this);
         }
 
         /// <summary>

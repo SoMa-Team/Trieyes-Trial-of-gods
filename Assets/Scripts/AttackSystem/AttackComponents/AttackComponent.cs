@@ -39,11 +39,6 @@ namespace AttackComponents
 
         protected float maxDistance = 5f;
 
-        protected virtual void Awake()
-        {
-            // Awake에서는 아무것도 하지 않음
-        }
-
         protected virtual void Start()
         {
             Activate();
@@ -166,32 +161,8 @@ namespace AttackComponents
         // ===== [기능 4] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
-            // owner 참조가 없으면 자동으로 찾기
-            EnsureOwnerReference();
-
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
-        }
-
-        /// <summary>
-        /// owner 참조가 설정되어 있는지 확인하고, 없으면 자동으로 찾아서 설정합니다.
-        /// </summary>
-        protected void EnsureOwnerReference()
-        {
-            if (owner == null)
-            {
-                // 현재 씬에서 Pawn을 찾아서 owner 참조 설정
-                Pawn foundPawn = FindFirstObjectByType<Pawn>();
-                if (foundPawn != null)
-                {
-                    owner = foundPawn;
-                    Debug.Log($"<color=green>[AttackComponent] Found owner through scene search: {foundPawn.gameObject.name}</color>");
-                }
-                else
-                {
-                    Debug.LogError("<color=red>[AttackComponent] No Pawn found in scene!</color>");
-                }
-            }
         }
 
         // ===== [기능 6] 공격 컴포넌트 실행 및 이벤트 반응 =====
@@ -208,22 +179,6 @@ namespace AttackComponents
             // 기본적으로는 아무것도 하지 않음
             // 하위 클래스에서 오버라이드하여 구현
             Debug.Log($"<color=cyan>[AttackComponent] {GetType().Name} modifying projectile stat sheet</color>");
-        }
-
-        // ===== [기능 8] 투사체 시각 효과 제공 =====
-        public virtual Sprite GetProjectileSprite(Vector2 direction)
-        {
-            return null;
-        }
-
-        public virtual RuntimeAnimatorController GetProjectileAnimator(Vector2 direction)
-        {
-            return null;
-        }
-
-        public void SetOwner(Pawn attacker)
-        {
-            owner = attacker;
         }
     }
 } 

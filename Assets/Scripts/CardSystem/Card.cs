@@ -40,6 +40,8 @@ namespace CardSystem
         public Sprite illustration;
 
         [TextArea] public string cardDescription;
+        
+        public List<Utils.EventType> eventTypes = new();
 
         /// <summary>
         /// 카드의 액션을 정의하는 ScriptableObject 참조입니다.
@@ -83,23 +85,8 @@ namespace CardSystem
         /// <param name="owner">카드를 소유할 캐릭터 (선택사항)</param>
         public void Activate(int level, int CardActionID, Pawn owner = null)
         {
-            // CardActionFactory가 초기화되었는지 확인
-            if (CardActionFactory.Instance == null)
-            {
-                Debug.LogWarning("CardActionFactory가 초기화되지 않았습니다.");
-                return;
-            }
-
-            // CardAction 생성
-            cardActionSO = CardActionFactory.Instance.Create(CardActionID);
-            if (cardActionSO == null)
-            {
-                Debug.LogWarning($"CardAction 생성 실패! CardActionID={CardActionID}");
-                return;
-            }
-
             // 스탯과 강화 정보 초기화
-            cardStats = new CardStat(cardActionSO.properties, level);
+            cardStats = new CardStat(properties, level);
             cardEnhancement = new CardEnhancement(level, 0);
             SetOwner(owner);
         }
@@ -122,7 +109,7 @@ namespace CardSystem
         /// <param name="param">이벤트와 함께 전달될 추가 매개변수 (선택사항)</param>
         public void TriggerCardEvent(Utils.EventType eventType, CardSystem.Deck deck, object param = null)
         {
-            cardActionSO?.OnEvent(owner, deck, eventType, param);
+            cardAction?.OnEvent(owner, deck, eventType, param);
         }
 
         /// <summary>

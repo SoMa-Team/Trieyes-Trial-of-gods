@@ -59,7 +59,34 @@ namespace CardSystem
         /// <param name="CardActionID">설정할 CardAction의 ID</param>
         private void Activate(Card card, int level, int CardActionID)
         {
-            card.Activate(level, CardActionID);
+            switch(CardActionID)
+            {
+                case 0:
+                    InitCardInfo(card, cardInfos[CardActionID]);
+                    card.cardAction = new PreparingMarch();
+                    break;
+                case 1:
+                    InitCardInfo(card, cardInfos[CardActionID]);
+                    card.cardAction = new Crouch();
+                    break;
+                case 2:
+                    InitCardInfo(card, cardInfos[CardActionID]);
+                    card.cardAction = new Shadow();
+                    break;
+                default:
+                    break;
+            }
+            card?.Activate();
+        }
+        
+        private void InitCardInfo(Card card, CardInfo info)
+        {
+            card.cardName = info.cardName;
+            card.rarity = info.rarity;
+            card.properties = info.properties;
+            card.illustration = info.illustration;
+            card.cardDescription = info.cardDescription;
+            card.eventTypes = new List<Utils.EventType>(info.eventTypes); // 깊은 복사
         }
 
         /// <summary>

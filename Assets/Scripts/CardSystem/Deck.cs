@@ -131,7 +131,7 @@ namespace CardSystem
                     foreach (var card in cards)
                     {
                         // 이 카드가 해당 이벤트에 반응할 때만 호출!
-                        if (card.cardActionSO != null && card.cardActionSO.eventTypes.Contains(eventType))
+                        if (card.cardAction != null && card.eventTypes.Contains(eventType))
                         {
                             card.TriggerCardEvent(eventType, this, param);
                         }
@@ -152,7 +152,7 @@ namespace CardSystem
             {
                 cards.Add(card);
                 card.SetOwner(owner);
-                foreach (var evt in card.cardActionSO.eventTypes)
+                foreach (var evt in card.eventTypes)
                 {
                     if (eventTypeCount.ContainsKey(evt))
                         eventTypeCount[evt]++;
@@ -171,7 +171,7 @@ namespace CardSystem
         {
             if (card != null && cards.Remove(card))
             {
-                foreach (var evt in card.cardActionSO.eventTypes)
+                foreach (var evt in card.eventTypes)
                 {
                     if (eventTypeCount.TryGetValue(evt, out int count))
                     {
@@ -255,7 +255,7 @@ namespace CardSystem
             {
                 if (cardIndex < cards.Count)
                 {
-                    Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardActionSO.cardName}");
+                    Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardName}");
                     cards[cardIndex]?.TriggerCardEvent(eventType, this, param);
                 }
             }

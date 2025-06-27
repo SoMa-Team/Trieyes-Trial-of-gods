@@ -80,7 +80,7 @@ namespace CardSystem
                         {
                             foreach (var eventType in cardEvents)
                             {
-                                owner.GetCardAcceptedEvents().Add(eventType);
+                                owner.GetCardAcceptedEvents()[eventType]++;
                             }
                         }
                     }
@@ -147,6 +147,14 @@ namespace CardSystem
                 CalcActionInitOrder();
                 
                 // 2. 계산된 순서대로 카드 액션 초기화 (기본 스탯은 보존)
+                CalcActionInitStat(Utils.EventType.OnBattleStart);
+            }
+
+            if (eventType == Utils.EventType.OnBattleSceneChange)
+            {
+                Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) processing OnBattleSceneChange</color>");
+                // 1. 카드 호출 순서 계산
+                CalcActionInitOrder();
                 CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
             }
             
@@ -212,7 +220,7 @@ namespace CardSystem
                     {
                         foreach (var eventType in cardEvents)
                         {
-                            owner.GetCardAcceptedEvents().Add(eventType);
+                            owner.GetCardAcceptedEvents()[eventType]++;
                         }
                         Debug.Log($"<color=cyan>[DECK] {owner.gameObject.name} added card events from {card.cardAction.GetType().Name}</color>");
                     }

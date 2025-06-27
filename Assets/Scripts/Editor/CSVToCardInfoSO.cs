@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using CardSystem;
-using Microsoft.VisualBasic.FileIO;
+using Utils;
 
 public static class CSVToCardInfoSOImporter
 {
@@ -16,7 +16,7 @@ public static class CSVToCardInfoSOImporter
         string csvPath = "Assets/Scripts/CardSystem/CardInfos/cardInfoData.csv";
 
         // 2. SO 저장 폴더 선택
-        string soOutputPath = "Assets/CardSystem/CardInfos/CardInfoSO";
+        string soOutputPath = "Assets/Scripts/CardSystem/CardInfos/CardInfoSO";
 
         // 3. CSV 읽기
         var lines = File.ReadAllLines(csvPath);
@@ -37,8 +37,7 @@ public static class CSVToCardInfoSOImporter
         for (int i = 1; i < lines.Length; i++)
         {
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
-            var values = SplitCsvLine(lines[i]);
-            var values = lines[i].Split(',');
+            var values = CsvUtils.SplitCsvLine(lines[i]).ToArray();
 
             if (values.Length < headers.Length) continue;
 

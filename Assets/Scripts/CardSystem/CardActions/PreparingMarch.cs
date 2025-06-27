@@ -7,12 +7,6 @@ using BattleSystem;
 
 namespace CardActions
 {
-    /// <summary>
-    /// 전진 준비(PreparingMarch) 카드 액션을 구현하는 클래스입니다.
-    /// OnBattleSceneChange 이벤트 발생 시 캐릭터의 공격력을 증가시킵니다.
-    /// CreateAssetMenu 속성을 통해 Unity 에디터에서 ScriptableObject로 생성할 수 있습니다.
-    /// </summary>
-    [CreateAssetMenu(menuName = "CardActions/PreparingMarch")]
     public class PreparingMarch : CardAction
     {
         // --- 필드 ---

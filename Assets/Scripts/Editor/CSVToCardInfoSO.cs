@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using CardSystem;
+using Microsoft.VisualBasic.FileIO;
 
 public static class CSVToCardInfoSOImporter
 {
@@ -36,6 +37,7 @@ public static class CSVToCardInfoSOImporter
         for (int i = 1; i < lines.Length; i++)
         {
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
+            var values = SplitCsvLine(lines[i]);
             var values = lines[i].Split(',');
 
             if (values.Length < headers.Length) continue;
@@ -72,6 +74,7 @@ public static class CSVToCardInfoSOImporter
                 Debug.LogWarning($"{cardName}: {values[idx_illustration]} Sprite를 Resources에서 못 찾음!");
 
             card.cardDescription = values[idx_cardDescription];
+            Debug.Log(card.cardDescription);
 
             // eventTypes
             card.eventTypes = values[idx_eventTypes]

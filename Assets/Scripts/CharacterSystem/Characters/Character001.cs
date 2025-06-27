@@ -9,13 +9,13 @@ namespace CharacterSystem
     {
         // ===== [기능 1] 고유 필드 =====
         public int experience = 0;
-        public PlayerController playerController;
 
         // ===== [기능 2] 초기화 및 스탯 =====
         protected override void Awake()
         {
             base.Awake();
             this.gold = 1000;
+            
             // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
             playerController = GetComponent<PlayerController>();
             if (playerController == null)

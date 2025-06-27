@@ -107,28 +107,26 @@ namespace Stats
         }
 
         private int GetCurrentValue(){
-            // if(BattleStage.now == null){
-            //     throw new Exception("BattleStageManager is not initialized.");
-            // }
-            // float currentTime = BattleStage.now.GetTime();
+            if(BattleStage.now == null){
+                throw new Exception("BattleStageManager is not initialized.");
+            }
+            float currentTime = BattleStage.now.GetTime();
 
             // 만료된 버프를 모두 제거
-            // while (!modifierHeap.IsEmpty && modifierHeap.Peek() < currentTime)
-            // {
-            //     modifierHeap.Pop();
-            //     modifierListChanged = true;
-            // }
+            while (!modifierHeap.IsEmpty && modifierHeap.Peek() < currentTime)
+            {
+                modifierHeap.Pop();
+                modifierListChanged = true;
+            }
 
-            // // 버프 리스트에 변동이 생겼거나, 기본 값이 변경되었으면 재계산
-            // if (modifierListChanged||basicValueChanged)
-            // {
-            //     RecalculateValue();
-            //     modifierListChanged = false;
-            //     basicValueChanged = false;
-            // }
-
-            // return currentValue;
-            return basicValue;
+            // 버프 리스트에 변동이 생겼거나, 기본 값이 변경되었으면 재계산
+            if (modifierListChanged||basicValueChanged)
+            {
+                RecalculateValue();
+                modifierListChanged = false;
+                basicValueChanged = false;
+            }
+            return currentValue;
         }
     }
 } 

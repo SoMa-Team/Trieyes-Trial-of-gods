@@ -33,16 +33,6 @@ namespace CharacterSystem
             RegisterAcceptedEvents(
                 Utils.EventType.OnLevelUp
             );
-            
-            // Character001의 카드들이 받을 특별한 이벤트들 등록
-            RegisterCardAcceptedEvents(
-                Utils.EventType.OnLevelUp
-            );
-            
-            // Character001의 유물들이 받을 특별한 이벤트들 등록
-            RegisterRelicAcceptedEvents(
-                Utils.EventType.OnLevelUp
-            );
         }
 
         protected override void OnDestroy()

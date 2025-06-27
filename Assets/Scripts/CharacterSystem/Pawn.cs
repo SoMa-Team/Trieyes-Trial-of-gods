@@ -81,8 +81,6 @@ namespace CharacterSystem
         /// </summary>
         protected HashSet<Utils.EventType> acceptedEvents = new HashSet<Utils.EventType>();
         
-        protected Dictionary<Utils.EventType, int> cardAcceptedEvents = new Dictionary<Utils.EventType, int>();
-        
         protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>();
 
         // ===== [Unity 생명주기] =====
@@ -134,7 +132,7 @@ namespace CharacterSystem
             );
            
 
-            deck.Initialize(this, true);
+            deck.Activate(this, true);
             initBaseStat();
 
             // 기본 공격 초기화
@@ -327,11 +325,6 @@ namespace CharacterSystem
         }
 
         // ===== [기능 1] 캐릭터 기본 정보 =====
-        public Dictionary<Utils.EventType, int> GetCardAcceptedEvents()
-        {
-            return cardAcceptedEvents;
-        }
-
         public Dictionary<Utils.EventType, int> GetRelicAcceptedEvents()
         {
             return relicAcceptedEvents;
@@ -355,21 +348,6 @@ namespace CharacterSystem
         }
 
         /// <summary>
-        /// 카드들이 받을 이벤트를 등록합니다. (카운트 관리)
-        /// </summary>
-        /// <param name="eventTypes">등록할 이벤트 타입들</param>
-        protected virtual void RegisterCardAcceptedEvents(params Utils.EventType[] eventTypes)
-        {
-            foreach (var eventType in eventTypes)
-            {
-                if (cardAcceptedEvents.ContainsKey(eventType))
-                    cardAcceptedEvents[eventType]++;
-                else
-                    cardAcceptedEvents[eventType] = 1;
-            }
-        }
-
-        /// <summary>
         /// 유물들이 받을 이벤트를 등록합니다. (카운트 관리)
         /// </summary>
         /// <param name="eventTypes">등록할 이벤트 타입들</param>
@@ -381,23 +359,6 @@ namespace CharacterSystem
                     relicAcceptedEvents[eventType]++;
                 else
                     relicAcceptedEvents[eventType] = 1;
-            }
-        }
-
-        /// <summary>
-        /// 카드들이 받을 이벤트를 해제합니다. (카운트 관리)
-        /// </summary>
-        /// <param name="eventTypes">해제할 이벤트 타입들</param>
-        protected virtual void UnregisterCardAcceptedEvents(params Utils.EventType[] eventTypes)
-        {
-            foreach (var eventType in eventTypes)
-            {
-                if (cardAcceptedEvents.ContainsKey(eventType))
-                {
-                    cardAcceptedEvents[eventType]--;
-                    if (cardAcceptedEvents[eventType] <= 0)
-                        cardAcceptedEvents.Remove(eventType);
-                }
             }
         }
 
@@ -435,7 +396,7 @@ namespace CharacterSystem
         /// <returns>허용되면 true, 아니면 false</returns>
         protected virtual bool IsCardEventAccepted(Utils.EventType eventType)
         {
-            return cardAcceptedEvents.ContainsKey(eventType) && cardAcceptedEvents[eventType] > 0;
+            return deck.EventTypeCount.ContainsKey(eventType) && deck.EventTypeCount[eventType] > 0;
         }
 
         /// <summary>
@@ -452,11 +413,6 @@ namespace CharacterSystem
         public void ClearAcceptedEvents()
         {
             acceptedEvents.Clear();
-        }
-
-        public void ClearCardAcceptedEvents()
-        {
-            cardAcceptedEvents.Clear();
         }
 
         public void ClearRelicAcceptedEvents()
@@ -609,7 +565,6 @@ namespace CharacterSystem
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
-                Debug.Log($"<color=cyan>[EVENT_FILTER] {gameObject.name} processing {eventType} for deck (card events: {string.Join(", ", cardAcceptedEvents)})</color>");
                 Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
             }

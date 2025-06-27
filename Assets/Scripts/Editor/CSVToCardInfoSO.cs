@@ -6,42 +6,18 @@ using System.Linq;
 using System.Collections.Generic;
 using CardSystem;
 
-public class CSVToCardInfoSO : EditorWindow
+public static class CSVToCardInfoSOImporter
 {
-    private string csvPath = "Assets/CardInfos/cardInfoData.csv";
-    private string soOutputPath = "Assets/CardSystem/CardInfos/CardInfoSO";
-
-    [MenuItem("Tools/CSVToStatPreset")]
-    public static void ShowWindow()
+    [MenuItem("Tools/CSVToCardInfoSO")]
+    public static void ImportFromCSV()
     {
-        GetWindow<CSVToCardInfoSO>("CSVToStatPreset");
-    }
+        // 1. CSV 파일 선택
+        string csvPath = "Assets/Scripts/CardInfos/cardInfoData.csv";
 
-    void OnGUI()
-    {
-        GUILayout.Label("CSV 파일 경로", EditorStyles.boldLabel);
-        csvPath = EditorGUILayout.TextField("CSV 파일 경로", csvPath);
+        // 2. SO 저장 폴더 선택
+        string soOutputPath = "Assets/CardSystem/CardInfos/CardInfoSO";
 
-        GUILayout.Label("SO 저장 경로", EditorStyles.boldLabel);
-        soOutputPath = EditorGUILayout.TextField("SO 저장 경로", soOutputPath);
-
-        if (GUILayout.Button("CSV로부터 CardInfoSO 생성/덮어쓰기"))
-        {
-            ImportCSVToSO();
-        }
-    }
-
-    void ImportCSVToSO()
-    {
-        if (!File.Exists(csvPath))
-        {
-            Debug.LogError($"CSV 파일이 없습니다: {csvPath}");
-            return;
-        }
-
-        if (!Directory.Exists(soOutputPath))
-            Directory.CreateDirectory(soOutputPath);
-
+        // 3. CSV 읽기
         var lines = File.ReadAllLines(csvPath);
         if (lines.Length < 2)
         {
@@ -60,7 +36,8 @@ public class CSVToCardInfoSO : EditorWindow
         for (int i = 1; i < lines.Length; i++)
         {
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
-            var values = SplitCsvLine(lines[i]);
+            var values = lines[i].Split(',');
+
             if (values.Length < headers.Length) continue;
 
             string cardName = values[idx_cardName];
@@ -69,7 +46,7 @@ public class CSVToCardInfoSO : EditorWindow
             string assetPath = Path.Combine(soOutputPath, $"{cardName}.asset");
 
             // 기존 SO가 있으면 불러오고, 없으면 새로 생성
-            CardInfo card = AssetDatabase.LoadAssetAtPath<CardInfo>(assetPath);
+            CardInfo card = AssetDatabase.LoadAssetAtPath<CardInfo>(assetPath.Replace(Application.dataPath, "Assets"));
             bool isNew = false;
             if (card == null)
             {
@@ -103,7 +80,7 @@ public class CSVToCardInfoSO : EditorWindow
                 .ToList();
 
             if (isNew)
-                AssetDatabase.CreateAsset(card, assetPath);
+                AssetDatabase.CreateAsset(card, assetPath.Replace(Application.dataPath, "Assets"));
             else
                 EditorUtility.SetDirty(card);
         }
@@ -111,12 +88,6 @@ public class CSVToCardInfoSO : EditorWindow
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log("CardInfoSO 생성/덮어쓰기 완료!");
-    }
-
-    // 심플 CSV 파서
-    string[] SplitCsvLine(string line)
-    {
-        return line.Split(',');
     }
 }
 #endif

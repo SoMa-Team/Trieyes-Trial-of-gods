@@ -12,7 +12,7 @@ namespace BattleSystem
     /// 적 캐릭터의 생성과 관리를 담당하는 팩토리 클래스
     /// 싱글톤 패턴을 사용하여 전역적으로 접근 가능합니다.
     /// </summary>
-    public class EnemyFactory : MonoBehaviour, IFactory<Pawn>
+    public class EnemyFactory : MonoBehaviour
     {
         // ===== 싱글톤 =====
         public static EnemyFactory Instance { private set; get; }

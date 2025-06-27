@@ -14,4 +14,20 @@
 *.mov filter=lfs diff=lfs merge=lfs -text
 *.avi filter=lfs diff=lfs merge=lfs -text
 *.unity filter=lfs diff=lfs merge=lfs -text 
+
+# 바이너리 파일은 diff 생략
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.fbx     binary
+*.wav     binary
+*.mp3     binary
+*.ogg     binary
+*.ttf     binary
+*.anim    binary
+*.controller binary
+*.prefab  merge=unityyamlmerge
+*.unity   merge=unityyamlmerge
+# .meta 파일은 diff 가능 (원하면 binary로 처리)
+*.meta    text
 * !text !filter !merge !diff

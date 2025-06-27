@@ -19,41 +19,314 @@ namespace CharacterSystem
     /// </summary>
     public abstract class Pawn : MonoBehaviour, IEventHandler, IMovable
     {
+        // ===== [필드] =====
         [Header("Pawn Settings")]
+
         public int maxHp = 100;
+
         public int currentHp;
+
         public float moveSpeed = 5f;
         
         [Header("Components")]
-        //public SpriteRenderer spriteRenderer;
         public GameObject spumPrefabs;
+        
         public Rigidbody2D rb;
+
         public CapsuleCollider2D capsuleCollider;
+
         public PlayerController playerController;
         
         [Header("Stats")]
-        public StatSheet statSheet = new(); // 여러 스탯 정보
+
+        public StatSheet statSheet = new();
+        
         public StatPresetSO statPresetSO;
-        
-        // 이벤트 처리용
+
         private List<object> eventHandlers = new List<object>();
-        
-        // ===== [기능 1] 캐릭터 기본 정보 =====
+        protected string currentAnimationState;
+
+        protected float lastAttackTime = 0f;
+
+        protected float attackCooldown = 0f;
+
+        // ===== [프로퍼티] =====
         public int pawnId { get; private set; }
+        
         public string pawnName { get; protected set; }
+        
         public int level { get; protected set; }
-        public int gold { get; protected set; } // 골드 시스템 추가
+        
+        public int gold { get; protected set; }
 
-        // ===== [기능 2] 스탯 시스템 =====
-        public GameObject basicAttack; // 기본 공격이자 관리자 공격
-        public List<Relic> relics = new(); // 장착 가능한 유물 리스트
-        public Deck deck = new Deck(); // Pawn이 관리하는 Deck 인스턴스
+        // ===== [기능별 필드] =====
+        /// <summary>
+        /// 기본 공격이자 관리자 공격
+        /// </summary>
+        public GameObject basicAttack;
+        
+        /// <summary>
+        /// 장착 가능한 유물 리스트
+        /// </summary>
+        public List<Relic> relics = new();
+        
+        /// <summary>
+        /// Pawn이 관리하는 Deck 인스턴스
+        /// </summary>
+        public Deck deck = new Deck();
 
-        // ===== [기능 11] 이벤트 필터링 시스템 =====
-        protected HashSet<Utils.EventType> acceptedEvents = new HashSet<Utils.EventType>(); // 이 Pawn이 받을 이벤트들
-        protected Dictionary<Utils.EventType, int> cardAcceptedEvents = new Dictionary<Utils.EventType, int>(); // 카드들이 받을 이벤트들 (카운트 관리)
-        protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>(); // 유물들이 받을 이벤트들 (카운트 관리)
+        // ===== [이벤트 필터링 시스템] =====
+        /// <summary>
+        /// 이 Pawn이 받을 이벤트들
+        /// </summary>
+        protected HashSet<Utils.EventType> acceptedEvents = new HashSet<Utils.EventType>();
+        
+        protected Dictionary<Utils.EventType, int> cardAcceptedEvents = new Dictionary<Utils.EventType, int>();
+        
+        protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>();
 
+        // ===== [Unity 생명주기] =====
+        protected virtual void Awake()
+        {
+            // Awake에서는 아무것도 하지 않음
+        }
+
+        protected virtual void Start()
+        {
+            Activate();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            Deactivate();
+        }
+
+        public virtual void Update() 
+        {    
+            // 자동공격 수행
+            PerformAutoAttack();
+        }
+
+        // ===== [커스텀 메서드] =====
+        /// <summary>
+        /// 오브젝트 풀링을 위한 활성화 함수
+        /// </summary>
+        public virtual void Activate()
+        {
+            // 컴포넌트 초기화
+            spumPrefabs = Instantiate(spumPrefabs, transform);
+            spumPrefabs.transform.localPosition = Vector3.zero;
+
+            rb = GetComponent<Rigidbody2D>();
+            capsuleCollider = GetComponent<CapsuleCollider2D>();
+            playerController = GetComponent<PlayerController>();
+            
+            // 스탯 시트 초기화
+            statSheet = new StatSheet();
+            
+            // 기본 이벤트 등록
+            RegisterAcceptedEvents(
+                Utils.EventType.OnAttack,
+                Utils.EventType.OnDamaged,
+                Utils.EventType.OnDeath,
+                Utils.EventType.OnKilled,
+                Utils.EventType.OnHPUpdated
+            );
+           
+
+            deck.Initialize(this, true);
+            initBaseStat();
+
+            // 기본 공격 초기화
+            GameObject attackObj = Instantiate(basicAttack);
+            attackObj.transform.SetParent(transform);
+            attackObj.transform.localPosition = Vector3.zero;
+            attackObj.transform.localRotation = Quaternion.identity;
+
+            basicAttack = attackObj;
+            basicAttack.GetComponent<Attack>().SetAttacker(this);
+        }
+
+        /// <summary>
+        /// 오브젝트 풀링을 위한 비활성화 함수
+        /// </summary>
+        public virtual void Deactivate()
+        {
+            // 이벤트 핸들러 정리
+            eventHandlers.Clear();
+            
+            // 리스트 초기화
+            if (relics != null)
+            {
+                relics.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 기본 스탯을 초기화합니다.
+        /// </summary>
+        protected void initBaseStat()
+        {
+            if(statSheet == null)
+            {
+                throw new Exception("statSheet is null");
+            }
+            if(statPresetSO != null)
+            {
+                ApplyStatPresetSO(statPresetSO);
+            }
+        }
+
+        /// <summary>
+        /// 스탯 프리셋을 적용합니다.
+        /// </summary>
+        /// <param name="preset">적용할 스탯 프리셋</param>
+        protected void ApplyStatPresetSO(StatPresetSO preset)
+        {
+            if (preset == null || preset.stats == null) return;
+
+            foreach (var pair in preset.stats)
+            {
+                statSheet[pair.type].SetBasicValue(pair.value);
+                Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
+            }
+        }
+
+        /// <summary>
+        /// 데미지를 받습니다.
+        /// </summary>
+        /// <param name="damage">받을 데미지</param>
+        public virtual void TakeDamage(int damage)
+        {
+            
+        }
+
+        /// <summary>
+        /// 지정된 방향으로 이동합니다.
+        /// </summary>
+        /// <param name="direction">이동할 방향</param>
+        public virtual void Move(Vector2 direction)
+        {
+            if (direction.magnitude > 0.1f)
+            {
+                transform.Translate(direction * Time.deltaTime * moveSpeed);
+
+                // 이동 방향에 따라 전체 flip (Y축 회전)
+                if (direction.x != 0)
+                {
+                    // SPUM 프리팹의 부모(혹은 UnitRoot 등)에 적용
+                    spumPrefabs.transform.rotation = direction.x > 0
+                        ? Quaternion.Euler(0, 180, 0)
+                        : Quaternion.identity;
+                }
+
+                ChangeAnimationState("MOVE");
+            }
+            else
+            {
+                ChangeAnimationState("IDLE");
+            }
+        }
+
+        /// <summary>
+        /// 애니메이션 상태를 변경합니다.
+        /// </summary>
+        /// <param name="newState">새로운 애니메이션 상태</param>
+        protected virtual void ChangeAnimationState(string newState)
+        {
+            // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
+            Animator animator = spumPrefabs.transform.Find("UnitRoot").GetComponent<Animator>();
+
+            if (animator != null && currentAnimationState != newState && animator.HasState(0, Animator.StringToHash(newState)))
+            {
+                // switch로 각 newStat에 대한 Parameter 값을 변경
+                switch (newState)
+                {
+                    case "MOVE":
+                        animator.SetBool("1_Move", true);
+                        break;
+                    case "IDLE":
+                        animator.SetBool("1_Move", false);
+                        break;
+                    case "ATTACK":
+                        animator.SetTrigger("2_Attack");
+                        break;
+                    case "DAMAGED":
+                        animator.SetBool("3_Damaged", true);
+                        break;
+                    case "DEATH":
+                        animator.SetBool("4_Death", true);
+                        animator.SetTrigger("4_Death");
+                        break;
+                }
+            }
+            else
+            {
+                Debug.Log($"<color=red>[ANIMATION] {gameObject.name} animation state '{newState}' not found</color>");
+            }
+        }
+
+        // ===== [스탯 관련 메서드] =====
+        /// <summary>
+        /// 지정된 스탯 타입의 값을 가져옵니다.
+        /// </summary>
+        /// <param name="statType">스탯 타입</param>
+        /// <returns>스탯 값</returns>
+        public int GetStatValue(StatType statType)
+        {
+            return statSheet[statType];
+        }
+        
+        /// <summary>
+        /// 지정된 스탯 타입의 값을 설정합니다.
+        /// </summary>
+        /// <param name="statType">스탯 타입</param>
+        /// <param name="value">설정할 값</param>
+        public void SetStatValue(StatType statType, int value)
+        {
+            statSheet[statType].SetBasicValue(value);
+        }
+
+        /// <summary>
+        /// 공격에 필요한 스탯 정보를 수집합니다.
+        /// Relic, Card의 영향을 포함한 최종 스탯을 반환합니다.
+        /// </summary>
+        /// <returns>공격용 스탯 정보</returns>
+        public virtual StatSheet CollectAttackStats()
+        {
+            // 기본 스탯 복사
+            StatSheet attackStats = new StatSheet();
+            
+            // Pawn의 모든 스탯을 복사
+            foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
+            {
+                int statValue = GetStatValue(statType);
+                attackStats[statType].SetBasicValue(statValue);
+            }
+            
+            Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
+            
+            return attackStats;
+        }
+
+        /// <summary>
+        /// 넉백을 적용합니다.
+        /// </summary>
+        /// <param name="attacker">공격자</param>
+        protected virtual void ApplyKnockback(Pawn attacker)
+        {
+            Rigidbody2D targetRb = GetComponent<Rigidbody2D>();
+            if (targetRb != null)
+            {
+                Vector2 knockbackDirection = (transform.position - attacker.transform.position).normalized;
+                float knockbackForce = 5f; // 기본 넉백 힘
+                targetRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+                
+                Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
+            }
+        }
+
+        // ===== [기능 1] 캐릭터 기본 정보 =====
         public Dictionary<Utils.EventType, int> GetCardAcceptedEvents()
         {
             return cardAcceptedEvents;
@@ -189,276 +462,6 @@ namespace CharacterSystem
         public void ClearRelicAcceptedEvents()
         {
             relicAcceptedEvents.Clear();
-        }
-
-        // ===== [기능 6] 이동 및 물리/애니메이션 관련 =====
-        protected string currentAnimationState;
-        
-        protected virtual void Awake()
-        {
-            // Awake에서는 아무것도 하지 않음
-        }
-
-        protected virtual void Start()
-        {
-            Activate();
-        }
-
-        protected virtual void OnDestroy()
-        {
-            Deactivate();
-        }
-
-        /// <summary>
-        /// 오브젝트 풀링을 위한 활성화 함수
-        /// </summary>
-        public virtual void Activate()
-        {
-            // 컴포넌트 초기화
-            // spriteRenderer = GetComponent<SpriteRenderer>();
-            spumPrefabs = Instantiate(spumPrefabs, transform);
-            spumPrefabs.transform.localPosition = Vector3.zero;
-
-            rb = GetComponent<Rigidbody2D>();
-            capsuleCollider = GetComponent<CapsuleCollider2D>();
-            playerController = GetComponent<PlayerController>();
-            
-            // 스탯 시트 초기화
-            statSheet = new StatSheet();
-            
-            // 기본 이벤트 등록
-            RegisterAcceptedEvents(
-                Utils.EventType.OnAttack,
-                Utils.EventType.OnDamaged,
-                Utils.EventType.OnDeath,
-                Utils.EventType.OnKilled,
-                Utils.EventType.OnHPUpdated
-            );
-           
-
-            deck.Initialize(this, true);
-            initBaseStat();
-
-            // 기본 공격 초기화
-            GameObject attackObj = Instantiate(basicAttack);
-            attackObj.transform.SetParent(transform);
-            attackObj.transform.localPosition = Vector3.zero;
-            attackObj.transform.localRotation = Quaternion.identity;
-
-            basicAttack = attackObj;
-            basicAttack.GetComponent<Attack>().SetAttacker(this);
-        }
-
-        /// <summary>
-        /// 오브젝트 풀링을 위한 비활성화 함수
-        /// </summary>
-        public virtual void Deactivate()
-        {
-            // 이벤트 핸들러 정리
-            eventHandlers.Clear();
-            
-            // 리스트 초기화
-            if (relics != null)
-            {
-                relics.Clear();
-            }
-        }
-        
-        protected void initBaseStat()
-        {
-            if(statSheet == null)
-            {
-                throw new Exception("statSheet is null");
-            }
-            if(statPresetSO != null)
-            {
-                ApplyStatPresetSO(statPresetSO);
-            }
-        }
-        protected void ApplyStatPresetSO(StatPresetSO preset)
-        {
-            if (preset == null || preset.stats == null) return;
-
-            foreach (var pair in preset.stats)
-            {
-                statSheet[pair.type].SetBasicValue(pair.value);
-                Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
-            }
-        }
-        
-        public virtual void Update() 
-        {    
-            // 자동공격 수행
-            PerformAutoAttack();
-        }
-        
-        public virtual void TakeDamage(int damage)
-        {
-            
-        }
-        
-        public virtual void Move(Vector2 direction)
-        {
-            if (direction.magnitude > 0.1f)
-            {
-                transform.Translate(direction * Time.deltaTime * moveSpeed);
-
-                // 이동 방향에 따라 전체 flip (Y축 회전)
-                if (direction.x != 0)
-                {
-                    // SPUM 프리팹의 부모(혹은 UnitRoot 등)에 적용
-                    spumPrefabs.transform.rotation = direction.x > 0
-                        ? Quaternion.Euler(0, 180, 0)
-                        : Quaternion.identity;
-                }
-
-                ChangeAnimationState("MOVE");
-            }
-            else
-            {
-                ChangeAnimationState("IDLE");
-            }
-        }
-        
-        protected virtual void ChangeAnimationState(string newState)
-        {
-            // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
-            // To-Do : GetComponentInChildren 사용해서 찾아보기
-            Animator animator = spumPrefabs.transform.Find("UnitRoot").GetComponent<Animator>();
-
-            if (animator != null && currentAnimationState != newState && animator.HasState(0, Animator.StringToHash(newState)))
-            {
-                // switch로 각 newStat에 대한 Parameter 값을 변경
-                switch (newState)
-                {
-                    case "MOVE":
-                        animator.SetBool("1_Move", true);
-                        break;
-                    case "IDLE":
-                        animator.SetBool("1_Move", false);
-                        break;
-                    case "ATTACK":
-                        animator.SetTrigger("2_Attack");
-                        break;
-                    case "DAMAGED":
-                        animator.SetBool("3_Damaged", true);
-                        break;
-                    case "DEATH":
-                        animator.SetBool("4_Death", true);
-                        animator.SetTrigger("4_Death");
-                        break;
-                }
-            }
-            else
-            {
-                Debug.Log($"<color=red>[ANIMATION] {gameObject.name} animation state '{newState}' not found</color>");
-            }
-        }
-
-        // ===== [기능 4] 스탯 관련 ===== 많이 안쓰일 것 같다면 지워도 됨
-        public int GetStatValue(StatType statType)
-        {
-            return statSheet[statType];
-        }
-        
-        public void SetStatValue(StatType statType, int value)
-        {
-            statSheet[statType].SetBasicValue(value);
-        }
-
-        /// <summary>
-        /// 공격에 필요한 스탯 정보를 수집합니다.
-        /// Relic, Card의 영향을 포함한 최종 스탯을 반환합니다.
-        /// </summary>
-        /// <returns>공격용 스탯 정보</returns>
-        public virtual StatSheet CollectAttackStats()
-        {
-            // 기본 스탯 복사
-            StatSheet attackStats = new StatSheet();
-            
-            // Pawn의 모든 스탯을 복사
-            foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
-            {
-                int statValue = GetStatValue(statType);
-                attackStats[statType].SetBasicValue(statValue);
-            }
-            
-            Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
-            
-            return attackStats;
-        }
-
-        /// <summary>
-        /// 넉백을 적용합니다.
-        /// </summary>
-        /// <param name="attacker">공격자</param>
-        protected virtual void ApplyKnockback(Pawn attacker)
-        {
-            Rigidbody2D targetRb = GetComponent<Rigidbody2D>();
-            if (targetRb != null)
-            {
-                Vector2 knockbackDirection = (transform.position - attacker.transform.position).normalized;
-                float knockbackForce = 5f; // 기본 넉백 힘
-                targetRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
-                
-                Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
-            }
-        }
-
-        // ===== [기능 10] 이벤트 데이터 클래스들 =====
-        
-        /// <summary>
-        /// 공격 관련 이벤트 데이터
-        /// </summary>
-        public class AttackEventData
-        {
-            public Pawn attacker;
-            public Pawn target;
-            public Attack projectile; // 투사체 정보 (데미지 계산용)
-            
-            public AttackEventData(Pawn attacker, Pawn target)
-            {
-                this.attacker = attacker;
-                this.target = target;
-                this.projectile = null;
-            }
-            
-            public AttackEventData(Pawn attacker, Pawn target, Attack projectile)
-            {
-                this.attacker = attacker;
-                this.target = target;
-                this.projectile = projectile;
-            }
-        }
-
-        /// <summary>
-        /// 스킬 관련 이벤트 데이터
-        /// </summary>
-        public class SkillEventData
-        {
-            public Pawn owner;
-            public Attack skill;
-            
-            public SkillEventData(Pawn owner, Attack skill)
-            {
-                this.owner = owner;
-                this.skill = skill;
-            }
-        }
-
-        /// <summary>
-        /// 스탯 업데이트 관련 이벤트 데이터
-        /// </summary>
-        public class StatUpdateEventData
-        {
-            public Pawn owner;
-            public int previousValue;
-            
-            public StatUpdateEventData(Pawn owner, int previousValue)
-            {
-                this.owner = owner;
-                this.previousValue = previousValue;
-            }
         }
 
         // ===== [기능 8] HP 및 골드 관리 =====
@@ -674,10 +677,6 @@ namespace CharacterSystem
             }
         }
 
-        
-        protected float lastAttackTime = 0f; // 마지막 공격 시간
-        protected float attackCooldown = 0f; // 공격 쿨다운 시간
-        
         /// <summary>
         /// 공격속도 스탯을 기반으로 공격 쿨다운을 계산합니다.
         /// 공격속도 10 = 60fps 기준 1초에 1개 발사
@@ -755,15 +754,124 @@ namespace CharacterSystem
                 Debug.LogError($"[ERROR] ExecuteAttack 예외: {ex}");
             }
         }
+
+        /// <summary>
+        /// 오른쪽을 향하고 있는지 확인합니다.
+        /// </summary>
+        /// <returns>오른쪽을 향하고 있으면 true</returns>
         public bool IsFacingRight()
         {
-            float yRotation = spumPrefabs.transform.rotation.eulerAngles.y;
-            return yRotation > 90f && yRotation < 270f;
+            return spumPrefabs.transform.rotation.eulerAngles.y == 180f;
         }
+
+        /// <summary>
+        /// 위쪽을 향하고 있는지 확인합니다.
+        /// </summary>
+        /// <returns>위쪽을 향하고 있으면 true</returns>
         public bool IsFacingUp()
         {
-            float yRotation = spumPrefabs.transform.rotation.eulerAngles.y;
-            return yRotation > 0f && yRotation < 180f;
+            return spumPrefabs.transform.rotation.eulerAngles.z > 0f;
+        }
+
+        // ===== [내부 클래스] =====
+        /// <summary>
+        /// 공격 관련 이벤트 데이터
+        /// </summary>
+        public class AttackEventData
+        {
+            /// <summary>
+            /// 공격자
+            /// </summary>
+            public Pawn attacker;
+            
+            /// <summary>
+            /// 공격 대상
+            /// </summary>
+            public Pawn target;
+            
+            /// <summary>
+            /// 투사체 정보 (데미지 계산용)
+            /// </summary>
+            public Attack projectile;
+            
+            /// <summary>
+            /// 공격 이벤트 데이터를 생성합니다.
+            /// </summary>
+            /// <param name="attacker">공격자</param>
+            /// <param name="target">공격 대상</param>
+            public AttackEventData(Pawn attacker, Pawn target)
+            {
+                this.attacker = attacker;
+                this.target = target;
+                this.projectile = null;
+            }
+            
+            /// <summary>
+            /// 투사체 공격 이벤트 데이터를 생성합니다.
+            /// </summary>
+            /// <param name="attacker">공격자</param>
+            /// <param name="target">공격 대상</param>
+            /// <param name="projectile">투사체</param>
+            public AttackEventData(Pawn attacker, Pawn target, Attack projectile)
+            {
+                this.attacker = attacker;
+                this.target = target;
+                this.projectile = projectile;
+            }
+        }
+
+        /// <summary>
+        /// 스킬 관련 이벤트 데이터
+        /// </summary>
+        public class SkillEventData
+        {
+            /// <summary>
+            /// 스킬 소유자
+            /// </summary>
+            public Pawn owner;
+            
+            /// <summary>
+            /// 스킬
+            /// </summary>
+            public Attack skill;
+            
+            /// <summary>
+            /// 스킬 이벤트 데이터를 생성합니다.
+            /// </summary>
+            /// <param name="owner">스킬 소유자</param>
+            /// <param name="skill">스킬</param>
+            public SkillEventData(Pawn owner, Attack skill)
+            {
+                this.owner = owner;
+                this.skill = skill;
+            }
+        }
+
+        /// <summary>
+        /// 스탯 업데이트 관련 이벤트 데이터
+        /// </summary>
+        public class StatUpdateEventData
+        {
+            /// <summary>
+            /// 스탯 소유자
+            /// </summary>
+            public Pawn owner;
+            
+            /// <summary>
+            /// 이전 값
+            /// </summary>
+            public int previousValue;
+            
+            /// <summary>
+            /// 스탯 업데이트 이벤트 데이터를 생성합니다.
+            /// </summary>
+            /// <param name="owner">스탯 소유자</param>
+            /// <param name="previousValue">이전 값</param>
+            public StatUpdateEventData(Pawn owner, int previousValue)
+            {
+                this.owner = owner;
+                this.previousValue = previousValue;
+            }
         }
     }
 } 

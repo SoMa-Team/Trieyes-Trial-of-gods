@@ -7,10 +7,10 @@ namespace CharacterSystem
 {
     public class Character001 : Pawn
     {
-        // ===== [기능 1] 고유 필드 =====
+        // ===== [필드] =====
         public int experience = 0;
 
-        // ===== [기능 2] 초기화 및 스탯 =====
+        // ===== [Unity 생명주기] =====
         protected override void Awake()
         {
             base.Awake();
@@ -50,7 +50,35 @@ namespace CharacterSystem
             base.OnDestroy();
         }
 
-        // ===== [기능 3] 이벤트 처리 =====
+        public override void Update()
+        {
+            base.Update();
+            playerController?.ProcessInputActions();
+        }
+
+        // ===== [커스텀 메서드] =====
+        public override void Activate()
+        {
+            base.Activate();
+            Debug.Log("Character001 Activated.");
+        }
+
+        public override void Deactivate()
+        {
+            // Character001 고유 정리 로직
+            experience = 0;
+            gold = 0;
+            
+            base.Deactivate();
+            Debug.Log("Character001 Deactivated.");
+        }
+
+        // ===== [이벤트 처리 메서드] =====
+        /// <summary>
+        /// 이벤트를 처리합니다.
+        /// </summary>
+        /// <param name="eventType">이벤트 타입</param>
+        /// <param name="param">이벤트 파라미터</param>
         public override void OnEvent(Utils.EventType eventType, object param)
         {
             // 이벤트 필터링: Character001이 받지 않는 이벤트는 무시
@@ -80,30 +108,6 @@ namespace CharacterSystem
                     }
                     break;
             }
-        }
-        
-        // ===== 활성화/비활성화 =====
-        public override void Activate()
-        {
-            base.Activate();
-            Debug.Log("Character001 Activated.");
-        }
-
-        
-        public override void Deactivate()
-        {
-            // Character001 고유 정리 로직
-            experience = 0;
-            gold = 0;
-            
-            base.Deactivate();
-            Debug.Log("Character001 Deactivated.");
-        }
-
-        public override void Update()
-        {
-            base.Update();
-            playerController?.ProcessInput();
         }
     }
 } 

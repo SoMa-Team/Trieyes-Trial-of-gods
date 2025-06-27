@@ -4,6 +4,9 @@ using Utils;
 
 namespace CharacterSystem
 {
+    /// <summary>
+    /// 사망 시 골드를 드랍하는 기본 적 캐릭터
+    /// </summary>
     public class Enemy001 : Pawn
     {
         // ===== [기능 1] 적 기본 정보 =====
@@ -25,13 +28,14 @@ namespace CharacterSystem
             base.OnDestroy();
         }
 
+        // ===== [커스텀 메서드] =====
         /// <summary>
         /// 오브젝트 풀링을 위한 활성화 함수
         /// </summary>
         public override void Activate()
         {
             base.Activate();
-            // TO-DO: AttackComponent 할당
+            // TODO: AttackComponent 할당
             Debug.Log("Enemy001 Activated.");
         }
 
@@ -47,7 +51,28 @@ namespace CharacterSystem
             Debug.Log("Enemy001 Deactivated.");
         }
 
-        // ===== [기능 3] 사망 이벤트 처리 =====
+        /// <summary>
+        /// 이벤트를 처리합니다.
+        /// </summary>
+        /// <param name="eventType">이벤트 타입</param>
+        /// <param name="param">이벤트 파라미터</param>
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            switch (eventType)
+            {
+                case Utils.EventType.OnDeath:
+                    OnSelfDeath(param);
+                    break;
+                // 기타 이벤트별 동작 추가
+            }
+        }
+
+        // ===== [이벤트 처리 메서드] =====
+        /// <summary>
+        /// 사망 시 골드 드랍 처리
+        /// </summary>
+        /// <param name="param">이벤트 파라미터</param>
         protected void OnSelfDeath(object param)
         {
             Debug.Log($"<color=green>{gameObject.name} (Enemy001) is performing its unique death action: Exploding!</color>");
@@ -58,19 +83,6 @@ namespace CharacterSystem
             {
                 attackData.attacker.ChangeGold(dropGold);
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {attackData.attacker.gameObject.name}</color>");
-            }
-        }
-
-        // ===== [기능 4] 이벤트 처리 =====
-        public override void OnEvent(Utils.EventType eventType, object param)
-        {
-            base.OnEvent(eventType, param);
-            switch (eventType)
-            {
-                case Utils.EventType.OnDeath:
-                    OnSelfDeath(param);
-                    break;
-                // 기타 이벤트별 동작 추가
             }
         }
     }

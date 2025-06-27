@@ -17,6 +17,7 @@ namespace CardSystem
         /// CardFactory의 싱글톤 인스턴스입니다.
         /// </summary>
         public static CardFactory Instance { private set; get; }
+        public List<CardInfo> cardInfos = new List<CardInfo>();
 
         // --- private 메서드 ---
 

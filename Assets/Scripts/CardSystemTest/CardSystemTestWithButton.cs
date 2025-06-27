@@ -44,7 +44,7 @@ public class TestCardSpawnerWithButton : MonoBehaviour
             Debug.LogError("[TEST] 카드 생성 실패! CardFactory.Instance 또는 CardActionFactory.Instance가 null일 수 있음.");
             return;
         }
-        Debug.Log($"[TEST] 1. 생성된 카드: cardId={newCard.cardId}, cardActionSO={newCard.cardActionSO?.cardName}");
+        Debug.Log($"[TEST] 1. 생성된 카드: cardId={newCard.cardId}, cardActionSO={newCard?.cardName}");
 
         // 2. 덱에 카드 추가
         Debug.Log("[TEST] 2. Deck에 카드 추가");

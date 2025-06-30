@@ -131,16 +131,18 @@ namespace CardSystem
         {
             switch (property)
             {
-                case Property.Attack:
+                case Property.Fire:
                     return StatType.AttackPower;
-                case Property.Defense:
+                case Property.Steel:
                     return StatType.Defense;
-                case Property.Health:
+                case Property.Light:
                     return StatType.Health;
-                case Property.MoveSpeed:
+                case Property.Dark:
                     return StatType.MoveSpeed;
-                default:
+                case Property.Water:
                     return StatType.AttackSpeed;
+                default:
+                    return StatType.CriticalRate;
             }
         }
     }

@@ -91,7 +91,6 @@ namespace CharacterSystem
 
         protected virtual void Start()
         {
-            Activate();
         }
 
         protected virtual void OnDestroy()
@@ -143,6 +142,8 @@ namespace CharacterSystem
 
             basicAttack = attackObj;
             basicAttack.GetComponent<Attack>().SetAttacker(this);
+            
+            gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -150,6 +151,7 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Deactivate()
         {
+            gameObject.SetActive(false);
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
             

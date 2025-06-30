@@ -70,6 +70,7 @@ namespace BattleSystem
         public void Activate(BattleStage battleStage, Pawn mainCharacter, Difficulty difficulty)
         {
             // 메인 캐릭터 설정
+            mainCharacter.Activate();
             battleStage.mainCharacter = mainCharacter;
             mainCharacter.transform.SetParent(battleStage.View.transform);
             
@@ -99,8 +100,7 @@ namespace BattleSystem
             // 캐릭터 정리
             foreach (var characters in battleStage.characters)
             {
-                // TODO: 캐릭터 전투 종료 로직 구현 필요
-                // 파괴는 하지 않는다는 사실을 기억하자!
+                characters.Deactivate();
             }
 
             // 적 정리

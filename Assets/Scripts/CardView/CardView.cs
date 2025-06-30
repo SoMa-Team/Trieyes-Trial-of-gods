@@ -12,6 +12,9 @@ namespace CardView
         public TMP_Text cardNameText;
         public TMP_Text levelText;
         public TMP_Text descriptionText;
+        
+        public Image propertyEmblemImage;
+        public PropertyEmblemSO propertyEmblemTable;
 
         private Card card;
 
@@ -29,6 +32,15 @@ namespace CardView
             cardNameText.text = card.cardName;
             descriptionText.text = card.cardDescription;
             levelText.text = $"Lv.{card.cardEnhancement.level.Value}";
+            if (card.properties != null && card.properties.Length > 0 && propertyEmblemTable != null)
+            {
+                propertyEmblemImage.sprite = propertyEmblemTable.GetEmblem(card.properties[0]);
+                propertyEmblemImage.enabled = (propertyEmblemImage.sprite != null); // 없으면 비활성화
+            }
+            else
+            {
+                propertyEmblemImage.enabled = false;
+            }
         }
     }
 }

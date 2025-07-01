@@ -29,7 +29,6 @@ namespace CharacterSystem
         public float moveSpeed = 5f;
         
         [Header("Components")]
-        public GameObject spumPrefabs;
         
         public Rigidbody2D rb;
 
@@ -75,6 +74,11 @@ namespace CharacterSystem
         /// </summary>
         public Deck deck = new Deck();
 
+        /// <summary>
+        /// SPUM 프리팹
+        /// </summary>
+        private GameObject spumPrefabs;
+
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
         /// 이 Pawn이 받을 이벤트들
@@ -112,7 +116,7 @@ namespace CharacterSystem
         public virtual void Activate()
         {
             // 컴포넌트 초기화
-            spumPrefabs = Instantiate(spumPrefabs, transform);
+            spumPrefabs = transform.GetChild(0).gameObject;
             spumPrefabs.transform.localPosition = Vector3.zero;
 
             rb = GetComponent<Rigidbody2D>();

@@ -4,7 +4,7 @@ using TMPro;
 using CardSystem;
 using UnityEngine.Serialization;
 
-namespace CardView
+namespace CardViews
 {
     /// <summary>
     /// 카드의 정보를 UI에 표시하는 컴포넌트입니다.

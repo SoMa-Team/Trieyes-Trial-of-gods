@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using CardSystem;
-namespace CardView
+namespace CardViews
 {
     /// <summary>
     /// 카드 속성별 엠블럼(아이콘) 정보를 저장하는 ScriptableObject입니다.

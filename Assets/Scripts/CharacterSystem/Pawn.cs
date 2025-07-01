@@ -133,7 +133,7 @@ namespace CharacterSystem
 
             if (rb != null)
             {
-                rb.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
+                rb.freezeRotation = true;
             }
 
             playerController = GetComponent<PlayerController>();

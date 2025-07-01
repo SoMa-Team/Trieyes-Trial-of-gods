@@ -77,7 +77,7 @@ namespace CharacterSystem
         /// <summary>
         /// SPUM 프리팹
         /// </summary>
-        private GameObject spumPrefabs;
+        protected GameObject pawnPrefab;
 
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
@@ -116,8 +116,8 @@ namespace CharacterSystem
         public virtual void Activate()
         {
             // 컴포넌트 초기화
-            spumPrefabs = transform.GetChild(0).gameObject;
-            spumPrefabs.transform.localPosition = Vector3.zero;
+            pawnPrefab = transform.GetChild(0).gameObject;
+            pawnPrefab.transform.localPosition = Vector3.zero;
 
             rb = GetComponent<Rigidbody2D>();
             Collider = GetComponent<Collider2D>();
@@ -223,7 +223,7 @@ namespace CharacterSystem
                 if (direction.x != 0)
                 {
                     // SPUM 프리팹의 부모(혹은 UnitRoot 등)에 적용
-                    spumPrefabs.transform.rotation = direction.x > 0
+                    pawnPrefab.transform.rotation = direction.x > 0
                         ? Quaternion.Euler(0, 180, 0)
                         : Quaternion.identity;
                 }
@@ -243,7 +243,7 @@ namespace CharacterSystem
         protected virtual void ChangeAnimationState(string newState)
         {
             // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
-            Animator animator = spumPrefabs.transform.Find("UnitRoot").GetComponent<Animator>();
+            Animator animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
 
             if (animator != null && currentAnimationState != newState && animator.HasState(0, Animator.StringToHash(newState)))
             {
@@ -726,7 +726,7 @@ namespace CharacterSystem
         /// <returns>오른쪽을 향하고 있으면 true</returns>
         public bool IsFacingRight()
         {
-            return spumPrefabs.transform.rotation.eulerAngles.y == 180f;
+            return pawnPrefab.transform.rotation.eulerAngles.y == 180f;
         }
 
         /// <summary>
@@ -735,7 +735,7 @@ namespace CharacterSystem
         /// <returns>위쪽을 향하고 있으면 true</returns>
         public bool IsFacingUp()
         {
-            return spumPrefabs.transform.rotation.eulerAngles.z > 0f;
+            return pawnPrefab.transform.rotation.eulerAngles.z > 0f;
         }
 
         // ===== [내부 클래스] =====

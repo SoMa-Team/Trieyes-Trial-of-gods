@@ -117,7 +117,16 @@ namespace CharacterSystem
         {
             // 컴포넌트 초기화
             pawnPrefab = transform.GetChild(0).gameObject;
+
+            if(pawnPrefab == null)
+            {
+                Debug.LogError($"pawnPrefab is null: {gameObject.name}");
+                return;
+            }
+
+            pawnPrefab.transform.SetParent(transform);
             pawnPrefab.transform.localPosition = Vector3.zero;
+            pawnPrefab.transform.localRotation = Quaternion.identity;
 
             rb = GetComponent<Rigidbody2D>();
             Collider = GetComponent<Collider2D>();

@@ -95,7 +95,6 @@ namespace CharacterSystem
 
         protected virtual void Start()
         {
-            Activate();
         }
 
         protected virtual void OnDestroy()

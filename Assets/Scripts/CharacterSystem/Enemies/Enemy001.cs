@@ -1,6 +1,9 @@
 using AttackSystem;
 using UnityEngine;
 using Utils;
+using Unity.Behavior;
+using System.Linq;
+using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -23,11 +26,38 @@ namespace CharacterSystem
         protected override void Start()
         {
             base.Start();
+            
+            // BT 트리에서 Target 변수 디버깅
+            Debug.Log($"[Enemy001] {gameObject.name} started. Checking BT variables...");
+            
+            // BT 트리가 있는지 확인 (Unity Behavior Tree)
+            behaviour = GetComponent<BehaviorGraphAgent>();
+            if (behaviour != null)
+            {
+                Debug.Log($"[Enemy001] BehaviorTree found: {behaviour.name}");
+                
+                // MainCharacter를 런타임에 찾아서 BT 트리의 Blackboard에 할당
+                var mainCharacter = BattleStage.now.transform.GetChild(0);
+                if (mainCharacter != null)
+                {
+                    // Blackboard에 MainCharacter 변수 할당
+                    behaviour.SetVariableValue("MainCharacter", mainCharacter.gameObject);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[Enemy001] BehaviorTree component not found!");
+            }
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
+        }
+        
+        public override void Update()
+        {
+            base.Update();
         }
 
         // ===== [커스텀 메서드] =====

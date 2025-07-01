@@ -43,6 +43,7 @@ namespace BattleSystem
             
             now = this;
             time = 0.0f;
+            View.gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace BattleSystem
         public void Deactivate()
         {
             now = null;
+            View.gameObject.SetActive(false);
         }
 
         // ===== 적 관리 =====

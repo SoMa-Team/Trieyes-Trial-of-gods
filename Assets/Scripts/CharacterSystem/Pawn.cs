@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Behavior;
 using Utils;
 using Stats;
 using AttackSystem;
@@ -78,6 +79,7 @@ namespace CharacterSystem
         /// SPUM 프리팹
         /// </summary>
         protected GameObject pawnPrefab;
+        protected BehaviorGraphAgent behaviour;
 
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
@@ -105,8 +107,11 @@ namespace CharacterSystem
 
         public virtual void Update() 
         {    
-            // 자동공격 수행
-            PerformAutoAttack();
+            if (playerController is not null)
+            {
+                // 자동공격 수행
+                PerformAutoAttack();
+            }
         }
 
         // ===== [커스텀 메서드] =====

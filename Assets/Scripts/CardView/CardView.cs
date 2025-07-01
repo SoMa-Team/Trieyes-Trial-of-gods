@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CardSystem;
+using UnityEngine.Serialization;
 
 namespace CardView
 {
@@ -15,6 +16,10 @@ namespace CardView
         
         public Image propertyEmblemImage;
         public PropertyEmblemSO propertyEmblemTable;
+        
+        public StatTypeEmblemSO statTypeEmblemTable;
+        public Image statTypeEmblemImage;
+        public TMP_Text statIntegerValueText;
 
         private Card card;
 
@@ -32,6 +37,7 @@ namespace CardView
             cardNameText.text = card.cardName;
             descriptionText.text = card.cardDescription;
             levelText.text = $"Lv.{card.cardEnhancement.level.Value}";
+            
             if (card.properties != null && card.properties.Length > 0 && propertyEmblemTable != null)
             {
                 propertyEmblemImage.sprite = propertyEmblemTable.GetEmblem(card.properties[0]);
@@ -40,6 +46,20 @@ namespace CardView
             else
             {
                 propertyEmblemImage.enabled = false;
+            }
+            
+            if (card.cardStats.stats.Count > 0 && statTypeEmblemTable != null)
+            {
+                var stat = card.cardStats.stats[0];
+                statTypeEmblemImage.sprite = statTypeEmblemTable.GetEmblem(stat.type);
+                statTypeEmblemImage.enabled = (statTypeEmblemImage.sprite != null);
+                statIntegerValueText.text = $"+{stat.value.Value}";
+                statIntegerValueText.enabled = true;
+            }
+            else
+            {
+                statTypeEmblemImage.enabled = false;
+                statIntegerValueText.enabled = false;
             }
         }
     }

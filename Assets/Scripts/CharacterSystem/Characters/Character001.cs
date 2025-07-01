@@ -9,6 +9,10 @@ namespace CharacterSystem
     {
         // ===== [필드] =====
         public int experience = 0;
+        
+        // Pawn의 추상 멤버 구현
+        public new Collider2D Collider => GetComponent<Collider2D>();
+        public new Rigidbody2D rb => GetComponent<Rigidbody2D>();
 
         // ===== [Unity 생명주기] =====
         protected override void Awake()

@@ -30,11 +30,11 @@ namespace CharacterSystem
         
         [Header("Components")]
         
-        public Rigidbody2D rb;
+        protected Rigidbody2D rb;
 
-        public CapsuleCollider2D capsuleCollider;
+        protected Collider2D Collider;
 
-        public PlayerController playerController;
+        protected PlayerController playerController;
         
         [Header("Stats")]
 
@@ -120,7 +120,13 @@ namespace CharacterSystem
             spumPrefabs.transform.localPosition = Vector3.zero;
 
             rb = GetComponent<Rigidbody2D>();
-            capsuleCollider = GetComponent<CapsuleCollider2D>();
+            Collider = GetComponent<Collider2D>();
+
+            if (rb != null)
+            {
+                rb.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
+            }
+
             playerController = GetComponent<PlayerController>();
             
             // 스탯 시트 초기화
@@ -549,7 +555,7 @@ namespace CharacterSystem
             if (eventType == Utils.EventType.OnDeath)
             {
                 Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
-                HandleDeath(param as Pawn);
+                HandleDeath();
             }
 
             // 유물들의 이벤트 처리 (필터링 적용)
@@ -614,12 +620,12 @@ namespace CharacterSystem
             }
         }
 
-        private void HandleDeath(Pawn killer)
+        private void HandleDeath()
         {
             Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             ChangeAnimationState("4_Death"); 
             if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
-            if (capsuleCollider != null) capsuleCollider.enabled = false; 
+            if (Collider != null) Collider.enabled = false; 
             Destroy(gameObject, 2f);
         }
         

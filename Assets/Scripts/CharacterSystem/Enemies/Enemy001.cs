@@ -10,7 +10,9 @@ namespace CharacterSystem
     public class Enemy001 : Pawn
     {
         // ===== [기능 1] 적 기본 정보 =====
-        [SerializeField] private int dropGold = 10; // 드랍할 골드 양
+        [SerializeField] 
+        private int dropGold = 10; // 드랍할 골드 양
+        private BoxCollider2D boxCollider;
         
         // ===== [기능 2] 초기화 =====
         protected override void Awake()
@@ -37,6 +39,9 @@ namespace CharacterSystem
             base.Activate();
             // TODO: AttackComponent 할당
             Debug.Log("Enemy001 Activated.");
+
+            // 이런 느낌으로 각 적마다 커스터마이징 
+            // boxCollider = Collider as BoxCollider2D;
         }
 
         /// <summary>

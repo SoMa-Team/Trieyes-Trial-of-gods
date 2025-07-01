@@ -44,6 +44,8 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+
+            // TODO: CSV에서 초기 골드 설정 받아오기
             this.gold = 1000;
             
             // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당

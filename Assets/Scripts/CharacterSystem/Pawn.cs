@@ -29,13 +29,12 @@ namespace CharacterSystem
         public float moveSpeed = 5f;
         
         [Header("Components")]
-        public GameObject spumPrefabs;
         
-        public Rigidbody2D rb;
+        protected Rigidbody2D rb;
 
-        public CapsuleCollider2D capsuleCollider;
+        protected Collider2D Collider;
 
-        public PlayerController playerController;
+        protected PlayerController playerController;
         
         [Header("Stats")]
 
@@ -75,6 +74,11 @@ namespace CharacterSystem
         /// </summary>
         public Deck deck = new Deck();
 
+        /// <summary>
+        /// SPUM 프리팹
+        /// </summary>
+        protected GameObject pawnPrefab;
+
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
         /// 이 Pawn이 받을 이벤트들
@@ -91,7 +95,6 @@ namespace CharacterSystem
 
         protected virtual void Start()
         {
-            Activate();
         }
 
         protected virtual void OnDestroy()
@@ -112,11 +115,26 @@ namespace CharacterSystem
         public virtual void Activate()
         {
             // 컴포넌트 초기화
-            spumPrefabs = Instantiate(spumPrefabs, transform);
-            spumPrefabs.transform.localPosition = Vector3.zero;
+            pawnPrefab = transform.GetChild(0).gameObject;
+
+            if(pawnPrefab == null)
+            {
+                Debug.LogError($"pawnPrefab is null: {gameObject.name}");
+                return;
+            }
+
+            pawnPrefab.transform.SetParent(transform);
+            pawnPrefab.transform.localPosition = Vector3.zero;
+            pawnPrefab.transform.localRotation = Quaternion.identity;
 
             rb = GetComponent<Rigidbody2D>();
-            capsuleCollider = GetComponent<CapsuleCollider2D>();
+            Collider = GetComponent<Collider2D>();
+
+            if (rb != null)
+            {
+                rb.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
+            }
+
             playerController = GetComponent<PlayerController>();
             
             // 스탯 시트 초기화
@@ -213,7 +231,7 @@ namespace CharacterSystem
                 if (direction.x != 0)
                 {
                     // SPUM 프리팹의 부모(혹은 UnitRoot 등)에 적용
-                    spumPrefabs.transform.rotation = direction.x > 0
+                    pawnPrefab.transform.rotation = direction.x > 0
                         ? Quaternion.Euler(0, 180, 0)
                         : Quaternion.identity;
                 }
@@ -233,7 +251,7 @@ namespace CharacterSystem
         protected virtual void ChangeAnimationState(string newState)
         {
             // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
-            Animator animator = spumPrefabs.transform.Find("UnitRoot").GetComponent<Animator>();
+            Animator animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
 
             if (animator != null && currentAnimationState != newState && animator.HasState(0, Animator.StringToHash(newState)))
             {
@@ -545,7 +563,7 @@ namespace CharacterSystem
             if (eventType == Utils.EventType.OnDeath)
             {
                 Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
-                HandleDeath(param as Pawn);
+                HandleDeath();
             }
 
             // 유물들의 이벤트 처리 (필터링 적용)
@@ -610,12 +628,12 @@ namespace CharacterSystem
             }
         }
 
-        private void HandleDeath(Pawn killer)
+        private void HandleDeath()
         {
             Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             ChangeAnimationState("4_Death"); 
             if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
-            if (capsuleCollider != null) capsuleCollider.enabled = false; 
+            if (Collider != null) Collider.enabled = false; 
             Destroy(gameObject, 2f);
         }
         
@@ -716,7 +734,7 @@ namespace CharacterSystem
         /// <returns>오른쪽을 향하고 있으면 true</returns>
         public bool IsFacingRight()
         {
-            return spumPrefabs.transform.rotation.eulerAngles.y == 180f;
+            return pawnPrefab.transform.rotation.eulerAngles.y == 180f;
         }
 
         /// <summary>
@@ -725,7 +743,7 @@ namespace CharacterSystem
         /// <returns>위쪽을 향하고 있으면 true</returns>
         public bool IsFacingUp()
         {
-            return spumPrefabs.transform.rotation.eulerAngles.z > 0f;
+            return pawnPrefab.transform.rotation.eulerAngles.z > 0f;
         }
 
         // ===== [내부 클래스] =====

@@ -108,7 +108,8 @@ namespace Stats
 
         private int GetCurrentValue(){
             if(BattleStage.now == null){
-                throw new Exception("BattleStageManager is not initialized.");
+                //throw new Exception("BattleStageManager is not initialized.");
+                return 0;
             }
             float currentTime = BattleStage.now.GetTime();
 

@@ -9,20 +9,14 @@ namespace CharacterSystem
     {
         // ===== [필드] =====
         public int experience = 0;
+        
+        // Pawn의 추상 멤버 구현
+        public new Collider2D Collider { get; private set; }
+        public new Rigidbody2D rb { get; private set; }
 
         // ===== [Unity 생명주기] =====
         protected override void Awake()
         {
-            base.Awake();
-            this.gold = 1000;
-            
-            // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
-            playerController = GetComponent<PlayerController>();
-            if (playerController == null)
-            {
-                throw new System.Exception("PlayerController not found on " + gameObject.name);
-            }
-            playerController.Initialize(this);
         }
 
         protected override void Start()
@@ -50,6 +44,17 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+
+            // TODO: CSV에서 초기 골드 설정 받아오기
+            this.gold = 1000;
+            
+            // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
+            playerController = GetComponent<PlayerController>();
+            if (playerController == null)
+            {
+                throw new System.Exception("PlayerController not found on " + gameObject.name);
+            }
+            playerController.Initialize(this);
             Debug.Log("Character001 Activated.");
         }
 

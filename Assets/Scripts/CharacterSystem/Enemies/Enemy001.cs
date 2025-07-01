@@ -35,7 +35,9 @@ namespace CharacterSystem
             if (behaviour != null)
             {
                 Debug.Log($"[Enemy001] BehaviorTree found: {behaviour.name}");
-                
+                Animator animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+                behaviour.SetVariableValue("SelfAnim", animator);
+
                 // MainCharacter를 런타임에 찾아서 BT 트리의 Blackboard에 할당
                 var mainCharacter = BattleStage.now.transform.GetChild(0);
                 if (mainCharacter != null)

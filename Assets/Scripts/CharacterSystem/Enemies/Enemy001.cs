@@ -1,6 +1,9 @@
 using AttackSystem;
 using UnityEngine;
 using Utils;
+using Unity.Behavior;
+using System.Linq;
+using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -10,7 +13,9 @@ namespace CharacterSystem
     public class Enemy001 : Pawn
     {
         // ===== [기능 1] 적 기본 정보 =====
-        [SerializeField] private int dropGold = 10; // 드랍할 골드 양
+        [SerializeField] 
+        private int dropGold = 10; // 드랍할 골드 양
+        private BoxCollider2D boxCollider;
         
         // ===== [기능 2] 초기화 =====
         protected override void Awake()
@@ -21,11 +26,40 @@ namespace CharacterSystem
         protected override void Start()
         {
             base.Start();
+            
+            // BT 트리에서 Target 변수 디버깅
+            Debug.Log($"[Enemy001] {gameObject.name} started. Checking BT variables...");
+            
+            // BT 트리가 있는지 확인 (Unity Behavior Tree)
+            behaviour = GetComponent<BehaviorGraphAgent>();
+            if (behaviour != null)
+            {
+                Debug.Log($"[Enemy001] BehaviorTree found: {behaviour.name}");
+                Animator animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+                behaviour.SetVariableValue("SelfAnim", animator);
+
+                // MainCharacter를 런타임에 찾아서 BT 트리의 Blackboard에 할당
+                var mainCharacter = BattleStage.now.transform.GetChild(0);
+                if (mainCharacter != null)
+                {
+                    // Blackboard에 MainCharacter 변수 할당
+                    behaviour.SetVariableValue("MainCharacter", mainCharacter.gameObject);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[Enemy001] BehaviorTree component not found!");
+            }
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
+        }
+        
+        public override void Update()
+        {
+            base.Update();
         }
 
         // ===== [커스텀 메서드] =====
@@ -37,6 +71,9 @@ namespace CharacterSystem
             base.Activate();
             // TODO: AttackComponent 할당
             Debug.Log("Enemy001 Activated.");
+
+            // 이런 느낌으로 각 적마다 커스터마이징 
+            // boxCollider = Collider as BoxCollider2D;
         }
 
         /// <summary>

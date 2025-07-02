@@ -94,7 +94,7 @@ namespace BattleSystem
         private GameObject GetPrefabById(CharacterID id)
         {
             // TODO: characterID와 characterPrefab 매칭 필요
-            return characterPrefabs[0];
+            return characterPrefabs[id];
             
             // return id switch
             // {

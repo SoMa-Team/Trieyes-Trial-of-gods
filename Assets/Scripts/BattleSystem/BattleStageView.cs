@@ -42,6 +42,10 @@ namespace BattleSystem
 
         private void CreateSpriteRect()
         {
+            // TODO : 테스트 이후 제거 필요.
+            if (spriteRectPrefabs is null || ruleTile is null) return;
+            // TODO END
+            
             // 1. 프리팹을 씬에 인스턴스화
             GameObject tilemapGO = Instantiate(spriteRectPrefabs);
 

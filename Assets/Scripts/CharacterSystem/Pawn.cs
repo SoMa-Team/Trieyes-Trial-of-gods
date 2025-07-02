@@ -678,6 +678,11 @@ namespace CharacterSystem
         /// </summary>
         protected virtual void ExecuteAttack()
         {
+            // TODO : Scene 통합 이후 제거 필요
+            if (AttackFactory.Instance is null)
+                return;
+            // TODO END
+            
             Attack attack = AttackFactory.Instance.Create(basicAttack, this);
 
             // GameObject attackObj = Instantiate(basicAttack);

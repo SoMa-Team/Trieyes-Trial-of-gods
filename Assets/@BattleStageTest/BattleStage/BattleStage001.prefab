@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8844113605452727411}
-  - component: {fileID: 3664882064064059805}
   - component: {fileID: 2947605435723044291}
   m_Layer: 0
   m_Name: BattleStage001
@@ -34,24 +33,6 @@ Transform:
   - {fileID: 370277665464752089}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3664882064064059805
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6405400953864103545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19131686d70dfc34681f3ed3ea000b4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCharacter: {fileID: 0}
-  characters: []
-  enemies:
-  - {fileID: 0}
-  attacks: []
-  spawnManager: {fileID: 0}
 --- !u!114 &2947605435723044291
 MonoBehaviour:
   m_ObjectHideFlags: 0

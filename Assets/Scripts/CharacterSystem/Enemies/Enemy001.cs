@@ -39,7 +39,7 @@ namespace CharacterSystem
                 behaviour.SetVariableValue("SelfAnim", animator);
 
                 // MainCharacter를 런타임에 찾아서 BT 트리의 Blackboard에 할당
-                var mainCharacter = BattleStage.now.transform.GetChild(0);
+                var mainCharacter = BattleStage.now.View.transform.GetChild(0);
                 if (mainCharacter != null)
                 {
                     // Blackboard에 MainCharacter 변수 할당

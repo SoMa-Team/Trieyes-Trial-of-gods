@@ -21,9 +21,9 @@ namespace BattleSystem
         // ===== 전투 스테이지 데이터 =====
         public Difficulty difficulty;
         public Pawn mainCharacter;
-        public List<Pawn> characters = new List<Pawn>();
-        public List<Pawn> enemies = new List<Pawn>();
-        public List<Attack> attacks = new List<Attack>();
+        public List<Pawn> characters = new ();
+        public List<Pawn> enemies = new ();
+        public List<Attack> attacks = new ();
         public SpawnManager spawnManager;
         
         private float time;
@@ -52,6 +52,16 @@ namespace BattleSystem
         {
             now = null;
             View.gameObject.SetActive(false);
+
+            foreach (var enemy in enemies)
+            {
+                EnemyFactory.Instance.Deactivate(enemy);
+            }
+            
+            foreach (var attack in attacks)
+            {
+                AttackFactory.Instance.Deactivate(attack);
+            }
         }
 
         // ===== 적 관리 =====
@@ -73,6 +83,11 @@ namespace BattleSystem
         {
             // TODO: 시간을 계산하는 기능 필요
             return time;
+        }
+
+        public void AttachAttack(Attack attack)
+        {
+            attacks.Add(attack);
         }
     }
 } 

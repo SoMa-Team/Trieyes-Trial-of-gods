@@ -6,11 +6,6 @@ public class TestEnemyController : MonoBehaviour
 {
     public Pawn owner;
     public float scale = 1;
-    
-    void Start()
-    {
-                
-    }
 
     void Update()
     {

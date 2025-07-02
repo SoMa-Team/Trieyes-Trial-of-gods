@@ -23,14 +23,8 @@ namespace AttackSystem
         public AttackData attackData; // 기획적으로 논의 필요
         public Pawn attacker; // 공격자 (투사체를 발사한 캐릭터)
 
-        public void SetAttacker(Pawn attacker)
-        {
-            this.attacker = attacker;
-        }
-
         public Attack parentAttack; // 부모 Attack (null이면 관리자, 아니면 투사체)
         public List<GameObject> componentPrefabs = new List<GameObject>();
-        public Stats.StatSheet projectileStats = new(); // 투사체가 가질 스탯 정보 (복사본)
         
         // ===== [기능 2] 투사체 관련 (투사체일 때만 사용) =====
         [SerializeField] protected int pierceCount = 1; // 관통 개수
@@ -57,12 +51,7 @@ namespace AttackSystem
         /// </summary>
         public bool IsProjectile => parentAttack != null;
         public List<GameObject> projectiles = new List<GameObject>();
-
-        protected virtual void Awake()
-        {
-            Activate();
-        }
-
+        
         protected virtual void OnDestroy()
         {
             Deactivate();
@@ -223,8 +212,11 @@ namespace AttackSystem
         /// <summary>
         /// 오브젝트 풀링을 위한 활성화 함수
         /// </summary>
-        public virtual void Activate()
+        /// <param name="pawn"></param>
+        public virtual void Activate(Pawn attacker)
         {
+            this.attacker = attacker;
+            
             // 투사체일 때만 초기화
             if (IsProjectile)
             {

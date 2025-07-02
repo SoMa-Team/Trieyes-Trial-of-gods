@@ -2,14 +2,10 @@ using System.Collections.Generic;
 using Utils;
 using Stats;
 using AttackSystem;
-using AttackComponents;
 using RelicSystem;
 using UnityEngine;
 using CardSystem;
-using CardActions;
-using System.Linq;
 using System;
-using System.IO.Compression;
 
 namespace CharacterSystem
 {
@@ -63,7 +59,7 @@ namespace CharacterSystem
         /// <summary>
         /// 기본 공격이자 관리자 공격
         /// </summary>
-        public GameObject basicAttack;
+        public AttackData basicAttack;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -132,15 +128,6 @@ namespace CharacterSystem
 
             deck.Activate(this, true);
             initBaseStat();
-
-            // 기본 공격 초기화
-            GameObject attackObj = Instantiate(basicAttack);
-            attackObj.transform.SetParent(transform);
-            attackObj.transform.localPosition = Vector3.zero;
-            attackObj.transform.localRotation = Quaternion.identity;
-
-            basicAttack = attackObj;
-            basicAttack.GetComponent<Attack>().SetAttacker(this);
             
             gameObject.SetActive(true);
         }
@@ -670,45 +657,55 @@ namespace CharacterSystem
         /// </summary>
         protected virtual void ExecuteAttack()
         {
-            try
-            {
-                if (basicAttack == null)
-                {
-                    Debug.LogWarning($"<color=yellow>[AUTO_ATTACK] {gameObject.name} has no basicAttack component!</color>");
-                    return;
-                }
-                
-                Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
-                
-                StatSheet attackStats = CollectAttackStats();
+            Attack attack = AttackFactory.Instance.Create(basicAttack, this);
 
-                int projectileCount = attackStats[Stats.StatType.ProjectileCount].Value;
-                float spreadAngle = attackStats[Stats.StatType.ProjectileSpread].Value;
+            // GameObject attackObj = Instantiate(basicAttack);
+            // attackObj.transform.SetParent(transform);
+            // attackObj.transform.localPosition = Vector3.zero;
+            // attackObj.transform.localRotation = Quaternion.identity;
+            //
+            // basicAttack = attackObj;
+            // basicAttack.GetComponent<Attack>().SetAttacker(this);
 
-                // === 여기서 방향 결정 ===
-                Vector2 baseDir = playerController.moveDir.normalized;
-
-                if (projectileCount <= 1)
-                {
-                    basicAttack.GetComponent<Attack>().CreateSingleProjectile(baseDir, statSheet);
-                }
-                else
-                {
-                    float angleStep = spreadAngle / (projectileCount - 1);
-                    float startAngle = -spreadAngle / 2f;
-                    for (int i = 0; i < projectileCount; i++)
-                    {
-                        float angle = startAngle + (angleStep * i);
-                        Vector2 direction = Quaternion.Euler(0, 0, angle) * baseDir;
-                        basicAttack.GetComponent<Attack>().CreateSingleProjectile(direction, statSheet);
-                    }
-                }
-                ChangeAnimationState("ATTACK");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[ERROR] ExecuteAttack 예외: {ex}");
-            }
+            // try
+            // {
+            //     if (basicAttack == null)
+            //     {
+            //         Debug.LogWarning($"<color=yellow>[AUTO_ATTACK] {gameObject.name} has no basicAttack component!</color>");
+            //         return;
+            //     }
+            //     
+            //     Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
+            //     
+            //     StatSheet attackStats = CollectAttackStats();
+            //
+            //     int projectileCount = attackStats[Stats.StatType.ProjectileCount].Value;
+            //     float spreadAngle = attackStats[Stats.StatType.ProjectileSpread].Value;
+            //
+            //     // === 여기서 방향 결정 ===
+            //     Vector2 baseDir = playerController.moveDir.normalized;
+            //
+            //     if (projectileCount <= 1)
+            //     {
+            //         basicAttack.GetComponent<Attack>().CreateSingleProjectile(baseDir, statSheet);
+            //     }
+            //     else
+            //     {
+            //         float angleStep = spreadAngle / (projectileCount - 1);
+            //         float startAngle = -spreadAngle / 2f;
+            //         for (int i = 0; i < projectileCount; i++)
+            //         {
+            //             float angle = startAngle + (angleStep * i);
+            //             Vector2 direction = Quaternion.Euler(0, 0, angle) * baseDir;
+            //             basicAttack.GetComponent<Attack>().CreateSingleProjectile(direction, statSheet);
+            //         }
+            //     }
+            //     ChangeAnimationState("ATTACK");
+            // }
+            // catch (Exception ex)
+            // {
+            //     Debug.LogError($"[ERROR] ExecuteAttack 예외: {ex}");
+            // }
         }
 
         /// <summary>

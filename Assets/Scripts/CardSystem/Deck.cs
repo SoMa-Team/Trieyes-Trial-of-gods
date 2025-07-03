@@ -188,6 +188,8 @@ namespace CardSystem
         {
             int idxA = cards.IndexOf(cardA);
             int idxB = cards.IndexOf(cardB);
+
+            Debug.Log($"SwapCards: cardA({cardA?.cardName ?? "null"}) idxA: {idxA}, cardB({cardB?.cardName ?? "null"}) idxB: {idxB}");
             
             if (idxA < 0)
             {

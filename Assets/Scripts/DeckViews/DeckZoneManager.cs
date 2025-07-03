@@ -52,16 +52,6 @@ namespace DeckViews
 
         public void OnCardClicked(CardInDeckView cardView)
         {
-            
-            // 이미 선택된 카드 다시 누르면 해제
-            if (selectedCard1 == cardView)
-            {
-                selectedCard1.SetSelected(false);
-                selectedCard1 = null;
-                removeButton.interactable = false;
-                return;
-            }
-
             // 첫번째 카드가 선택되지 않은 경우
             if (selectedCard1 == null)
             {
@@ -70,9 +60,18 @@ namespace DeckViews
                 removeButton.interactable = true; // 첫 카드만 선택하면 제거 버튼 표시
                 return;
             }
+            
+            // 이미 선택된 카드 다시 누르면 해제
+            else if (selectedCard1 == cardView)
+            {
+                selectedCard1.SetSelected(false);
+                selectedCard1 = null;
+                removeButton.interactable = false;
+                return;
+            }
 
             // 두번째 카드 선택 (그리고 두 카드가 다를 때만)
-            if (selectedCard1 != cardView)
+            else if (selectedCard1 != cardView)
             {
                 selectedCard2 = cardView;
                 selectedCard2.SetSelected(true);

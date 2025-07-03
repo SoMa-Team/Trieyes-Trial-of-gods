@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 373576148167022596}
   - component: {fileID: 7048805263917066739}
+  - component: {fileID: -6770395914511400560}
   - component: {fileID: 7661104193838161178}
   - component: {fileID: 9097963647980026422}
   m_Layer: 7
@@ -53,6 +54,19 @@ MonoBehaviour:
   statPresetSO: {fileID: 11400000, guid: b6ca1ab4fbc702f4f91bd07c9d83d7cb, type: 2}
   basicAttack: {fileID: 8016258422780310161, guid: ed7b48300e0914e4da7d85bf92d94413, type: 3}
   dropGold: 10
+--- !u!114 &-6770395914511400560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9048457892950683038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69256d39b1a4d0f43b9c8aa962f71acc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minFollowDistance: 0.1
 --- !u!50 &7661104193838161178
 Rigidbody2D:
   serializedVersion: 5

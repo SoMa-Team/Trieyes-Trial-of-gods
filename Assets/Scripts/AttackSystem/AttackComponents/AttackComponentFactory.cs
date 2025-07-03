@@ -60,7 +60,7 @@ namespace AttackComponents
         /// <param name="pawn">활성화할 Attack Component</param>
         public void Activate(AttackComponent attackComponent)
         {
-            attackComponent.Activate(null);
+            attackComponent.Activate(null, Vector2.zero);
         }
 
         /// <summary>

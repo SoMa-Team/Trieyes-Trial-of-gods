@@ -39,7 +39,7 @@ namespace AttackComponents
         /// <summary>
         /// 오브젝트 풀링을 위한 활성화 함수
         /// </summary>
-        public virtual void Activate(Attack attack)
+        public virtual void Activate(Attack attack, Vector2 direction)
         {
             
         }
@@ -91,7 +91,7 @@ namespace AttackComponents
         /// </summary>
         /// <param name="targetPawn">피격 대상</param>
         /// <param name="hitObject">충돌한 객체</param>
-        protected virtual void ProcessComponentCollision(Pawn targetPawn, GameObject hitObject)
+        public virtual void ProcessComponentCollision(Pawn targetPawn, GameObject hitObject)
         {
             Debug.Log($"<color=orange>[COMPONENT] {gameObject.name} hit {targetPawn.gameObject.name}</color>");
             

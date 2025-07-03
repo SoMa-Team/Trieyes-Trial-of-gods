@@ -150,6 +150,11 @@ namespace AttackSystem
                     attacker.OnEvent(Utils.EventType.OnAttack, targetPawn);
                 }
             }
+
+            foreach (var attackComponent in components)
+            {
+                attackComponent.ProcessComponentCollision(targetPawn, hitObject);
+            }
         }
 
         /// <summary>
@@ -171,15 +176,17 @@ namespace AttackSystem
         /// <summary>
         /// 오브젝트 풀링을 위한 활성화 함수
         /// </summary>
+        /// <param name="attacker"></param>
+        /// <param name="direction"></param>
         /// <param name="pawn"></param>
-        public virtual void Activate(Pawn attacker)
+        public virtual void Activate(Pawn attacker, Vector2 direction)
         {
             this.attacker = attacker;
             
             children = new List<Attack>();
             foreach (var attackComponent in components)
             {
-                attackComponent.Activate(this);
+                attackComponent.Activate(this, direction);
             }
             
             gameObject.SetActive(true);
@@ -242,6 +249,11 @@ namespace AttackSystem
                     Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing {eventType}</color>");
                     break;
             }
+        }
+
+        public void AddAttack(Attack newAttack)
+        {
+            children.Add(newAttack);
         }
     }
 } 

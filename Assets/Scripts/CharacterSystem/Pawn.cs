@@ -686,7 +686,7 @@ namespace CharacterSystem
                 return;
             // TODO END
             
-            Attack attack = AttackFactory.Instance.Create(basicAttack, this, null);
+            Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
 
             // GameObject attackObj = Instantiate(basicAttack);
             // attackObj.transform.SetParent(transform);

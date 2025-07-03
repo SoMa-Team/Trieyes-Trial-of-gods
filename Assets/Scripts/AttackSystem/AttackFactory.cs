@@ -1,6 +1,7 @@
 using System;
 using BattleSystem;
 using CharacterSystem;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace AttackSystem
@@ -25,23 +26,30 @@ namespace AttackSystem
         
         public Attack[] attackPrefab;
 
-        public Attack Create(AttackData attackData, Pawn attacker)
+        public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent)
         {
             var attack = ClonePrefab(attackData.attackId);
+            attack.attackData = attackData;
+            attack.parent = parent;
             Activate(attack, attacker);
             return attack;
         }
 
         public void Activate(Attack attack, Pawn attacker)
         {
+            attack.transform.position = attacker.transform.position;
+            var direction = attacker.LastMoveDirection;
+            var th = Mathf.Atan2(direction.y, direction.x) *  Mathf.Rad2Deg;
+            attack.transform.rotation = Quaternion.Euler(new Vector3(0, 0, th));
+            
             attack.Activate(attacker);
-
+            
+            attack.transform.SetParent(BattleStage.now.View.transform);
             BattleStage.now.AttachAttack(attack);
         }
 
         public void Deactivate(Attack attack)
         {
-            attack.Deactivate();
         }
         
         // ===== 내부 헬퍼 =====

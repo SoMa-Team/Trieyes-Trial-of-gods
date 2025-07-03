@@ -7,6 +7,7 @@ using RelicSystem;
 using UnityEngine;
 using CardSystem;
 using System;
+using UnityEngine.EventSystems;
 
 namespace CharacterSystem
 {
@@ -31,7 +32,7 @@ namespace CharacterSystem
 
         protected Collider2D Collider;
 
-        protected PlayerController playerController;
+        protected Controller playerController;
         
         [Header("Stats")]
 
@@ -52,6 +53,7 @@ namespace CharacterSystem
         public string pawnName { get; protected set; }
         
         public int level { get; protected set; }
+        public Vector2 LastMoveDirection => playerController.lastMoveDir;
         
         public int gold { get; protected set; }
 
@@ -610,7 +612,8 @@ namespace CharacterSystem
             ChangeHP(-finalDamage);
 
             Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {finalDamage} damage from {damageInfo.attacker.gameObject.name}</color>");
-            ApplyKnockback(damageInfo.attacker);
+            // TODO : 넉백 확률 스탯 부분 추가 필요
+            // ApplyKnockback(damageInfo.attacker);
 
             if (currentHp <= 0 && previousHP > 0)
             {
@@ -683,7 +686,7 @@ namespace CharacterSystem
                 return;
             // TODO END
             
-            Attack attack = AttackFactory.Instance.Create(basicAttack, this);
+            Attack attack = AttackFactory.Instance.Create(basicAttack, this, null);
 
             // GameObject attackObj = Instantiate(basicAttack);
             // attackObj.transform.SetParent(transform);

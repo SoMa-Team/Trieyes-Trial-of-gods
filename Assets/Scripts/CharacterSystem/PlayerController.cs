@@ -18,11 +18,6 @@ namespace CharacterSystem
         /// 공격 입력 액션 (에디터에서 할당)
         /// </summary>
         public InputActionReference attackAction;
-        
-        /// <summary>
-        /// 현재 이동 방향
-        /// </summary>
-        public Vector2 moveDir = Vector2.zero;
 
         // ===== [Unity 생명주기] =====
         /// <summary>

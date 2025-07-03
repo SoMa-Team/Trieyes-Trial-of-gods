@@ -25,6 +25,7 @@ public class ShopSceneTester : MonoBehaviour
         Reroll();
         
         playerDeck = new Deck();
+        DeckZoneManager.Instance.setDeck(playerDeck);
 
         RerollButton.onClick.AddListener(Reroll);
         BuyButton1.onClick.AddListener(BuyCard1);
@@ -47,20 +48,20 @@ public class ShopSceneTester : MonoBehaviour
     {
         var card = cardView1.GetCurrentCard();
         playerDeck.AddCard(card);
-        DeckZoneManager.Instance.RefreshDeckUI(playerDeck);
+        DeckZoneManager.Instance.RefreshDeckUI();
     }
 
     public void BuyCard2()
     {
         var card = cardView2.GetCurrentCard();
         playerDeck.AddCard(card);
-        DeckZoneManager.Instance.RefreshDeckUI(playerDeck);
+        DeckZoneManager.Instance.RefreshDeckUI();
     }
 
     public void BuyCard3()
     {
         var card = cardView3.GetCurrentCard();
         playerDeck.AddCard(card);
-        DeckZoneManager.Instance.RefreshDeckUI(playerDeck);
+        DeckZoneManager.Instance.RefreshDeckUI();
     }
 }

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8844113605452727411}
   - component: {fileID: 2947605435723044291}
-  - component: {fileID: -2456705522469447201}
   m_Layer: 0
   m_Name: BattleStage001
   m_TagString: Untagged
@@ -48,25 +47,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRectPrefabs: {fileID: 8801104504220340556, guid: 746de627368694a488c3fc8b498d5167, type: 3}
   ruleTile: {fileID: 11400000, guid: 9b0d19d3cf337da4f866dae57254304b, type: 2}
---- !u!114 &-2456705522469447201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6405400953864103545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19131686d70dfc34681f3ed3ea000b4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCharacter: {fileID: 0}
-  characters:
-  - {fileID: 6424139744733695351, guid: fb3fdb9ee34417e4e81c3da26acd1a28, type: 3}
-  enemies:
-  - {fileID: 7048805263917066739, guid: e2b6f831e0cdc5446878904156fe38e0, type: 3}
-  attacks: []
-  spawnManager: {fileID: 0}
 --- !u!1001 &9051822390736683844
 PrefabInstance:
   m_ObjectHideFlags: 0

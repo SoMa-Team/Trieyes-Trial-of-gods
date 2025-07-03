@@ -48,14 +48,12 @@ namespace BattleSystem
         {
             BattleStageID battleStageID = 0; // TODO: 난이도와 연동하여 스테이지 ID 설정 필요
             
-            BattleStage battleStage = Instantiate(battleStagePrefabs[battleStageID]).GetComponent<BattleStage>();
-            var battleStageView = battleStage.GetComponent<BattleStageView>();
-
-            Debug.Log($"BattleStageFactory.Create: {battleStageID}");
+            var battleStageGameObject = Instantiate(battleStagePrefabs[battleStageID]);
+            var battleStageView = battleStageGameObject.GetComponent<BattleStageView>();
+            var battleStage = new BattleStage();
 
             battleStageView.BattleStage = battleStage;
-            battleStage.View = battleStageView;
-            
+
             Activate(battleStage, mainCharacter, difficulty);
             return battleStage;
         }
@@ -86,7 +84,7 @@ namespace BattleSystem
             battleStage.spawnManager = SpawnManager.Instance;
             battleStage.spawnManager.Activate(difficulty);
             
-            //battleStage.Activate();
+            battleStage.Activate();
         }
 
         /// <summary>

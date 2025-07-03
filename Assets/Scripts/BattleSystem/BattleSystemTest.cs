@@ -10,14 +10,25 @@ namespace BattleSystem
     /// </summary>
     public class BattleSystemTest: MonoBehaviour
     {
+        public BattleStage battleStage;
+        public Pawn character;
+        public Difficulty difficulty;
+
+        public static BattleSystemTest Instance {private set; get;}
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         void Start()
         {
             var characterID = 0;
             var stageRound = 12;
             
-            Pawn character = CharacterFactory.Instance.Create(characterID);
-            Difficulty difficulty = Difficulty.GetByStageRound(stageRound);
-            BattleStage battleStage = BattleStageFactory.Instance.Create(character, difficulty);
+            character = CharacterFactory.Instance.Create(characterID);
+            difficulty = Difficulty.GetByStageRound(stageRound);
+            battleStage = BattleStageFactory.Instance.Create(character, difficulty);
         }
     }
 }

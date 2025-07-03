@@ -18,6 +18,7 @@ namespace CharacterSystem
         protected override void Awake()
         {
             base.Awake();
+
             this.gold = 1000;
             
             // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당

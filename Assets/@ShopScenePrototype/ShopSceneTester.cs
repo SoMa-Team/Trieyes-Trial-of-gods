@@ -2,6 +2,7 @@ using UnityEngine;
 using CardViews;
 using UnityEngine.UI;
 using CardSystem;
+using DeckViews;
 
 public class ShopSceneTester : MonoBehaviour
 {
@@ -17,11 +18,18 @@ public class ShopSceneTester : MonoBehaviour
     
     public CardFactory cardFactory;
 
+    private Deck playerDeck;
+
     private void Start()
     {
         Reroll();
         
+        playerDeck = new Deck();
+
         RerollButton.onClick.AddListener(Reroll);
+        BuyButton1.onClick.AddListener(BuyCard1);
+        BuyButton2.onClick.AddListener(BuyCard2);
+        BuyButton3.onClick.AddListener(BuyCard3);
     }
 
     private void Reroll()
@@ -33,5 +41,26 @@ public class ShopSceneTester : MonoBehaviour
         cardView1.SetCard(card1);
         cardView2.SetCard(card2);
         cardView3.SetCard(card3);
+    }
+
+    public void BuyCard1()
+    {
+        var card = cardView1.GetCurrentCard();
+        playerDeck.AddCard(card);
+        DeckZoneManager.Instance.RefreshDeckUI(playerDeck);
+    }
+
+    public void BuyCard2()
+    {
+        var card = cardView2.GetCurrentCard();
+        playerDeck.AddCard(card);
+        DeckZoneManager.Instance.RefreshDeckUI(playerDeck);
+    }
+
+    public void BuyCard3()
+    {
+        var card = cardView3.GetCurrentCard();
+        playerDeck.AddCard(card);
+        DeckZoneManager.Instance.RefreshDeckUI(playerDeck);
     }
 }

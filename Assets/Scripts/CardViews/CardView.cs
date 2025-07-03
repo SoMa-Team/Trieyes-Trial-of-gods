@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CardSystem;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 
 namespace CardViews
@@ -49,6 +50,12 @@ namespace CardViews
         { 
             this.card = card;
             UpdateView();
+        }
+
+        public Card GetCurrentCard()
+        {
+            if(this.card is null) Debug.LogError("CardView.GetCurrentCard: card is null");
+            return this.card;
         }
 
         /// <summary>

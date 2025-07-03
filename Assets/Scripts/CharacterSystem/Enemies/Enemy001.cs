@@ -21,6 +21,9 @@ namespace CharacterSystem
         protected override void Awake()
         {
             base.Awake();
+
+            // Collision Layer를 Enemy로 설정
+            gameObject.layer = LayerMask.NameToLayer("Enemy");
         }
 
         protected override void Start()

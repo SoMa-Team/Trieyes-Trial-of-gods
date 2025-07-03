@@ -21,6 +21,9 @@ namespace CharacterSystem
 
             this.gold = 1000;
             
+            // Collision Layer를 Character로 설정
+            gameObject.layer = LayerMask.NameToLayer("Character");
+            
             // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
             playerController = GetComponent<PlayerController>();
             if (playerController == null)

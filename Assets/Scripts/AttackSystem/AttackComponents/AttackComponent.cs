@@ -17,8 +17,6 @@ namespace AttackComponents
         protected Attack attack; // 부모 Attack
         protected Pawn attacker => attack?.attacker; // 소유자 (Attack의 attacker)
 
-        protected float maxDistance = 5f;
-
         protected virtual void Start()
         {
         }

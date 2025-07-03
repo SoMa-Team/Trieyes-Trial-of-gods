@@ -10,7 +10,7 @@ namespace AttackSystem
     
     public class AttackFactory : MonoBehaviour
     {
-        public static AttackFactory Instance { get; private set; }
+        public static AttackFactory Instance { get; private set; } // 싱글톤 인스턴스
 
         private void Awake()
         {
@@ -24,7 +24,7 @@ namespace AttackSystem
             DontDestroyOnLoad(gameObject);
         }
         
-        public Attack[] attackPrefab;
+        public Attack[] attackPrefab; // 공격 프리팹 배열
 
         public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
         {

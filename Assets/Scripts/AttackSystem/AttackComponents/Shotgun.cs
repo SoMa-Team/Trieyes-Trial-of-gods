@@ -5,13 +5,13 @@ namespace AttackComponents
 {
     public class Shotgun : AttackComponent
     {
-        public AttackData newAttackData;
-        public int itemNumber;
-        public float angle;
+        public AttackData newAttackData; // 생성할 공격 데이터
+        public int itemNumber; // 생성할 투사체 개수
+        public float angle; // 퍼지는 각도
 
         public override void Activate(Attack attack, Vector2 direction)
         {
-            base.Activate(attack, direction);
+            base.Activate(attack, direction); // 기본 활성화
 
             var baseAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             for (int i = 0; i < itemNumber; i++)

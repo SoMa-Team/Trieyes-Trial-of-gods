@@ -17,7 +17,7 @@ namespace AttackComponents
         public static AttackComponentFactory Instance {private set; get;}
 
         // ===== 프리팹 =====
-        public GameObject[] attackComponentPrefabs;
+        public GameObject[] attackComponentPrefabs; // 공격 컴포넌트 프리팹 배열
 
         // ===== 초기화 =====
         

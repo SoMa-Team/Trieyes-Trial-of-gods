@@ -45,8 +45,8 @@ namespace CharacterSystem
 
         private void Update()
         {
-            moveDir = moveAction.action.ReadValue<Vector2>();
-            owner.PerformAutoAttack();
+            moveDir = moveAction.action.ReadValue<Vector2>(); // 이동 방향 갱신
+            owner.PerformAutoAttack(); // 자동 공격
         }
 
         // ===== [커스텀 메서드] =====

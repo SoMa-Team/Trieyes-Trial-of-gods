@@ -183,6 +183,36 @@ namespace CardSystem
                 }
             }
         }
+        
+        public void SwapCards(Card cardA, Card cardB)
+        {
+            int idxA = cards.IndexOf(cardA);
+            int idxB = cards.IndexOf(cardB);
+            
+            if (idxA < 0)
+            {
+                Debug.LogError($"SwapCards: cardA({cardA?.cardName ?? "null"})는 덱에 존재하지 않습니다!");
+                return;
+            }
+            if (idxB < 0)
+            {
+                Debug.LogError($"SwapCards: cardB({cardB?.cardName ?? "null"})는 덱에 존재하지 않습니다!");
+                return;
+            }
+            if (idxA == idxB)
+            {
+                Debug.LogWarning("SwapCards: 같은 카드를 두 번 선택했습니다. 스왑하지 않습니다.");
+                return;
+            }
+
+            if (idxA >= 0 && idxB >= 0 && idxA != idxB)
+            {
+                // Swap
+                var temp = cards[idxA];
+                cards[idxA] = cards[idxB];
+                cards[idxB] = temp;
+            }
+        }
 
         // ===== [기능 2] 덱 스탯 및 카드 액션 초기화 =====
         /// <summary>

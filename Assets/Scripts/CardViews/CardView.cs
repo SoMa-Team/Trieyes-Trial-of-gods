@@ -39,14 +39,14 @@ namespace CardViews
         // --- 내부 필드 ---
 
         /// 현재 표시 중인 카드 데이터
-        private Card card;
+        public Card card;
 
         // --- public 메서드 ---
 
         /// <summary>
         /// 카드 데이터를 설정하고 UI를 갱신합니다.
         /// </summary>
-        public void SetCard(Card card)
+        public virtual void SetCard(Card card)
         { 
             this.card = card;
             UpdateView();

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Behavior;
 using Utils;
 using Stats;
 using AttackSystem;
@@ -79,7 +78,6 @@ namespace CharacterSystem
         /// SPUM 프리팹
         /// </summary>
         protected GameObject pawnPrefab;
-        protected BehaviorGraphAgent behaviour;
 
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
@@ -229,14 +227,15 @@ namespace CharacterSystem
         /// <param name="direction">이동할 방향</param>
         public virtual void Move(Vector2 direction)
         {
+            if (rb == null) rb = GetComponent<Rigidbody2D>();
             if (direction.magnitude > 0.1f)
             {
-                transform.Translate(direction * Time.deltaTime * moveSpeed);
+                // 360도 자연스러운 이동
+                rb.linearVelocity = direction.normalized * moveSpeed;
 
                 // 이동 방향에 따라 전체 flip (Y축 회전)
                 if (direction.x != 0)
                 {
-                    // SPUM 프리팹의 부모(혹은 UnitRoot 등)에 적용
                     pawnPrefab.transform.rotation = direction.x > 0
                         ? Quaternion.Euler(0, 180, 0)
                         : Quaternion.identity;
@@ -246,6 +245,7 @@ namespace CharacterSystem
             }
             else
             {
+                if (rb != null) rb.linearVelocity = Vector2.zero;
                 ChangeAnimationState("IDLE");
             }
         }
@@ -709,7 +709,15 @@ namespace CharacterSystem
                 float spreadAngle = attackStats[Stats.StatType.ProjectileSpread].Value;
 
                 // === 여기서 방향 결정 ===
-                Vector2 baseDir = playerController.moveDir.normalized;
+                Vector2 baseDir;
+                if (rb != null && rb.linearVelocity.magnitude > 0.1f)
+                {
+                    baseDir = rb.linearVelocity.normalized;
+                }
+                else
+                {
+                    baseDir = Vector2.right; // 기본값(오른쪽)
+                }
 
                 if (projectileCount <= 1)
                 {

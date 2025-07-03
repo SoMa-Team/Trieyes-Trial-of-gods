@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+// using UnityEngine.InputSystem; // 더 이상 필요 없음
 
 namespace CharacterSystem
 {
@@ -9,48 +9,29 @@ namespace CharacterSystem
     public class PlayerController : Controller
     {
         // ===== [필드] =====
-        /// <summary>
-        /// 이동 입력 액션 (에디터에서 할당)
-        /// </summary>
-        public InputActionReference moveAction;
-        
-        /// <summary>
-        /// 공격 입력 액션 (에디터에서 할당)
-        /// </summary>
-        public InputActionReference attackAction;
-        
-        /// <summary>
-        /// 현재 이동 방향
-        /// </summary>
-        public Vector2 moveDir = Vector2.zero;
+        // public InputActionReference moveAction;
+        // public InputActionReference attackAction;
+        // public Vector2 moveDir = Vector2.zero;
+
+        public Joystick joystick; // 인스펙터 할당 없이 자동 연결
 
         // ===== [Unity 생명주기] =====
-        /// <summary>
-        /// 컴포넌트가 활성화될 때 호출됩니다.
-        /// </summary>
-        private void OnEnable()
-        {
-            if (moveAction != null)
-            {
-                moveAction.action.Enable();
-            }
-            if (attackAction != null)
-            {
-                attackAction.action.Enable();
-            }
-        }
+        // private void OnEnable() { }
+        // private void OnDisable() { }
+        // private void Update() { }
 
-        private void OnDisable()
+        private void Awake()
         {
-            if (moveAction != null)
+            if (joystick == null)
             {
-                moveAction.action.Disable();
+                // "Canvas"라는 이름의 오브젝트를 먼저 찾음
+                var canvas = GameObject.Find("Canvas");
+                if (canvas != null)
+                {
+                    var found = canvas.GetComponentInChildren<Joystick>(true);
+                    joystick = found as FixedJoystick;
+                }
             }
-        }
-
-        private void Update()
-        {
-            moveDir = moveAction.action.ReadValue<Vector2>();
         }
 
         // ===== [커스텀 메서드] =====
@@ -59,25 +40,14 @@ namespace CharacterSystem
         /// </summary>
         public override void ProcessInputActions()
         {
-            if (owner == null)
+            if (owner == null || joystick == null)
             {
                 return;
             }
-            
-            // 이동 처리
-            if (moveAction != null)
-            {
-                owner.Move(moveDir);
-            }
-
-            // 공격 처리
-            if (attackAction != null)
-            {
-                if (attackAction.action.ReadValue<float>() > 0)
-                {
-                    owner.PerformAutoAttack();
-                }
-            }
+            // 조이스틱 입력값으로 이동
+            Vector2 moveDir = new Vector2(joystick.Horizontal, joystick.Vertical);
+            owner.Move(moveDir);
+            // 공격 버튼 연동 시 moveDir 방향으로 공격 등 추가 가능
         }
     }
 } 

@@ -51,7 +51,6 @@ MonoBehaviour:
   maxHp: 100
   currentHp: 0
   moveSpeed: 5
-  pawnType: 0
   statPresetSO: {fileID: 11400000, guid: 174e138bcc1157a4b9b72c292f87a14f, type: 2}
   basicAttack: {fileID: 8016258422780310161, guid: ed7b48300e0914e4da7d85bf92d94413, type: 3}
   experience: 0
@@ -68,8 +67,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 6424139744733695351}
-  moveAction: {fileID: 5272399529475385058, guid: 1d14ad3822373244fb44a26708f9ad94, type: 3}
-  attackAction: {fileID: 7821323942778765749, guid: 1d14ad3822373244fb44a26708f9ad94, type: 3}
+  moveAction: {fileID: 5272399529475385058, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
+  attackAction: {fileID: 7821323942778765749, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
   moveDir: {x: 0, y: 0}
 --- !u!50 &4105170365882426735
 Rigidbody2D:

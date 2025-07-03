@@ -17,7 +17,7 @@ public class ShopSceneTester : MonoBehaviour
     
     public CardFactory cardFactory;
 
-    private void Awake()
+    private void Start()
     {
         Reroll();
         

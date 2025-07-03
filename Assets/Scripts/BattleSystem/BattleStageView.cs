@@ -27,6 +27,12 @@ namespace BattleSystem
         public float cameraSmoothTime = 0.1f;
         private Vector3 _cameraVelocity = Vector3.zero;
         
+        [Header("Dynamic Camera Settings")]
+        public float minCameraDistance = 5f;  // 최소 카메라 거리
+        public float maxCameraDistance = 15f; // 최대 카메라 거리
+        public float speedToDistanceMultiplier = 2f; // 속도에 따른 거리 배수
+        private Vector3 _dynamicCameraOffset;
+        
         /// <summary>
         /// BattleStage 데이터에 대한 접근자
         /// 설정 시 양방향 연결을 자동으로 구성합니다.
@@ -124,8 +130,11 @@ namespace BattleSystem
             {
                 _mainCharacter = _battleStage.mainCharacter;
                 
+                // 동적 카메라 오프셋 초기화
+                _dynamicCameraOffset = cameraOffset;
+                
                 // 카메라를 캐릭터 위치로 즉시 이동
-                Vector3 targetPosition = _mainCharacter.transform.position + cameraOffset;
+                Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
                 _battleCamera.transform.position = targetPosition;
                 
                 Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
@@ -134,13 +143,17 @@ namespace BattleSystem
         
         /// <summary>
         /// 카메라가 메인 캐릭터를 부드럽게 따라다니도록 업데이트합니다.
+        /// 캐릭터의 이동 속도에 따라 카메라 거리가 동적으로 조절됩니다.
         /// </summary>
         private void Update()
         {
             if (_mainCharacter != null && _battleCamera != null)
             {
-                // 목표 위치 계산
-                Vector3 targetPosition = _mainCharacter.transform.position + cameraOffset;
+                // 캐릭터의 이동 속도에 따른 동적 카메라 거리 계산
+                UpdateDynamicCameraDistance();
+                
+                // 목표 위치 계산 (동적 오프셋 사용)
+                Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
                 
                 // 부드러운 이동
                 _battleCamera.transform.position = Vector3.SmoothDamp(
@@ -150,6 +163,34 @@ namespace BattleSystem
                     cameraSmoothTime
                 );
             }
+        }
+        
+        /// <summary>
+        /// 캐릭터의 이동 속도에 따라 카메라 거리를 동적으로 조절합니다.
+        /// </summary>
+        private void UpdateDynamicCameraDistance()
+        {
+            if (_mainCharacter == null) return;
+            
+            // 캐릭터의 이동 속도 가져오기
+            float characterSpeed = _mainCharacter.moveSpeed;
+            
+            // 속도에 따른 거리 계산 (속도가 빠를수록 카메라가 멀어짐)
+            float dynamicDistance = Mathf.Lerp(
+                minCameraDistance, 
+                maxCameraDistance, 
+                (characterSpeed - 1f) / (10f - 1f) // 1~10 속도 범위를 0~1로 정규화
+            );
+            
+            // 거리 제한 적용
+            dynamicDistance = Mathf.Clamp(dynamicDistance, minCameraDistance, maxCameraDistance);
+            
+            // 동적 카메라 오프셋 업데이트 (Z축만 변경)
+            _dynamicCameraOffset = new Vector3(
+                cameraOffset.x,
+                cameraOffset.y,
+                -dynamicDistance
+            );
         }
     }
 } 

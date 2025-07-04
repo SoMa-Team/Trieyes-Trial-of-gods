@@ -87,5 +87,16 @@ namespace CardSystem
                 CheckLevelUp(); // 재귀적으로 다음 레벨업 체크
             }
         }
+        
+        public CardEnhancement DeepCopy()
+        {
+            var clone = new CardEnhancement(
+                this.level.Value,
+                this.exp.Value
+            );
+            clone.level = this.level.DeepCopy();
+            clone.exp = this.exp.DeepCopy();
+            return clone;
+        }
     }
 } 

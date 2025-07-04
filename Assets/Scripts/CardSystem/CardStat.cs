@@ -145,5 +145,16 @@ namespace CardSystem
                     return StatType.CriticalRate;
             }
         }
+        
+        public CardStat DeepCopy()
+        {
+            var clone = new CardStat(new Property[0], 0);
+            clone.stats = new List<StatValuePair>();
+            foreach (var pair in this.stats)
+            {
+                clone.stats.Add(new StatValuePair(pair.type, pair.value.DeepCopy()));
+            }
+            return clone;
+        }
     }
 } 

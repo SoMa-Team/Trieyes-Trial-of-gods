@@ -47,7 +47,7 @@ namespace AttackComponents
 
 
             // direction이 0이 아니면 그 방향 벡터로, 0이면 소유자의 방향 벡터로
-            throwDir = direction.magnitude > 0 ? direction : owner.IsFacingRight() ? Vector2.right : Vector2.left;
+            throwDir = owner.lastestDirection;
 
             if (spriteRenderer != null)
                 spriteRenderer.flipX = throwDir.x >= 0;

@@ -23,7 +23,7 @@ namespace CharacterSystem
                 if (canvas != null)
                 {
                     var found = canvas.GetComponentInChildren<Joystick>(true);
-                    joystick = found as FixedJoystick;
+                    joystick = found as Joystick;
                 }
             }
         }

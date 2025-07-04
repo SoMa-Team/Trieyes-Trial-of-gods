@@ -515,11 +515,12 @@ namespace CharacterSystem
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
-            if (!IsEventAccepted(eventType))
-            {
-                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
-                return;
-            }
+            // if (!IsEventAccepted(eventType))
+            // {
+            //     Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
+            //     return;
+            // }
+            // 버그 발생하여 테스트를 위해 일단 무시
 
             Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
             

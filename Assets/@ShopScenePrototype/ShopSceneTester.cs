@@ -3,7 +3,6 @@ using CardViews;
 using UnityEngine.UI;
 using CardSystem;
 using DeckViews;
-using UnityEngine.Rendering.Universal;
 using CharacterSystem;
 
 public class ShopSceneTester : MonoBehaviour
@@ -15,6 +14,7 @@ public class ShopSceneTester : MonoBehaviour
     public Button BuyButton1;
     public Button BuyButton2;
     public Button BuyButton3;
+    public Button OnBattleSceneChange;
 
     public Button RerollButton;
     
@@ -32,6 +32,8 @@ public class ShopSceneTester : MonoBehaviour
         BuyButton1.onClick.AddListener(BuyCard1);
         BuyButton2.onClick.AddListener(BuyCard2);
         BuyButton3.onClick.AddListener(BuyCard3);
+        
+        OnBattleSceneChange.onClick.AddListener(OnBattleSceneChangeTest);
     }
 
     private void Reroll()
@@ -64,5 +66,10 @@ public class ShopSceneTester : MonoBehaviour
         var card = cardView3.GetCurrentCard();
         mainCharacter.deck.AddCard(card.DeepCopy());
         DeckZoneManager.Instance.RefreshDeckUI();
+    }
+
+    public void OnBattleSceneChangeTest()
+    {
+        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
     }
 }

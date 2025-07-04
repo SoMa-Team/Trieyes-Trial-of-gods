@@ -72,11 +72,11 @@ namespace CharacterSystem
         public override void OnEvent(Utils.EventType eventType, object param)
         {
             // 이벤트 필터링: Character001이 받지 않는 이벤트는 무시
-            if (!IsEventAccepted(eventType))
-            {
-                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} (Character001) ignoring event: {eventType} (not in accepted events: {string.Join(", ", GetAcceptedEvents())})</color>");
-                return;
-            }
+            // if (!IsEventAccepted(eventType))
+            // {
+            //     Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} (Character001) ignoring event: {eventType} (not in accepted events: {string.Join(", ", GetAcceptedEvents())})</color>");
+            //     return;
+            // }
 
             Debug.Log($"<color=green>[EVENT_FILTER] {gameObject.name} (Character001) accepting event: {eventType}</color>");
 

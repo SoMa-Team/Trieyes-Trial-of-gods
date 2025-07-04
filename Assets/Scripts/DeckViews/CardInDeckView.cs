@@ -2,6 +2,7 @@ using UnityEngine;
 using CardViews;
 using UnityEngine.EventSystems;
 using CardSystem;
+using UnityEngine.UI;
 
 namespace DeckViews
 {
@@ -10,7 +11,7 @@ namespace DeckViews
     /// </summary>
     public class CardInDeckView : CardView, IPointerClickHandler
     {
-        public GameObject selectionOutline;
+        public Image selectionOutline;
 
         /// <summary>
         /// 카드 정보를 UI에 반영하고 선택 효과는 해제합니다.
@@ -36,7 +37,8 @@ namespace DeckViews
         {
             if (selectionOutline != null)
             {
-                selectionOutline.SetActive(selected);
+                if(selected) Debug.Log("selected!");
+                selectionOutline.color = selected ? Color.yellow : Color.black;
             }
         }
     }

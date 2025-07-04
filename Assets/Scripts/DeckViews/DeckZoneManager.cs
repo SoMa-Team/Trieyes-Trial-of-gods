@@ -78,6 +78,7 @@ namespace DeckViews
             // [1] 아무것도 선택 안 했으면 첫 번째 카드 선택
             if (selectedCard1 == null)
             {
+                Debug.Log("Card Selected");
                 selectedCard1 = cardView;
                 selectedCard1.SetSelected(true);
                 removeButton.interactable = true; // 첫 카드만 선택하면 제거 버튼 표시
@@ -109,10 +110,9 @@ namespace DeckViews
                 selectedCard1 = null;
                 selectedCard2 = null;
                 removeButton.interactable = false;
-
-                // UI 새로고침 (카드 순서 갱신)
-                RefreshDeckUI();
             }
+            // UI 새로고침 (카드 순서 갱신)
+            RefreshDeckUI();
         }
 
         /// <summary>

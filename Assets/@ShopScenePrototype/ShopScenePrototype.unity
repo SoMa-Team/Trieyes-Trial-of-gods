@@ -1144,19 +1144,19 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 733603309}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1766420707}
-  m_Father: {fileID: 943131387}
+  m_Father: {fileID: 1520009911}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 49, y: -19.912}
-  m_SizeDelta: {x: 133.80542, y: 39.822998}
-  m_Pivot: {x: 1, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 727, y: -236.96}
+  m_SizeDelta: {x: -1404.3146, y: -434.5421}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &739951417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1834,15 +1834,14 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 733603314}
+  m_Children: []
   m_Father: {fileID: 1019847107}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00048828125, y: -1.7979736}
-  m_SizeDelta: {x: 0, y: 3.5957642}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0.0009076731, y: -0.000091552734}
+  m_SizeDelta: {x: 0, y: 460.59576}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &943131388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2631,6 +2630,7 @@ RectTransform:
   m_Children:
   - {fileID: 1019847107}
   - {fileID: 739951418}
+  - {fileID: 733603314}
   m_Father: {fileID: 1358291454}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3125,7 +3125,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 21.5
+  m_fontSize: 21.6
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

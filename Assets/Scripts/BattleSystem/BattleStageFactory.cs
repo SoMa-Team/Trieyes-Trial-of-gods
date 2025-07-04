@@ -52,10 +52,8 @@ namespace BattleSystem
             var battleStageView = battleStageGameObject.GetComponent<BattleStageView>();
             var battleStage = new BattleStage();
 
-            Debug.Log($"BattleStageFactory.Create: {battleStageID}");
-
             battleStageView.BattleStage = battleStage;
-            
+
             Activate(battleStage, mainCharacter, difficulty);
             return battleStage;
         }
@@ -73,6 +71,9 @@ namespace BattleSystem
             mainCharacter.Activate();
             battleStage.mainCharacter = mainCharacter;
             mainCharacter.transform.SetParent(battleStage.View.transform);
+            
+            // 카메라가 메인 캐릭터를 팔로우하도록 설정
+            battleStage.View.SetMainCharacter();
             
             // 캐릭터 리스트 초기화
             battleStage.characters = new List<Pawn>();

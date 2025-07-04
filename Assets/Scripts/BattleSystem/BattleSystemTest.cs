@@ -11,9 +11,17 @@ namespace BattleSystem
     /// </summary>
     public class BattleSystemTest: MonoBehaviour
     {
-        public Pawn Character;
-        public AttackData attackData;
-        
+        public BattleStage battleStage;
+        public Pawn character;
+        // public Difficulty difficulty;
+
+        public static BattleSystemTest Instance {private set; get;}
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         void Start()
         {
             var characterID = 0;

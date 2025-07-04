@@ -11,14 +11,18 @@ namespace CharacterSystem
         public int experience = 0;
         
         // Pawn의 추상 멤버 구현
-        public new Collider2D Collider => GetComponent<Collider2D>();
-        public new Rigidbody2D rb => GetComponent<Rigidbody2D>();
+        public new Collider2D Collider { get; private set; }
+        public new Rigidbody2D rb { get; private set; }
 
         // ===== [Unity 생명주기] =====
         protected override void Awake()
         {
             base.Awake();
+
             this.gold = 1000;
+            
+            // Collision Layer를 Character로 설정
+            gameObject.layer = LayerMask.NameToLayer("Character");
             
             // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
             playerController = GetComponent<PlayerController>();

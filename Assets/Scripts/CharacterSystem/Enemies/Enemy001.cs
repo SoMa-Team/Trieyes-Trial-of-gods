@@ -1,7 +1,6 @@
 using AttackSystem;
 using UnityEngine;
 using Utils;
-using Unity.Behavior;
 using System.Linq;
 using BattleSystem;
 
@@ -21,35 +20,14 @@ namespace CharacterSystem
         protected override void Awake()
         {
             base.Awake();
+
+            // Collision Layer를 Enemy로 설정
+            gameObject.layer = LayerMask.NameToLayer("Enemy");
         }
 
         protected override void Start()
         {
             base.Start();
-            
-            // BT 트리에서 Target 변수 디버깅
-            Debug.Log($"[Enemy001] {gameObject.name} started. Checking BT variables...");
-            
-            // BT 트리가 있는지 확인 (Unity Behavior Tree)
-            behaviour = GetComponent<BehaviorGraphAgent>();
-            if (behaviour != null)
-            {
-                Debug.Log($"[Enemy001] BehaviorTree found: {behaviour.name}");
-                Animator animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
-                behaviour.SetVariableValue("SelfAnim", animator);
-
-                // MainCharacter를 런타임에 찾아서 BT 트리의 Blackboard에 할당
-                var mainCharacter = BattleStage.now.View.transform.GetChild(0);
-                if (mainCharacter != null)
-                {
-                    // Blackboard에 MainCharacter 변수 할당
-                    behaviour.SetVariableValue("MainCharacter", mainCharacter.gameObject);
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"[Enemy001] BehaviorTree component not found!");
-            }
         }
 
         // ===== [커스텀 메서드] =====

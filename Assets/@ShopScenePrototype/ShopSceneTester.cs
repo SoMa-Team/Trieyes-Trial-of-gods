@@ -3,6 +3,8 @@ using CardViews;
 using UnityEngine.UI;
 using CardSystem;
 using DeckViews;
+using UnityEngine.Rendering.Universal;
+using CharacterSystem;
 
 public class ShopSceneTester : MonoBehaviour
 {
@@ -18,14 +20,13 @@ public class ShopSceneTester : MonoBehaviour
     
     public CardFactory cardFactory;
 
-    private Deck playerDeck;
+    public Pawn mainCharacter;
 
     private void Start()
     {
         Reroll();
         
-        playerDeck = new Deck();
-        DeckZoneManager.Instance.setDeck(playerDeck);
+        DeckZoneManager.Instance.setDeck(mainCharacter.deck);
 
         RerollButton.onClick.AddListener(Reroll);
         BuyButton1.onClick.AddListener(BuyCard1);
@@ -47,21 +48,21 @@ public class ShopSceneTester : MonoBehaviour
     public void BuyCard1()
     {
         var card = cardView1.GetCurrentCard();
-        playerDeck.AddCard(card.DeepCopy());
+        mainCharacter.deck.AddCard(card.DeepCopy());
         DeckZoneManager.Instance.RefreshDeckUI();
     }
 
     public void BuyCard2()
     {
         var card = cardView2.GetCurrentCard();
-        playerDeck.AddCard(card.DeepCopy());
+        mainCharacter.deck.AddCard(card.DeepCopy());
         DeckZoneManager.Instance.RefreshDeckUI();
     }
 
     public void BuyCard3()
     {
         var card = cardView3.GetCurrentCard();
-        playerDeck.AddCard(card.DeepCopy());
+        mainCharacter.deck.AddCard(card.DeepCopy());
         DeckZoneManager.Instance.RefreshDeckUI();
     }
 }

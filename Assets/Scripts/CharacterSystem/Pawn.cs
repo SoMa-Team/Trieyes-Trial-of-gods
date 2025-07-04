@@ -302,7 +302,7 @@ namespace CharacterSystem
                 attackStats[statType].SetBasicValue(statValue);
             }
             
-            Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
+            //Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
             
             return attackStats;
         }
@@ -643,7 +643,7 @@ namespace CharacterSystem
             // 공격속도가 높을수록 쿨다운이 짧아짐
             attackCooldown = 1f / (attackSpeed / 10f);
             
-            Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
+            //Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
         }
         
         /// <summary>
@@ -677,7 +677,7 @@ namespace CharacterSystem
                     return;
                 }
                 
-                Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
+                //Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
                 
                 StatSheet attackStats = CollectAttackStats();
 

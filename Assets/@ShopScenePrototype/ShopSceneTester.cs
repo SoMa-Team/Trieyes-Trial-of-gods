@@ -47,21 +47,21 @@ public class ShopSceneTester : MonoBehaviour
     public void BuyCard1()
     {
         var card = cardView1.GetCurrentCard();
-        playerDeck.AddCard(card);
+        playerDeck.AddCard(card.DeepCopy());
         DeckZoneManager.Instance.RefreshDeckUI();
     }
 
     public void BuyCard2()
     {
         var card = cardView2.GetCurrentCard();
-        playerDeck.AddCard(card);
+        playerDeck.AddCard(card.DeepCopy());
         DeckZoneManager.Instance.RefreshDeckUI();
     }
 
     public void BuyCard3()
     {
         var card = cardView3.GetCurrentCard();
-        playerDeck.AddCard(card);
+        playerDeck.AddCard(card.DeepCopy());
         DeckZoneManager.Instance.RefreshDeckUI();
     }
 }

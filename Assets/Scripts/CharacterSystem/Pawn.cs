@@ -31,7 +31,7 @@ namespace CharacterSystem
 
         protected Collider2D Collider;
 
-        protected Controller playerController;
+        protected Controller Controller;
         
         [Header("Stats")]
 
@@ -52,7 +52,7 @@ namespace CharacterSystem
         public string pawnName { get; protected set; }
         
         public int level { get; protected set; }
-        public Vector2 LastMoveDirection => playerController.lastMoveDir;
+        public Vector2 LastMoveDirection => Controller.lastMoveDir;
         
         public int gold { get; protected set; }
 
@@ -132,7 +132,7 @@ namespace CharacterSystem
                 rb.freezeRotation = true;
             }
 
-            playerController = GetComponent<PlayerController>();
+            Controller = GetComponent<PlayerController>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
@@ -189,7 +189,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="preset">적용할 스탯 프리셋</param>
         protected void ApplyStatPresetSO(StatPresetSO preset)
-        {
+        {  
             if (preset == null || preset.stats == null) return;
 
             foreach (var pair in preset.stats)

@@ -6,7 +6,7 @@ namespace CharacterSystem
     /// <summary>
     /// Unity Input System을 사용한 플레이어 입력 처리 컨트롤러
     /// </summary>
-    public class PlayerController : Controller
+    public class LegacyPlayerController : Controller
     {
         // ===== [필드] =====
         /// <summary>

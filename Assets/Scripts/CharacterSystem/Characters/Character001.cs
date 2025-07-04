@@ -25,12 +25,12 @@ namespace CharacterSystem
             gameObject.layer = LayerMask.NameToLayer("Character");
             
             // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
-            playerController = GetComponent<PlayerController>();
-            if (playerController == null)
+            Controller = GetComponent<Controller>();
+            if (Controller == null)
             {
                 throw new System.Exception("PlayerController not found on " + gameObject.name);
             }
-            playerController.Initialize(this);
+            Controller.Initialize(this);
         }
 
         protected override void Start()
@@ -51,7 +51,7 @@ namespace CharacterSystem
         public override void Update()
         {
             base.Update();
-            playerController?.ProcessInputActions();
+            Controller?.ProcessInputActions();
         }
 
         // ===== [커스텀 메서드] =====

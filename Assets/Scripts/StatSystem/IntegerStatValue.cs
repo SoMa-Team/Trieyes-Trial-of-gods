@@ -107,11 +107,11 @@ namespace Stats
         }
 
         private int GetCurrentValue(){
-            if(BattleSystemTest.Instance.battleStage == null)
+            if(BattleStage.now == null)
             {
                 return 0;
             }
-            float currentTime = BattleSystemTest.Instance.battleStage.GetTime();
+            float currentTime = BattleStage.now.GetTime();
 
             // 만료된 버프를 모두 제거
             while (!modifierHeap.IsEmpty && modifierHeap.Peek() < currentTime)

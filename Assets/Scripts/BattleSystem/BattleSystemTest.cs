@@ -13,21 +13,15 @@ namespace BattleSystem
     {
         public BattleStage battleStage;
         public Pawn character;
+        public AttackData attackData;
         // public Difficulty difficulty;
-
-        public static BattleSystemTest Instance {private set; get;}
-
-        private void Awake()
-        {
-            Instance = this;
-        }
 
         void Start()
         {
             var characterID = 0;
             var stageRound = 12;
 
-            Pawn character = Character;
+            Pawn character = this.character;
             character.basicAttack = attackData;
             Difficulty difficulty = Difficulty.GetByStageRound(stageRound);
             BattleStage battleStage = BattleStageFactory.Instance.Create(character, difficulty);

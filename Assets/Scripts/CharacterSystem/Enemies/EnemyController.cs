@@ -17,7 +17,7 @@ namespace CharacterSystem.Enemies
         {
             pawn = GetComponent<Pawn>();
 
-            var playerObj = BattleSystemTest.Instance.battleStage.mainCharacter.gameObject;
+            var playerObj = BattleStage.now.mainCharacter.gameObject;
 
             if (playerObj != null)
             {

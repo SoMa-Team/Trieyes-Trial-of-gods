@@ -467,6 +467,7 @@ GameObject:
   - component: {fileID: 331290538}
   - component: {fileID: 331290540}
   - component: {fileID: 331290539}
+  - component: {fileID: 331290541}
   m_Layer: 5
   m_Name: CardBuyZoneBG
   m_TagString: Untagged
@@ -535,6 +536,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 331290537}
   m_CullTransparentMesh: 1
+--- !u!114 &331290541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 331290537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 40
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &386705163
 GameObject:
   m_ObjectHideFlags: 0
@@ -1474,19 +1501,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_SizeDelta.x
@@ -1542,7 +1569,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 35
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1579,6 +1606,10 @@ PrefabInstance:
     - target: {fileID: 6646428559046362012, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8009057185346321971, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -23.56424
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1762,7 +1793,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMin.x
@@ -1770,7 +1801,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_SizeDelta.x
@@ -1822,11 +1853,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 188
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 39
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2026,7 +2057,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.000015258789, y: -55}
+  m_AnchoredPosition: {x: 0, y: -54.999992}
   m_SizeDelta: {x: 219.03052, y: 30}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &998140290
@@ -2343,19 +2374,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_SizeDelta.x
@@ -2407,11 +2438,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -169
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 35
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4444745632151055419, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2448,6 +2479,10 @@ PrefabInstance:
     - target: {fileID: 6646428559046362012, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8009057185346321971, guid: 316acff377c2d4182a8cc0e1d10013c9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -23.564331
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3317,7 +3352,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 21.6
+  m_fontSize: 20.05
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3456,6 +3491,7 @@ GameObject:
   - component: {fileID: 2043145834}
   - component: {fileID: 2043145833}
   - component: {fileID: 2043145832}
+  - component: {fileID: 2043145836}
   m_Layer: 5
   m_Name: RerollButton
   m_TagString: Untagged
@@ -3520,7 +3556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3562,9 +3598,29 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.00018310547, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 1, y: 1}
+--- !u!114 &2043145836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043145831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 1
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &2044423528
 GameObject:
   m_ObjectHideFlags: 0
@@ -3651,7 +3707,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 31.9
+  m_fontSize: 31.7
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

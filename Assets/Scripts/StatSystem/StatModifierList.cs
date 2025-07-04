@@ -76,5 +76,15 @@ namespace Stats
         {
             return modifiers.Count;
         }
+        
+        public StatModifierList DeepCopy()
+        {
+            var copy = new StatModifierList();
+            foreach (var modifier in this.modifiers)
+            {
+                copy.Add(modifier);
+            }
+            return copy;
+        }
     }
 }

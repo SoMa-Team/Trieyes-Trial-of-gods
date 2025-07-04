@@ -216,5 +216,15 @@ namespace Utils
         {
             return 2 * index + 2;
         }
+        
+        public MinHeap<T> DeepCopy()
+        {
+            var copy = new MinHeap<T>(this.Count);
+            foreach (var item in this._heap)
+            {
+                copy.Push(item);
+            }
+            return copy;
+        }
     }
 }

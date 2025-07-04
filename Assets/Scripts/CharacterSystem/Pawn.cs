@@ -32,6 +32,7 @@ namespace CharacterSystem
         protected Collider2D Collider;
 
         protected Controller Controller;
+        protected Animator Animator;
         
         [Header("Stats")]
 
@@ -89,6 +90,18 @@ namespace CharacterSystem
         protected virtual void Awake()
         {
             // Awake에서는 아무것도 하지 않음
+            
+            rb = GetComponent<Rigidbody2D>();
+            Collider = GetComponent<Collider2D>();
+
+            if (rb != null)
+            {
+                rb.freezeRotation = true;
+            }
+
+            Controller = GetComponent<PlayerController>();
+            // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
+            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
         }
 
         protected virtual void Start()
@@ -123,16 +136,6 @@ namespace CharacterSystem
             pawnPrefab.transform.SetParent(transform);
             pawnPrefab.transform.localPosition = Vector3.zero;
             pawnPrefab.transform.localRotation = Quaternion.identity;
-
-            rb = GetComponent<Rigidbody2D>();
-            Collider = GetComponent<Collider2D>();
-
-            if (rb != null)
-            {
-                rb.freezeRotation = true;
-            }
-
-            Controller = GetComponent<PlayerController>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
@@ -243,29 +246,26 @@ namespace CharacterSystem
         /// <param name="newState">새로운 애니메이션 상태</param>
         protected virtual void ChangeAnimationState(string newState)
         {
-            // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
-            Animator animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
-
-            if (animator != null && currentAnimationState != newState && animator.HasState(0, Animator.StringToHash(newState)))
+            if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
                 // switch로 각 newStat에 대한 Parameter 값을 변경
                 switch (newState)
                 {
                     case "MOVE":
-                        animator.SetBool("1_Move", true);
+                        Animator.SetBool("1_Move", true);
                         break;
                     case "IDLE":
-                        animator.SetBool("1_Move", false);
+                        Animator.SetBool("1_Move", false);
                         break;
                     case "ATTACK":
-                        animator.SetTrigger("2_Attack");
+                        Animator.SetTrigger("2_Attack");
                         break;
                     case "DAMAGED":
-                        animator.SetBool("3_Damaged", true);
+                        Animator.SetBool("3_Damaged", true);
                         break;
                     case "DEATH":
-                        animator.SetBool("4_Death", true);
-                        animator.SetTrigger("4_Death");
+                        Animator.SetBool("4_Death", true);
+                        Animator.SetTrigger("4_Death");
                         break;
                 }
             }

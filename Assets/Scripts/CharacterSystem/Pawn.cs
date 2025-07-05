@@ -115,7 +115,6 @@ namespace CharacterSystem
 
         public virtual void Update() 
         {    
-            // 자동공격 수행
         }
 
         // ===== [커스텀 메서드] =====

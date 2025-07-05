@@ -22,7 +22,7 @@ namespace AttackComponents
                 attack.AddAttack(newAttack);
             }
             
-            attack.Deactivate();
+            AttackFactory.Instance.Deactivate(attack);
         }
     }
 }

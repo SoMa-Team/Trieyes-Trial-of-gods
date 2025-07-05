@@ -71,7 +71,7 @@ namespace AttackSystem
 
         protected virtual void OnDestroy()
         {
-            Deactivate();
+            AttackFactory.Instance.Deactivate(this);
         }
 
         // ===== [기능 6] 충돌 처리 (투사체일 때만 사용) =====
@@ -216,8 +216,6 @@ namespace AttackSystem
             parent = null;
             
             gameObject.SetActive(false);
-            
-            AttackFactory.Instance.Deactivate(this);
         }
         
         // ===== [기능 9] 이벤트 처리 =====

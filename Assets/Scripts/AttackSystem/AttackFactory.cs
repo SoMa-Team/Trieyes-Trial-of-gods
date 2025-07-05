@@ -62,6 +62,7 @@ namespace AttackSystem
 
         public void Deactivate(Attack attack)
         {
+            attack.Deactivate();
             Destroy(attack.gameObject);
         }
         

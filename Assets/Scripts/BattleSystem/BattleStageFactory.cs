@@ -68,7 +68,7 @@ namespace BattleSystem
         public void Activate(BattleStage battleStage, Pawn mainCharacter, Difficulty difficulty)
         {
             // 메인 캐릭터 설정
-            mainCharacter.Activate();
+            CharacterFactory.Instance.Activate(mainCharacter);
             battleStage.mainCharacter = mainCharacter;
             mainCharacter.transform.SetParent(battleStage.View.transform);
             

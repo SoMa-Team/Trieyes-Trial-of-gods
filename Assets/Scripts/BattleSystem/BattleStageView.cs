@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using CharacterSystem;
+using Utils;
 
 namespace BattleSystem
 {
@@ -17,6 +18,18 @@ namespace BattleSystem
         public TileBase ruleTile; // 인스펙터에서 사용할 타일 배열 할당
         public int Height { get; internal set; }
         public int Width { get; internal set; }
+        
+        // ===== 타일 풀링 시스템 =====
+        private TilePoolingSystem tilePoolingSystem;
+        private Tilemap tilemap;
+        private Vector3Int lastTileCenter;
+        private bool isTileSystemInitialized = false;
+        
+        // ===== 콜리전 기반 경계 시스템 =====
+        private TileBoundaryCollider boundaryCollider;
+        
+        [Header("Tile Pooling Settings")]
+        public float boundaryThreshold = 0.5f; // 경계 임계값 (80%)
         
         // ===== 카메라 관련 =====
         private Camera _battleCamera;
@@ -41,8 +54,8 @@ namespace BattleSystem
         {
             set
             {
-                Height = 100;
-                Width = 100;
+                Height = 30;
+                Width = 30;
                 _battleStage = value;
                 _battleStage.View = this;
                 
@@ -63,7 +76,7 @@ namespace BattleSystem
             GameObject tilemapGO = Instantiate(spriteRectPrefabs);
 
             // 2. Tilemap 컴포넌트 가져오기
-            Tilemap tilemap = tilemapGO.GetComponentInChildren<Tilemap>();
+            tilemap = tilemapGO.GetComponentInChildren<Tilemap>();
             if (tilemap == null)
             {
                 Debug.LogError("Tilemap 컴포넌트를 찾을 수 없습니다.");
@@ -76,19 +89,55 @@ namespace BattleSystem
                 renderer.sortingOrder = -1;
             }
 
-            // 3. 원하는 위치에 타일 그리기 (예시: 전체를 같은 타일로 채우기)
-            // -에서 시작해서 +방향으로 그리기
-            for (int y = Height / 2; y >= -Height / 2; y--)
-            {
-                for (int x = -Width / 2; x < Width / 2; x++)
-                {
-                    // 예시: tiles[0]을 전체에 채움. 필요시 타입별로 분기
-                    tilemap.SetTile(new Vector3Int(x, y, 0), ruleTile);
-
-                    // Z-order -1
-                    tilemap.SetTileFlags(new Vector3Int(x, y, 0), TileFlags.None);
-                }
-            }
+            // 3. 타일 풀링 시스템 초기화
+            InitializeTilePoolingSystem();
+            
+            // 4. 초기 타일 생성 (중앙 기준)
+            Vector3Int initialCenter = Vector3Int.zero;
+            tilePoolingSystem.CreateTilesInRange(initialCenter, Width, Height);
+            lastTileCenter = initialCenter;
+            
+            Debug.Log($"[BATTLE_STAGE_VIEW] 초기 타일 생성 완료 (중심: {initialCenter}, 크기: {Width}x{Height})");
+        }
+        
+        /// <summary>
+        /// 타일 풀링 시스템과 콜리전 기반 경계 시스템을 초기화합니다.
+        /// </summary>
+        private void InitializeTilePoolingSystem()
+        {
+            // 타일 풀링 시스템 컴포넌트 추가
+            tilePoolingSystem = gameObject.AddComponent<TilePoolingSystem>();
+            tilePoolingSystem.boundaryThreshold = boundaryThreshold;
+            
+            // 타일 풀링 시스템 초기화
+            tilePoolingSystem.Initialize(tilemap, ruleTile);
+            isTileSystemInitialized = true;
+            
+            // 콜리전 기반 경계 시스템 초기화
+            InitializeBoundaryCollider();
+            
+            Debug.Log("[BATTLE_STAGE_VIEW] 타일 풀링 시스템과 콜리전 기반 경계 시스템이 초기화되었습니다.");
+        }
+        
+        /// <summary>
+        /// 콜리전 기반 경계 시스템을 초기화합니다.
+        /// </summary>
+        private void InitializeBoundaryCollider()
+        {
+            // 경계 콜리전 게임오브젝트 생성
+            GameObject boundaryGO = new GameObject("TileBoundaryCollider");
+            boundaryGO.transform.SetParent(transform);
+            
+            // TileBoundaryCollider 컴포넌트 추가
+            boundaryCollider = boundaryGO.AddComponent<TileBoundaryCollider>();
+            boundaryCollider.boundaryThreshold = boundaryThreshold;
+            boundaryCollider.tileWidth = Width;
+            boundaryCollider.tileHeight = Height;
+            
+            // 콜리전 시스템 초기화
+            boundaryCollider.Initialize(this);
+            
+            Debug.Log("[BATTLE_STAGE_VIEW] 콜리전 기반 경계 시스템이 초기화되었습니다.");
         }
         
         /// <summary>
@@ -144,14 +193,12 @@ namespace BattleSystem
         /// <summary>
         /// 카메라가 메인 캐릭터를 부드럽게 따라다니도록 업데이트합니다.
         /// 캐릭터의 이동 속도에 따라 카메라 거리가 동적으로 조절됩니다.
+        /// 경계 기반 타일 관리도 함께 수행합니다.
         /// </summary>
         private void Update()
         {
             if (_mainCharacter != null && _battleCamera != null)
-            {
-                // 캐릭터의 이동 속도에 따른 동적 카메라 거리 계산
-                UpdateDynamicCameraDistance();
-                
+            {                
                 // 목표 위치 계산 (동적 오프셋 사용)
                 Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
                 
@@ -164,33 +211,61 @@ namespace BattleSystem
                 );
             }
         }
+           
+        /// <summary>
+        /// 콜리전 기반 경계 시스템에서 호출되는 타일 업데이트 메서드입니다.
+        /// </summary>
+        /// <param name="newCenter">새로운 타일 중심</param>
+        public void UpdateTilesAtBoundary(Vector3Int newCenter)
+        {
+            if (tilePoolingSystem == null) return;
+            
+            Debug.Log($"[BATTLE_STAGE_VIEW] 콜리전 기반 타일 업데이트 시작: {newCenter}");
+            
+            // 배치 처리를 위한 성능 최적화
+            StartCoroutine(UpdateTilesBatch(newCenter));
+        }
         
         /// <summary>
-        /// 캐릭터의 이동 속도에 따라 카메라 거리를 동적으로 조절합니다.
+        /// 배치로 타일을 업데이트합니다. (성능 최적화)
         /// </summary>
-        private void UpdateDynamicCameraDistance()
+        private System.Collections.IEnumerator UpdateTilesBatch(Vector3Int newCenter)
         {
-            if (_mainCharacter == null) return;
+            // 1. 범위 밖의 타일들을 제거하고 풀로 반환 (O(log n))
+            int removedCount = tilePoolingSystem.RemoveTilesOutsideRange(newCenter, Width, Height);
             
-            // 캐릭터의 이동 속도 가져오기
-            float characterSpeed = _mainCharacter.moveSpeed;
+            // 프레임 분할을 위한 yield
+            yield return null;
             
-            // 속도에 따른 거리 계산 (속도가 빠를수록 카메라가 멀어짐)
-            float dynamicDistance = Mathf.Lerp(
-                minCameraDistance, 
-                maxCameraDistance, 
-                (characterSpeed - 1f) / (10f - 1f) // 1~10 속도 범위를 0~1로 정규화
-            );
+            // 2. 새로운 범위의 타일들을 생성 (O(n) 최적화)
+            int createdCount = tilePoolingSystem.CreateTilesInRange(newCenter, Width, Height);
             
-            // 거리 제한 적용
-            dynamicDistance = Mathf.Clamp(dynamicDistance, minCameraDistance, maxCameraDistance);
+            // 3. 마지막 타일 중심 업데이트
+            lastTileCenter = newCenter;
             
-            // 동적 카메라 오프셋 업데이트 (Z축만 변경)
-            _dynamicCameraOffset = new Vector3(
-                cameraOffset.x,
-                cameraOffset.y,
-                -dynamicDistance
-            );
+            Debug.Log($"[BATTLE_STAGE_VIEW] 배치 타일 업데이트 완료 - 제거: {removedCount}개, 생성: {createdCount}개");
+            
+            // 성능 통계 출력
+            if (tilePoolingSystem != null)
+            {
+                tilePoolingSystem.LogPerformanceStats();
+            }
+        }
+        
+        /// <summary>
+        /// 타일 풀링 시스템의 상태를 로그로 출력합니다.
+        /// </summary>
+        public void LogTileSystemStatus()
+        {
+            if (tilePoolingSystem != null)
+            {
+                tilePoolingSystem.LogStatus();
+                Debug.Log($"[BATTLE_STAGE_VIEW] 현재 타일 중심: {lastTileCenter}");
+            }
+            else
+            {
+                Debug.Log("[BATTLE_STAGE_VIEW] 타일 풀링 시스템이 초기화되지 않았습니다.");
+            }
         }
     }
 } 

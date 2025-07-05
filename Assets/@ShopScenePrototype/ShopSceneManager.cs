@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using CardSystem;
 using DeckViews;
 using CharacterSystem;
+using Stats;
+using TMPro;
 
 /// <summary>
 /// 상점 씬의 핵심 관리 클래스입니다.
@@ -46,6 +48,11 @@ public class ShopSceneManager : MonoBehaviour
     /// 상점에서 조작할 메인 캐릭터 Pawn
     public Pawn mainCharacter;
 
+    public TMP_Text attackStatValue;
+    public TMP_Text defenseStatValue;
+    public TMP_Text healthStatValue;
+    public TMP_Text moveSpeedStatValue;
+
     // --- Unity 메서드 ---
 
     /// <summary>
@@ -66,6 +73,8 @@ public class ShopSceneManager : MonoBehaviour
         BuyButton2.onClick.AddListener(BuyCard2);
         BuyButton3.onClick.AddListener(BuyCard3);
         OnBattleSceneChange.onClick.AddListener(OnBattleSceneChangeTest);
+        
+        statRefresh();
     }
 
     // --- 카드 리롤/뽑기 관련 메서드 ---
@@ -135,5 +144,14 @@ public class ShopSceneManager : MonoBehaviour
     public void OnBattleSceneChangeTest()
     {
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
+        statRefresh();
+    }
+
+    private void statRefresh()
+    {
+        attackStatValue.text = $"{mainCharacter.statSheet[StatType.AttackPower].Value}";
+        defenseStatValue.text = $"{mainCharacter.statSheet[StatType.Defense].Value}";
+        healthStatValue.text = $"{mainCharacter.statSheet[StatType.Health].Value}";
+        moveSpeedStatValue.text = $"{mainCharacter.statSheet[StatType.MoveSpeed].Value}";
     }
 }

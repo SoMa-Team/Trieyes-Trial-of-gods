@@ -81,7 +81,7 @@ namespace BattleSystem
                 {
                     var spawnPoint = GetRandomSpawnPoint();
                     var enemy = SpawnEnemy();
-                    BattleSystemTest.Instance.battleStage.AttachEnemy(enemy, spawnPoint.transform);
+                    BattleStage.now.AttachEnemy(enemy, spawnPoint.transform);
                 }
             }
         }

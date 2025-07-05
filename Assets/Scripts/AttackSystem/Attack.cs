@@ -90,25 +90,19 @@ namespace AttackSystem
         /// <param name="hitObject">충돌한 객체</param>
         protected virtual void HandleCollision(GameObject hitObject)
         {
-            // 충돌한 객체의 Pawn 컴포넌트 찾기
-            Pawn hitPawn = hitObject.GetComponent<Pawn>();
-            if (hitPawn == null)
+            switch (hitObject.tag)
             {
-                // Pawn이 없는 경우 Attack 컴포넌트 찾기
-                Attack hitAttack = hitObject.GetComponent<Attack>();
-                if (hitAttack != null)
-                {
-                    hitPawn = hitAttack.attacker;
-                }
-            }
-
-            if (hitPawn != null && attacker != null)
-            {
-                // 공격자와 피격자가 다른 경우에만 처리
-                if (hitPawn != attacker)
-                {
-                    ProcessAttackCollision(hitPawn, hitObject);
-                }
+                case "Player": 
+                case "Enemy":
+                    if (attacker.gameObject.CompareTag(hitObject.tag))
+                        return;
+                    
+                    // Player가 맞음
+                    ProcessAttackCollision(hitObject.GetComponent<Pawn>());
+                    break;
+                
+                default:
+                    return;
             }
         }
 
@@ -116,9 +110,9 @@ namespace AttackSystem
         /// 공격 성공 시 충돌을 처리합니다. (투사체 전용)
         /// </summary>
         /// <param name="targetPawn">피격 대상</param>
-        /// <param name="hitObject">충돌한 객체</param>
-        protected virtual void ProcessAttackCollision(Pawn targetPawn, GameObject hitObject)
+        protected virtual void ProcessAttackCollision(Pawn targetPawn)
         {
+            Debug.LogError($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             
             // 이벤트 발생 순서: OnAttackHit → OnDamageHit → 회피 판정 → OnAttackMiss/OnAttack
@@ -153,7 +147,7 @@ namespace AttackSystem
 
             foreach (var attackComponent in components)
             {
-                attackComponent.ProcessComponentCollision(targetPawn, hitObject);
+                attackComponent.ProcessComponentCollision(targetPawn);
             }
         }
 

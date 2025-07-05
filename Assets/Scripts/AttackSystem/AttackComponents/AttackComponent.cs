@@ -79,7 +79,7 @@ namespace AttackComponents
                 // 소유자와 피격자가 다른 경우에만 처리
                 if (hitPawn != attacker)
                 {
-                    ProcessComponentCollision(hitPawn, hitObject);
+                    ProcessComponentCollision(hitPawn);
                 }
             }
         }
@@ -89,7 +89,7 @@ namespace AttackComponents
         /// </summary>
         /// <param name="targetPawn">피격 대상</param>
         /// <param name="hitObject">충돌한 객체</param>
-        public virtual void ProcessComponentCollision(Pawn targetPawn, GameObject hitObject)
+        public virtual void ProcessComponentCollision(Pawn targetPawn)
         {
             Debug.Log($"<color=orange>[COMPONENT] {gameObject.name} hit {targetPawn.gameObject.name}</color>");
             

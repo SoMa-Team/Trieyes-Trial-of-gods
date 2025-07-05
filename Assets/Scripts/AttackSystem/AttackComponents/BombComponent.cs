@@ -1,6 +1,5 @@
 using AttackSystem;
 using CharacterSystem;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace AttackComponents
@@ -10,9 +9,9 @@ namespace AttackComponents
         public AttackData newAttackData;
         public int itemNumber;
 
-        public override void ProcessComponentCollision(Pawn targetPawn, GameObject hitObject)
+        public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            base.ProcessComponentCollision(targetPawn, hitObject);
+            base.ProcessComponentCollision(targetPawn);
             
             for (int i = 0; i < itemNumber; i++)
             {

@@ -169,6 +169,8 @@ namespace CardSystem
             clone.cardAction = this.cardAction?.DeepCopy();
             clone.cardStats = this.cardStats?.DeepCopy();
             clone.cardEnhancement = this.cardEnhancement?.DeepCopy();
+            
+            clone.descParams = (string[])this.descParams?.Clone();
 
             return clone;
         }

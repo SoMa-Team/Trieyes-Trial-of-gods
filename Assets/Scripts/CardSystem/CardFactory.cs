@@ -112,11 +112,7 @@ namespace CardSystem
             card.illustration = info.illustration;
             card.cardDescription = info.cardDescription;
             card.eventTypes = new List<Utils.EventType>(info.eventTypes); // 깊은 복사
-            card.descParams = new string[info.descParams.Length];
-            for (int i = 0; i < info.descParams.Length; i++)
-            {
-                card.descParams[i] = info.descParams[i];
-            }
+            card.descParams = (string[])info.descParams.Clone();
         }
     }
 } 

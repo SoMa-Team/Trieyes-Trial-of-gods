@@ -86,6 +86,8 @@ namespace CardSystem
         /// 카드의 레벨업과 경험치 시스템을 담당합니다.
         /// </summary>
         public CardEnhancement cardEnhancement;
+        
+        public string[] descParams;
 
         /// <summary>
         /// 카드를 소유한 캐릭터(Pawn)입니다.

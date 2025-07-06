@@ -4,6 +4,7 @@ using CardSystem;
 using Stats;
 using System.Collections.Generic;
 using BattleSystem;
+using Utils;
 
 namespace CardActions
 {
@@ -38,6 +39,7 @@ namespace CardActions
             if (descParams == null)
             {
                 Debug.LogError("descParams 형변환이 실패하였습니다.");
+                return;
             }
 
             // OnBattleSceneChange 이벤트 처리
@@ -45,28 +47,11 @@ namespace CardActions
             {
                 Debug.Log($"PreparingMarch.OnEvent: OnBattleSceneChange");
                 
-                StatType statType1 = new StatType();
-                int value1 = int.Parse(descParams[1]);
-                switch (descParams[0])
+                StatType statType1 = KoreanToStatType.ToStatType(descParams[0]);
+                if (!int.TryParse(descParams[1], out int value1))
                 {
-                    case "공격력":
-                        statType1 = StatType.AttackPower;
-                        break;
-                    case "방어력":
-                        statType1 = StatType.Defense;
-                        break;
-                    case "사정거리":
-                        statType1 = StatType.AttackRange;
-                        break;
-                    case "공격속도":
-                        statType1 = StatType.AttackSpeed;
-                        break;
-                    case "체력":
-                        statType1 = StatType.Health;
-                        break;
-                    default:
-                        statType1 = StatType.Health;
-                        break;
+                    Debug.LogError($"descParams[1] 파싱 실패: {descParams[1]}");
+                    return;
                 }
                 
                 // 공격력 증가 버프 생성 및 적용

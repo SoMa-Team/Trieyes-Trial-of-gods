@@ -14,14 +14,6 @@ namespace CardActions
     /// </summary>
     public class PreparingMarch : CardAction
     {
-        // --- 필드 ---
-
-        /// <summary>
-        /// 이 카드가 OnBattleSceneChange 이벤트에서 제공하는 공격력 증가 수치입니다.
-        /// 기본값은 10으로 설정되어 있으며, 캐릭터의 공격력을 이만큼 증가시킵니다.
-        /// </summary>
-        public int attackPowerIncrease = 10;
-
         // --- public 메서드 ---
 
         /// <summary>
@@ -35,6 +27,7 @@ namespace CardActions
         /// <param name="param">이벤트와 함께 전달된 매개변수</param>
         public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
+            var descParams = param as string[];
             // 매개변수 유효성 검사
             if (owner == null || deck == null)
             {
@@ -42,16 +35,45 @@ namespace CardActions
                 return;
             }
 
+            if (descParams == null)
+            {
+                Debug.LogError("descParams 형변환이 실패하였습니다.");
+            }
+
             // OnBattleSceneChange 이벤트 처리
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
                 Debug.Log($"PreparingMarch.OnEvent: OnBattleSceneChange");
                 
+                StatType statType1 = new StatType();
+                int value1 = int.Parse(descParams[1]);
+                switch (descParams[0])
+                {
+                    case "공격력":
+                        statType1 = StatType.AttackPower;
+                        break;
+                    case "방어력":
+                        statType1 = StatType.Defense;
+                        break;
+                    case "사정거리":
+                        statType1 = StatType.AttackRange;
+                        break;
+                    case "공격속도":
+                        statType1 = StatType.AttackSpeed;
+                        break;
+                    case "체력":
+                        statType1 = StatType.Health;
+                        break;
+                    default:
+                        statType1 = StatType.Health;
+                        break;
+                }
+                
                 // 공격력 증가 버프 생성 및 적용
-                var modifier = new StatModifier(attackPowerIncrease, BuffOperationType.Additive);
+                var modifier = new StatModifier(value1, BuffOperationType.Additive);
                 Debug.Log("modifier Created");
-                owner.statSheet[StatType.AttackPower].AddBuff(modifier);
-                Debug.Log($"<color=yellow>[PreparingMarch] ATK +{attackPowerIncrease}. New Value: {owner.statSheet[StatType.AttackPower].Value}</color>");
+                owner.statSheet[statType1].AddBuff(modifier);
+                Debug.Log($"<color=yellow>[PreparingMarch] ATK +{value1}. New Value: {owner.statSheet[statType1].Value}</color>");
             }
         }
     }

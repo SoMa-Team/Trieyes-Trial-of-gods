@@ -69,7 +69,7 @@ namespace CardViews
 
             // 카드 이름, 설명, 레벨 표시
             cardNameText.text = card.cardName;
-            descriptionText.text = card.cardDescription;
+            descriptionText.text = FormatDescription(card.cardDescription, card.descParams);
             levelText.text = $"Lv.{card.cardEnhancement.level.Value}";
             
             // 속성 엠블럼 표시
@@ -97,6 +97,20 @@ namespace CardViews
                 statTypeEmblemImage.enabled = false;
                 statIntegerValueText.enabled = false;
             }
+        }
+        
+        // --- private 메서드 ---
+        private string FormatDescription(string template, string[] descParams)
+        {
+            if (descParams == null || descParams.Length == 0)
+                return template;
+
+            string result = template;
+            for (int i = 0; i < descParams.Length; i++)
+            {
+                result = result.Replace("{" + i + "}", descParams[i]);
+            }
+            return result;
         }
     }
 }

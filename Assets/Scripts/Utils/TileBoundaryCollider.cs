@@ -18,6 +18,7 @@ namespace Utils
         private BattleStageView battleStageView;
         private Vector3Int lastTileCenter;
         private bool isInitialized = false;
+        private string playerTag = "Player"; // 플레이어 태그
         
         /// <summary>
         /// 타일 경계 콜리전을 초기화합니다.
@@ -27,6 +28,9 @@ namespace Utils
         {
             battleStageView = view;
             lastTileCenter = Vector3Int.zero;
+            
+            // 플레이어 태그 설정 (성능 최적화를 위해 캐시)
+            playerTag = "Player";
             
             // BoxCollider2D 컴포넌트 추가
             boundaryCollider = gameObject.AddComponent<BoxCollider2D>();
@@ -48,26 +52,14 @@ namespace Utils
         /// <summary>
         /// 콜리전이 트리거될 때 호출됩니다.
         /// </summary>
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerExit2D(Collider2D other)
         {
             if (!isInitialized || battleStageView == null) return;
             
-            // 플레이어 캐릭터인지 확인
-            if (other.CompareTag("Player") || other.GetComponent<CharacterSystem.Pawn>() != null)
-            {
-                HandleBoundaryTrigger(other.transform.position);
-            }
-        }
-        
-        /// <summary>
-        /// 콜리전이 트리거 상태일 때 호출됩니다.
-        /// </summary>
-        private void OnTriggerStay2D(Collider2D other)
-        {
-            if (!isInitialized || battleStageView == null) return;
-            
-            // 플레이어 캐릭터인지 확인
-            if (other.CompareTag("Player") || other.GetComponent<CharacterSystem.Pawn>() != null)
+            Debug.Log($"[TILE_BOUNDARY] 콜리전 트리거 발생: {other.gameObject.name} Tag : {other.gameObject.tag}");
+
+            // 플레이어 태그로만 처리 (안전하고 명확)
+            if (other.CompareTag(playerTag))
             {
                 HandleBoundaryTrigger(other.transform.position);
             }

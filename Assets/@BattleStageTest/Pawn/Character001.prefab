@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1761318757419568748}
   m_Layer: 6
   m_Name: Character001
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -52,6 +52,7 @@ MonoBehaviour:
   currentHp: 0
   moveSpeed: 5
   statPresetSO: {fileID: 11400000, guid: 174e138bcc1157a4b9b72c292f87a14f, type: 2}
+  lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 8016258422780310161, guid: ed7b48300e0914e4da7d85bf92d94413, type: 3}
   experience: 0
 --- !u!114 &2023119471966098418
@@ -67,9 +68,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 6424139744733695351}
-  moveAction: {fileID: 5272399529475385058, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
-  attackAction: {fileID: 7821323942778765749, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
-  moveDir: {x: 0, y: 0}
+  joystick: {fileID: 0}
 --- !u!50 &4105170365882426735
 Rigidbody2D:
   serializedVersion: 5

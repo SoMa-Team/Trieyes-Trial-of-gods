@@ -11,7 +11,6 @@ namespace Utils
     public class TilePoolingSystem : MonoBehaviour
     {
         [Header("Tile Pooling Settings")]
-        public int poolSize = 1000;
         public float boundaryThreshold;
         public int gridSize = 50; // 공간 분할을 위한 그리드 크기
         
@@ -247,22 +246,6 @@ namespace Utils
             
             Debug.Log($"[TILE_POOLING] 배치 타일 제거 완료: {removedCount}개 제거됨 (중심: {center}, 크기: {width}x{height})");
             return removedCount;
-        }
-        
-        /// <summary>
-        /// 특정 위치에 타일이 존재하는지 확인합니다. (O(1))
-        /// </summary>
-        public bool HasTile(Vector3Int position)
-        {
-            return activeTiles.Contains(position);
-        }
-        
-        /// <summary>
-        /// 현재 활성화된 타일 개수를 반환합니다. (O(1))
-        /// </summary>
-        public int GetActiveTileCount()
-        {
-            return activeTiles.Count;
         }
         
         /// <summary>

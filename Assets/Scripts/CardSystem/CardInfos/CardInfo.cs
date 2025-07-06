@@ -39,5 +39,8 @@ public class CardInfo : ScriptableObject{
     /// 이벤트 처리 최적화를 위해 사용됩니다.
     /// </summary>
     public List<Utils.EventType> eventTypes = new();
+    
+    [HideInInspector]
+    public string[] descParams;
 }
 }

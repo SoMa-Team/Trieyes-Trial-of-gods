@@ -77,7 +77,7 @@ namespace AttackSystem
                 currentDistance = Vector3.Distance(transform.position, spawnPosition);
                 if (currentDistance >= maxDistance)
                 {
-                    Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} reached max distance ({maxDistance})</color>");
+                    //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} reached max distance ({maxDistance})</color>");
                     DestroyProjectile();
                 }
             }
@@ -143,7 +143,7 @@ namespace AttackSystem
         /// <param name="hitObject">충돌한 객체</param>
         protected virtual void ProcessAttackCollision(Pawn targetPawn, GameObject hitObject)
         {
-            Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
+            //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             
             // 이미 맞은 대상으로 기록
             hitTargets.Add(hitObject);
@@ -151,11 +151,11 @@ namespace AttackSystem
             // 이벤트 발생 순서: OnAttackHit → OnDamageHit → 회피 판정 → OnAttackMiss/OnAttack
             if (attacker != null)
             {
-                Debug.Log($"<color=yellow>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackHit -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
+                //Debug.Log($"<color=yellow>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackHit -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                 // 1. 공격자의 OnAttackHit 이벤트 (유물, 카드 순회)
                 attacker.OnEvent(Utils.EventType.OnAttackHit, targetPawn);
                 
-                Debug.Log($"<color=red>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnDamageHit <- Attacker {attacker.gameObject.name} ({attacker.GetType().Name})</color>");
+                //Debug.Log($"<color=red>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnDamageHit <- Attacker {attacker.gameObject.name} ({attacker.GetType().Name})</color>");
                 // 2. 피격자의 OnDamageHit 이벤트 (회피 판정)
                 targetPawn.OnEvent(Utils.EventType.OnDamageHit, attacker);
                 
@@ -164,15 +164,15 @@ namespace AttackSystem
                 
                 if (isEvaded)
                 {
-                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnEvaded (SUCCESS)</color>");
-                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackMiss -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
+                    //Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnEvaded (SUCCESS)</color>");
+                    //Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackMiss -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                     // 회피 성공: OnEvaded (피격자) + OnAttackMiss (공격자)
                     targetPawn.OnEvent(Utils.EventType.OnEvaded, null);
                     attacker.OnEvent(Utils.EventType.OnAttackMiss, targetPawn);
                 }
                 else
                 {
-                    Debug.Log($"<color=green>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttack -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
+                    //Debug.Log($"<color=green>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttack -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                     // 회피 실패: OnAttack (공격자) - 데미지 계산 및 OnDamaged 호출
                     attacker.OnEvent(Utils.EventType.OnAttack, targetPawn);
                 }
@@ -184,7 +184,7 @@ namespace AttackSystem
             // 관통 한계에 도달했는지 확인
             if (currentPierceCount >= pierceCount)
             {
-                Debug.Log($"<color=red>[ATTACK_PROJECTILE] {gameObject.name} reached pierce limit ({pierceCount})</color>");
+                //Debug.Log($"<color=red>[ATTACK_PROJECTILE] {gameObject.name} reached pierce limit ({pierceCount})</color>");
                 DestroyProjectile();
             }
         }
@@ -200,7 +200,7 @@ namespace AttackSystem
             float evasionRate = targetPawn.GetStatValue(StatType.Evasion) / 100f;
             bool isEvaded = UnityEngine.Random.Range(0f, 1f) < evasionRate;
             
-            Debug.Log($"<color=cyan>[EVASION] {targetPawn.gameObject.name} evasion check: {evasionRate * 100}% -> {(isEvaded ? "SUCCESS" : "FAILED")}</color>");
+            //Debug.Log($"<color=cyan>[EVASION] {targetPawn.gameObject.name} evasion check: {evasionRate * 100}% -> {(isEvaded ? "SUCCESS" : "FAILED")}</color>");
             
             return isEvaded;
         }
@@ -211,7 +211,7 @@ namespace AttackSystem
         /// </summary>
         protected virtual void DestroyProjectile()
         {
-            Debug.Log($"<color=red>[ATTACK_PROJECTILE] {gameObject.name} destroyed</color>");
+            //Debug.Log($"<color=red>[ATTACK_PROJECTILE] {gameObject.name} destroyed</color>");
             
             // 자기 자식 컴포넌트들 삭제
             foreach (var component in componentPrefabs)
@@ -233,11 +233,11 @@ namespace AttackSystem
                 currentLifetime = 0f;
                 hitTargets.Clear();
                 
-                Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} started as projectile</color>");
+                //Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} started as projectile</color>");
             }
             else
             {
-                Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} started as manager</color>");
+                //Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} started as manager</color>");
             }
 
             // 컴포넌트 초기화
@@ -285,7 +285,7 @@ namespace AttackSystem
         {
             // 역할에 따른 로그 출력
             string role = IsManager ? "MANAGER" : "PROJECTILE";
-            Debug.Log($"<color=blue>[ATTACK_{role}] {gameObject.name} received event: {eventType}</color>");
+            //Debug.Log($"<color=blue>[ATTACK_{role}] {gameObject.name} received event: {eventType}</color>");
             
             // 이벤트 타입에 따른 처리
             switch (eventType)
@@ -294,44 +294,44 @@ namespace AttackSystem
                     // 공격 시작 이벤트 처리
                     if (IsManager)
                     {
-                        Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} processing OnAttackHit as manager</color>");
+                        //Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} processing OnAttackHit as manager</color>");
                     }
                     else
                     {
-                        Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} processing OnAttackHit as projectile</color>");
+                        //Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} processing OnAttackHit as projectile</color>");
                     }
                     break;
                 case Utils.EventType.OnAttack:
                     // 공격 종료 이벤트 처리
                     if (IsManager)
                     {
-                        Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} processing OnAttack as manager</color>");
+                        //Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} processing OnAttack as manager</color>");
                     }
                     else
                     {
-                        Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} processing OnAttack as projectile</color>");
+                        //Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} processing OnAttack as projectile</color>");
                     }
                     break;
                 case Utils.EventType.OnDamageHit:
                     // 타격 이벤트 처리
                     if (IsManager)
                     {
-                        Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} processing OnDamageHit as manager</color>");
+                        //Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} processing OnDamageHit as manager</color>");
                     }
                     else
                     {
-                        Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} processing OnDamageHit as projectile</color>");
+                        //Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} processing OnDamageHit as projectile</color>");
                     }
                     break;
                 default:
                     // 기본 이벤트 처리
                     if (IsManager)
                     {
-                        Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} processing {eventType} as manager</color>");
+                        //Debug.Log($"<color=blue>[ATTACK_MANAGER] {gameObject.name} processing {eventType} as manager</color>");
                     }
                     else
                     {
-                        Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} processing {eventType} as projectile</color>");
+                        //Debug.Log($"<color=blue>[ATTACK_PROJECTILE] {gameObject.name} processing {eventType} as projectile</color>");
                     }
                     break;
             }
@@ -362,12 +362,12 @@ namespace AttackSystem
                     }
                     else
                     {
-                        Debug.LogError($"[Attack] {componentPrefab.name}에 AttackComponent가 없습니다!");
+                        //Debug.LogError($"[Attack] {componentPrefab.name}에 AttackComponent가 없습니다!");
                     }
                 }
                 else if (componentPrefab != null)
                 {
-                    Debug.LogError($"[Attack] {componentPrefab.GetType().Name}의 prefab이 할당되어 있지 않습니다!");
+                    //Debug.LogError($"[Attack] {componentPrefab.GetType().Name}의 prefab이 할당되어 있지 않습니다!");
                 }
             }
         }

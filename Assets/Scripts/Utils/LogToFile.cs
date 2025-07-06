@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Utils
 {
     /// <summary>
-    /// Unity의 Debug.Log를 파일로 저장하는 시스템입니다.
+    /// Unity의 //Debug.Log를 파일로 저장하는 시스템입니다.
     /// </summary>
     public class LogToFile : MonoBehaviour
     {
@@ -56,7 +56,7 @@ namespace Utils
                 
                 // 초기화 로그
                 string initMessage = $"[{GetTimestamp()}] [SYSTEM] LogToFile initialized. Log file: {logFilePath}";
-                Debug.Log(initMessage);
+                //Debug.Log(initMessage);
                 WriteToFile(initMessage);
                 
                 // Application.logMessageReceived 이벤트 등록
@@ -64,7 +64,7 @@ namespace Utils
             }
             catch (Exception e)
             {
-                Debug.LogError($"<color=red>[LogToFile] Failed to initialize logging: {e.Message}</color>");
+                //Debug.LogError($"<color=red>[LogToFile] Failed to initialize logging: {e.Message}</color>");
             }
         }
         
@@ -94,7 +94,7 @@ namespace Utils
             }
             catch (Exception e)
             {
-                Debug.LogError($"<color=red>[LogToFile] Failed to write log: {e.Message}</color>");
+                //Debug.LogError($"<color=red>[LogToFile] Failed to write log: {e.Message}</color>");
             }
         }
         
@@ -113,7 +113,7 @@ namespace Utils
             }
             catch (Exception e)
             {
-                Debug.LogError($"<color=red>[LogToFile] Failed to write to file: {e.Message}</color>");
+                //Debug.LogError($"<color=red>[LogToFile] Failed to write to file: {e.Message}</color>");
             }
         }
         
@@ -142,7 +142,7 @@ namespace Utils
         {
             if (string.IsNullOrEmpty(logFilePath) || !File.Exists(logFilePath))
             {
-                Debug.LogWarning("<color=yellow>[LogToFile] Log file does not exist.</color>");
+                //Debug.LogWarning("<color=yellow>[LogToFile] Log file does not exist.</color>");
                 return;
             }
             
@@ -153,7 +153,7 @@ namespace Utils
             }
             catch (Exception e)
             {
-                Debug.LogError($"<color=red>[LogToFile] Failed to open log file: {e.Message}</color>");
+                //Debug.LogError($"<color=red>[LogToFile] Failed to open log file: {e.Message}</color>");
             }
         }
         
@@ -185,18 +185,18 @@ namespace Utils
         {
             if (string.IsNullOrEmpty(logFilePath) || !File.Exists(logFilePath))
             {
-                Debug.LogWarning("<color=yellow>[LogToFile] Log file does not exist.</color>");
+                //Debug.LogWarning("<color=yellow>[LogToFile] Log file does not exist.</color>");
                 return;
             }
             
             try
             {
                 File.Delete(logFilePath);
-                Debug.Log("<color=green>[LogToFile] Log file cleared.</color>");
+                //Debug.Log("<color=green>[LogToFile] Log file cleared.</color>");
             }
             catch (Exception e)
             {
-                Debug.LogError($"<color=red>[LogToFile] Failed to clear log file: {e.Message}</color>");
+                //Debug.LogError($"<color=red>[LogToFile] Failed to clear log file: {e.Message}</color>");
             }
         }
         

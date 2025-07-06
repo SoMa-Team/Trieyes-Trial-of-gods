@@ -48,7 +48,7 @@ namespace Utils
             // 그리드 시스템 초기화
             InitializeSpatialGrid();
             
-            Debug.Log("[TILE_POOLING] 최적화된 타일 풀링 시스템이 초기화되었습니다.");
+            //Debug.Log("[TILE_POOLING] 최적화된 타일 풀링 시스템이 초기화되었습니다.");
         }
         
         /// <summary>
@@ -57,7 +57,7 @@ namespace Utils
         private void InitializeSpatialGrid()
         {
             spatialGrid.Clear();
-            Debug.Log("[TILE_POOLING] 공간 분할 그리드 시스템이 초기화되었습니다.");
+            //Debug.Log("[TILE_POOLING] 공간 분할 그리드 시스템이 초기화되었습니다.");
         }
         
         /// <summary>
@@ -101,15 +101,6 @@ namespace Utils
             // 공간 분할 그리드 업데이트
             UpdateSpatialGrid(position, true);
             
-            if (reused)
-            {
-                Debug.Log($"[TILE_POOLING] 풀에서 타일 재사용: {position}");
-            }
-            else
-            {
-                Debug.Log($"[TILE_POOLING] 새 타일 생성: {position}");
-            }
-            
             return true;
         }
         
@@ -133,7 +124,7 @@ namespace Utils
             // 공간 분할 그리드 업데이트
             UpdateSpatialGrid(position, false);
             
-            Debug.Log($"[TILE_POOLING] 타일을 풀로 반환: {position}");
+            //Debug.Log($"[TILE_POOLING] 타일을 풀로 반환: {position}");
             return true;
         }
         
@@ -199,7 +190,7 @@ namespace Utils
                 }
             }
             
-            Debug.Log($"[TILE_POOLING] 배치 타일 생성 완료: {createdCount}개 생성됨 (중심: {center}, 크기: {width}x{height})");
+            //Debug.Log($"[TILE_POOLING] 배치 타일 생성 완료: {createdCount}개 생성됨 (중심: {center}, 크기: {width}x{height})");
             return createdCount;
         }
         
@@ -244,7 +235,7 @@ namespace Utils
                 }
             }
             
-            Debug.Log($"[TILE_POOLING] 배치 타일 제거 완료: {removedCount}개 제거됨 (중심: {center}, 크기: {width}x{height})");
+            //Debug.Log($"[TILE_POOLING] 배치 타일 제거 완료: {removedCount}개 제거됨 (중심: {center}, 크기: {width}x{height})");
             return removedCount;
         }
         
@@ -312,7 +303,7 @@ namespace Utils
             tilePool.Clear();
             spatialGrid.Clear();
             
-            Debug.Log("[TILE_POOLING] 모든 타일이 제거되고 풀이 정리되었습니다.");
+            //Debug.Log("[TILE_POOLING] 모든 타일이 제거되고 풀이 정리되었습니다.");
         }
         
         /// <summary>
@@ -320,7 +311,7 @@ namespace Utils
         /// </summary>
         public void LogStatus()
         {
-            Debug.Log($"[TILE_POOLING_STATUS] 활성 타일: {activeTiles.Count}개, 풀에 있는 타일: {tilePool.Count}개, 그리드 셀: {spatialGrid.Count}개");
+            //Debug.Log($"[TILE_POOLING_STATUS] 활성 타일: {activeTiles.Count}개, 풀에 있는 타일: {tilePool.Count}개, 그리드 셀: {spatialGrid.Count}개");
         }
         
         /// <summary>
@@ -329,7 +320,7 @@ namespace Utils
         public void LogPerformanceStats()
         {
             float memoryUsage = (activeTiles.Count + tilePool.Count) * sizeof(int) / 1024f; // KB
-            Debug.Log($"[TILE_POOLING_PERFORMANCE] 메모리 사용량: {memoryUsage:F2}KB, 그리드 효율성: {spatialGrid.Count}/{activeTiles.Count}");
+            //Debug.Log($"[TILE_POOLING_PERFORMANCE] 메모리 사용량: {memoryUsage:F2}KB, 그리드 효율성: {spatialGrid.Count}/{activeTiles.Count}");
         }
     }
 } 

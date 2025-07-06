@@ -46,7 +46,7 @@ namespace Utils
             
             isInitialized = true;
             
-            Debug.Log($"[TILE_BOUNDARY] 타일 경계 콜리전 초기화 완료 (크기: {colliderWidth}x{colliderHeight})");
+            //Debug.Log($"[TILE_BOUNDARY] 타일 경계 콜리전 초기화 완료 (크기: {colliderWidth}x{colliderHeight})");
         }
         
         /// <summary>
@@ -56,7 +56,7 @@ namespace Utils
         {
             if (!isInitialized || battleStageView == null) return;
             
-            Debug.Log($"[TILE_BOUNDARY] 콜리전 트리거 발생: {other.gameObject.name} Tag : {other.gameObject.tag}");
+            //Debug.Log($"[TILE_BOUNDARY] 콜리전 트리거 발생: {other.gameObject.name} Tag : {other.gameObject.tag}");
 
             // 플레이어 태그로만 처리 (안전하고 명확)
             if (other.CompareTag(playerTag))
@@ -88,7 +88,7 @@ namespace Utils
             // 경계에 도달했는지 확인
             if (distanceFromLastCenter >= boundaryDistance)
             {
-                Debug.Log($"[TILE_BOUNDARY] 경계 트리거! 캐릭터 위치: {characterPosition}, 새로운 중심: {currentTileCenter}");
+                //Debug.Log($"[TILE_BOUNDARY] 경계 트리거! 캐릭터 위치: {characterPosition}, 새로운 중심: {currentTileCenter}");
                 
                 // 타일 업데이트 수행
                 battleStageView.UpdateTilesAtBoundary(currentTileCenter);
@@ -107,7 +107,7 @@ namespace Utils
         private void UpdateColliderPosition(Vector3Int tileCenter)
         {
             transform.position = new Vector3(tileCenter.x, tileCenter.y, 0);
-            Debug.Log($"[TILE_BOUNDARY] 콜리전 위치 업데이트: {transform.position}");
+            //Debug.Log($"[TILE_BOUNDARY] 콜리전 위치 업데이트: {transform.position}");
         }
         
         /// <summary>
@@ -124,7 +124,7 @@ namespace Utils
             float colliderHeight = tileHeight * boundaryThreshold;
             boundaryCollider.size = new Vector2(colliderWidth, colliderHeight);
             
-            Debug.Log($"[TILE_BOUNDARY] 콜리전 크기 업데이트: {colliderWidth}x{colliderHeight}");
+            //Debug.Log($"[TILE_BOUNDARY] 콜리전 크기 업데이트: {colliderWidth}x{colliderHeight}");
         }
         
         /// <summary>
@@ -143,7 +143,7 @@ namespace Utils
         {
             if (boundaryCollider != null)
             {
-                Debug.Log($"[TILE_BOUNDARY_STATUS] 위치: {transform.position}, 크기: {boundaryCollider.size}, 임계값: {boundaryThreshold}");
+                //Debug.Log($"[TILE_BOUNDARY_STATUS] 위치: {transform.position}, 크기: {boundaryCollider.size}, 임계값: {boundaryThreshold}");
             }
         }
     }

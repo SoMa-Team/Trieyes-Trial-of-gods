@@ -79,7 +79,7 @@ namespace BattleSystem
             tilemap = tilemapGO.GetComponentInChildren<Tilemap>();
             if (tilemap == null)
             {
-                Debug.LogError("Tilemap 컴포넌트를 찾을 수 없습니다.");
+                //Debug.LogError("Tilemap 컴포넌트를 찾을 수 없습니다.");
                 return;
             }
 
@@ -97,7 +97,7 @@ namespace BattleSystem
             tilePoolingSystem.CreateTilesInRange(initialCenter, Width, Height);
             lastTileCenter = initialCenter;
             
-            Debug.Log($"[BATTLE_STAGE_VIEW] 초기 타일 생성 완료 (중심: {initialCenter}, 크기: {Width}x{Height})");
+            //Debug.Log($"[BATTLE_STAGE_VIEW] 초기 타일 생성 완료 (중심: {initialCenter}, 크기: {Width}x{Height})");
         }
         
         /// <summary>
@@ -116,7 +116,7 @@ namespace BattleSystem
             // 콜리전 기반 경계 시스템 초기화
             InitializeBoundaryCollider();
             
-            Debug.Log("[BATTLE_STAGE_VIEW] 타일 풀링 시스템과 콜리전 기반 경계 시스템이 초기화되었습니다.");
+            //Debug.Log("[BATTLE_STAGE_VIEW] 타일 풀링 시스템과 콜리전 기반 경계 시스템이 초기화되었습니다.");
         }
         
         /// <summary>
@@ -137,7 +137,7 @@ namespace BattleSystem
             // 콜리전 시스템 초기화
             boundaryCollider.Initialize(this);
             
-            Debug.Log("[BATTLE_STAGE_VIEW] 콜리전 기반 경계 시스템이 초기화되었습니다.");
+            //Debug.Log("[BATTLE_STAGE_VIEW] 콜리전 기반 경계 시스템이 초기화되었습니다.");
         }
         
         /// <summary>
@@ -167,7 +167,7 @@ namespace BattleSystem
             // 초기 위치 설정
             _battleCamera.transform.position = cameraOffset;
             
-            Debug.Log("전투 카메라가 생성되었습니다.");
+            //Debug.Log("전투 카메라가 생성되었습니다.");
         }
         
         /// <summary>
@@ -186,7 +186,7 @@ namespace BattleSystem
                 Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
                 _battleCamera.transform.position = targetPosition;
                 
-                Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
+                //Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
             }
         }
         
@@ -220,7 +220,7 @@ namespace BattleSystem
         {
             if (tilePoolingSystem == null) return;
             
-            Debug.Log($"[BATTLE_STAGE_VIEW] 콜리전 기반 타일 업데이트 시작: {newCenter}");
+            //Debug.Log($"[BATTLE_STAGE_VIEW] 콜리전 기반 타일 업데이트 시작: {newCenter}");
             
             // 배치 처리를 위한 성능 최적화
             StartCoroutine(UpdateTilesBatch(newCenter));
@@ -243,7 +243,7 @@ namespace BattleSystem
             // 3. 마지막 타일 중심 업데이트
             lastTileCenter = newCenter;
             
-            Debug.Log($"[BATTLE_STAGE_VIEW] 배치 타일 업데이트 완료 - 제거: {removedCount}개, 생성: {createdCount}개");
+            //Debug.Log($"[BATTLE_STAGE_VIEW] 배치 타일 업데이트 완료 - 제거: {removedCount}개, 생성: {createdCount}개");
             
             // 성능 통계 출력
             if (tilePoolingSystem != null)
@@ -260,11 +260,11 @@ namespace BattleSystem
             if (tilePoolingSystem != null)
             {
                 tilePoolingSystem.LogStatus();
-                Debug.Log($"[BATTLE_STAGE_VIEW] 현재 타일 중심: {lastTileCenter}");
+                //Debug.Log($"[BATTLE_STAGE_VIEW] 현재 타일 중심: {lastTileCenter}");
             }
             else
             {
-                Debug.Log("[BATTLE_STAGE_VIEW] 타일 풀링 시스템이 초기화되지 않았습니다.");
+                //Debug.Log("[BATTLE_STAGE_VIEW] 타일 풀링 시스템이 초기화되지 않았습니다.");
             }
         }
     }

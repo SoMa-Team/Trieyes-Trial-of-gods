@@ -259,8 +259,22 @@ namespace CardSystem
                 cardCallCounts[currentCardIndex]++;
                 cardCallOrder.Add(currentCardIndex);
 
-                // SO 기반 이벤트 전파
-                cards[currentCardIndex]?.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, currentCardIndex);
+                var card = cards[currentCardIndex];
+
+                if (card != null)
+                {
+                    // 1. descParams 복사 (null 체크 포함)
+                    string[] originalParams = card.descParams ?? new string[0];
+
+                    // 2. 새로운 배열로 확장 (descParams + currentCardIndex)
+                    string[] paramWithIndex = new string[originalParams.Length + 1];
+                    for (int i = 0; i < originalParams.Length; i++)
+                        paramWithIndex[i] = originalParams[i];
+                    paramWithIndex[originalParams.Length] = currentCardIndex.ToString();
+
+                    // 3. paramWithIndex를 param으로 넘기기
+                    card.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, paramWithIndex);
+                }
 
                 currentCardIndex++;
                 iterationCount++;

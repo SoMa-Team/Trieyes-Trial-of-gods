@@ -36,9 +36,9 @@ namespace CardActions
                 return;
             }
 
-            if (descParams == null)
+            if (descParams == null || descParams.Length < 2)
             {
-                Debug.LogError("descParams 형변환이 실패하였습니다.");
+                Debug.LogError("descParams null 또는 길이 부족");
                 return;
             }
 

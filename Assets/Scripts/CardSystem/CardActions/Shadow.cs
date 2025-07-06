@@ -7,25 +7,12 @@ namespace CardActions
 {
     /// <summary>
     /// 그림자(Shadow) 카드 액션을 구현하는 클래스입니다.
-    /// CalcActionInitOrder 이벤트 발생 시 자기 자신을 제외한 다른 모든 카드를 한 번 더 호출하는 특별한 효과를 가집니다.
-    /// 카드 호출 순서를 조작하여 전략적 우위를 점하는 복잡한 카드입니다.
+    /// CalcActionInitOrder 이벤트 발생 시 자기 자신을 제외한 다른 모든 카드를 지정된 횟수만큼 더 호출합니다.
     /// </summary>
     public class Shadow : CardAction
     {
-        // --- public 메서드 ---
-
-        /// <summary>
-        /// 카드 액션이 이벤트에 반응할 때 호출되는 메서드입니다.
-        /// CalcActionInitOrder 이벤트 발생 시 호출 순서 재조정 로직을 실행합니다.
-        /// 다른 카드들의 호출 순서를 조작하는 특별한 능력을 발동시킵니다.
-        /// </summary>
-        /// <param name="owner">카드를 소유한 캐릭터</param>
-        /// <param name="deck">카드가 속한 덱</param>
-        /// <param name="eventType">발생한 이벤트 타입</param>
-        /// <param name="param">이벤트와 함께 전달된 매개변수</param>
         public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
-            // 매개변수 유효성 검사
             if (owner == null || deck == null)
             {
                 Debug.LogWarning("owner 또는 deck이 정의되지 않았습니다.");
@@ -39,41 +26,56 @@ namespace CardActions
             }
         }
 
-        // --- private 메서드 ---
-
         /// <summary>
-        /// 자기 자신을 제외한 다른 모든 카드를 한 번 더 호출하는 로직을 처리합니다.
-        /// 덱의 호출 순서에 다른 카드들의 인덱스를 추가하여 중복 호출을 구현합니다.
-        /// 그림자 카드의 핵심 능력으로, 다른 카드들의 효과를 두 배로 증폭시킵니다.
+        /// 자기 자신을 제외한 다른 모든 카드를 'repeatCount'번 추가 호출.
+        /// param은 string[](descParams) 또는 int로 전달될 수 있음.
         /// </summary>
-        /// <param name="deck">현재 덱</param>
-        /// <param name="param">현재 카드의 인덱스</param>
         private void HandleCalcActionInitOrder(Deck deck, object param)
         {
-            if (param is int currentCardIndex)
+            int repeatCount = 1; // 기본값
+            int currentCardIndex = -1;
+
+            // param 타입에 따라 처리 (string[] or Tuple or CustomParam 등)
+            if (param is string[] arr && arr.Length >= 2)
             {
-                // 덱에 카드가 1개 이하인 경우 효과 없음
-                if (deck.Cards.Count <= 1)
-                {
-                    Debug.Log("<color=yellow>[Shadow] Only one card in deck, no effect</color>");
-                    return;
-                }
+                // descParams: [repeatCount, currentCardIndex]
+                int.TryParse(arr[0], out repeatCount);
+                int.TryParse(arr[1], out currentCardIndex);
+            }
+            else if (param is int idx)
+            {
+                // 기존처럼 index만 오는 경우(기존 구조)
+                currentCardIndex = idx;
+            }
+            else if (param is (int repeat, int idx2))
+            {
+                repeatCount = repeat;
+                currentCardIndex = idx2;
+            }
 
-                // 자기 자신을 제외한 카드 인덱스를 수집
-                List<int> cardsToAppend = new List<int>();
-                List<int> callOrder = deck.GetCallOrder();
+            // 덱에 카드가 1개 이하인 경우 효과 없음
+            if (deck.Cards.Count <= 1 || currentCardIndex < 0)
+            {
+                Debug.Log("<color=yellow>[Shadow] Only one card in deck or invalid index, no effect</color>");
+                return;
+            }
 
+            List<int> cardsToAppend = new List<int>();
+            List<int> callOrder = deck.GetCallOrder();
+
+            // 자기 자신을 제외한 카드 인덱스를 repeatCount번 추가
+            for (int repeat = 0; repeat < repeatCount; repeat++)
+            {
                 for (int i = 0; i < deck.Cards.Count; i++)
                 {
                     if (i != currentCardIndex)
                         cardsToAppend.Add(i);
                 }
-
-                // 기존 순서에 추가
-                callOrder.AddRange(cardsToAppend);
-
-                Debug.Log($"<color=green>[Shadow] {deck.GetOwner().gameObject.name} appended other cards once (excluding {currentCardIndex}): [{string.Join(", ", cardsToAppend)}]</color>");
             }
+
+            callOrder.AddRange(cardsToAppend);
+
+            Debug.Log($"<color=green>[Shadow] {deck.GetOwner().gameObject.name} appended other cards {repeatCount}x (excluding {currentCardIndex}): [{string.Join(", ", cardsToAppend)}]</color>");
         }
     }
 }

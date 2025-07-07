@@ -51,7 +51,6 @@ namespace BattleSystem
             var battleStageGameObject = Instantiate(battleStagePrefabs[battleStageID]);
             var battleStageView = battleStageGameObject.GetComponent<BattleStageView>();
             var battleStage = new BattleStage();
-
             battleStageView.BattleStage = battleStage;
 
             Activate(battleStage, mainCharacter, difficulty);

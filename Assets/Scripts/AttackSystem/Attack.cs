@@ -69,6 +69,21 @@ namespace AttackSystem
             }
         }
 
+        protected virtual void Update()
+        {
+            // 투사체일 때만 Update 처리
+            if (IsProjectile)
+            {
+                // 투사체 거리 관리
+                currentDistance = Vector3.Distance(transform.position, spawnPosition);
+                if (currentDistance >= maxDistance)
+                {
+                    //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} reached max distance ({maxDistance})</color>");
+                    AttackFactory.Instance.Deactivate(this);
+                }
+            }
+        }
+
         protected virtual void OnDestroy()
         {
             AttackFactory.Instance.Deactivate(this);
@@ -112,16 +127,16 @@ namespace AttackSystem
         /// <param name="targetPawn">피격 대상</param>
         protected virtual void ProcessAttackCollision(Pawn targetPawn)
         {
-            Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
+            //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             
             // 이벤트 발생 순서: OnAttackHit → OnDamageHit → 회피 판정 → OnAttackMiss/OnAttack
             if (attacker != null)
             {
-                Debug.Log($"<color=yellow>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackHit -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
+                //Debug.Log($"<color=yellow>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackHit -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                 // 1. 공격자의 OnAttackHit 이벤트 (유물, 카드 순회)
                 attacker.OnEvent(Utils.EventType.OnAttackHit, targetPawn);
                 
-                Debug.Log($"<color=red>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnDamageHit <- Attacker {attacker.gameObject.name} ({attacker.GetType().Name})</color>");
+                //Debug.Log($"<color=red>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnDamageHit <- Attacker {attacker.gameObject.name} ({attacker.GetType().Name})</color>");
                 // 2. 피격자의 OnDamageHit 이벤트 (회피 판정)
                 targetPawn.OnEvent(Utils.EventType.OnDamageHit, attacker);
                 
@@ -130,15 +145,15 @@ namespace AttackSystem
                 
                 if (isEvaded)
                 {
-                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnEvaded (SUCCESS)</color>");
-                    Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackMiss -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
+                    //Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnEvaded (SUCCESS)</color>");
+                    //Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackMiss -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                     // 회피 성공: OnEvaded (피격자) + OnAttackMiss (공격자)
                     targetPawn.OnEvent(Utils.EventType.OnEvaded, null);
                     attacker.OnEvent(Utils.EventType.OnAttackMiss, targetPawn);
                 }
                 else
                 {
-                    Debug.Log($"<color=green>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttack -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
+                    //Debug.Log($"<color=green>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttack -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
                     // 회피 실패: OnAttack (공격자) - 데미지 계산 및 OnDamaged 호출
                     attacker.OnEvent(Utils.EventType.OnAttack, targetPawn);
                 }
@@ -161,7 +176,7 @@ namespace AttackSystem
             float evasionRate = targetPawn.GetStatValue(StatType.Evasion) / 100f;
             bool isEvaded = UnityEngine.Random.Range(0f, 1f) < evasionRate;
             
-            Debug.Log($"<color=cyan>[EVASION] {targetPawn.gameObject.name} evasion check: {evasionRate * 100}% -> {(isEvaded ? "SUCCESS" : "FAILED")}</color>");
+            //Debug.Log($"<color=cyan>[EVASION] {targetPawn.gameObject.name} evasion check: {evasionRate * 100}% -> {(isEvaded ? "SUCCESS" : "FAILED")}</color>");
             
             return isEvaded;
         }
@@ -191,6 +206,7 @@ namespace AttackSystem
         public virtual void Deactivate()
         {
             // 컴포넌트 정리
+            // TODO: AttackComponent 초기화 필요시 초기화
             children.Clear();
             
             // 물리 속성 초기화

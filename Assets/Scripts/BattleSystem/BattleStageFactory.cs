@@ -52,10 +52,8 @@ namespace BattleSystem
             var battleStageView = battleStageGameObject.GetComponent<BattleStageView>();
             var battleStage = new BattleStage();
 
-            Debug.Log($"BattleStageFactory.Create: {battleStageID}");
-
             battleStageView.BattleStage = battleStage;
-            
+
             Activate(battleStage, mainCharacter, difficulty);
             return battleStage;
         }
@@ -70,8 +68,12 @@ namespace BattleSystem
         public void Activate(BattleStage battleStage, Pawn mainCharacter, Difficulty difficulty)
         {
             // 메인 캐릭터 설정
+            CharacterFactory.Instance.Activate(mainCharacter);
             battleStage.mainCharacter = mainCharacter;
             mainCharacter.transform.SetParent(battleStage.View.transform);
+            
+            // 카메라가 메인 캐릭터를 팔로우하도록 설정
+            battleStage.View.SetMainCharacter();
             
             // 캐릭터 리스트 초기화
             battleStage.characters = new List<Pawn>();
@@ -99,8 +101,7 @@ namespace BattleSystem
             // 캐릭터 정리
             foreach (var characters in battleStage.characters)
             {
-                // TODO: 캐릭터 전투 종료 로직 구현 필요
-                // 파괴는 하지 않는다는 사실을 기억하자!
+                characters.Deactivate();
             }
 
             // 적 정리

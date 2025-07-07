@@ -1,0 +1,37 @@
+using UnityEngine;
+
+namespace CharacterSystem
+{
+    /// <summary>
+    /// 모든 컨트롤러의 기본 클래스입니다.
+    /// </summary>
+    public abstract class Controller : MonoBehaviour
+    {
+        // ===== [필드] =====
+        public Pawn owner;
+
+        /// <summary>
+        /// 현재 이동 방향
+        /// </summary>
+        private Vector2 _moveDir;
+        public Vector2 moveDir
+        {
+            set
+            {
+                _moveDir = value;
+                if (_moveDir.magnitude > 1e-6) 
+                    lastMoveDir = _moveDir;
+            }
+            get => _moveDir;
+        }
+        public Vector2 lastMoveDir;
+
+        // ===== [Unity 생명주기] =====
+        public virtual void Initialize(Pawn pawn)
+        {
+            owner = pawn;
+        }
+
+        public abstract void ProcessInputActions();
+    }
+}

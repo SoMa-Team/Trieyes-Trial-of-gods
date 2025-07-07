@@ -1,6 +1,8 @@
 using AttackSystem;
 using UnityEngine;
 using Utils;
+using System.Linq;
+using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -18,16 +20,14 @@ namespace CharacterSystem
         protected override void Awake()
         {
             base.Awake();
+
+            // Collision Layer를 Enemy로 설정
+            gameObject.layer = LayerMask.NameToLayer("Enemy");
         }
 
         protected override void Start()
         {
             base.Start();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
         }
 
         // ===== [커스텀 메서드] =====

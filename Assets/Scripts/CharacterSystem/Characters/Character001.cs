@@ -17,6 +17,20 @@ namespace CharacterSystem
         // ===== [Unity 생명주기] =====
         protected override void Awake()
         {
+            base.Awake();
+
+            this.gold = 1000;
+            
+            // Collision Layer를 Character로 설정
+            gameObject.layer = LayerMask.NameToLayer("Character");
+            
+            // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
+            Controller = GetComponent<Controller>();
+            if (Controller == null)
+            {
+                throw new System.Exception("PlayerController not found on " + gameObject.name);
+            }
+            Controller.Initialize(this);
         }
 
         protected override void Start()
@@ -37,24 +51,13 @@ namespace CharacterSystem
         public override void Update()
         {
             base.Update();
-            playerController?.ProcessInputActions();
+            Controller?.ProcessInputActions();
         }
 
         // ===== [커스텀 메서드] =====
         public override void Activate()
         {
             base.Activate();
-
-            // TODO: CSV에서 초기 골드 설정 받아오기
-            this.gold = 1000;
-            
-            // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
-            playerController = GetComponent<PlayerController>();
-            if (playerController == null)
-            {
-                throw new System.Exception("PlayerController not found on " + gameObject.name);
-            }
-            playerController.Initialize(this);
             Debug.Log("Character001 Activated.");
         }
 

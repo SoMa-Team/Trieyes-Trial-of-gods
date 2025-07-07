@@ -33,7 +33,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8642677144017507823}
+  - {fileID: 5774878692793094050}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6424139744733695351
@@ -134,7 +134,7 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.5, y: 1}
   m_Direction: 0
---- !u!1001 &4627608145063152420
+--- !u!1001 &7488388419884355945
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -208,7 +208,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4019572638652079819, guid: 1fcfec8e6456783419d70582561b8ccf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -170
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 4019572638652079819, guid: 1fcfec8e6456783419d70582561b8ccf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -231,8 +231,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1fcfec8e6456783419d70582561b8ccf, type: 3}
---- !u!224 &8642677144017507823 stripped
+--- !u!224 &5774878692793094050 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4019572638652079819, guid: 1fcfec8e6456783419d70582561b8ccf, type: 3}
-  m_PrefabInstance: {fileID: 4627608145063152420}
+  m_PrefabInstance: {fileID: 7488388419884355945}
   m_PrefabAsset: {fileID: 0}

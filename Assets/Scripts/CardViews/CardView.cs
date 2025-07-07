@@ -69,7 +69,7 @@ namespace CardViews
 
             // 카드 이름, 설명, 레벨 표시
             cardNameText.text = card.cardName;
-            descriptionText.text = FormatDescription(card.cardDescription, card.descParams);
+            descriptionText.text = FormatDescription(card.cardDescription, card.cardAction.);
             levelText.text = $"Lv.{card.cardEnhancement.level.Value}";
             
             // 속성 엠블럼 표시

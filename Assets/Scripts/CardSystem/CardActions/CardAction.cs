@@ -33,5 +33,7 @@ namespace CardActions
             return this;
             //카드 액션이 상태를 갖는 경우 DeepCopy 로직을 추가합니다.
         }
+
+        public abstract string[] GetDescriptionParams(Card card);
     }
 } 

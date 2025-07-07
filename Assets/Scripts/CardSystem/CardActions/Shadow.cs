@@ -2,6 +2,7 @@ using UnityEngine;
 using CharacterSystem;
 using CardSystem;
 using System.Collections.Generic;
+using System;
 
 namespace CardActions
 {
@@ -22,36 +23,33 @@ namespace CardActions
             // 호출 순서 재조정 이벤트 감지
             if (eventType == Utils.EventType.CalcActionInitOrder)
             {
-                HandleCalcActionInitOrder(deck, param);
+                if (param is ValueTuple<Card, int> tuple)
+                {
+                    Card card = tuple.Item1;
+                    int level = card.cardEnhancement.level;
+                    int currentCardIndex = tuple.Item2;
+
+                    HandleCalcActionInitOrder(deck, level, currentCardIndex);
+                }
+                else
+                {
+                    Debug.LogError("[Shadow] param이 올바르지 않음");
+                }
             }
+        }
+
+        public int calRepeatCount(int cardLevel)
+        {
+            return cardLevel;
         }
 
         /// <summary>
         /// 자기 자신을 제외한 다른 모든 카드를 'repeatCount'번 추가 호출.
         /// param은 string[](descParams) 또는 int로 전달될 수 있음.
         /// </summary>
-        private void HandleCalcActionInitOrder(Deck deck, object param)
+        private void HandleCalcActionInitOrder(Deck deck, int cardLevel, int currentCardIndex)
         {
-            int repeatCount = 1; // 기본값
-            int currentCardIndex = -1;
-
-            // param 타입에 따라 처리 (string[] or Tuple or CustomParam 등)
-            if (param is string[] arr && arr.Length >= 2)
-            {
-                // descParams: [repeatCount, currentCardIndex]
-                int.TryParse(arr[0], out repeatCount);
-                int.TryParse(arr[1], out currentCardIndex);
-            }
-            else if (param is int idx)
-            {
-                // 기존처럼 index만 오는 경우(기존 구조)
-                currentCardIndex = idx;
-            }
-            else if (param is (int repeat, int idx2))
-            {
-                repeatCount = repeat;
-                currentCardIndex = idx2;
-            }
+            int repeatCount = calRepeatCount(cardLevel); // 기본값
 
             // 덱에 카드가 1개 이하인 경우 효과 없음
             if (deck.Cards.Count <= 1 || currentCardIndex < 0)
@@ -76,6 +74,12 @@ namespace CardActions
             callOrder.AddRange(cardsToAppend);
 
             Debug.Log($"<color=green>[Shadow] {deck.GetOwner().gameObject.name} appended other cards {repeatCount}x (excluding {currentCardIndex}): [{string.Join(", ", cardsToAppend)}]</color>");
+        }
+        
+        public override string[] GetDescriptionParams(Card card)
+        {
+            int repeatCount = calRepeatCount(card.cardEnhancement.level.Value);
+            return new string[] { repeatCount.ToString() };
         }
     }
 }

@@ -25,15 +25,15 @@ namespace CardActions
         {
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
-                // owner에서 card를 찾아오거나 param으로 Card를 넘길 수도 있음
-                int cardLevel = param as int;
-                int value1 = calValue1(cardLevel);
+                Card card = param as Card;
+                int level = card?.cardEnhancement.level.Value ?? 1;
+                int value1 = calValue1(level);
 
                 owner.statSheet[statType1].AddBuff(new StatModifier(value1, BuffOperationType.Additive));
             }
         }
 
-        public string[] GetDescriptionParams(Card card)
+        public override string[] GetDescriptionParams(Card card)
         {
             int level = card.cardEnhancement.level.Value;
             int value1 = baseValue * level;

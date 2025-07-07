@@ -249,7 +249,7 @@ namespace CharacterSystem
         {
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
-                animator.speed = 1.25f;
+                Animator.speed = 1.25f;
                 // switch로 각 newStat에 대한 Parameter 값을 변경
                 switch (newState)
                 {

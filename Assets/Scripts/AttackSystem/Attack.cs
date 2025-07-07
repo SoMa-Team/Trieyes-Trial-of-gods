@@ -69,21 +69,6 @@ namespace AttackSystem
             }
         }
 
-        protected virtual void Update()
-        {
-            // 투사체일 때만 Update 처리
-            if (IsProjectile)
-            {
-                // 투사체 거리 관리
-                currentDistance = Vector3.Distance(transform.position, spawnPosition);
-                if (currentDistance >= maxDistance)
-                {
-                    //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} reached max distance ({maxDistance})</color>");
-                    AttackFactory.Instance.Deactivate(this);
-                }
-            }
-        }
-
         protected virtual void OnDestroy()
         {
             AttackFactory.Instance.Deactivate(this);

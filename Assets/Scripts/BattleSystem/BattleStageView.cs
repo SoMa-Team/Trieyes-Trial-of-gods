@@ -73,24 +73,11 @@ namespace BattleSystem
         /// </summary>
         private void FillTilesWithRandomPattern(Vector3Int center, int width, int height)
         {
-<<<<<<< HEAD
-            // TODO : 테스트 이후 제거 필요.
-            if (spriteRectPrefabs is null || ruleTile is null) return;
-            // TODO END
-            
-            // 1. 프리팹을 씬에 인스턴스화
-            GameObject tilemapGO = Instantiate(spriteRectPrefabs);
-
-            // 2. Tilemap 컴포넌트 가져오기
-            Tilemap tilemap = tilemapGO.GetComponentInChildren<Tilemap>();
-            if (tilemap == null)
-=======
             if (ruleTiles == null || ruleTiles.Length == 0) return;
             tilemap.ClearAllTiles();
             int halfWidth = width / 2;
             int halfHeight = height / 2;
             for (int y = center.y - halfHeight; y <= center.y + halfHeight; y++)
->>>>>>> inter
             {
                 for (int x = center.x - halfWidth; x <= center.x + halfWidth; x++)
                 {

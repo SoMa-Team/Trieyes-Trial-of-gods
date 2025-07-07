@@ -37,8 +37,8 @@ namespace CardActions
         {
             int level = card.cardEnhancement.level.Value;
             int value1 = baseValue * level;
-            string koreanStat = StatTypeTransformer.ToStatType(statType1);
-            return new string[] { "방어력", value1.ToString() };
+            string koreanStat = StatTypeTransformer.StatTypeToKorean(statType1);
+            return new string[] { koreanStat, value1.ToString() };
         }
     }
 }

@@ -112,7 +112,6 @@ namespace AttackSystem
         /// <param name="targetPawn">피격 대상</param>
         protected virtual void ProcessAttackCollision(Pawn targetPawn)
         {
-            Debug.LogError($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             
             // 이벤트 발생 순서: OnAttackHit → OnDamageHit → 회피 판정 → OnAttackMiss/OnAttack

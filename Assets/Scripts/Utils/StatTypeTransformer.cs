@@ -15,14 +15,15 @@ namespace Utils
             {"체력",   StatType.Health},
             // 필요시 더 추가
         };
+
         private static readonly Dictionary<StatType, string> StatTypeToKor = new()
         {
-            { StatType.AttackPower , "공격력"},
-            { StatType.Defense , "방어력"},
-            { StatType.AttackSpeed , "공격속도"},
-            {StatType.AttackRange, "사정거리"},
-            { StatType.Health, "체력"}
-        }
+            { StatType.AttackPower, "공격력" },
+            { StatType.Defense, "방어력" },
+            { StatType.AttackSpeed, "공격속도" },
+            { StatType.AttackRange, "사정거리" },
+            { StatType.Health, "체력" }
+        };
         public static StatType KoreanToStatType(string korean)
         {
             if (korToStatType.TryGetValue(korean, out var statType))

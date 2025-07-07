@@ -12,7 +12,7 @@ namespace Utils
     {
         [Header("Tile Pooling Settings")]
         public float boundaryThreshold;
-        public int gridSize = 50; // 공간 분할을 위한 그리드 크기
+        private int gridSize; // 하나만 남김
         
         // === 핵심 데이터 구조 ===
         private Queue<Vector3Int> tilePool = new Queue<Vector3Int>();
@@ -33,16 +33,19 @@ namespace Utils
         private List<Vector3Int> batchCreateBuffer = new List<Vector3Int>();
         private List<Vector3Int> batchRemoveBuffer = new List<Vector3Int>();
         
+        // === 타일맵 랜덤 패턴 관련 필드 ===
         private Tilemap tilemap;
-        private TileBase ruleTile;
-        
+        private TileBase[] ruleTiles;
+
+        private Dictionary<Vector3Int, TileBase> prevTiles = new Dictionary<Vector3Int, TileBase>();
+
         /// <summary>
-        /// 타일 풀링 시스템을 초기화합니다.
+        /// 타일 풀링 시스템을 초기화합니다. (ruleTiles, width, height 포함)
         /// </summary>
-        public void Initialize(Tilemap tilemap, TileBase ruleTile)
+        public void Initialize(Tilemap tilemap, TileBase[] ruleTiles)
         {
             this.tilemap = tilemap;
-            this.ruleTile = ruleTile;
+            this.ruleTiles = ruleTiles;
             isInitialized = true;
             
             // 그리드 시스템 초기화
@@ -81,22 +84,19 @@ namespace Utils
                 return false;
             }
             
-            // 풀에서 재사용 또는 새로 생성
-            bool reused = false;
             if (tilePool.Count > 0)
             {
                 Vector3Int pooledTile = tilePool.Dequeue();
                 tileData.Remove(pooledTile);
-                reused = true;
             }
             
             // 타일 설정
-            tilemap.SetTile(position, ruleTile);
+            tilemap.SetTile(position, ruleTiles[0]); // 임시로 첫 번째 타일 사용
             tilemap.SetTileFlags(position, TileFlags.None);
             
             // 데이터 구조 업데이트
             activeTiles.Add(position);
-            tileData[position] = ruleTile;
+            tileData[position] = ruleTiles[0];
             
             // 공간 분할 그리드 업데이트
             UpdateSpatialGrid(position, true);
@@ -153,92 +153,7 @@ namespace Utils
                 }
             }
         }
-        
-        /// <summary>
-        /// 특정 범위의 타일들을 배치로 생성합니다. (O(n) 최적화)
-        /// </summary>
-        public int CreateTilesInRange(Vector3Int center, int width, int height)
-        {
-            if (!isInitialized) return 0;
-            
-            int createdCount = 0;
-            int halfWidth = width / 2;
-            int halfHeight = height / 2;
-            
-            // 배치 처리를 위한 버퍼 초기화
-            batchCreateBuffer.Clear();
-            
-            // 범위 내 모든 위치를 버퍼에 추가
-            for (int y = center.y - halfHeight; y <= center.y + halfHeight; y++)
-            {
-                for (int x = center.x - halfWidth; x <= center.x + halfWidth; x++)
-                {
-                    Vector3Int tilePos = new Vector3Int(x, y, 0);
-                    if (!activeTiles.Contains(tilePos))
-                    {
-                        batchCreateBuffer.Add(tilePos);
-                    }
-                }
-            }
-            
-            // 배치로 타일 생성 (성능 최적화)
-            foreach (Vector3Int tilePos in batchCreateBuffer)
-            {
-                if (CreateTile(tilePos))
-                {
-                    createdCount++;
-                }
-            }
-            
-            //Debug.Log($"[TILE_POOLING] 배치 타일 생성 완료: {createdCount}개 생성됨 (중심: {center}, 크기: {width}x{height})");
-            return createdCount;
-        }
-        
-        /// <summary>
-        /// 특정 범위 밖의 타일들을 효율적으로 제거합니다. (O(log n) 최적화)
-        /// </summary>
-        public int RemoveTilesOutsideRange(Vector3Int center, int width, int height)
-        {
-            if (!isInitialized) return 0;
-            
-            int removedCount = 0;
-            int halfWidth = width / 2;
-            int halfHeight = height / 2;
-            
-            // 배치 처리를 위한 버퍼 초기화
-            batchRemoveBuffer.Clear();
-            
-            // 공간 분할을 활용한 효율적인 범위 쿼리
-            Vector2Int minGrid = WorldToGridCell(new Vector3Int(center.x - halfWidth, center.y - halfHeight, 0));
-            Vector2Int maxGrid = WorldToGridCell(new Vector3Int(center.x + halfWidth, center.y + halfHeight, 0));
-            
-            // 범위 밖의 그리드 셀들만 처리
-            foreach (var gridCell in spatialGrid.Keys)
-            {
-                if (gridCell.x < minGrid.x || gridCell.x > maxGrid.x ||
-                    gridCell.y < minGrid.y || gridCell.y > maxGrid.y)
-                {
-                    // 이 그리드 셀의 모든 타일을 제거 대상에 추가
-                    foreach (Vector3Int tilePos in spatialGrid[gridCell])
-                    {
-                        batchRemoveBuffer.Add(tilePos);
-                    }
-                }
-            }
-            
-            // 배치로 타일 제거
-            foreach (Vector3Int tilePos in batchRemoveBuffer)
-            {
-                if (RemoveTile(tilePos))
-                {
-                    removedCount++;
-                }
-            }
-            
-            //Debug.Log($"[TILE_POOLING] 배치 타일 제거 완료: {removedCount}개 제거됨 (중심: {center}, 크기: {width}x{height})");
-            return removedCount;
-        }
-        
+   
         /// <summary>
         /// 풀에 있는 타일 개수를 반환합니다. (O(1))
         /// </summary>
@@ -246,45 +161,7 @@ namespace Utils
         {
             return tilePool.Count;
         }
-        
-        /// <summary>
-        /// 특정 범위 내의 타일 개수를 효율적으로 계산합니다. (O(log n))
-        /// </summary>
-        public int GetTileCountInRange(Vector3Int center, int width, int height)
-        {
-            if (!isInitialized) return 0;
-            
-            int count = 0;
-            int halfWidth = width / 2;
-            int halfHeight = height / 2;
-            
-            // 공간 분할을 활용한 효율적인 범위 쿼리
-            Vector2Int minGrid = WorldToGridCell(new Vector3Int(center.x - halfWidth, center.y - halfHeight, 0));
-            Vector2Int maxGrid = WorldToGridCell(new Vector3Int(center.x + halfWidth, center.y + halfHeight, 0));
-            
-            for (int gridY = minGrid.y; gridY <= maxGrid.y; gridY++)
-            {
-                for (int gridX = minGrid.x; gridX <= maxGrid.x; gridX++)
-                {
-                    Vector2Int gridCell = new Vector2Int(gridX, gridY);
-                    if (spatialGrid.ContainsKey(gridCell))
-                    {
-                        // 그리드 셀 내의 타일들 중 범위 내에 있는 것만 카운트
-                        foreach (Vector3Int tilePos in spatialGrid[gridCell])
-                        {
-                            if (tilePos.x >= center.x - halfWidth && tilePos.x <= center.x + halfWidth &&
-                                tilePos.y >= center.y - halfHeight && tilePos.y <= center.y + halfHeight)
-                            {
-                                count++;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            return count;
-        }
-        
+      
         /// <summary>
         /// 모든 타일을 제거하고 풀을 정리합니다.
         /// </summary>
@@ -304,6 +181,42 @@ namespace Utils
             spatialGrid.Clear();
             
             //Debug.Log("[TILE_POOLING] 모든 타일이 제거되고 풀이 정리되었습니다.");
+        }
+
+        /// <summary>
+        /// 타일맵 전체를 비우지 않고, 변경이 필요한 셀만 갱신합니다.
+        /// </summary>
+        public void FillTilesWithRandomPattern(Vector3Int center, int gridSize)
+        {
+            if (!isInitialized || ruleTiles == null || ruleTiles.Length == 0) return;
+            int half = gridSize / 2;
+            HashSet<Vector3Int> newTiles = new HashSet<Vector3Int>();
+            for (int y = center.y - half; y <= center.y + half; y++)
+            {
+                for (int x = center.x - half; x <= center.x + half; x++)
+                {
+                    Vector3Int tilePos = new Vector3Int(x, y, 0);
+                    int randomIndex = UnityEngine.Random.Range(0, ruleTiles.Length);
+                    TileBase tileToUse = ruleTiles[randomIndex];
+                    newTiles.Add(tilePos);
+                    // 이전과 다를 때만 SetTile
+                    if (!prevTiles.ContainsKey(tilePos) || prevTiles[tilePos] != tileToUse)
+                    {
+                        tilemap.SetTile(tilePos, tileToUse);
+                        prevTiles[tilePos] = tileToUse;
+                    }
+                }
+            }
+            // 범위 밖의 타일은 null로 바꿔줌
+            var prevKeys = new List<Vector3Int>(prevTiles.Keys);
+            foreach (var tilePos in prevKeys)
+            {
+                if (!newTiles.Contains(tilePos))
+                {
+                    tilemap.SetTile(tilePos, null);
+                    prevTiles.Remove(tilePos);
+                }
+            }
         }
         
         /// <summary>

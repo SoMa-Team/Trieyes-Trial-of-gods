@@ -47,8 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ruleTiles:
   - {fileID: 11400000, guid: 9b0d19d3cf337da4f866dae57254304b, type: 2}
-  defaultRuleTile: {fileID: 0}
-  boundaryThreshold: 0.35
+  gridSize: 35
+  boundaryThreshold: 0.4
   cameraFollowSpeed: 5
   cameraOffset: {x: 0, y: 0, z: -7}
   cameraSmoothTime: 0.1

@@ -11,9 +11,8 @@ namespace Utils
     {
         [Header("Boundary Settings")]
         public float boundaryThreshold; // 경계 임계값
-        public int tileWidth;
-        public int tileHeight;
         
+        private int gridSize;
         private BoxCollider2D boundaryCollider;
         private BattleStageView battleStageView;
         private Vector3Int lastTileCenter;
@@ -37,8 +36,11 @@ namespace Utils
             boundaryCollider.isTrigger = true; // 트리거로 설정
             
             // 콜리전 크기 설정 (경계 임계값 적용)
-            float colliderWidth = tileWidth * boundaryThreshold;
-            float colliderHeight = tileHeight * boundaryThreshold;
+            gridSize = battleStageView.gridSize;
+            boundaryThreshold = battleStageView.boundaryThreshold;
+            
+            float colliderWidth = gridSize * boundaryThreshold;
+            float colliderHeight = gridSize * boundaryThreshold;
             boundaryCollider.size = new Vector2(colliderWidth, colliderHeight);
             
             // 초기 위치 설정
@@ -89,7 +91,7 @@ namespace Utils
             int distanceFromLastCenter = Mathf.Max(deltaX, deltaY);
             
             // 경계 거리 계산
-            int boundaryDistance = Mathf.RoundToInt(Mathf.Min(tileWidth, tileHeight) * boundaryThreshold / 2f);
+            int boundaryDistance = Mathf.RoundToInt(gridSize * boundaryThreshold / 2f);
             
             // 경계에 도달했는지 확인
             if (distanceFromLastCenter >= boundaryDistance)
@@ -119,15 +121,12 @@ namespace Utils
         /// <summary>
         /// 콜리전 크기를 업데이트합니다.
         /// </summary>
-        public void UpdateColliderSize(int width, int height)
+        public void UpdateColliderSize()
         {
             if (boundaryCollider == null) return;
             
-            tileWidth = width;
-            tileHeight = height;
-            
-            float colliderWidth = tileWidth * boundaryThreshold;
-            float colliderHeight = tileHeight * boundaryThreshold;
+            float colliderWidth = gridSize * boundaryThreshold;
+            float colliderHeight = gridSize * boundaryThreshold;
             boundaryCollider.size = new Vector2(colliderWidth, colliderHeight);
             
             //Debug.Log($"[TILE_BOUNDARY] 콜리전 크기 업데이트: {colliderWidth}x{colliderHeight}");
@@ -139,7 +138,7 @@ namespace Utils
         public void UpdateBoundaryThreshold(float threshold)
         {
             boundaryThreshold = threshold;
-            UpdateColliderSize(tileWidth, tileHeight);
+            UpdateColliderSize();
         }
         
         /// <summary>

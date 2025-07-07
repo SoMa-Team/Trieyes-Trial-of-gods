@@ -56,6 +56,12 @@ namespace Utils
         {
             if (!isInitialized || battleStageView == null) return;
             
+            // 게임 종료 시 콜리전 처리 방지
+            if (!gameObject.activeInHierarchy || !enabled)
+            {
+                return;
+            }
+            
             //Debug.Log($"[TILE_BOUNDARY] 콜리전 트리거 발생: {other.gameObject.name} Tag : {other.gameObject.tag}");
 
             // 플레이어 태그로만 처리 (안전하고 명확)

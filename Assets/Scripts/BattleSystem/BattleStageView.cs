@@ -14,8 +14,9 @@ namespace BattleSystem
     {
         // ===== 뷰 데이터 =====
         private BattleStage _battleStage;
-        public GameObject spriteRectPrefabs;
-        public TileBase ruleTile; // 인스펙터에서 사용할 타일 배열 할당
+        [Header("Tile Settings")]
+        public TileBase[] ruleTiles; // 다양한 타일 배열
+        public TileBase defaultRuleTile; // 기본 타일
         public int Height { get; internal set; }
         public int Width { get; internal set; }
         
@@ -54,13 +55,13 @@ namespace BattleSystem
         {
             set
             {
-                Height = 30;
-                Width = 30;
+                Height = 50;
+                Width = 50;
                 _battleStage = value;
                 _battleStage.View = this;
                 
                 // TODO: 데이터 UI 동기화 로직 구현 필요
-                CreateSpriteRect();
+                CreateTilemap();
                 CreateBattleCamera();
             }
 
@@ -70,34 +71,34 @@ namespace BattleSystem
             }
         }
 
-        private void CreateSpriteRect()
+        private void CreateTilemap()
         {
-            // 1. 프리팹을 씬에 인스턴스화
-            GameObject tilemapGO = Instantiate(spriteRectPrefabs);
-
-            // 2. Tilemap 컴포넌트 가져오기
-            tilemap = tilemapGO.GetComponentInChildren<Tilemap>();
-            if (tilemap == null)
-            {
-                //Debug.LogError("Tilemap 컴포넌트를 찾을 수 없습니다.");
-                return;
-            }
-
-            TilemapRenderer renderer = tilemap.GetComponent<TilemapRenderer>();
-            if (renderer != null)
-            {
-                renderer.sortingOrder = -1;
-            }
-
-            // 3. 타일 풀링 시스템 초기화
+            // 1. Tilemap 게임오브젝트 동적 생성
+            GameObject tilemapGO = new GameObject("DynamicTilemap");
+            tilemapGO.transform.SetParent(transform);
+            
+            // 2. Tilemap 컴포넌트 추가
+            tilemap = tilemapGO.AddComponent<Tilemap>();
+            
+            // 3. TilemapRenderer 추가 및 설정
+            TilemapRenderer renderer = tilemapGO.AddComponent<TilemapRenderer>();
+            renderer.sortingOrder = -1;
+            
+            // 4. Grid 컴포넌트 추가 (Tilemap이 작동하려면 필요)
+            Grid grid = tilemapGO.AddComponent<Grid>();
+            grid.cellSize = new Vector3(1, 1, 1);
+            grid.cellGap = Vector3.zero;
+            grid.cellSwizzle = GridLayout.CellSwizzle.XYZ;
+            
+            // 5. 타일 풀링 시스템 초기화
             InitializeTilePoolingSystem();
             
-            // 4. 초기 타일 생성 (중앙 기준)
+            // 6. 초기 타일 생성 (중앙 기준) - 랜덤 패턴으로 직접 생성
             Vector3Int initialCenter = Vector3Int.zero;
-            tilePoolingSystem.CreateTilesInRange(initialCenter, Width, Height);
+            CreateTilesWithRandomPattern(initialCenter, Width, Height);
             lastTileCenter = initialCenter;
             
-            //Debug.Log($"[BATTLE_STAGE_VIEW] 초기 타일 생성 완료 (중심: {initialCenter}, 크기: {Width}x{Height})");
+            Debug.Log($"[BATTLE_STAGE_VIEW] 동적 타일맵 생성 완료 (중심: {initialCenter}, 크기: {Width}x{Height})");
         }
         
         /// <summary>
@@ -109,8 +110,9 @@ namespace BattleSystem
             tilePoolingSystem = gameObject.AddComponent<TilePoolingSystem>();
             tilePoolingSystem.boundaryThreshold = boundaryThreshold;
             
-            // 타일 풀링 시스템 초기화
-            tilePoolingSystem.Initialize(tilemap, ruleTile);
+            // 타일 풀링 시스템 초기화 (기본 타일 사용)
+            TileBase tileToUse = defaultRuleTile != null ? defaultRuleTile : (ruleTiles != null && ruleTiles.Length > 0 ? ruleTiles[0] : null);
+            tilePoolingSystem.Initialize(tilemap, tileToUse);
             isTileSystemInitialized = true;
             
             // 콜리전 기반 경계 시스템 초기화
@@ -220,6 +222,13 @@ namespace BattleSystem
         {
             if (tilePoolingSystem == null) return;
             
+            // 게임 종료 시 코루틴 시작 방지
+            if (!gameObject.activeInHierarchy || !enabled)
+            {
+                Debug.LogWarning("[BATTLE_STAGE_VIEW] 비활성화된 상태에서 코루틴 시작 시도 차단");
+                return;
+            }
+            
             //Debug.Log($"[BATTLE_STAGE_VIEW] 콜리전 기반 타일 업데이트 시작: {newCenter}");
             
             // 배치 처리를 위한 성능 최적화
@@ -231,27 +240,55 @@ namespace BattleSystem
         /// </summary>
         private System.Collections.IEnumerator UpdateTilesBatch(Vector3Int newCenter)
         {
-            // 1. 범위 밖의 타일들을 제거하고 풀로 반환 (O(log n))
-            int removedCount = tilePoolingSystem.RemoveTilesOutsideRange(newCenter, Width, Height);
+            // 1. 타일맵 전체 초기화 (풀링 시스템도 무시)
+            tilemap.ClearAllTiles();
             
-            // 프레임 분할을 위한 yield
-            yield return null;
-            
-            // 2. 새로운 범위의 타일들을 생성 (O(n) 최적화)
-            int createdCount = tilePoolingSystem.CreateTilesInRange(newCenter, Width, Height);
+            // 2. 정사각형 범위만 랜덤으로 다시 칠함
+            int halfWidth = Width / 2;
+            int halfHeight = Height / 2;
+            for (int y = newCenter.y - halfHeight; y <= newCenter.y + halfHeight; y++)
+            {
+                for (int x = newCenter.x - halfWidth; x <= newCenter.x + halfWidth; x++)
+                {
+                    Vector3Int tilePos = new Vector3Int(x, y, 0);
+                    int randomIndex = UnityEngine.Random.Range(0, ruleTiles.Length);
+                    tilemap.SetTile(tilePos, ruleTiles[randomIndex]);
+                }
+            }
             
             // 3. 마지막 타일 중심 업데이트
             lastTileCenter = newCenter;
             
-            //Debug.Log($"[BATTLE_STAGE_VIEW] 배치 타일 업데이트 완료 - 제거: {removedCount}개, 생성: {createdCount}개");
-            
-            // 성능 통계 출력
-            if (tilePoolingSystem != null)
-            {
-                tilePoolingSystem.LogPerformanceStats();
-            }
+            yield return null;
         }
         
+        /// <summary>
+        /// 랜덤 패턴으로 타일을 생성합니다.
+        /// </summary>
+        private void CreateTilesWithRandomPattern(Vector3Int center, int width, int height)
+        {
+            if (ruleTiles == null || ruleTiles.Length == 0) return;
+
+            // 1. 타일맵 전체 초기화
+            tilemap.ClearAllTiles();
+
+            int halfWidth = width / 2;
+            int halfHeight = height / 2;
+
+            for (int y = center.y - halfHeight; y <= center.y + halfHeight; y++)
+            {
+                for (int x = center.x - halfWidth; x <= center.x + halfWidth; x++)
+                {
+                    Vector3Int tilePos = new Vector3Int(x, y, 0);
+
+                    // 랜덤 타일 선택 (위치 기반 시드 사용)
+                    int randomIndex = UnityEngine.Random.Range(0, ruleTiles.Length);
+                    TileBase tileToUse = ruleTiles[randomIndex];
+                    tilemap.SetTile(tilePos, tileToUse);
+                }
+            }
+        }
+
         /// <summary>
         /// 타일 풀링 시스템의 상태를 로그로 출력합니다.
         /// </summary>

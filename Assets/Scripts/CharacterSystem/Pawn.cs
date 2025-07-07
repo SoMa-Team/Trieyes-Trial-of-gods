@@ -2,14 +2,11 @@ using System.Collections.Generic;
 using Utils;
 using Stats;
 using AttackSystem;
-using AttackComponents;
 using RelicSystem;
 using UnityEngine;
 using CardSystem;
-using CardActions;
-using System.Linq;
 using System;
-using System.IO.Compression;
+using UnityEngine.EventSystems;
 
 namespace CharacterSystem
 {
@@ -34,7 +31,8 @@ namespace CharacterSystem
 
         protected Collider2D Collider;
 
-        protected PlayerController playerController;
+        protected Controller Controller;
+        protected Animator Animator;
         
         [Header("Stats")]
 
@@ -48,22 +46,22 @@ namespace CharacterSystem
         protected float lastAttackTime = 0f;
 
         protected float attackCooldown = 0f;
-        
-        public Vector2 lastestDirection;
+
         // ===== [프로퍼티] =====
         public int pawnId { get; private set; }
         
         public string pawnName { get; protected set; }
         
         public int level { get; protected set; }
+        public Vector2 LastMoveDirection => Controller.lastMoveDir;
         
         public int gold { get; protected set; }
-        
+
         // ===== [기능별 필드] =====
         /// <summary>
         /// 기본 공격이자 관리자 공격
         /// </summary>
-        public GameObject basicAttack;
+        public AttackData basicAttack;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -92,6 +90,16 @@ namespace CharacterSystem
         protected virtual void Awake()
         {
             // Awake에서는 아무것도 하지 않음
+            
+            rb = GetComponent<Rigidbody2D>();
+            Collider = GetComponent<Collider2D>();
+
+            if (rb != null)
+            {
+                rb.freezeRotation = true;
+            }
+
+            Controller = GetComponent<PlayerController>();
         }
 
         protected virtual void Start()
@@ -105,11 +113,6 @@ namespace CharacterSystem
 
         public virtual void Update() 
         {    
-            if (playerController is not null)
-            {
-                // 자동공격 수행
-                PerformAutoAttack();
-            }
         }
 
         // ===== [커스텀 메서드] =====
@@ -121,25 +124,12 @@ namespace CharacterSystem
             // 컴포넌트 초기화
             pawnPrefab = transform.GetChild(0).gameObject;
 
-            if(pawnPrefab == null)
-            {
-                ////Debug.LogError($"pawnPrefab is null: {gameObject.name}");
-                return;
-            }
-
             pawnPrefab.transform.SetParent(transform);
             pawnPrefab.transform.localPosition = Vector3.zero;
             pawnPrefab.transform.localRotation = Quaternion.identity;
 
-            rb = GetComponent<Rigidbody2D>();
-            Collider = GetComponent<Collider2D>();
-
-            if (rb != null)
-            {
-                rb.freezeRotation = true;
-            }
-
-            playerController = GetComponent<PlayerController>();
+            // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
+            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
@@ -156,17 +146,8 @@ namespace CharacterSystem
 
             deck.Activate(this, true);
             initBaseStat();
-
-            // 기본 공격 초기화
-            GameObject attackObj = Instantiate(basicAttack);
-            attackObj.transform.SetParent(transform);
-            attackObj.transform.localPosition = Vector3.zero;
-            attackObj.transform.localRotation = Quaternion.identity;
-
-            basicAttack = attackObj;
-            basicAttack.GetComponent<Attack>().SetAttacker(this);
             
-            lastestDirection = Vector2.right;
+            gameObject.SetActive(true);
         }
 
         /// <summary>
@@ -174,6 +155,7 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Deactivate()
         {
+            gameObject.SetActive(false);
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
             
@@ -210,7 +192,7 @@ namespace CharacterSystem
             foreach (var pair in preset.stats)
             {
                 statSheet[pair.type].SetBasicValue(pair.value);
-                //////Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
+                Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
             }
         }
 
@@ -233,8 +215,7 @@ namespace CharacterSystem
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동
-                lastestDirection = direction.normalized;
-                rb.linearVelocity = lastestDirection * moveSpeed;
+                rb.linearVelocity = direction.normalized * moveSpeed;
 
                 // 이동 방향에 따라 전체 flip (Y축 회전)
                 if (direction.x != 0)
@@ -259,36 +240,32 @@ namespace CharacterSystem
         /// <param name="newState">새로운 애니메이션 상태</param>
         protected virtual void ChangeAnimationState(string newState)
         {
-            // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
-            Animator animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
-
-            if (animator != null && currentAnimationState != newState && animator.HasState(0, Animator.StringToHash(newState)))
+            if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
-                animator.speed = 1.25f;
                 // switch로 각 newStat에 대한 Parameter 값을 변경
                 switch (newState)
                 {
                     case "MOVE":
-                        animator.SetBool("1_Move", true);
+                        Animator.SetBool("1_Move", true);
                         break;
                     case "IDLE":
-                        animator.SetBool("1_Move", false);
+                        Animator.SetBool("1_Move", false);
                         break;
                     case "ATTACK":
-                        animator.SetTrigger("2_Attack");
+                        Animator.SetTrigger("2_Attack");
                         break;
                     case "DAMAGED":
-                        animator.SetBool("3_Damaged", true);
+                        Animator.SetBool("3_Damaged", true);
                         break;
                     case "DEATH":
-                        animator.SetBool("4_Death", true);
-                        animator.SetTrigger("4_Death");
+                        Animator.SetBool("4_Death", true);
+                        Animator.SetTrigger("4_Death");
                         break;
                 }
             }
             else
             {
-                //Debug.Log($"<color=red>[ANIMATION] {gameObject.name} animation state '{newState}' not found</color>");
+                Debug.Log($"<color=red>[ANIMATION] {gameObject.name} animation state '{newState}' not found</color>");
             }
         }
 
@@ -330,7 +307,7 @@ namespace CharacterSystem
                 attackStats[statType].SetBasicValue(statValue);
             }
             
-            //////Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
+            Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
             
             return attackStats;
         }
@@ -348,7 +325,7 @@ namespace CharacterSystem
                 float knockbackForce = 5f; // 기본 넉백 힘
                 targetRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
                 
-                ////Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
+                Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
             }
         }
 
@@ -506,7 +483,7 @@ namespace CharacterSystem
                     }
                 }
                 
-                ////Debug.Log($"<color=purple>[RELIC] {gameObject.name} acquired relic: {relic.GetInfo().name}</color>");
+                Debug.Log($"<color=purple>[RELIC] {gameObject.name} acquired relic: {relic.GetInfo().name}</color>");
             }
         }
 
@@ -535,7 +512,7 @@ namespace CharacterSystem
                     }
                 }
 
-                ////Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
+                Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
             }
         }
 
@@ -545,18 +522,18 @@ namespace CharacterSystem
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
             if (!IsEventAccepted(eventType))
             {
-                ////Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
+                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
                 return;
             }
 
-            ////Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
+            Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
             
             // Pawn 자체의 이벤트 처리
             if (eventType == Utils.EventType.OnAttack)
             {
                 if (param is Pawn target) 
                 {
-                    ////Debug.Log($"<color=yellow>[EVENT] {gameObject.name} ({GetType().Name}) processing OnAttack against {target.gameObject.name} ({target.GetType().Name})</color>");
+                    Debug.Log($"<color=yellow>[EVENT] {gameObject.name} ({GetType().Name}) processing OnAttack against {target.gameObject.name} ({target.GetType().Name})</color>");
                     ProcessAndTriggerDamage(target);
                 }
             }
@@ -565,26 +542,26 @@ namespace CharacterSystem
             {
                 if (param is AttackDamageInfo damageInfo) 
                 {
-                    ////Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDamaged from {damageInfo.attacker?.gameObject.name} ({damageInfo.attacker?.GetType().Name})</color>");
+                    Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDamaged from {damageInfo.attacker?.gameObject.name} ({damageInfo.attacker?.GetType().Name})</color>");
                     ApplyDamage(damageInfo);
                 }
             }
             
             if (eventType == Utils.EventType.OnDeath)
             {
-                ////Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
+                Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
                 HandleDeath();
             }
 
             // 유물들의 이벤트 처리 (필터링 적용)
             if (relics != null && IsRelicEventAccepted(eventType))
             {
-                ////Debug.Log($"<color=purple>[EVENT_FILTER] {gameObject.name} processing {eventType} for {relics.Count} relics (relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
+                Debug.Log($"<color=purple>[EVENT_FILTER] {gameObject.name} processing {eventType} for {relics.Count} relics (relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
                 foreach (var relic in relics)
                 {
                     if (relic != null)
                     {
-                        ////Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.GetInfo().name} processing {eventType}</color>");
+                        Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.GetInfo().name} processing {eventType}</color>");
                         relic.OnEvent(eventType, param);
                     }
                 }
@@ -593,7 +570,7 @@ namespace CharacterSystem
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
-                ////Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
+                Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
             }
         }
@@ -628,8 +605,9 @@ namespace CharacterSystem
             int previousHP = currentHp;
             ChangeHP(-finalDamage);
 
-            ////Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {finalDamage} damage from {damageInfo.attacker.gameObject.name}</color>");
-            ApplyKnockback(damageInfo.attacker);
+            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {finalDamage} damage from {damageInfo.attacker.gameObject.name}</color>");
+            // TODO : 넉백 확률 스탯 부분 추가 필요
+            // ApplyKnockback(damageInfo.attacker);
 
             if (currentHp <= 0 && previousHP > 0)
             {
@@ -640,7 +618,7 @@ namespace CharacterSystem
 
         private void HandleDeath()
         {
-            ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
+            Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             ChangeAnimationState("4_Death"); 
             if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
             if (Collider != null) Collider.enabled = false; 
@@ -671,7 +649,7 @@ namespace CharacterSystem
             // 공격속도가 높을수록 쿨다운이 짧아짐
             attackCooldown = 1f / (attackSpeed / 10f);
             
-            ////Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
+            Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
         }
         
         /// <summary>
@@ -697,52 +675,14 @@ namespace CharacterSystem
         /// </summary>
         protected virtual void ExecuteAttack()
         {
-            try
-            {
-                if (basicAttack == null)
-                {
-                    ////Debug.LogWarning($"<color=yellow>[AUTO_ATTACK] {gameObject.name} has no basicAttack component!</color>");
-                    return;
-                }
-                
-                ////Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
-                
-                StatSheet attackStats = CollectAttackStats();
-
-                int projectileCount = attackStats[Stats.StatType.ProjectileCount].Value;
-                float spreadAngle = attackStats[Stats.StatType.ProjectileSpread].Value;
-
-                // === 여기서 방향 결정 ===
-                Vector2 baseDir;
-                baseDir = lastestDirection;
-
-                if (projectileCount <= 1)
-                {
-                    basicAttack.GetComponent<Attack>().CreateSingleProjectile(baseDir, statSheet);
-                }
-                else
-                {
-                    float angleStep = spreadAngle / (projectileCount - 1);
-                    float startAngle = -spreadAngle / 2f;
-                    for (int i = 0; i < projectileCount; i++)
-                    {
-                        float angle = startAngle + (angleStep * i);
-                        Vector2 direction = Quaternion.Euler(0, 0, angle) * baseDir;
-                        basicAttack.GetComponent<Attack>().CreateSingleProjectile(direction, statSheet);
-                    }
-                }
-                
-                // 공격 속도에 따라 애니메이션 speed multiplier 설정
-                float speedMultiplier = 1f / (GetStatValue(StatType.AttackSpeed) / 10f);
-                
-                ChangeAnimationState("ATTACK");
-            }
-            catch (Exception ex)
-            {
-                ////Debug.LogError($"[ERROR] ExecuteAttack 예외: {ex}");
-            }
+            // TODO : Scene 통합 이후 제거 필요
+            if (AttackFactory.Instance is null)
+                return;
+            // TODO END
+            
+            Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
         }
-        
+
         // ===== [내부 클래스] =====
         /// <summary>
         /// 공격 관련 이벤트 데이터

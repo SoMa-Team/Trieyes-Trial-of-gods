@@ -1,3 +1,4 @@
+using AttackSystem;
 using CharacterSystem;
 using UnityEngine;
 using Utils;
@@ -10,22 +11,20 @@ namespace BattleSystem
     /// </summary>
     public class BattleSystemTest: MonoBehaviour
     {
-        public static BattleSystemTest Instance {private set; get;}
-
-        private void Awake()
-        {
-            Instance = this;
-        }
+        public BattleStage battleStage;
+        public Pawn character;
+        public AttackData attackData;
+        // public Difficulty difficulty;
 
         void Start()
         {
             var characterID = 0;
             var stageRound = 12;
-            
-            var character = CharacterFactory.Instance.Create(characterID);
-            var difficulty = Difficulty.GetByStageRound(stageRound);
-            var battleStage = BattleStageFactory.Instance.Create(character, difficulty);
-            BattleStage.now = battleStage;
+
+            Pawn character = this.character;
+            character.basicAttack = attackData;
+            Difficulty difficulty = Difficulty.GetByStageRound(stageRound);
+            BattleStage battleStage = BattleStageFactory.Instance.Create(character, difficulty);
         }
     }
 }

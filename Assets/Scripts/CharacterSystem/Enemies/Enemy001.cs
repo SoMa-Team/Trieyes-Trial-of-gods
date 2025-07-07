@@ -30,16 +30,6 @@ namespace CharacterSystem
             base.Start();
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
-        
-        public override void Update()
-        {
-            base.Update();
-        }
-
         // ===== [커스텀 메서드] =====
         /// <summary>
         /// 오브젝트 풀링을 위한 활성화 함수

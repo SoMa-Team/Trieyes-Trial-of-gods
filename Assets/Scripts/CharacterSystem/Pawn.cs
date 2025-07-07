@@ -192,7 +192,7 @@ namespace CharacterSystem
             foreach (var pair in preset.stats)
             {
                 statSheet[pair.type].SetBasicValue(pair.value);
-                Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
+                //Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
             }
         }
 
@@ -265,7 +265,7 @@ namespace CharacterSystem
             }
             else
             {
-                Debug.Log($"<color=red>[ANIMATION] {gameObject.name} animation state '{newState}' not found</color>");
+                //Debug.Log($"<color=red>[ANIMATION] {gameObject.name} animation state '{newState}' not found</color>");
             }
         }
 
@@ -307,7 +307,7 @@ namespace CharacterSystem
                 attackStats[statType].SetBasicValue(statValue);
             }
             
-            Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
+            //Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
             
             return attackStats;
         }
@@ -325,7 +325,7 @@ namespace CharacterSystem
                 float knockbackForce = 5f; // 기본 넉백 힘
                 targetRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
                 
-                Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
+                //Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
             }
         }
 
@@ -483,7 +483,7 @@ namespace CharacterSystem
                     }
                 }
                 
-                Debug.Log($"<color=purple>[RELIC] {gameObject.name} acquired relic: {relic.GetInfo().name}</color>");
+                //Debug.Log($"<color=purple>[RELIC] {gameObject.name} acquired relic: {relic.GetInfo().name}</color>");
             }
         }
 
@@ -512,7 +512,7 @@ namespace CharacterSystem
                     }
                 }
 
-                Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
+                //Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
             }
         }
 
@@ -522,18 +522,18 @@ namespace CharacterSystem
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
             if (!IsEventAccepted(eventType))
             {
-                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
+                //Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
                 return;
             }
 
-            Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
+            //Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
             
             // Pawn 자체의 이벤트 처리
             if (eventType == Utils.EventType.OnAttack)
             {
                 if (param is Pawn target) 
                 {
-                    Debug.Log($"<color=yellow>[EVENT] {gameObject.name} ({GetType().Name}) processing OnAttack against {target.gameObject.name} ({target.GetType().Name})</color>");
+                    //Debug.Log($"<color=yellow>[EVENT] {gameObject.name} ({GetType().Name}) processing OnAttack against {target.gameObject.name} ({target.GetType().Name})</color>");
                     ProcessAndTriggerDamage(target);
                 }
             }
@@ -542,26 +542,26 @@ namespace CharacterSystem
             {
                 if (param is AttackDamageInfo damageInfo) 
                 {
-                    Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDamaged from {damageInfo.attacker?.gameObject.name} ({damageInfo.attacker?.GetType().Name})</color>");
+                    //Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDamaged from {damageInfo.attacker?.gameObject.name} ({damageInfo.attacker?.GetType().Name})</color>");
                     ApplyDamage(damageInfo);
                 }
             }
             
             if (eventType == Utils.EventType.OnDeath)
             {
-                Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
+                //Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
                 HandleDeath();
             }
 
             // 유물들의 이벤트 처리 (필터링 적용)
             if (relics != null && IsRelicEventAccepted(eventType))
             {
-                Debug.Log($"<color=purple>[EVENT_FILTER] {gameObject.name} processing {eventType} for {relics.Count} relics (relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
+                //Debug.Log($"<color=purple>[EVENT_FILTER] {gameObject.name} processing {eventType} for {relics.Count} relics (relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
                 foreach (var relic in relics)
                 {
                     if (relic != null)
                     {
-                        Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.GetInfo().name} processing {eventType}</color>");
+                        //Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.GetInfo().name} processing {eventType}</color>");
                         relic.OnEvent(eventType, param);
                     }
                 }
@@ -570,7 +570,7 @@ namespace CharacterSystem
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
-                Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
+                //Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
             }
         }
@@ -605,7 +605,7 @@ namespace CharacterSystem
             int previousHP = currentHp;
             ChangeHP(-finalDamage);
 
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {finalDamage} damage from {damageInfo.attacker.gameObject.name}</color>");
+            //Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {finalDamage} damage from {damageInfo.attacker.gameObject.name}</color>");
             // TODO : 넉백 확률 스탯 부분 추가 필요
             // ApplyKnockback(damageInfo.attacker);
 
@@ -618,7 +618,7 @@ namespace CharacterSystem
 
         private void HandleDeath()
         {
-            Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
+            //Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             ChangeAnimationState("4_Death"); 
             if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
             if (Collider != null) Collider.enabled = false; 
@@ -649,7 +649,7 @@ namespace CharacterSystem
             // 공격속도가 높을수록 쿨다운이 짧아짐
             attackCooldown = 1f / (attackSpeed / 10f);
             
-            Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
+            //Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
         }
         
         /// <summary>

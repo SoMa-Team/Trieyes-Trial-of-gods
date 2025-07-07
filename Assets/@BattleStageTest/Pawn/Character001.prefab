@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4105170365882426735}
   - component: {fileID: 1761318757419568748}
   - component: {fileID: 55800501933275295}
+  - component: {fileID: 2543392400981761397}
   m_Layer: 6
   m_Name: Character001
   m_TagString: Player
@@ -133,6 +134,21 @@ MonoBehaviour:
   owner: {fileID: 6424139744733695351}
   lastMoveDir: {x: 0, y: 0}
   joystick: {fileID: 0}
+--- !u!114 &2543392400981761397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541045329464624103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05569e1e7fd024d1e9359bbd46584435, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  q: {fileID: 11400000, guid: aa5f6b6debcd849e4923f9f2a46d9e56, type: 2}
+  w: {fileID: 11400000, guid: 288ab4f26aece4a62ae914df85ede2e5, type: 2}
+  e: {fileID: 11400000, guid: 3c88e9b0f78d541cf8fb2ff448f939bf, type: 2}
 --- !u!1001 &5798268980380353089
 PrefabInstance:
   m_ObjectHideFlags: 0

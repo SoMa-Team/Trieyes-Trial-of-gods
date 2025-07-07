@@ -956,14 +956,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5126839729858664683, guid: f314d1b820862c54cae6053239af1e71, type: 3}
-      propertyPath: owner
-      value: 
-      objectReference: {fileID: 1881846440}
-    - target: {fileID: 5126839729858664683, guid: f314d1b820862c54cae6053239af1e71, type: 3}
-      propertyPath: scale
-      value: 0.35
-      objectReference: {fileID: 0}
     - target: {fileID: 9048457892950683038, guid: f314d1b820862c54cae6053239af1e71, type: 3}
       propertyPath: m_Name
       value: Enemy001 1
@@ -1562,17 +1554,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 373576148167022596, guid: f314d1b820862c54cae6053239af1e71, type: 3}
   m_PrefabInstance: {fileID: 1215084555}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1881846440 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7048805263917066739, guid: f314d1b820862c54cae6053239af1e71, type: 3}
-  m_PrefabInstance: {fileID: 1215084555}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1881846435}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47c3dcabfb9b40a4fabdcc6f5a19479f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1988644563 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6694959207526959116, guid: 887868667e7a0a04ab4f72defdcbbf79, type: 3}
@@ -1936,10 +1917,6 @@ PrefabInstance:
     - target: {fileID: 2544713937806820294, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: m_Name
       value: AttackFactory
-      objectReference: {fileID: 0}
-    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
-      propertyPath: attackPrefab.Array.size
-      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: 'attackPrefab.Array.data[0]'

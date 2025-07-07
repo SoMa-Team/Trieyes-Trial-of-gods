@@ -47,7 +47,7 @@ namespace CardActions
             {
                 Debug.Log($"PreparingMarch.OnEvent: OnBattleSceneChange");
                 
-                StatType statType1 = KoreanToStatType.ToStatType(descParams[0]);
+                StatType statType1 = StatTypeTransformer.ToStatType(descParams[0]);
                 if (!int.TryParse(descParams[1], out int value1))
                 {
                     Debug.LogError($"descParams[1] 파싱 실패: {descParams[1]}");

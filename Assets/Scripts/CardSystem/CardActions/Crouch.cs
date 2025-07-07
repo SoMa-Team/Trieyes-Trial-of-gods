@@ -13,36 +13,32 @@ namespace CardActions
     /// </summary>
     public class Crouch : CardAction
     {
+        public StatType statType1 = StatType.Defense;
+        public int baseValue = 10;
+
+        public int calValue1(int cardLevel)
+        {
+            return baseValue * cardLevel;
+        }
+
         public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
-            var descParams = param as string[];
-
-            // 매개변수 유효성 검사
-            if (owner == null || deck == null)
-            {
-                Debug.LogWarning("owner 또는 deck이 정의되지 않았습니다.");
-                return;
-            }
-            if (descParams == null || descParams.Length < 2)
-            {
-                Debug.LogError("descParams null 또는 길이 부족");
-                return;
-            }
-
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
-                StatType statType = KoreanToStatType.ToStatType(descParams[0]);
-                if (!int.TryParse(descParams[1], out int value))
-                {
-                    Debug.LogError($"descParams[1] 파싱 실패: {descParams[1]}");
-                    return;
-                }
+                // owner에서 card를 찾아오거나 param으로 Card를 넘길 수도 있음
+                int cardLevel = param as int;
+                int value1 = calValue1(cardLevel);
 
-                var modifier = new StatModifier(value, BuffOperationType.Additive);
-                owner.statSheet[statType].AddBuff(modifier);
-
-                Debug.Log($"<color=yellow>[Crouch] {statType} +{value}. New Value: {owner.statSheet[statType].Value}</color>");
+                owner.statSheet[statType1].AddBuff(new StatModifier(value1, BuffOperationType.Additive));
             }
+        }
+
+        public string[] GetDescriptionParams(Card card)
+        {
+            int level = card.cardEnhancement.level.Value;
+            int value1 = baseValue * level;
+            string koreanStat = StatTypeTransformer.ToStatType(statType1);
+            return new string[] { "방어력", value1.ToString() };
         }
     }
 }

@@ -77,10 +77,14 @@ namespace AttackSystem
         // ===== [기능 6] 충돌 처리 (투사체일 때만 사용) =====
         protected virtual void OnTriggerEnter2D(Collider2D other)
         {
+            // null 체크 추가
+            if (other == null || other.gameObject == null) return;
+            
             foreach (var attackComponent in components)
             {
                 attackComponent.OnTriggerEnter2D(other);
             }
+            
             HandleCollision(other.gameObject);
         }
 
@@ -90,6 +94,14 @@ namespace AttackSystem
         /// <param name="hitObject">충돌한 객체</param>
         protected virtual void HandleCollision(GameObject hitObject)
         {
+            // null 체크 추가
+            if (hitObject == null) return;
+            if (attacker == null) return;
+            if (attacker.gameObject == null) return;
+            
+            // tag null 체크 추가
+            if (string.IsNullOrEmpty(hitObject.tag)) return;
+                
             switch (hitObject.tag)
             {
                 case "Player": 
@@ -97,8 +109,12 @@ namespace AttackSystem
                     if (attacker.gameObject.CompareTag(hitObject.tag))
                         return;
                     
-                    // Player가 맞음
-                    ProcessAttackCollision(hitObject.GetComponent<Pawn>());
+                    // Player가 맞음 - Pawn 컴포넌트 null 체크 추가
+                    Pawn targetPawn = hitObject.GetComponent<Pawn>();
+                    if (targetPawn != null)
+                    {
+                        ProcessAttackCollision(targetPawn);
+                    }
                     break;
                 
                 default:

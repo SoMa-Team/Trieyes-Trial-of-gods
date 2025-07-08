@@ -18,7 +18,7 @@ namespace DeckViews
         public Button removeButton;
 
         // 현재 표시 중인 카드 오브젝트들
-        private List<GameObject> cardViews = new();
+        private List<GameObject> cardViewsInDeck = new();
         // 카드 선택 상태 관리(최대 2장까지)
         private CardInDeckView selectedCard1;
         private CardInDeckView selectedCard2;
@@ -57,16 +57,16 @@ namespace DeckViews
         {
 
             // 기존 카드 오브젝트 모두 제거
-            foreach (var obj in cardViews)
+            foreach (var obj in cardViewsInDeck)
                 Destroy(obj);
-            cardViews.Clear();
+            cardViewsInDeck.Clear();
 
             // 덱에 있는 카드 수만큼 프리팹 인스턴스 생성 및 카드 정보 반영
             foreach (var card in currentDeck.Cards)
             {
                 var cardViewInstance = Instantiate(cardPrefab, deckZone);
                 cardViewInstance.GetComponent<CardViews.CardView>().SetCard(card);
-                cardViews.Add(cardViewInstance);
+                cardViewsInDeck.Add(cardViewInstance);
             }
         }
 

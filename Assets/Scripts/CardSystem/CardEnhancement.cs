@@ -109,4 +109,4 @@ namespace CardSystem
             return clone;
         }
     }
-} 
+}

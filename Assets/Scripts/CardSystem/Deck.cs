@@ -196,14 +196,9 @@ namespace CardSystem
 
             Debug.Log($"SwapCards: cardA({cardA?.cardName ?? "null"}) idxA: {idxA}, cardB({cardB?.cardName ?? "null"}) idxB: {idxB}");
             
-            if (idxA < 0)
+            if (idxA < 0 || idxB < 0)
             {
-                Debug.LogError($"cardA {cardA?.cardName ?? "null"} not found in deck");
-                return;
-            }
-            if (idxB < 0)
-            {
-                Debug.LogError($"cardB {cardB?.cardName ?? "null"} not found in deck");
+                Debug.LogError($"card not found in deck");
                 return;
             }
 

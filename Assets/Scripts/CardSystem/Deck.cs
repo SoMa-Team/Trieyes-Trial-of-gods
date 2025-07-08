@@ -215,6 +215,7 @@ namespace CardSystem
         /// <returns>합치기가 성공했는지 여부</returns>
         public bool MergeCards(Card cardA, Card cardB)
         {
+            Debug.Log("Merge Cards 호출");
             // 카드가 덱에 있는지 확인
             if (!cards.Contains(cardA) || !cards.Contains(cardB))
             {
@@ -247,7 +248,10 @@ namespace CardSystem
             }
 
             // 낮은 카드의 총 경험치를 높은 카드에 추가
+            Debug.Log($"MergeCards: {higherExpCard.cardName}의 총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()}");
+            Debug.Log($"MergeCards: {lowerExpCard.cardName}의 총 경험치: {lowerExpCard.cardEnhancement.GetTotalExp()}");
             higherExpCard.cardEnhancement.AddExp(lowerExpCard.cardEnhancement.GetTotalExp());
+            Debug.Log($"MergeCards: {higherExpCard.cardName}의 총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()}");
 
             higherExpCard.RefreshStats();
 

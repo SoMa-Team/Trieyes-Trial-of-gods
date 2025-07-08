@@ -33,8 +33,11 @@ namespace CardActions
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
                 Card card = param as Card;
+                Debug.Log($"card: {card?.cardName}");
                 int level = card?.cardEnhancement.level.Value ?? 1;
                 int value1 = CalValue1(level);
+
+                Debug.Log($"level: {level}, value1: {value1}");
 
                 var modifier = new StatModifier(value1, BuffOperationType.Additive);
                 owner.statSheet[statType1].AddBuff(modifier);

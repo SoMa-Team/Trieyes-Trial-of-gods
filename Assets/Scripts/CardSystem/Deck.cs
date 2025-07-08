@@ -198,27 +198,67 @@ namespace CardSystem
             
             if (idxA < 0)
             {
-                Debug.LogError($"SwapCards: cardA({cardA?.cardName ?? "null"})는 덱에 존재하지 않습니다!");
+                Debug.LogError($"cardA {cardA?.cardName ?? "null"} not found in deck");
                 return;
             }
             if (idxB < 0)
             {
-                Debug.LogError($"SwapCards: cardB({cardB?.cardName ?? "null"})는 덱에 존재하지 않습니다!");
-                return;
-            }
-            if (idxA == idxB)
-            {
-                Debug.LogWarning("SwapCards: 같은 카드를 두 번 선택했습니다. 스왑하지 않습니다.");
+                Debug.LogError($"cardB {cardB?.cardName ?? "null"} not found in deck");
                 return;
             }
 
-            if (idxA >= 0 && idxB >= 0 && idxA != idxB)
+            // 카드 스왑
+            (cards[idxA], cards[idxB]) = (cards[idxB], cards[idxA]);
+        }
+
+        /// <summary>
+        /// 같은 이름의 두 카드를 합치는 메서드입니다.
+        /// GetTotalExp가 높은 카드에 낮은 카드의 총 경험치를 합치고, 낮은 카드는 덱에서 제거합니다.
+        /// </summary>
+        /// <param name="cardA">합칠 첫 번째 카드</param>
+        /// <param name="cardB">합칠 두 번째 카드</param>
+        /// <returns>합치기가 성공했는지 여부</returns>
+        public bool MergeCards(Card cardA, Card cardB)
+        {
+            // 카드가 덱에 있는지 확인
+            if (!cards.Contains(cardA) || !cards.Contains(cardB))
             {
-                // Swap
-                var temp = cards[idxA];
-                cards[idxA] = cards[idxB];
-                cards[idxB] = temp;
+                Debug.LogError("MergeCards: 하나 이상의 카드가 덱에 없습니다.");
+                return false;
             }
+
+            // 같은 이름의 카드인지 확인
+            if (cardA.cardName != cardB.cardName)
+            {
+                Debug.LogError("MergeCards: 다른 이름의 카드는 합칠 수 없습니다.");
+                return false;
+            }
+
+            int totalExpA = cardA.cardEnhancement.GetTotalExp();
+            int totalExpB = cardB.cardEnhancement.GetTotalExp();
+
+            Card higherExpCard, lowerExpCard;
+
+            // GetTotalExp가 높은 카드와 낮은 카드 구분
+            if (totalExpA >= totalExpB)
+            {
+                higherExpCard = cardA;
+                lowerExpCard = cardB;
+            }
+            else
+            {
+                higherExpCard = cardB;
+                lowerExpCard = cardA;
+            }
+
+            // 낮은 카드의 총 경험치를 높은 카드에 추가
+            higherExpCard.cardEnhancement.AddExp(lowerExpCard.cardEnhancement.GetTotalExp());
+
+            // 낮은 카드를 덱에서 제거
+            RemoveCard(lowerExpCard);
+
+            Debug.Log($"카드 합치기 완료: {higherExpCard.cardName} (총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()})");
+            return true;
         }
 
         // ===== [기능 2] 덱 스탯 및 카드 액션 초기화 =====
@@ -298,7 +338,7 @@ namespace CardSystem
                 if (cardIndex < cards.Count)
                 {
                     Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardName}");
-                    cards[cardIndex]?.TriggerCardEvent(eventType, this, param);
+                    cards[cardIndex]?.TriggerCardEvent(eventType, this, cards[cardIndex]);
                 }
             }
         }

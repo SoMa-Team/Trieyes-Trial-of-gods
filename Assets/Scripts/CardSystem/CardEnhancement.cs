@@ -90,11 +90,11 @@ namespace CardSystem
             int currentExp = exp.Value;
             int requiredExp = level.Value * 10; // 레벨당 10 경험치 필요
 
-            if (currentExp >= requiredExp)
+            while(currentExp >= requiredExp)
             {
                 level.AddToBasicValue(1);
                 exp.AddToBasicValue(-requiredExp);
-                CheckLevelUp(); // 재귀적으로 다음 레벨업 체크
+                requiredExp = level.Value * 10;
             }
         }
         

@@ -142,8 +142,12 @@ namespace CharacterSystem
             
             // 기본 이벤트 등록
             RegisterAcceptedEvents(
+                Utils.EventType.OnAttackHit,
+                Utils.EventType.OnDamageHit,
                 Utils.EventType.OnAttack,
                 Utils.EventType.OnDamaged,
+                Utils.EventType.OnEvaded,
+                Utils.EventType.OnAttackMiss,
                 Utils.EventType.OnDeath,
                 Utils.EventType.OnKilled,
                 Utils.EventType.OnHPUpdated
@@ -537,21 +541,12 @@ namespace CharacterSystem
             ////Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
             
             // Pawn 자체의 이벤트 처리
-            if (eventType == Utils.EventType.OnAttack)
-            {
-                if (param is Pawn target) 
-                {
-                    ////Debug.Log($"<color=yellow>[EVENT] {gameObject.name} ({GetType().Name}) processing OnAttack against {target.gameObject.name} ({target.GetType().Name})</color>");
-                    ProcessAndTriggerDamage(target);
-                }
-            }
             
             if (eventType == Utils.EventType.OnDamaged)
             {
-                if (param is AttackDamageInfo damageInfo) 
+                if (param is AttackResult result) 
                 {
-                    ////Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDamaged from {damageInfo.attacker?.gameObject.name} ({damageInfo.attacker?.GetType().Name})</color>");
-                    ApplyDamage(damageInfo);
+                    ApplyDamage(result);
                 }
             }
             
@@ -583,69 +578,34 @@ namespace CharacterSystem
             }
         }
 
-        private void ProcessAndTriggerDamage(Pawn target)
+        private void ApplyDamage(AttackResult result)
         {
-            StatSheet tempStatSheet = new StatSheet();
-            tempStatSheet[StatType.AttackPower].SetBasicValue(GetStatValue(StatType.AttackPower));
-            OnEvent(Utils.EventType.OnAttack, new AttackEventData(this, target));
-            
-            bool isCritical = UnityEngine.Random.Range(0f, 1f) < (GetStatValue(StatType.CriticalRate) / 100f);
-            
-            if (isCritical)
-            {
-                OnEvent(Utils.EventType.OnCriticalAttack, new AttackEventData(this, target));
-            }
-            
-            var damageInfo = new AttackDamageInfo(this, tempStatSheet);
-            target.OnEvent(Utils.EventType.OnDamaged, damageInfo);
-        }
-
-        private void ApplyDamage(AttackDamageInfo damageInfo)
-        {
-            if (damageInfo.attacker == null) return;
-
-            float attackPower = damageInfo.finalStatSheet[StatType.AttackPower].Value;
-            float defense = GetStatValue(StatType.Defense);
-            float defensePenetration = damageInfo.finalStatSheet[StatType.DefensePenetration].Value;
-            float effectiveDefense = defense * (1f - (defensePenetration / 100f));
-            int finalDamage = Mathf.Max(1, Mathf.RoundToInt(attackPower - effectiveDefense));
+            if (result.attacker == null) return;
             
             int previousHP = currentHp;
-            ChangeHP(-finalDamage);
+            ChangeHP(-result.totalDamage);
 
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {finalDamage} damage from {damageInfo.attacker.gameObject.name}</color>");
+            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {result.totalDamage} damage from {result.attacker.gameObject.name}</color>");
             // TODO : 넉백 확률 스탯 부분 추가 필요
             // ApplyKnockback(damageInfo.attacker);
-
+            
             if (currentHp <= 0 && previousHP > 0)
             {
-                OnEvent(Utils.EventType.OnDeath, damageInfo.attacker);
-                damageInfo.attacker.OnEvent(Utils.EventType.OnKilled, this);
+                OnEvent(Utils.EventType.OnDeath, result);
+                result.attacker.OnEvent(Utils.EventType.OnKilled, result);
             }
         }
 
         private void HandleDeath()
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
-            ChangeAnimationState("4_Death"); 
+            ChangeAnimationState("DEATH"); 
             if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
             if (Collider != null) Collider.enabled = false; 
             Destroy(gameObject, 2f);
         }
         
         // ===== [기능 12] 자동공격 시스템 =====
-        public class AttackDamageInfo
-        {
-            public Pawn attacker;
-            public StatSheet finalStatSheet;
-
-            public AttackDamageInfo(Pawn attacker, StatSheet statSheet)
-            {
-                this.attacker = attacker;
-                this.finalStatSheet = statSheet;
-            }
-        }
-
         /// <summary>
         /// 공격속도 스탯을 기반으로 공격 쿨다운을 계산합니다.
         /// 공격속도 10 = 60fps 기준 1초에 1개 발사
@@ -679,7 +639,7 @@ namespace CharacterSystem
         }
         
         /// <summary>
-        /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack 관리자에게 전달합니다.
+        /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack에게 전달합니다.
         /// </summary>
         protected virtual void ExecuteAttack()
         {
@@ -688,131 +648,11 @@ namespace CharacterSystem
                 return;
             // TODO END
             
+            StatSheet attackStats = CollectAttackStats();
             Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
-
-            // GameObject attackObj = Instantiate(basicAttack);
-            // attackObj.transform.SetParent(transform);
-            // attackObj.transform.localPosition = Vector3.zero;
-            // attackObj.transform.localRotation = Quaternion.identity;
-            //
-            // basicAttack = attackObj;
-            // basicAttack.GetComponent<Attack>().SetAttacker(this);
-
-            // try
-            // {
-            //     if (basicAttack == null)
-            //     {
-            //         Debug.LogWarning($"<color=yellow>[AUTO_ATTACK] {gameObject.name} has no basicAttack component!</color>");
-            //         return;
-            //     }
-            //     
-            //     Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
-            //     
-            //     StatSheet attackStats = CollectAttackStats();
-            //
-            //     int projectileCount = attackStats[Stats.StatType.ProjectileCount].Value;
-            //     float spreadAngle = attackStats[Stats.StatType.ProjectileSpread].Value;
-            //
-            //     // === 여기서 방향 결정 ===
-            //     Vector2 baseDir = playerController.moveDir.normalized;
-            //
-            //     if (projectileCount <= 1)
-            //     {
-            //         basicAttack.GetComponent<Attack>().CreateSingleProjectile(baseDir, statSheet);
-            //     }
-            //     else
-            //     {
-            //         float angleStep = spreadAngle / (projectileCount - 1);
-            //         float startAngle = -spreadAngle / 2f;
-            //         for (int i = 0; i < projectileCount; i++)
-            //         {
-            //             float angle = startAngle + (angleStep * i);
-            //             Vector2 direction = Quaternion.Euler(0, 0, angle) * baseDir;
-            //             basicAttack.GetComponent<Attack>().CreateSingleProjectile(direction, statSheet);
-            //         }
-            //     }
-            //     ChangeAnimationState("ATTACK");
-            // }
-            // catch (Exception ex)
-            // {
-            //     Debug.LogError($"[ERROR] ExecuteAttack 예외: {ex}");
-            // }
         }
         
         // ===== [내부 클래스] =====
-        /// <summary>
-        /// 공격 관련 이벤트 데이터
-        /// </summary>
-        public class AttackEventData
-        {
-            /// <summary>
-            /// 공격자
-            /// </summary>
-            public Pawn attacker;
-            
-            /// <summary>
-            /// 공격 대상
-            /// </summary>
-            public Pawn target;
-            
-            /// <summary>
-            /// 투사체 정보 (데미지 계산용)
-            /// </summary>
-            public Attack projectile;
-            
-            /// <summary>
-            /// 공격 이벤트 데이터를 생성합니다.
-            /// </summary>
-            /// <param name="attacker">공격자</param>
-            /// <param name="target">공격 대상</param>
-            public AttackEventData(Pawn attacker, Pawn target)
-            {
-                this.attacker = attacker;
-                this.target = target;
-                this.projectile = null;
-            }
-            
-            /// <summary>
-            /// 투사체 공격 이벤트 데이터를 생성합니다.
-            /// </summary>
-            /// <param name="attacker">공격자</param>
-            /// <param name="target">공격 대상</param>
-            /// <param name="projectile">투사체</param>
-            public AttackEventData(Pawn attacker, Pawn target, Attack projectile)
-            {
-                this.attacker = attacker;
-                this.target = target;
-                this.projectile = projectile;
-            }
-        }
-
-        /// <summary>
-        /// 스킬 관련 이벤트 데이터
-        /// </summary>
-        public class SkillEventData
-        {
-            /// <summary>
-            /// 스킬 소유자
-            /// </summary>
-            public Pawn owner;
-            
-            /// <summary>
-            /// 스킬
-            /// </summary>
-            public Attack skill;
-            
-            /// <summary>
-            /// 스킬 이벤트 데이터를 생성합니다.
-            /// </summary>
-            /// <param name="owner">스킬 소유자</param>
-            /// <param name="skill">스킬</param>
-            public SkillEventData(Pawn owner, Attack skill)
-            {
-                this.owner = owner;
-                this.skill = skill;
-            }
-        }
-
         /// <summary>
         /// 스탯 업데이트 관련 이벤트 데이터
         /// </summary>

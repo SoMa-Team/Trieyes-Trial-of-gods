@@ -9,11 +9,10 @@ namespace AttackSystem
     {
         public int attackId;
         public string attackName;
-        public string attackIcon;
         public AttackType attackType;
-        public float cooldown;
-        public bool bIsActivated;
-        public StatSheet statSheet;
+        public float cooldown; // Type이 Basic일 경우, 값은 무시됨.
+        public float damage;
+        public string attackIcon;
         // 기타 공격 관련 정보
     }
 

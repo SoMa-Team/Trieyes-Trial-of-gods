@@ -91,17 +91,7 @@ namespace AttackComponents
         /// <param name="hitObject">충돌한 객체</param>
         public virtual void ProcessComponentCollision(Pawn targetPawn)
         {
-            //Debug.Log($"<color=orange>[COMPONENT] {gameObject.name} hit {targetPawn.gameObject.name}</color>");
             
-            // 이벤트 발생
-            if (attacker != null)
-            {
-                // 소유자의 OnAttackHit 이벤트
-                attacker.OnEvent(Utils.EventType.OnAttackHit, targetPawn);
-                
-                // 피격자의 OnDamageHit 이벤트
-                targetPawn.OnEvent(Utils.EventType.OnDamageHit, attacker);
-            }
         }
 
         // ===== [기능 4] 이벤트 처리 =====
@@ -109,19 +99,6 @@ namespace AttackComponents
         {
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
-        }
-        
-        // ===== [기능 7] 투사체 스탯 수정 =====
-        /// <summary>
-        /// 투사체의 스탯을 수정합니다.
-        /// 하위 클래스에서 오버라이드하여 구체적인 스탯 수정 로직을 구현합니다.
-        /// </summary>
-        /// <param name="projectileStats">수정할 투사체 스탯</param>
-        public virtual void ModifyProjectileStats(Stats.StatSheet projectileStats)
-        {
-            // 기본적으로는 아무것도 하지 않음
-            // 하위 클래스에서 오버라이드하여 구현
-            //Debug.Log($"<color=cyan>[AttackComponent] {GetType().Name} modifying projectile stat sheet</color>");
         }
 
         public void SetAttack(Attack attack)

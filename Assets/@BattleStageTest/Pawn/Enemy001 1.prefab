@@ -49,10 +49,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 100
-  currentHp: 0
+  currentHp: 100
   moveSpeed: 5
   statPresetSO: {fileID: 11400000, guid: b6ca1ab4fbc702f4f91bd07c9d83d7cb, type: 2}
-  basicAttack: {fileID: 8016258422780310161, guid: ed7b48300e0914e4da7d85bf92d94413, type: 3}
+  basicAttack: {fileID: 0}
   dropGold: 10
 --- !u!50 &7661104193838161178
 Rigidbody2D:

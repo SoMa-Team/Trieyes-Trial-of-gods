@@ -242,6 +242,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b389717492a5304c8911a723c892479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &126691321 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6974926124632890442, guid: f314d1b820862c54cae6053239af1e71, type: 3}
+  m_PrefabInstance: {fileID: 1215084555}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &126691325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126691321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dce8152f18af78645b6a1f1f8b118bd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &230598675
 GameObject:
   m_ObjectHideFlags: 0
@@ -956,6 +973,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1138489585984773130, guid: f314d1b820862c54cae6053239af1e71, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 28793f7f6c4c23a4389795731c0dcf27, type: 2}
     - target: {fileID: 9048457892950683038, guid: f314d1b820862c54cae6053239af1e71, type: 3}
       propertyPath: m_Name
       value: Enemy001 1
@@ -963,7 +984,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6974926124632890442, guid: f314d1b820862c54cae6053239af1e71, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 126691325}
   m_SourcePrefab: {fileID: 100100000, guid: f314d1b820862c54cae6053239af1e71, type: 3}
 --- !u!1 &1249544606
 GameObject:

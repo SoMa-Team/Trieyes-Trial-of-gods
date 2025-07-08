@@ -7,6 +7,7 @@ using UnityEngine;
 using CardSystem;
 using System;
 using UnityEngine.EventSystems;
+using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -155,7 +156,7 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Deactivate()
         {
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
             
@@ -164,6 +165,9 @@ namespace CharacterSystem
             {
                 relics.Clear();
             }
+
+            //TODO: 오브젝트 풀링 처리시 삭제 필요
+            Destroy(gameObject);
         }
 
         /// <summary>
@@ -259,7 +263,6 @@ namespace CharacterSystem
                         break;
                     case "DEATH":
                         Animator.SetBool("4_Death", true);
-                        Animator.SetTrigger("4_Death");
                         break;
                 }
             }
@@ -619,10 +622,10 @@ namespace CharacterSystem
         private void HandleDeath()
         {
             //Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
-            ChangeAnimationState("4_Death"); 
-            if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
-            if (Collider != null) Collider.enabled = false; 
-            Destroy(gameObject, 2f);
+            ChangeAnimationState("DEATH"); 
+            // if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
+            // if (Collider != null) Collider.enabled = false;
+            // CharacterFactory.Instance.Deactivate(this);
         }
         
         // ===== [기능 12] 자동공격 시스템 =====

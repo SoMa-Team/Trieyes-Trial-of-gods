@@ -59,7 +59,6 @@ namespace BattleSystem
         /// <param name="enemy">활성화할 적 Pawn</param>
         public void Activate(Pawn enemy)
         {
-            Debug.Log($"enemy activated! {enemy}");
             enemy.Activate();
             // TODO: 적 활성화 로직 구현 필요 + ObjectPooling
         }

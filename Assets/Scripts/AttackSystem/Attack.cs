@@ -31,6 +31,18 @@ namespace AttackSystem
         protected Rigidbody2D rb;
         protected Collider2D attackCollider;
 
+        private void Update()
+        {
+            // TODO : 공격의 거리 제한에 대한 임시 코드
+            float distance = Vector2.Distance(transform.position, attacker.transform.position);
+            var maxDistance = 30f;
+            if (distance > maxDistance)
+            {
+                AttackFactory.Instance.Deactivate(this);
+            }
+            // TODO END
+        }
+
         private void Start()
         {
             // 컴포넌트 초기화

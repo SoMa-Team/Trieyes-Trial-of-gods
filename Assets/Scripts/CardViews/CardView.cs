@@ -111,7 +111,7 @@ namespace CardViews
             for (int i = 0; i < descParams.Length; i++)
             {
                 result = result.Replace("{" + i + "}", descParams[i]);
-            }
+            }//TODO : 성능 이슈 있으면 StringBuilder로 고치기
             return result;
         }
     }

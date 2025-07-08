@@ -22,6 +22,8 @@ public class CardViewTester : MonoBehaviour
     /// '그림자' 카드 표시 버튼
     public Button showShadow;
 
+    public int cardLevel;
+
     // --- Unity 이벤트 메서드 ---
 
     /// <summary>
@@ -41,7 +43,7 @@ public class CardViewTester : MonoBehaviour
     /// </summary>
     void ShowPreparingMarch()
     {
-        Card card = cardFactory.Create(1, 0);
+        Card card = cardFactory.Create(cardLevel, 0);
         cardView.SetCard(card);
     }
 
@@ -50,7 +52,7 @@ public class CardViewTester : MonoBehaviour
     /// </summary>
     void ShowCrouch()
     {
-        Card card = cardFactory.Create(1, 1);
+        Card card = cardFactory.Create(cardLevel, 1);
         cardView.SetCard(card);
     }
     
@@ -59,7 +61,7 @@ public class CardViewTester : MonoBehaviour
     /// </summary>
     void ShowShadow()
     {
-        Card card = cardFactory.Create(1, 2);
+        Card card = cardFactory.Create(cardLevel, 2);
         cardView.SetCard(card);
     }
 }

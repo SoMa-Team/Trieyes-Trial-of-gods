@@ -94,15 +94,29 @@ namespace DeckViews
                 return;
             }
 
-            // [3] 다른 카드 누르면 두 번째 카드 선택 후, 스왑 수행
+            // [3] 다른 카드 누르면 두 번째 카드 선택 후, 같은 이름인지 확인
             else if (selectedCard1 != cardView)
             {
                 selectedCard2 = cardView;
                 selectedCard2.SetSelected(true);
 
-                // 덱에서 카드 스왑
-                if(currentDeck is null) Debug.Log("현재 덱이 설정되지 않았습니다.");
-                currentDeck.SwapCards(selectedCard1.card, selectedCard2.card);
+                if(currentDeck is null) 
+                {
+                    Debug.Log("현재 덱이 설정되지 않았습니다.");
+                    return;
+                }
+
+                // 같은 이름의 카드인지 확인
+                if (selectedCard1.card.cardName == selectedCard2.card.cardName)
+                {
+                    // 카드 합치기
+                    MergeCards(selectedCard1.card, selectedCard2.card);
+                }
+                else
+                {
+                    // 다른 이름이면 기존처럼 스왑
+                    currentDeck.SwapCards(selectedCard1.card, selectedCard2.card);
+                }
 
                 // 둘 다 선택 해제
                 selectedCard1.SetSelected(false);
@@ -113,6 +127,38 @@ namespace DeckViews
             }
             // UI 새로고침 (카드 순서 갱신)
             RefreshDeckUI();
+        }
+
+        /// <summary>
+        /// 같은 이름의 두 카드를 합치는 메서드
+        /// GetTotalExp가 높은 카드에 낮은 카드의 총 경험치를 합치고, 낮은 카드는 덱에서 제거
+        /// </summary>
+        private void MergeCards(Card card1, Card card2)
+        {
+            int totalExp1 = card1.cardEnhancement.GetTotalExp();
+            int totalExp2 = card2.cardEnhancement.GetTotalExp();
+
+            Card higherExpCard, lowerExpCard;
+
+            // GetTotalExp가 높은 카드와 낮은 카드 구분
+            if (totalExp1 >= totalExp2)
+            {
+                higherExpCard = card1;
+                lowerExpCard = card2;
+            }
+            else
+            {
+                higherExpCard = card2;
+                lowerExpCard = card1;
+            }
+
+            // 낮은 카드의 총 경험치를 높은 카드에 추가
+            higherExpCard.cardEnhancement.AddExp(lowerExpCard.cardEnhancement.GetTotalExp());
+
+            // 낮은 카드를 덱에서 제거
+            currentDeck.RemoveCard(lowerExpCard);
+
+            Debug.Log($"카드 합치기 완료: {higherExpCard.cardName} (총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()})");
         }
 
         /// <summary>

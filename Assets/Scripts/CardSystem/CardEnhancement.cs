@@ -69,6 +69,16 @@ namespace CardSystem
             CheckLevelUp();
         }
 
+        /// <summary>
+        /// 카드의 총 경험치를 반환합니다.
+        /// 총 경험치 = 레벨 * 7 + 현재 경험치
+        /// </summary>
+        /// <returns>카드의 총 경험치</returns>
+        public int GetTotalExp()
+        {
+            return level.Value * 10 + exp.Value;
+        }
+
         // --- private 메서드 ---
 
         /// <summary>

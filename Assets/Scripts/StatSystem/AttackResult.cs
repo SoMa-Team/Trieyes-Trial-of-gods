@@ -35,7 +35,7 @@ namespace Stats
             
             // TODO : 수식 수정 필요
             attackResult.isCritical = Random.Range(0f, 100f) < attackStat[StatType.CriticalRate];
-            var baseDamage = attackStat[StatType.AttackPower] * 100 / (100 + targetStat[StatType.Defense]);
+            var baseDamage = (int)(attackStat[StatType.AttackPower] * attack.attackData.damage) * 100 / (100 + targetStat[StatType.Defense]);
             attackResult.totalDamage = attackResult.isCritical ? baseDamage * attackStat[StatType.CriticalDamage] / 100 : baseDamage;
             attackResult.attackerHealed = attackResult.totalDamage * attackStat[StatType.LifeSteal] / 100;
             attackResult.attackerDamage = attackResult.totalDamage * targetStat[StatType.Reflect] / 100;

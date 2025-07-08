@@ -71,6 +71,11 @@ namespace CardSystem
             
             Clear();
 
+            eventTypeCount[Utils.EventType.OnBattleSceneChange] = 1;
+            eventTypeCount[Utils.EventType.OnBattleEnd] = 1;
+            eventTypeCount[Utils.EventType.OnCardPurchase] = 1;
+            eventTypeCount[Utils.EventType.OnCardRemove] = 1;
+
             Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
         }
 

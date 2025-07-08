@@ -151,6 +151,19 @@ namespace CardSystem
         {
             owner = pawn;
         }
+
+        public void LevelUp()
+        {
+            cardEnhancement.level.AddToBasicValue(1);
+            RefreshStats();
+        }
+
+        public void RefreshStats()
+        {
+            // 현재 property와 레벨로 CardStat 새로 생성
+            cardStats = new CardStat(properties, cardEnhancement.level.Value);
+        }
+
         
         public Card DeepCopy()
         {

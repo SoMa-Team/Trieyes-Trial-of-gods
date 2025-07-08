@@ -249,6 +249,8 @@ namespace CardSystem
             // 낮은 카드의 총 경험치를 높은 카드에 추가
             higherExpCard.cardEnhancement.AddExp(lowerExpCard.cardEnhancement.GetTotalExp());
 
+            higherExpCard.RefreshStats();
+
             // 낮은 카드를 덱에서 제거
             RemoveCard(lowerExpCard);
 

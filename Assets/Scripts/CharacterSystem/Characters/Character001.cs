@@ -8,12 +8,9 @@ namespace CharacterSystem
     public class Character001 : Pawn
     {
         // ===== [필드] =====
-        public int experience = 0;
         
         // Pawn의 추상 멤버 구현
-        public new Collider2D Collider { get; private set; }
-        public new Rigidbody2D rb { get; private set; }
-
+        
         // ===== [Unity 생명주기] =====
         protected override void Awake()
         {
@@ -64,7 +61,6 @@ namespace CharacterSystem
         public override void Deactivate()
         {
             // Character001 고유 정리 로직
-            experience = 0;
             gold = 0;
             
             base.Deactivate();
@@ -105,4 +101,4 @@ namespace CharacterSystem
             }
         }
     }
-} 
+}

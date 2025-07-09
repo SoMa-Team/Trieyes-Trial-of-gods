@@ -8,7 +8,6 @@ using CardSystem;
 using System;
 using BattleSystem;
 using UnityEngine.EventSystems;
-using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -26,9 +25,8 @@ namespace CharacterSystem
         public int currentHp;
 
         public float moveSpeed = 5f;
-        
-        [Header("Components")]
-        
+
+        [Header("Components")] 
         protected Rigidbody2D rb;
 
         protected Collider2D Collider;
@@ -88,6 +86,7 @@ namespace CharacterSystem
         protected HashSet<Utils.EventType> acceptedEvents = new HashSet<Utils.EventType>();
         
         protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>();
+        public bool isDead { get; protected set; }
 
         // ===== [Unity 생명주기] =====
         protected virtual void Awake()
@@ -105,6 +104,8 @@ namespace CharacterSystem
             Controller = GetComponent<Controller>();
             // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
             Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+
+            isDead = false;
         }
 
         protected virtual void Start()
@@ -550,6 +551,7 @@ namespace CharacterSystem
             if (eventType == Utils.EventType.OnDeath)
             {
                 //Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
+                isDead = true;
                 HandleDeath();
             }
 
@@ -596,10 +598,14 @@ namespace CharacterSystem
         private void HandleDeath()
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
+            // 정지
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
+                rb.isKinematic = true; // 물리 엔진의 영향을 받지 않도록 설정
+            }
             ChangeAnimationState("DEATH"); 
-            // if (rb != null) rb.bodyType = RigidbodyType2D.Static;
-            // if (Collider != null) Collider.enabled = false; 
-            Destroy(gameObject, 2f);
         }
         
         // ===== [기능 12] 자동공격 시스템 =====

@@ -27,8 +27,10 @@ namespace CharacterSystem.Enemies
 
         private void Update()
         {
-            if (pawn == null || playerTarget == null)
+            if (pawn == null || playerTarget == null || pawn.isDead)
+            {
                 return;
+            }
 
             // StatSheet에서 최신 MoveSpeed를 반영
             pawn.moveSpeed = pawn.GetStatValue(Stats.StatType.MoveSpeed);

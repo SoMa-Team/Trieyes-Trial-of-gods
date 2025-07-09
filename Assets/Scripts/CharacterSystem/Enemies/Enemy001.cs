@@ -15,7 +15,6 @@ namespace CharacterSystem
         // ===== [기능 1] 적 기본 정보 =====
         [SerializeField] 
         private int dropGold = 10; // 드랍할 골드 양
-        private BoxCollider2D boxCollider;
         
         // ===== [기능 2] 초기화 =====
         protected override void Awake()

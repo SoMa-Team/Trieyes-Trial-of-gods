@@ -527,6 +527,7 @@ namespace CharacterSystem
         // ===== [기능 3] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
+            Debug.Log("OnEvent 호출");
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
             // if (!IsEventAccepted(eventType))
             // {
@@ -566,11 +567,11 @@ namespace CharacterSystem
                     }
                 }
             }
-
+            Debug.Log($"isDeckNull: {deck == null}, isCardEventAccepted: {IsCardEventAccepted(eventType)}");
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
-                //Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
+                Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
             }
         }

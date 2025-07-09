@@ -65,6 +65,7 @@ namespace CardViews
         {
             // 카드 일러스트 및 경험치 게이지 표시
             illustrationImage.sprite = card.illustration;
+            Debug.Log($"cardLevel: {card.cardEnhancement.level.Value}");
             expFill.fillAmount = (float)card.cardEnhancement.exp.Value / (card.cardEnhancement.level.Value * 10);
 
             // 카드 이름, 설명, 레벨 표시

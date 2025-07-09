@@ -39,7 +39,7 @@ namespace CharacterSystem
         {
             base.Activate();
             // TODO: AttackComponent 할당
-            //Debug.Log("Enemy001 Activated.");
+            ////Debug.Log("Enemy001 Activated.");
 
             // 이런 느낌으로 각 적마다 커스터마이징 
             // boxCollider = Collider as BoxCollider2D;
@@ -54,7 +54,7 @@ namespace CharacterSystem
             dropGold = 10; // 기본값으로 초기화
             
             base.Deactivate();
-            //Debug.Log("Enemy001 Deactivated.");
+            ////Debug.Log("Enemy001 Deactivated.");
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace CharacterSystem
         /// <param name="param">이벤트 파라미터</param>
         protected void OnSelfDeath(AttackResult result)
         {
-            //Debug.Log($"<color=green>{gameObject.name} (Enemy001) is performing its unique death action: Exploding!</color>");
+            ////Debug.Log($"<color=green>{gameObject.name} (Enemy001) is performing its unique death action: Exploding!</color>");
             
             // 골드 드랍 로직 (임시로 플레이어에게 직접 전달)
             // TODO: 실제로는 드롭 아이템 시스템을 통해 구현해야 함

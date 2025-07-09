@@ -8,6 +8,7 @@ using CardSystem;
 using System;
 using BattleSystem;
 using UnityEngine.EventSystems;
+using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -58,7 +59,7 @@ namespace CharacterSystem
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
         
         public int gold { get; protected set; }
-        
+
         // ===== [기능별 필드] =====
         /// <summary>
         /// 기본 공격이자 관리자 공격
@@ -128,12 +129,6 @@ namespace CharacterSystem
             // 컴포넌트 초기화
             pawnPrefab = transform.GetChild(0).gameObject;
 
-            if(pawnPrefab == null)
-            {
-                ////Debug.LogError($"pawnPrefab is null: {gameObject.name}");
-                return;
-            }
-
             pawnPrefab.transform.SetParent(transform);
             pawnPrefab.transform.localPosition = Vector3.zero;
             pawnPrefab.transform.localRotation = Quaternion.identity;
@@ -166,7 +161,7 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Deactivate()
         {
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
             
@@ -175,6 +170,9 @@ namespace CharacterSystem
             {
                 relics.Clear();
             }
+
+            //TODO: 오브젝트 풀링 처리시 삭제 필요
+            Destroy(gameObject);
         }
 
         /// <summary>
@@ -197,13 +195,13 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="preset">적용할 스탯 프리셋</param>
         protected void ApplyStatPresetSO(StatPresetSO preset)
-        {  
+        {
             if (preset == null || preset.stats == null) return;
 
             foreach (var pair in preset.stats)
             {
                 statSheet[pair.type].SetBasicValue(pair.value);
-                //////Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
+                //Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
             }
         }
 
@@ -225,8 +223,7 @@ namespace CharacterSystem
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동
-                lastestDirection = direction.normalized;
-                rb.linearVelocity = lastestDirection * moveSpeed;
+                rb.linearVelocity = direction.normalized * moveSpeed;
 
                 // 이동 방향에 따라 전체 flip (Y축 회전)
                 if (direction.x != 0)
@@ -253,7 +250,6 @@ namespace CharacterSystem
         {
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
-                Animator.speed = 1.25f;
                 // switch로 각 newStat에 대한 Parameter 값을 변경
                 switch (newState)
                 {
@@ -271,7 +267,6 @@ namespace CharacterSystem
                         break;
                     case "DEATH":
                         Animator.SetBool("4_Death", true);
-                        Animator.SetTrigger("4_Death");
                         break;
                 }
             }
@@ -319,7 +314,7 @@ namespace CharacterSystem
                 attackStats[statType].SetBasicValue(statValue);
             }
             
-            //////Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
+            //Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
             
             return attackStats;
         }
@@ -337,7 +332,7 @@ namespace CharacterSystem
                 float knockbackForce = 5f; // 기본 넉백 힘
                 targetRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
                 
-                ////Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
+                //Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
             }
         }
 
@@ -495,7 +490,7 @@ namespace CharacterSystem
                     }
                 }
                 
-                ////Debug.Log($"<color=purple>[RELIC] {gameObject.name} acquired relic: {relic.GetInfo().name}</color>");
+                //Debug.Log($"<color=purple>[RELIC] {gameObject.name} acquired relic: {relic.GetInfo().name}</color>");
             }
         }
 
@@ -524,7 +519,7 @@ namespace CharacterSystem
                     }
                 }
 
-                ////Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
+                //Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
             }
         }
 
@@ -534,11 +529,11 @@ namespace CharacterSystem
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
             if (!IsEventAccepted(eventType))
             {
-                ////Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
+                //Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
                 return;
             }
 
-            ////Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
+            //Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
             
             // Pawn 자체의 이벤트 처리
             
@@ -552,19 +547,19 @@ namespace CharacterSystem
             
             if (eventType == Utils.EventType.OnDeath)
             {
-                ////Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
+                //Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
                 HandleDeath();
             }
 
             // 유물들의 이벤트 처리 (필터링 적용)
             if (relics != null && IsRelicEventAccepted(eventType))
             {
-                ////Debug.Log($"<color=purple>[EVENT_FILTER] {gameObject.name} processing {eventType} for {relics.Count} relics (relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
+                //Debug.Log($"<color=purple>[EVENT_FILTER] {gameObject.name} processing {eventType} for {relics.Count} relics (relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
                 foreach (var relic in relics)
                 {
                     if (relic != null)
                     {
-                        ////Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.GetInfo().name} processing {eventType}</color>");
+                        //Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.GetInfo().name} processing {eventType}</color>");
                         relic.OnEvent(eventType, param);
                     }
                 }
@@ -573,7 +568,7 @@ namespace CharacterSystem
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
-                ////Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
+                //Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
             }
         }
@@ -617,7 +612,7 @@ namespace CharacterSystem
             // 공격속도가 높을수록 쿨다운이 짧아짐
             attackCooldown = 1f / (attackSpeed / 10f);
             
-            ////Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
+            //Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
         }
         
         /// <summary>
@@ -651,7 +646,7 @@ namespace CharacterSystem
             StatSheet attackStats = CollectAttackStats();
             Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
         }
-        
+
         // ===== [내부 클래스] =====
         /// <summary>
         /// 스탯 업데이트 관련 이벤트 데이터

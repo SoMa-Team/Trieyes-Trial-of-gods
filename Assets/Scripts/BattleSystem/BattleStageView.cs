@@ -120,7 +120,7 @@ namespace BattleSystem
 
             
             lastTileCenter = initialCenter;
-            Debug.Log($"[BATTLE_STAGE_VIEW] 동적 타일맵 생성 완료 (중심: {initialCenter}, 크기: {gridSize}x{gridSize})");
+            //Debug.Log($"[BATTLE_STAGE_VIEW] 동적 타일맵 생성 완료 (중심: {initialCenter}, 크기: {gridSize}x{gridSize})");
         }
         
         /// <summary>
@@ -150,7 +150,7 @@ namespace BattleSystem
             // 초기 위치 설정
             _battleCamera.transform.position = cameraOffset;
             
-            //Debug.Log("전투 카메라가 생성되었습니다.");
+            ////Debug.Log("전투 카메라가 생성되었습니다.");
         }
         
         /// <summary>
@@ -169,7 +169,7 @@ namespace BattleSystem
                 Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
                 _battleCamera.transform.position = targetPosition;
                 
-                //Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
+                ////Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
             }
         }
         
@@ -206,11 +206,11 @@ namespace BattleSystem
             // 게임 종료 시 코루틴 시작 방지
             if (!gameObject.activeInHierarchy || !enabled)
             {
-                Debug.LogWarning("[BATTLE_STAGE_VIEW] 비활성화된 상태에서 코루틴 시작 시도 차단");
+                //Debug.LogWarning("[BATTLE_STAGE_VIEW] 비활성화된 상태에서 코루틴 시작 시도 차단");
                 return;
             }
             
-            //Debug.Log($"[BATTLE_STAGE_VIEW] 콜리전 기반 타일 업데이트 시작: {newCenter}");
+            ////Debug.Log($"[BATTLE_STAGE_VIEW] 콜리전 기반 타일 업데이트 시작: {newCenter}");
             
             // 배치 처리를 위한 성능 최적화
             StartCoroutine(UpdateTilesBatch(newCenter));

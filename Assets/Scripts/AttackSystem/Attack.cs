@@ -69,10 +69,14 @@ namespace AttackSystem
         // ===== [기능 6] 충돌 처리 (투사체일 때만 사용) =====
         protected virtual void OnTriggerEnter2D(Collider2D other)
         {
+            // null 체크 추가
+            if (other == null || other.gameObject == null) return;
+            
             foreach (var attackComponent in components)
             {
                 attackComponent.OnTriggerEnter2D(other);
             }
+            
             HandleCollision(other.gameObject);
         }
 
@@ -82,6 +86,14 @@ namespace AttackSystem
         /// <param name="hitObject">충돌한 객체</param>
         protected virtual void HandleCollision(GameObject hitObject)
         {
+            // null 체크 추가
+            if (hitObject == null) return;
+            if (attacker == null) return;
+            if (attacker.gameObject == null) return;
+            
+            // tag null 체크 추가
+            if (string.IsNullOrEmpty(hitObject.tag)) return;
+                
             switch (hitObject.tag)
             {
                 case "Player": 
@@ -171,29 +183,29 @@ namespace AttackSystem
         public void OnEvent(Utils.EventType eventType, object param)
         {
             // 역할에 따른 로그 출력
-            Debug.Log($"<color=blue>[ATTACK] {gameObject.name} received event: {eventType}</color>");
+            //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} received event: {eventType}</color>");
             
             // 이벤트 타입에 따른 처리
             switch (eventType)
             {
                 case Utils.EventType.OnAttackHit:
                     // 공격 시작 이벤트 처리
-                    Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnAttackHit</color>");
+                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnAttackHit</color>");
                     break;
                 
                 case Utils.EventType.OnAttack:
                     // 공격 종료 이벤트 처리
-                    Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnAttack</color>");
+                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnAttack</color>");
                     break;
                 
                 case Utils.EventType.OnDamageHit:
                     // 타격 이벤트 처리
-                    Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnDamageHit</color>");
+                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnDamageHit</color>");
                     break;
                 
                 default:
                     // 기본 이벤트 처리
-                    Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing {eventType}</color>");
+                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing {eventType}</color>");
                     break;
             }
         }

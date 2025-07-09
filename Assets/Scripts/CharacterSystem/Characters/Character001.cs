@@ -58,7 +58,7 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
-            Debug.Log("Character001 Activated.");
+            //Debug.Log("Character001 Activated.");
         }
 
         public override void Deactivate()

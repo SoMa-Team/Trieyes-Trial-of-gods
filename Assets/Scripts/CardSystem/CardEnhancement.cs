@@ -1,4 +1,5 @@
 using Stats;
+using UnityEngine;
 
 namespace CardSystem
 {
@@ -69,6 +70,16 @@ namespace CardSystem
             CheckLevelUp();
         }
 
+        /// <summary>
+        /// 카드의 총 경험치를 반환합니다.
+        /// 총 경험치 = 레벨 * 7 + 현재 경험치
+        /// </summary>
+        /// <returns>카드의 총 경험치</returns>
+        public int GetTotalExp()
+        {
+            return level.Value * 10;
+        }
+
         // --- private 메서드 ---
 
         /// <summary>
@@ -77,15 +88,26 @@ namespace CardSystem
         /// </summary>
         private void CheckLevelUp()
         {
-            int currentExp = exp.Value;
             int requiredExp = level.Value * 10; // 레벨당 10 경험치 필요
 
-            if (currentExp >= requiredExp)
+            while(exp.Value >= requiredExp)
             {
+                Debug.Log($"curLevel: {level.Value}, curExp: {exp.Value}, requiredExp: {requiredExp}");
                 level.AddToBasicValue(1);
                 exp.AddToBasicValue(-requiredExp);
-                CheckLevelUp(); // 재귀적으로 다음 레벨업 체크
+                requiredExp = level.Value * 10;
             }
         }
+        
+        public CardEnhancement DeepCopy()
+        {
+            var clone = new CardEnhancement(
+                this.level.Value,
+                this.exp.Value
+            );
+            clone.level = this.level.DeepCopy();
+            clone.exp = this.exp.DeepCopy();
+            return clone;
+        }
     }
-} 
+}

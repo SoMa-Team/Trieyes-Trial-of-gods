@@ -27,5 +27,13 @@ namespace CardActions
             // 기본 구현은 비어있습니다.
             // 하위 클래스에서 오버라이드하여 구체적인 로직을 구현합니다.
         }
+
+        public virtual CardAction DeepCopy()
+        {
+            return this;
+            //카드 액션이 상태를 갖는 경우 DeepCopy 로직을 추가합니다.
+        }
+
+        public abstract string[] GetDescriptionParams(Card card);
     }
 } 

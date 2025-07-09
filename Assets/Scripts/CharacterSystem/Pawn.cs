@@ -302,7 +302,7 @@ namespace CharacterSystem
                 attackStats[statType].SetBasicValue(statValue);
             }
             
-            Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
+            //Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
             
             return attackStats;
         }
@@ -515,11 +515,12 @@ namespace CharacterSystem
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
-            if (!IsEventAccepted(eventType))
-            {
-                Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
-                return;
-            }
+            // if (!IsEventAccepted(eventType))
+            // {
+            //     Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
+            //     return;
+            // }
+            // 버그 발생하여 테스트를 위해 일단 무시
 
             Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
             
@@ -643,7 +644,7 @@ namespace CharacterSystem
             // 공격속도가 높을수록 쿨다운이 짧아짐
             attackCooldown = 1f / (attackSpeed / 10f);
             
-            Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
+            //Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
         }
         
         /// <summary>
@@ -677,7 +678,7 @@ namespace CharacterSystem
                     return;
                 }
                 
-                Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
+                //Debug.Log($"<color=green>[AUTO_ATTACK] {gameObject.name} executing attack</color>");
                 
                 StatSheet attackStats = CollectAttackStats();
 

@@ -151,5 +151,37 @@ namespace CardSystem
         {
             owner = pawn;
         }
+
+        public void LevelUp()
+        {
+            cardEnhancement.level.AddToBasicValue(1);
+            RefreshStats();
+        }
+
+        public void RefreshStats()
+        {
+            // 현재 property와 레벨로 CardStat 새로 생성
+            cardStats = new CardStat(properties, cardEnhancement.level.Value);
+        }
+
+        
+        public Card DeepCopy()
+        {
+            var clone = new Card();
+            // 필드들 복사
+            clone.properties = (Property[])this.properties.Clone();
+            clone.rarity = this.rarity;
+            clone.cardName = this.cardName;
+            clone.illustration = this.illustration;
+            clone.cardDescription = this.cardDescription;
+            clone.eventTypes = new List<Utils.EventType>(this.eventTypes);
+
+            // 내부 참조 타입 멤버들도 DeepCopy!
+            clone.cardAction = this.cardAction?.DeepCopy();
+            clone.cardStats = this.cardStats?.DeepCopy();
+            clone.cardEnhancement = this.cardEnhancement?.DeepCopy();
+
+            return clone;
+        }
     }
 } 

@@ -2,9 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CardSystem;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 
-namespace CardView
+namespace CardViews
 {
     /// <summary>
     /// 카드의 정보를 UI에 표시하는 컴포넌트입니다.
@@ -38,17 +39,23 @@ namespace CardView
         // --- 내부 필드 ---
 
         /// 현재 표시 중인 카드 데이터
-        private Card card;
+        public Card card;
 
         // --- public 메서드 ---
 
         /// <summary>
         /// 카드 데이터를 설정하고 UI를 갱신합니다.
         /// </summary>
-        public void SetCard(Card card)
+        public virtual void SetCard(Card card)
         { 
             this.card = card;
             UpdateView();
+        }
+
+        public Card GetCurrentCard()
+        {
+            if(this.card is null) Debug.LogError("CardView.GetCurrentCard: card is null");
+            return this.card;
         }
 
         /// <summary>
@@ -62,7 +69,9 @@ namespace CardView
 
             // 카드 이름, 설명, 레벨 표시
             cardNameText.text = card.cardName;
-            descriptionText.text = card.cardDescription;
+            var descParams = card.cardAction.GetDescriptionParams(card);
+            descriptionText.text = FormatDescription(card.cardDescription, descParams);
+
             levelText.text = $"Lv.{card.cardEnhancement.level.Value}";
             
             // 속성 엠블럼 표시
@@ -90,6 +99,20 @@ namespace CardView
                 statTypeEmblemImage.enabled = false;
                 statIntegerValueText.enabled = false;
             }
+        }
+        
+        // --- private 메서드 ---
+        private string FormatDescription(string template, string[] descParams)
+        {
+            if (descParams == null || descParams.Length == 0)
+                return template;
+
+            string result = template;
+            for (int i = 0; i < descParams.Length; i++)
+            {
+                result = result.Replace("{" + i + "}", descParams[i]);
+            }//TODO : 성능 이슈 있으면 StringBuilder로 고치기
+            return result;
         }
     }
 }

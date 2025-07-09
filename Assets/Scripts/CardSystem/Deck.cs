@@ -76,19 +76,19 @@ namespace CardSystem
             eventTypeCount[Utils.EventType.OnCardPurchase] = 1;
             eventTypeCount[Utils.EventType.OnCardRemove] = 1;
 
-            Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
+            // Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
         }
 
         public void Clear()
         {
             if (!isPersistent)
             {
-                Debug.Log($"<color=yellow>[DECK] {owner?.gameObject.name} clearing all cards (isPersistent: {isPersistent})</color>");
+                //Debug.Log($"<color=yellow>[DECK] {owner?.gameObject.name} clearing all cards (isPersistent: {isPersistent})</color>");
                 cards.Clear();
             }
             else
             {
-                Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} preserving {cards.Count} cards (isPersistent: {isPersistent})</color>");
+                //Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} preserving {cards.Count} cards (isPersistent: {isPersistent})</color>");
             }
             
             cardCallCounts = (cards.Count > 0) ? new List<int>(new int[cards.Count]) : new List<int>();
@@ -106,7 +106,7 @@ namespace CardSystem
         /// <param name="param">이벤트와 함께 전달된 매개변수</param>
         public void OnEvent(Utils.EventType eventType, object param)
         {
-            Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) received {eventType} event</color>");
+            //Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) received {eventType} event</color>");
 
             switch (eventType)
             {
@@ -316,7 +316,7 @@ namespace CardSystem
                 iterationCount++;
             }
 
-            Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
+            //Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
         }
 
         /// <summary>
@@ -326,11 +326,11 @@ namespace CardSystem
         /// <param name="param">이벤트와 함께 전달할 매개변수 (선택사항)</param>
         public void CalcActionInitStat(Utils.EventType eventType, object param = null)
         {
-            Debug.Log("CalcActionInitStat!!");
+            //Debug.Log("CalcActionInitStat!!");
             if (cardCallOrder == null)
             {
                 cardCallOrder = new List<int>();
-                Debug.LogWarning($"<color=yellow>[DECK] {owner?.gameObject.name} cardCallOrder was null, initialized empty list</color>");
+                //Debug.LogWarning($"<color=yellow>[DECK] {owner?.gameObject.name} cardCallOrder was null, initialized empty list</color>");
                 return;
             }
 

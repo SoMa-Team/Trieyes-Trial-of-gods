@@ -93,8 +93,7 @@ namespace BattleSystem
         /// <returns>선택된 스폰 포인트 GameObject</returns>
         private GameObject GetRandomSpawnPoint()
         {
-            // TODO: 랜덤 스폰 포인트 지정 로직 필요
-            return spawnPoints[0];
+            return spawnPoints[Random.Range(0, spawnPoints.Length)];
         }
 
         /// <summary>

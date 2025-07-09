@@ -1,6 +1,9 @@
 using AttackSystem;
 using UnityEngine;
 using Utils;
+using System.Linq;
+using BattleSystem;
+using Stats;
 
 namespace CharacterSystem
 {
@@ -10,22 +13,22 @@ namespace CharacterSystem
     public class Enemy001 : Pawn
     {
         // ===== [기능 1] 적 기본 정보 =====
-        [SerializeField] private int dropGold = 10; // 드랍할 골드 양
+        [SerializeField] 
+        private int dropGold = 10; // 드랍할 골드 양
+        private BoxCollider2D boxCollider;
         
         // ===== [기능 2] 초기화 =====
         protected override void Awake()
         {
             base.Awake();
+
+            // Collision Layer를 Enemy로 설정
+            gameObject.layer = LayerMask.NameToLayer("Enemy");
         }
 
         protected override void Start()
         {
             base.Start();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
         }
 
         // ===== [커스텀 메서드] =====
@@ -36,7 +39,10 @@ namespace CharacterSystem
         {
             base.Activate();
             // TODO: AttackComponent 할당
-            Debug.Log("Enemy001 Activated.");
+            ////Debug.Log("Enemy001 Activated.");
+
+            // 이런 느낌으로 각 적마다 커스터마이징 
+            // boxCollider = Collider as BoxCollider2D;
         }
 
         /// <summary>
@@ -48,7 +54,7 @@ namespace CharacterSystem
             dropGold = 10; // 기본값으로 초기화
             
             base.Deactivate();
-            Debug.Log("Enemy001 Deactivated.");
+            ////Debug.Log("Enemy001 Deactivated.");
         }
 
         /// <summary>
@@ -62,7 +68,7 @@ namespace CharacterSystem
             switch (eventType)
             {
                 case Utils.EventType.OnDeath:
-                    OnSelfDeath(param);
+                    OnSelfDeath(param as AttackResult);
                     break;
                 // 기타 이벤트별 동작 추가
             }
@@ -73,16 +79,16 @@ namespace CharacterSystem
         /// 사망 시 골드 드랍 처리
         /// </summary>
         /// <param name="param">이벤트 파라미터</param>
-        protected void OnSelfDeath(object param)
+        protected void OnSelfDeath(AttackResult result)
         {
-            Debug.Log($"<color=green>{gameObject.name} (Enemy001) is performing its unique death action: Exploding!</color>");
+            ////Debug.Log($"<color=green>{gameObject.name} (Enemy001) is performing its unique death action: Exploding!</color>");
             
             // 골드 드랍 로직 (임시로 플레이어에게 직접 전달)
             // TODO: 실제로는 드롭 아이템 시스템을 통해 구현해야 함
-            if (param is Pawn.AttackEventData attackData && attackData.attacker != null)
+            if (result.attacker != null)
             {
-                attackData.attacker.ChangeGold(dropGold);
-                Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {attackData.attacker.gameObject.name}</color>");
+                result.attacker.ChangeGold(dropGold);
+                //Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {attackData.attacker.gameObject.name}</color>");
             }
         }
     }

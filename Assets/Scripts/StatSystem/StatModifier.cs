@@ -36,18 +36,24 @@ namespace Stats
         /// </summary>
         public StatModifier(int buffValue, BuffOperationType operationType, bool canStack=true, float duration = -1f)
         {
-            if(duration == 0f){
+            if (duration == 0f)
+            {
                 throw new ArgumentException("Duration cannot be 0. Use -1 for permanent buff.");
-            }
-            if(BattleStage.now == null){
-                throw new Exception("BattleStageManager is not initialized.");
             }
             this.id = modifierID++;
             this.value = buffValue;
             this.operationType = operationType;
             this.canStack = canStack;
-            this.isPermanent = duration < 0f;
-            this.endTime = this.isPermanent ? float.MaxValue : BattleStage.now.GetTime() + duration;
+            if(BattleStage.now == null)
+            {
+                this.isPermanent = true;
+                this.endTime = float.MaxValue;
+            }
+            else
+            {
+                this.isPermanent = duration < 0f;
+                this.endTime = this.isPermanent ? float.MaxValue : BattleStage.now.GetTime() + duration;
+            }
         }
 
         // --- 메서드 ---

@@ -36,6 +36,7 @@ namespace Stats
                 stat.Value.ClearBuffs();
             }
         }
+        // TODO: DeepCopy 메소드 넣기
 
         // --- 인덱서 ---
 

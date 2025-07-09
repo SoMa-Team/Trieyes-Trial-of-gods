@@ -118,6 +118,7 @@ namespace CardSystem
                 case Utils.EventType.OnBattleEnd:
                     cardCallOrder.Clear();
                     cardCallCounts = new List<int>(new int[cards.Count]);
+                    EventProcessor(eventType, param);
                     owner?.statSheet.ClearBuffs();
                     break;
                 case Utils.EventType.OnCardPurchase:
@@ -127,21 +128,20 @@ namespace CardSystem
                     if (param is Card removedCard) RemoveCard(removedCard);
                     break;
                 default:
-                    // // 이벤트 처리 최적화
-                    // if (eventTypeCount != null && !eventTypeCount.ContainsKey(eventType))
-                    // {
-                    //     Debug.Log($"<color=grey>[DECK] {owner?.gameObject.name}: No card reacts to {eventType}, skipping.</color>");
-                    //     return;
-                    // }
-                    foreach (var card in cards)
-                    {
-                        // 이 카드가 해당 이벤트에 반응할 때만 호출!
-                        if (card.cardAction != null && card.eventTypes.Contains(eventType))
-                        {
-                            card.TriggerCardEvent(eventType, this, param);
-                        }
-                    }
+                    EventProcessor(eventType, param);
                     break;
+            }
+        }
+
+        public void EventProcessor(Utils.EventType eventType, object param)
+        {
+            foreach (var card in cards)
+            {
+                // 이 카드가 해당 이벤트에 반응할 때만 호출!
+                if (card.cardAction != null && card.eventTypes.Contains(eventType))
+                {
+                    card.TriggerCardEvent(eventType, this, param);
+                }
             }
         }
 

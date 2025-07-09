@@ -91,7 +91,7 @@ namespace AttackComponents
         /// <param name="hitObject">충돌한 객체</param>
         public virtual void ProcessComponentCollision(Pawn targetPawn)
         {
-            Debug.Log($"<color=orange>[COMPONENT] {gameObject.name} hit {targetPawn.gameObject.name}</color>");
+            //Debug.Log($"<color=orange>[COMPONENT] {gameObject.name} hit {targetPawn.gameObject.name}</color>");
             
             // 이벤트 발생
             if (attacker != null)
@@ -121,7 +121,7 @@ namespace AttackComponents
         {
             // 기본적으로는 아무것도 하지 않음
             // 하위 클래스에서 오버라이드하여 구현
-            Debug.Log($"<color=cyan>[AttackComponent] {GetType().Name} modifying projectile stat sheet</color>");
+            //Debug.Log($"<color=cyan>[AttackComponent] {GetType().Name} modifying projectile stat sheet</color>");
         }
 
         public void SetAttack(Attack attack)

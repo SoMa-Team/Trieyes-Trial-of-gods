@@ -51,7 +51,6 @@ namespace BattleSystem
             var battleStageGameObject = Instantiate(battleStagePrefabs[battleStageID]);
             var battleStageView = battleStageGameObject.GetComponent<BattleStageView>();
             var battleStage = new BattleStage();
-
             battleStageView.BattleStage = battleStage;
 
             Activate(battleStage, mainCharacter, difficulty);
@@ -70,6 +69,16 @@ namespace BattleSystem
             // 메인 캐릭터 설정
             CharacterFactory.Instance.Activate(mainCharacter);
             battleStage.mainCharacter = mainCharacter;
+            
+            // 프리팹인지 확인하고 인스턴스화
+            if (mainCharacter.gameObject.scene.name == null)
+            {
+                // 프리팹인 경우 인스턴스화
+                GameObject instance = Instantiate(mainCharacter.gameObject);
+                mainCharacter = instance.GetComponent<Pawn>();
+                battleStage.mainCharacter = mainCharacter;
+            }
+            
             mainCharacter.transform.SetParent(battleStage.View.transform);
             
             // 카메라가 메인 캐릭터를 팔로우하도록 설정

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using CharacterSystem;
+using Utils;
 
 namespace BattleSystem
 {
@@ -13,10 +14,22 @@ namespace BattleSystem
     {
         // ===== 뷰 데이터 =====
         private BattleStage _battleStage;
-        public GameObject spriteRectPrefabs;
-        public TileBase ruleTile; // 인스펙터에서 사용할 타일 배열 할당
-        public int Height { get; internal set; }
-        public int Width { get; internal set; }
+        [Header("Tile Settings")]
+        public TileBase[] ruleTiles; // 다양한 타일 배열
+        [Header("Grid Size (정사각형)")]
+        public int gridSize = 50; // 인스펙터에서 설정
+        
+        // ===== 타일 풀링 시스템 =====
+        private TilePoolingSystem tilePoolingSystem;
+        private Tilemap tilemap;
+        private Vector3Int lastTileCenter;
+        private bool isTileSystemInitialized = false;
+        
+        // ===== 콜리전 기반 경계 시스템 =====
+        private TileBoundaryCollider boundaryCollider;
+        
+        [Header("Tile Pooling Settings")]
+        public float boundaryThreshold = 0.5f;
         
         // ===== 카메라 관련 =====
         private Camera _battleCamera;
@@ -41,13 +54,11 @@ namespace BattleSystem
         {
             set
             {
-                Height = 100;
-                Width = 100;
                 _battleStage = value;
                 _battleStage.View = this;
                 
                 // TODO: 데이터 UI 동기화 로직 구현 필요
-                CreateSpriteRect();
+                CreateTilemap();
                 CreateBattleCamera();
             }
 
@@ -57,42 +68,59 @@ namespace BattleSystem
             }
         }
 
-        private void CreateSpriteRect()
+        /// <summary>
+        /// 지정된 중심과 크기로 랜덤 타일맵을 채웁니다.
+        /// </summary>
+        private void FillTilesWithRandomPattern(Vector3Int center, int width, int height)
         {
-            // TODO : 테스트 이후 제거 필요.
-            if (spriteRectPrefabs is null || ruleTile is null) return;
-            // TODO END
-            
-            // 1. 프리팹을 씬에 인스턴스화
-            GameObject tilemapGO = Instantiate(spriteRectPrefabs);
-
-            // 2. Tilemap 컴포넌트 가져오기
-            Tilemap tilemap = tilemapGO.GetComponentInChildren<Tilemap>();
-            if (tilemap == null)
+            if (ruleTiles == null || ruleTiles.Length == 0) return;
+            tilemap.ClearAllTiles();
+            int halfWidth = width / 2;
+            int halfHeight = height / 2;
+            for (int y = center.y - halfHeight; y <= center.y + halfHeight; y++)
             {
-                Debug.LogError("Tilemap 컴포넌트를 찾을 수 없습니다.");
-                return;
-            }
-
-            TilemapRenderer renderer = tilemap.GetComponent<TilemapRenderer>();
-            if (renderer != null)
-            {
-                renderer.sortingOrder = -1;
-            }
-
-            // 3. 원하는 위치에 타일 그리기 (예시: 전체를 같은 타일로 채우기)
-            // -에서 시작해서 +방향으로 그리기
-            for (int y = Height / 2; y >= -Height / 2; y--)
-            {
-                for (int x = -Width / 2; x < Width / 2; x++)
+                for (int x = center.x - halfWidth; x <= center.x + halfWidth; x++)
                 {
-                    // 예시: tiles[0]을 전체에 채움. 필요시 타입별로 분기
-                    tilemap.SetTile(new Vector3Int(x, y, 0), ruleTile);
-
-                    // Z-order -1
-                    tilemap.SetTileFlags(new Vector3Int(x, y, 0), TileFlags.None);
+                    Vector3Int tilePos = new Vector3Int(x, y, 0);
+                    int randomIndex = UnityEngine.Random.Range(0, ruleTiles.Length);
+                    tilemap.SetTile(tilePos, ruleTiles[randomIndex]);
                 }
             }
+        }
+
+        // 게임 시작 시 호출
+        private void CreateTilemap()
+        {
+            GameObject tilemapGO = new GameObject("DynamicTilemap");
+            tilemapGO.transform.SetParent(transform);
+            tilemap = tilemapGO.AddComponent<Tilemap>();
+
+            TilemapRenderer renderer = tilemapGO.AddComponent<TilemapRenderer>();
+            renderer.sortingOrder = -1;
+
+            Grid grid = tilemapGO.AddComponent<Grid>();
+            grid.cellSize = new Vector3(1, 1, 1);
+            grid.cellGap = Vector3.zero;
+            grid.cellSwizzle = GridLayout.CellSwizzle.XYZ;
+
+            // TilePoolingSystem에 ruleTiles, gridSize 전달
+            tilePoolingSystem = gameObject.AddComponent<TilePoolingSystem>();
+            tilePoolingSystem.boundaryThreshold = boundaryThreshold;
+            tilePoolingSystem.Initialize(tilemap, ruleTiles);
+            isTileSystemInitialized = true;
+
+            Vector3Int initialCenter = Vector3Int.zero;
+            tilePoolingSystem.FillTilesWithRandomPattern(initialCenter, gridSize);
+
+            // 경계 콜리전 게임오브젝트 생성
+            GameObject boundaryGO = new GameObject("TileBoundaryCollider");
+            boundaryGO.transform.SetParent(transform);
+            boundaryCollider = boundaryGO.AddComponent<TileBoundaryCollider>();
+            boundaryCollider.Initialize(this);           
+
+            
+            lastTileCenter = initialCenter;
+            //Debug.Log($"[BATTLE_STAGE_VIEW] 동적 타일맵 생성 완료 (중심: {initialCenter}, 크기: {gridSize}x{gridSize})");
         }
         
         /// <summary>
@@ -122,7 +150,7 @@ namespace BattleSystem
             // 초기 위치 설정
             _battleCamera.transform.position = cameraOffset;
             
-            Debug.Log("전투 카메라가 생성되었습니다.");
+            ////Debug.Log("전투 카메라가 생성되었습니다.");
         }
         
         /// <summary>
@@ -141,21 +169,19 @@ namespace BattleSystem
                 Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
                 _battleCamera.transform.position = targetPosition;
                 
-                Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
+                ////Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
             }
         }
         
         /// <summary>
         /// 카메라가 메인 캐릭터를 부드럽게 따라다니도록 업데이트합니다.
         /// 캐릭터의 이동 속도에 따라 카메라 거리가 동적으로 조절됩니다.
+        /// 경계 기반 타일 관리도 함께 수행합니다.
         /// </summary>
         private void Update()
         {
             if (_mainCharacter != null && _battleCamera != null)
-            {
-                // 캐릭터의 이동 속도에 따른 동적 카메라 거리 계산
-                UpdateDynamicCameraDistance();
-                
+            {                
                 // 목표 위치 계산 (동적 오프셋 사용)
                 Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
                 
@@ -168,33 +194,34 @@ namespace BattleSystem
                 );
             }
         }
-        
+           
         /// <summary>
-        /// 캐릭터의 이동 속도에 따라 카메라 거리를 동적으로 조절합니다.
+        /// 콜리전 기반 경계 시스템에서 호출되는 타일 업데이트 메서드입니다.
         /// </summary>
-        private void UpdateDynamicCameraDistance()
+        /// <param name="newCenter">새로운 타일 중심</param>
+        public void UpdateTilesAtBoundary(Vector3Int newCenter)
         {
-            if (_mainCharacter == null) return;
+            if (tilePoolingSystem == null) return;
             
-            // 캐릭터의 이동 속도 가져오기
-            float characterSpeed = _mainCharacter.moveSpeed;
+            // 게임 종료 시 코루틴 시작 방지
+            if (!gameObject.activeInHierarchy || !enabled)
+            {
+                //Debug.LogWarning("[BATTLE_STAGE_VIEW] 비활성화된 상태에서 코루틴 시작 시도 차단");
+                return;
+            }
             
-            // 속도에 따른 거리 계산 (속도가 빠를수록 카메라가 멀어짐)
-            float dynamicDistance = Mathf.Lerp(
-                minCameraDistance, 
-                maxCameraDistance, 
-                (characterSpeed - 1f) / (10f - 1f) // 1~10 속도 범위를 0~1로 정규화
-            );
+            ////Debug.Log($"[BATTLE_STAGE_VIEW] 콜리전 기반 타일 업데이트 시작: {newCenter}");
             
-            // 거리 제한 적용
-            dynamicDistance = Mathf.Clamp(dynamicDistance, minCameraDistance, maxCameraDistance);
-            
-            // 동적 카메라 오프셋 업데이트 (Z축만 변경)
-            _dynamicCameraOffset = new Vector3(
-                cameraOffset.x,
-                cameraOffset.y,
-                -dynamicDistance
-            );
+            // 배치 처리를 위한 성능 최적화
+            StartCoroutine(UpdateTilesBatch(newCenter));
+        }
+
+                // 이동 시 호출
+        private System.Collections.IEnumerator UpdateTilesBatch(Vector3Int newCenter)
+        {
+            tilePoolingSystem.FillTilesWithRandomPattern(newCenter, gridSize);
+            lastTileCenter = newCenter;
+            yield return null;
         }
     }
 } 

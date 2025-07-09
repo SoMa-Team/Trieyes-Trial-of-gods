@@ -1,9 +1,9 @@
 using AttackSystem;
 using CharacterSystem;
-using Unity.Mathematics.Geometry;
+using Stats;
 using UnityEngine;
 
-namespace Stats
+namespace BattleSystem
 {
     public class AttackResult
     {

@@ -6,6 +6,7 @@ using RelicSystem;
 using UnityEngine;
 using CardSystem;
 using System;
+using BattleSystem;
 using UnityEngine.EventSystems;
 
 namespace CharacterSystem
@@ -221,7 +222,6 @@ namespace CharacterSystem
         /// <param name="direction">이동할 방향</param>
         public virtual void Move(Vector2 direction)
         {
-            if (rb == null) rb = GetComponent<Rigidbody2D>();
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동
@@ -600,8 +600,8 @@ namespace CharacterSystem
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             ChangeAnimationState("DEATH"); 
-            if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
-            if (Collider != null) Collider.enabled = false; 
+            // if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+            // if (Collider != null) Collider.enabled = false; 
             Destroy(gameObject, 2f);
         }
         

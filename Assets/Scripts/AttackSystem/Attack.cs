@@ -4,6 +4,7 @@ using CharacterSystem;
 using Utils;
 using UnityEngine;
 using AttackComponents;
+using BattleSystem;
 using Stats;
 using JetBrains.Annotations;
 
@@ -103,7 +104,7 @@ namespace AttackSystem
         protected virtual void ProcessAttackCollision(Pawn targetPawn)
         {
             //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
-            DamageCaculator.ProcessHit(this, targetPawn);
+            DamageProcessor.ProcessHit(this, targetPawn);
             
             // TODO : OnEvent를 활용한 처리 필요
             foreach (var attackComponent in components)

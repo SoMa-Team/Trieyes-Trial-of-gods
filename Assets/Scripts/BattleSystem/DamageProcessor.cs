@@ -1,10 +1,9 @@
 using AttackSystem;
 using CharacterSystem;
-using UnityEngine;
 
-namespace Stats
+namespace BattleSystem
 {
-    public class DamageCaculator
+    public class DamageProcessor
     {
         /// <summary>
         /// 공격이 타겟에 맞을 경우 처리합니다.

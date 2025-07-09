@@ -30,7 +30,7 @@ namespace CharacterSystem
             {
                 throw new System.Exception("PlayerController not found on " + gameObject.name);
             }
-            Controller.Initialize(this);
+            Controller.Activate(this);
         }
 
         protected override void Start()

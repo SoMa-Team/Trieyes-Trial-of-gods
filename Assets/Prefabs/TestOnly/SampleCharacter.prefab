@@ -326,7 +326,8 @@ MonoBehaviour:
   currentHp: 0
   moveSpeed: 5
   statPresetSO: {fileID: 11400000, guid: 174e138bcc1157a4b9b72c292f87a14f, type: 2}
-  basicAttack: {fileID: 11400000, guid: 288ab4f26aece4a62ae914df85ede2e5, type: 2}
+  lastestDirection: {x: 0, y: 0}
+  basicAttack: {fileID: 11400000, guid: 0a469357fde99402aafafd4ab3ceac75, type: 2}
   experience: 0
 --- !u!50 &16111979999986116
 Rigidbody2D:

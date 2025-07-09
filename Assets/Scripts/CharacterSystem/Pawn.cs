@@ -155,6 +155,9 @@ namespace CharacterSystem
             initBaseStat();
             
             gameObject.SetActive(true);
+            
+            // TODO : EnemyController 없음
+            Controller.Activate(this);
         }
 
         /// <summary>
@@ -171,9 +174,6 @@ namespace CharacterSystem
             {
                 relics.Clear();
             }
-
-            //TODO: 오브젝트 풀링 처리시 삭제 필요
-            Destroy(gameObject);
         }
 
         /// <summary>

@@ -13357,9 +13357,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 100
-  currentHp: 0
+  currentHp: 100
   moveSpeed: 1
   statPresetSO: {fileID: 11400000, guid: b6ca1ab4fbc702f4f91bd07c9d83d7cb, type: 2}
+  lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 0}
   dropGold: 10
 --- !u!50 &3867755423161223523
@@ -13438,6 +13439,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69256d39b1a4d0f43b9c8aa962f71acc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: {fileID: 0}
+  lastMoveDir: {x: 0, y: 0}
   minFollowDistance: 0.1
 --- !u!1 &8284442213204127861
 GameObject:

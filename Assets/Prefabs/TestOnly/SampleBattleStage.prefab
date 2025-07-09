@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6de7f4a6cfa6174485032ff04d169f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRectPrefabs: {fileID: 8801104504220340556, guid: e16b9d7b72f774162918642e6be6e1e1, type: 3}
-  ruleTile: {fileID: 11400000, guid: ea88ea926354e4e66bb8852ebb645b9f, type: 2}
+  ruleTiles:
+  - {fileID: 11400000, guid: ea88ea926354e4e66bb8852ebb645b9f, type: 2}
+  gridSize: 50
+  boundaryThreshold: 0.5
   cameraFollowSpeed: 5
   cameraOffset: {x: 0, y: 0, z: -7}
   cameraSmoothTime: 0.1

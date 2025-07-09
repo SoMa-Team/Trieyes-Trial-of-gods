@@ -16,7 +16,7 @@ namespace CharacterSystem
 
         public Joystick joystick; // 인스펙터 할당 없이 자동 연결
 
-        private void Awake()
+        public void Awake()
         {
             if (joystick == null)
             {
@@ -48,6 +48,21 @@ namespace CharacterSystem
         private void Update()
         {
             owner.PerformAutoAttack(); // 자동 공격
+        }
+
+        public override void Activate(Pawn pawn)
+        {
+            base.Activate(pawn);
+            
+            if (joystick == null)
+            {
+                var canvas = GameObject.Find("Canvas");
+                if (canvas != null)
+                {
+                    var found = canvas.GetComponentInChildren<Joystick>(true);
+                    joystick = found as Joystick;
+                }
+            }
         }
     }
 } 

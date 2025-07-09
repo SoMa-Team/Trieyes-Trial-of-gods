@@ -113,11 +113,12 @@ namespace CardSystem
                 case Utils.EventType.OnBattleSceneChange:
                     CalcBaseStat();
                     CalcActionInitOrder();
-                    //CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
+                    CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     break;
                 case Utils.EventType.OnBattleEnd:
                     cardCallOrder.Clear();
                     cardCallCounts = new List<int>(new int[cards.Count]);
+                    EventProcessor(eventType, param);
                     owner?.statSheet.ClearBuffs();
                     break;
                 case Utils.EventType.OnCardPurchase:
@@ -127,8 +128,13 @@ namespace CardSystem
                     if (param is Card removedCard) RemoveCard(removedCard);
                     break;
                 default:
+                    EventProcessor(eventType, param);
                     break;
             }
+        }
+
+        public void EventProcessor(Utils.EventType eventType, object param)
+        {
             foreach (var card in cards)
             {
                 // 이 카드가 해당 이벤트에 반응할 때만 호출!

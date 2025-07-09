@@ -3,6 +3,7 @@ using UnityEngine;
 using Utils;
 using System.Linq;
 using BattleSystem;
+using Stats;
 
 namespace CharacterSystem
 {
@@ -67,7 +68,7 @@ namespace CharacterSystem
             switch (eventType)
             {
                 case Utils.EventType.OnDeath:
-                    OnSelfDeath(param);
+                    OnSelfDeath(param as AttackResult);
                     break;
                 // 기타 이벤트별 동작 추가
             }
@@ -78,16 +79,16 @@ namespace CharacterSystem
         /// 사망 시 골드 드랍 처리
         /// </summary>
         /// <param name="param">이벤트 파라미터</param>
-        protected void OnSelfDeath(object param)
+        protected void OnSelfDeath(AttackResult result)
         {
             ////Debug.Log($"<color=green>{gameObject.name} (Enemy001) is performing its unique death action: Exploding!</color>");
             
             // 골드 드랍 로직 (임시로 플레이어에게 직접 전달)
             // TODO: 실제로는 드롭 아이템 시스템을 통해 구현해야 함
-            if (param is Pawn.AttackEventData attackData && attackData.attacker != null)
+            if (result.attacker != null)
             {
-                attackData.attacker.ChangeGold(dropGold);
-                ////Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {attackData.attacker.gameObject.name}</color>");
+                result.attacker.ChangeGold(dropGold);
+                //Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {attackData.attacker.gameObject.name}</color>");
             }
         }
     }

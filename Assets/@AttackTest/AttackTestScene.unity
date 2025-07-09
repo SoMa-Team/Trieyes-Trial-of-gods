@@ -352,9 +352,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 100
-  currentHp: 0
+  currentHp: 100
   moveSpeed: 1
   statPresetSO: {fileID: 11400000, guid: b6ca1ab4fbc702f4f91bd07c9d83d7cb, type: 2}
+  lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 0}
   dropGold: 10
 --- !u!4 &311065438
@@ -669,8 +670,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6de7f4a6cfa6174485032ff04d169f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteRectPrefabs: {fileID: 0}
-  ruleTile: {fileID: 0}
+  ruleTiles: []
+  gridSize: 50
+  boundaryThreshold: 0.5
   cameraFollowSpeed: 5
   cameraOffset: {x: 0, y: 0, z: -7}
   cameraSmoothTime: 0.1

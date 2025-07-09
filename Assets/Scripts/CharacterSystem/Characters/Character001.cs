@@ -100,10 +100,7 @@ namespace CharacterSystem
                 case Utils.EventType.OnDeath:
                     // Character001의 사망 이벤트는 base.OnEvent에서 이미 처리됨
                     // 여기서는 고유한 추가 로직만 수행
-                    if (param as Pawn == this)
-                    {
-                        //Debug.Log($"<color=yellow>{gameObject.name} (Character001) is performing its unique death action: Game Over!</color>");
-                    }
+                    //Debug.Log($"<color=yellow>{gameObject.name} (Character001) is performing its unique death action: Game Over!</color>");
                     break;
             }
         }

@@ -36,8 +36,10 @@ namespace CardSystem
         /// <param name="maxExp">최대 경험치 (기본값: 100)</param>
         public CardEnhancement(int initialLevel, int initialExp, int maxLevel = 99, int maxExp = 100)
         {
+            Debug.Log($"initialLevel: {initialLevel}");
             level = new IntegerStatValue(initialLevel, maxLevel, 1);
             exp = new IntegerStatValue(initialExp, maxExp, 0);
+            Debug.Log($"New Card Enhancement: {level.Value}, {exp.Value}");
         }
 
         // --- public 메서드 ---

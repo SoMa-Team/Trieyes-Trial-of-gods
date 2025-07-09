@@ -1,3 +1,4 @@
+using BattleSystem;
 using UnityEngine;
 using CardViews;
 using UnityEngine.UI;
@@ -45,7 +46,7 @@ public class ShopSceneManager : MonoBehaviour
     public CardFactory cardFactory;
 
     [Header("플레이어 정보")]
-    /// 상점에서 조작할 메인 캐릭터 Pawn
+    public CharacterFactory characterFactory;
     public Pawn mainCharacter;
 
     public TMP_Text attackStatValue;
@@ -61,6 +62,7 @@ public class ShopSceneManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        mainCharacter = characterFactory.Create(0);
         // 첫 리롤(시작 시 3장 뽑기)
         Reroll();
         
@@ -143,6 +145,8 @@ public class ShopSceneManager : MonoBehaviour
     /// </summary>
     public void OnBattleSceneChangeTest()
     {
+        Debug.Log("BattleSceneChangeTest");
+        if(mainCharacter == null) Debug.LogError("캐릭터가 초기화되지 않았습니다.");
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
         statRefresh();
     }

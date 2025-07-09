@@ -44,6 +44,7 @@ public class CardViewTester : MonoBehaviour
     void ShowPreparingMarch()
     {
         Card card = cardFactory.Create(cardLevel, 0);
+        Debug.Log($"Card Created! {card.cardName}");
         cardView.SetCard(card);
     }
 

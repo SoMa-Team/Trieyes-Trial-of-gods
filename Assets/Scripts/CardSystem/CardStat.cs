@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Stats;
+using UnityEngine;
 
 namespace CardSystem
 {
@@ -79,8 +80,11 @@ namespace CardSystem
         /// <param name="level">카드의 레벨</param>
         public void AddStat(Property property, int level)
         {
+            Debug.Log($"Add Stat - Card Level: {level}");
             StatType targetStat = GetStatType(property);
             var statValue = new IntegerStatValue(level * 7);
+            
+            Debug.Log($"Stat Value: {statValue.Value}");
             
             stats.Add(new StatValuePair(targetStat, statValue));
         }

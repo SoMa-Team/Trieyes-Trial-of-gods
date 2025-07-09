@@ -11,7 +11,7 @@ namespace AttackSystem
         public string attackName;
         public AttackType attackType;
         public float cooldown; // Type이 Basic일 경우, 값은 무시됨.
-        public float damage;
+        public float damageMultiplier = 1;
         public string attackIcon;
         // 기타 공격 관련 정보
     }

@@ -113,7 +113,7 @@ namespace CardSystem
                 case Utils.EventType.OnBattleSceneChange:
                     CalcBaseStat();
                     CalcActionInitOrder();
-                    CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
+                    //CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     break;
                 case Utils.EventType.OnBattleEnd:
                     cardCallOrder.Clear();
@@ -127,21 +127,15 @@ namespace CardSystem
                     if (param is Card removedCard) RemoveCard(removedCard);
                     break;
                 default:
-                    // // 이벤트 처리 최적화
-                    // if (eventTypeCount != null && !eventTypeCount.ContainsKey(eventType))
-                    // {
-                    //     Debug.Log($"<color=grey>[DECK] {owner?.gameObject.name}: No card reacts to {eventType}, skipping.</color>");
-                    //     return;
-                    // }
-                    foreach (var card in cards)
-                    {
-                        // 이 카드가 해당 이벤트에 반응할 때만 호출!
-                        if (card.cardAction != null && card.eventTypes.Contains(eventType))
-                        {
-                            card.TriggerCardEvent(eventType, this, param);
-                        }
-                    }
                     break;
+            }
+            foreach (var card in cards)
+            {
+                // 이 카드가 해당 이벤트에 반응할 때만 호출!
+                if (card.cardAction != null && card.eventTypes.Contains(eventType))
+                {
+                    card.TriggerCardEvent(eventType, this, param);
+                }
             }
         }
 

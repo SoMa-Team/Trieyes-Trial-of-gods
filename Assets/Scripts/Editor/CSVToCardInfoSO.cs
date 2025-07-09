@@ -27,6 +27,7 @@ public static class CSVToCardInfoSOImporter
         }
 
         var headers = lines[0].Split(',');
+        int idx_soName = System.Array.IndexOf(headers, "soName");
         int idx_cardName = System.Array.IndexOf(headers, "cardName");
         int idx_rarity = System.Array.IndexOf(headers, "rarity");
         int idx_properties = System.Array.IndexOf(headers, "properties");
@@ -44,7 +45,8 @@ public static class CSVToCardInfoSOImporter
             string cardName = values[idx_cardName];
 
             // SO 파일 경로 생성
-            string assetPath = Path.Combine(soOutputPath, $"{cardName}.asset");
+            string soName = values[idx_soName].Trim();
+            string assetPath = Path.Combine(soOutputPath, $"{soName}.asset");
 
             // 기존 SO가 있으면 불러오고, 없으면 새로 생성
             CardInfo card = AssetDatabase.LoadAssetAtPath<CardInfo>(assetPath.Replace(Application.dataPath, "Assets"));

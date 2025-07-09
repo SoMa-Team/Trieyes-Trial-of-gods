@@ -129,5 +129,16 @@ namespace Stats
             }
             return currentValue;
         }
+        
+        public IntegerStatValue DeepCopy()
+        {
+            var copy = new IntegerStatValue(this.basicValue, this.maxValue, this.minValue);
+            copy.currentValue = this.currentValue;
+            copy.modifierListChanged = this.modifierListChanged;
+            copy.basicValueChanged = this.basicValueChanged;
+            copy.activeModifiers = this.activeModifiers.DeepCopy();
+            copy.modifierHeap = this.modifierHeap.DeepCopy();
+            return copy;
+        }
     }
 } 

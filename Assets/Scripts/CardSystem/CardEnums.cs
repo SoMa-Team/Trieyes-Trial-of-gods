@@ -45,48 +45,10 @@ namespace CardSystem
     /// </summary>
     public enum Property
     {
-        /// <summary>
-        /// 공격 속성입니다.
-        /// 캐릭터의 공격력을 증가시킵니다.
-        /// </summary>
-        Attack,
-
-        /// <summary>
-        /// 방어 속성입니다.
-        /// 캐릭터의 방어력을 증가시킵니다.
-        /// </summary>
-        Defense,
-
-        /// <summary>
-        /// 체력 속성입니다.
-        /// 캐릭터의 최대 체력을 증가시킵니다.
-        /// </summary>
-        Health,
-
-        /// <summary>
-        /// 치명타 확률 속성입니다.
-        /// 캐릭터의 치명타 발생 확률을 증가시킵니다.
-        /// </summary>
-        CritRate,
-
-        /// <summary>
-        /// 치명타 피해 속성입니다.
-        /// 캐릭터의 치명타 피해량을 증가시킵니다.
-        /// </summary>
-        CritDamage,
-
-        /// <summary>
-        /// 이동 속도 속성입니다.
-        /// 캐릭터의 이동 속도를 증가시킵니다.
-        /// </summary>
-        MoveSpeed,
-
-        /// <summary>
-        /// 점프력 속성입니다.
-        /// 캐릭터의 점프력을 증가시킵니다.
-        /// </summary>
-        JumpForce
-
-        // 필요에 따라 더 많은 속성을 추가할 수 있습니다.
+        Fire,
+        Water,
+        Light,
+        Dark,
+        Steel
     }
 } 

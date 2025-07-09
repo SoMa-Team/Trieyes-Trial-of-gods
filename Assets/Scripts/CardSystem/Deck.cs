@@ -71,7 +71,12 @@ namespace CardSystem
             
             Clear();
 
-            //Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
+            eventTypeCount[Utils.EventType.OnBattleSceneChange] = 1;
+            eventTypeCount[Utils.EventType.OnBattleEnd] = 1;
+            eventTypeCount[Utils.EventType.OnCardPurchase] = 1;
+            eventTypeCount[Utils.EventType.OnCardRemove] = 1;
+
+            // Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
         }
 
         public void Clear()
@@ -113,6 +118,7 @@ namespace CardSystem
                 case Utils.EventType.OnBattleEnd:
                     cardCallOrder.Clear();
                     cardCallCounts = new List<int>(new int[cards.Count]);
+                    EventProcessor(eventType, param);
                     owner?.statSheet.ClearBuffs();
                     break;
                 case Utils.EventType.OnCardPurchase:
@@ -122,21 +128,20 @@ namespace CardSystem
                     if (param is Card removedCard) RemoveCard(removedCard);
                     break;
                 default:
-                    // // 이벤트 처리 최적화
-                    // if (eventTypeCount != null && !eventTypeCount.ContainsKey(eventType))
-                    // {
-                    //     //Debug.Log($"<color=grey>[DECK] {owner?.gameObject.name}: No card reacts to {eventType}, skipping.</color>");
-                    //     return;
-                    // }
-                    foreach (var card in cards)
-                    {
-                        // 이 카드가 해당 이벤트에 반응할 때만 호출!
-                        if (card.cardAction != null && card.eventTypes.Contains(eventType))
-                        {
-                            card.TriggerCardEvent(eventType, this, param);
-                        }
-                    }
+                    EventProcessor(eventType, param);
                     break;
+            }
+        }
+
+        public void EventProcessor(Utils.EventType eventType, object param)
+        {
+            foreach (var card in cards)
+            {
+                // 이 카드가 해당 이벤트에 반응할 때만 호출!
+                if (card.cardAction != null && card.eventTypes.Contains(eventType))
+                {
+                    card.TriggerCardEvent(eventType, this, param);
+                }
             }
         }
 
@@ -183,6 +188,79 @@ namespace CardSystem
                 }
             }
         }
+        
+        public void SwapCards(Card cardA, Card cardB)
+        {
+            int idxA = cards.IndexOf(cardA);
+            int idxB = cards.IndexOf(cardB);
+
+            Debug.Log($"SwapCards: cardA({cardA?.cardName ?? "null"}) idxA: {idxA}, cardB({cardB?.cardName ?? "null"}) idxB: {idxB}");
+            
+            if (idxA < 0 || idxB < 0)
+            {
+                Debug.LogError($"card not found in deck");
+                return;
+            }
+
+            // 카드 스왑
+            (cards[idxA], cards[idxB]) = (cards[idxB], cards[idxA]);
+        }
+
+        /// <summary>
+        /// 같은 이름의 두 카드를 합치는 메서드입니다.
+        /// GetTotalExp가 높은 카드에 낮은 카드의 총 경험치를 합치고, 낮은 카드는 덱에서 제거합니다.
+        /// </summary>
+        /// <param name="cardA">합칠 첫 번째 카드</param>
+        /// <param name="cardB">합칠 두 번째 카드</param>
+        /// <returns>합치기가 성공했는지 여부</returns>
+        public bool MergeCards(Card cardA, Card cardB)
+        {
+            Debug.Log("Merge Cards 호출");
+            // 카드가 덱에 있는지 확인
+            if (!cards.Contains(cardA) || !cards.Contains(cardB))
+            {
+                Debug.LogError("MergeCards: 하나 이상의 카드가 덱에 없습니다.");
+                return false;
+            }
+
+            // 같은 이름의 카드인지 확인
+            if (cardA.cardName != cardB.cardName)
+            {
+                Debug.LogError("MergeCards: 다른 이름의 카드는 합칠 수 없습니다.");
+                return false;
+            }
+
+            int totalExpA = cardA.cardEnhancement.GetTotalExp();
+            int totalExpB = cardB.cardEnhancement.GetTotalExp();
+
+            Card higherExpCard, lowerExpCard;
+
+            // GetTotalExp가 높은 카드와 낮은 카드 구분
+            if (totalExpA >= totalExpB)
+            {
+                higherExpCard = cardA;
+                lowerExpCard = cardB;
+            }
+            else
+            {
+                higherExpCard = cardB;
+                lowerExpCard = cardA;
+            }
+
+            // 낮은 카드의 총 경험치를 높은 카드에 추가
+            Debug.Log($"MergeCards: {higherExpCard.cardName}의 총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()}");
+            Debug.Log($"MergeCards: {lowerExpCard.cardName}의 총 경험치: {lowerExpCard.cardEnhancement.GetTotalExp()}");
+            higherExpCard.cardEnhancement.AddExp(lowerExpCard.cardEnhancement.GetTotalExp());
+            Debug.Log($"MergeCards: {higherExpCard.cardName}의 총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()}");
+
+            higherExpCard.RefreshStats();
+
+            // 낮은 카드를 덱에서 제거
+            RemoveCard(lowerExpCard);
+
+            Debug.Log($"카드 합치기 완료: {higherExpCard.cardName} (총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()})");
+            return true;
+        }
 
         // ===== [기능 2] 덱 스탯 및 카드 액션 초기화 =====
         /// <summary>
@@ -227,8 +305,12 @@ namespace CardSystem
                 cardCallCounts[currentCardIndex]++;
                 cardCallOrder.Add(currentCardIndex);
 
-                // SO 기반 이벤트 전파
-                cards[currentCardIndex]?.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, currentCardIndex);
+                var card = cards[currentCardIndex];
+
+                if (card != null)
+                {
+                    card.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, (card, currentCardIndex));
+                }
 
                 currentCardIndex++;
                 iterationCount++;
@@ -256,8 +338,8 @@ namespace CardSystem
             {
                 if (cardIndex < cards.Count)
                 {
-                    //Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardName}");
-                    cards[cardIndex]?.TriggerCardEvent(eventType, this, param);
+                    Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardName}");
+                    cards[cardIndex]?.TriggerCardEvent(eventType, this, cards[cardIndex]);
                 }
             }
         }

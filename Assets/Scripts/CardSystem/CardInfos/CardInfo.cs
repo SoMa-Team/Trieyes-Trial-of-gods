@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace CardSystem
 {
-    /// <summary>
-    /// 카드의 기본 정보를 담는 클래스입니다.
-    /// 카드의 속성, 희귀도, 이름, 이미지, 설명 등 UI 표시에 필요한 정보를 관리합니다.
-    /// CardAction과 분리되어 데이터와 로직을 명확히 구분합니다.
-    /// </summary>
+/// <summary>
+/// 카드의 기본 정보를 담는 클래스입니다.
+/// 카드의 속성, 희귀도, 이름, 이미지, 설명 등 UI 표시에 필요한 정보를 관리합니다.
+/// CardAction과 분리되어 데이터와 로직을 명확히 구분합니다.
+/// </summary>
     public class CardInfo : ScriptableObject{
         /// <summary>
         /// 이 카드가 가진 속성들의 배열입니다.

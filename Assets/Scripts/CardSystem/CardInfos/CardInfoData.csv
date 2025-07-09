@@ -1,4 +1,4 @@
-cardName,rarity,properties,illustration,cardDescription,eventTypes,
-PrepaingMarch,Common,Attack,PreparingMarch,"전투가 시작할 때, 해당 전투 동안 공격력을 10 증가 시킵니다.",OnBattleSceneChange,
-Crouch,Common,Defense,Crouch,"전투가 시작할 때, 해당 전투 동안 방어력을 10 증가 시킵니다.", OnBattleSceneChange,
-Shadow,Uncommon,MoveSpeed,Shadow,"전투가 시작할 때, 나 이외의 다른 모든 카드를 한 번 더 발동시킵니다.",CalcActionInitOrder,
+soName,cardName,rarity,properties,illustration,cardDescription,eventTypes,""
+PreparingMarch,행진 준비!,Common,Fire,PreparingMarch,"전투가 시작할 때, 해당 전투 동안 {0}을 {1} 증가 시킵니다.",OnBattleSceneChange,""
+Crouch,웅크리기,Common,Steel,Crouch,"전투가 시작할 때, 해당 전투 동안 {0}을 {1} 증가 시킵니다.",OnBattleSceneChange,""
+Shadow,그림자,Uncommon,Dark,Shadow,"전투가 시작할 때, 나 이외의 다른 모든 카드를 {0} 번 더 발동시킵니다.",CalcActionInitOrder,""

@@ -18,15 +18,6 @@ namespace CharacterSystem
 
         public void Awake()
         {
-            if (joystick == null)
-            {
-                var canvas = GameObject.Find("Canvas");
-                if (canvas != null)
-                {
-                    var found = canvas.GetComponentInChildren<Joystick>(true);
-                    joystick = found as Joystick;
-                }
-            }
         }
 
         public override void ProcessInputActions()

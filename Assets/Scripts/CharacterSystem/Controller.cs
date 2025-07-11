@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CharacterSystem
@@ -27,11 +28,14 @@ namespace CharacterSystem
         public Vector2 lastMoveDir;
 
         // ===== [Unity 생명주기] =====
-        public virtual void Initialize(Pawn pawn)
+        public virtual void Activate(Pawn pawn)
         {
             owner = pawn;
         }
 
-        public abstract void ProcessInputActions();
+        public virtual void ProcessInputActions()
+        {
+            
+        }
     }
 }

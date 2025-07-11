@@ -44,9 +44,9 @@ public class ShopSceneManager : MonoBehaviour
     [Header("카드 생성 팩토리")]
     /// 실제로 카드를 생성하는 CardFactory 참조
     public CardFactory cardFactory;
+    // TODO: 싱글톤이므로 필드 삭제 필요
 
     [Header("플레이어 정보")]
-    public CharacterFactory characterFactory;
     public Pawn mainCharacter;
 
     public TMP_Text attackStatValue;
@@ -62,7 +62,7 @@ public class ShopSceneManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        mainCharacter = characterFactory.Create(0);
+        mainCharacter = CharacterFactory.Instance.Create(0);
         // 첫 리롤(시작 시 3장 뽑기)
         Reroll();
         

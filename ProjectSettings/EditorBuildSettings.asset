@@ -6,8 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+    path: Assets/@SceneChangeManager/SceneChangeBaseTest.unity
+    guid: 0c252077e1a3846efbdb5bafb9ae0654
+  - enabled: 1
+    path: Assets/@SceneChangeManager/BattleSceneTest.unity
+    guid: 361d8bdf6f61b4dc58c382272f2f0426
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 99f9c9493070a9d4c979a8fec7c5a8d3, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 86d3583cc8f0a9f45bbaea6ac7040922, type: 2}

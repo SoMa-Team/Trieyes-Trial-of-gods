@@ -70,6 +70,8 @@ namespace BattleSystem
         {
             enemy.Deactivate();
             // TODO: 적 비활성화 로직 구현 필요 + ObjectPooling
+            // TODO: 오브젝트 풀링 처리시 삭제 필요
+            Destroy(enemy.gameObject);
         }
         
         // ===== 내부 헬퍼 =====

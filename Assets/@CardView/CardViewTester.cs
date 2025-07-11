@@ -13,8 +13,6 @@ public class CardViewTester : MonoBehaviour
 
     /// 테스트할 CardView 컴포넌트
     public CardView cardView;
-    /// 카드 생성 팩토리
-    public CardFactory cardFactory;
     /// '준비운동' 카드 표시 버튼
     public Button showPreparingMarch;
     /// '웅크리기' 카드 표시 버튼
@@ -43,7 +41,8 @@ public class CardViewTester : MonoBehaviour
     /// </summary>
     void ShowPreparingMarch()
     {
-        Card card = cardFactory.Create(cardLevel, 0);
+        Card card = CardFactory.Instance.Create(cardLevel, 0);
+        Debug.Log($"Card Created! {card.cardName}");
         cardView.SetCard(card);
     }
 
@@ -52,7 +51,7 @@ public class CardViewTester : MonoBehaviour
     /// </summary>
     void ShowCrouch()
     {
-        Card card = cardFactory.Create(cardLevel, 1);
+        Card card = CardFactory.Instance.Create(cardLevel, 1);
         cardView.SetCard(card);
     }
     
@@ -61,7 +60,7 @@ public class CardViewTester : MonoBehaviour
     /// </summary>
     void ShowShadow()
     {
-        Card card = cardFactory.Create(cardLevel, 2);
+        Card card = CardFactory.Instance.Create(cardLevel, 2);
         cardView.SetCard(card);
     }
 }

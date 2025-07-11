@@ -52,6 +52,7 @@ namespace CardSystem
         /// <returns>생성된 카드 객체</returns>
         public Card Create(int level, int CardActionID)
         {
+            Debug.Log($"Creating Card {CardActionID}, Card Level: {level}");
             Card card = new Card();
             Activate(card, level, CardActionID);
             return card;

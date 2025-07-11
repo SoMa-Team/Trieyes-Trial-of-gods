@@ -1,65 +1,53 @@
+using System;
+using BattleSystem;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using CharacterSystem;
+using Utils;
 
 namespace GameFramework
 {
     public class SceneChangeManager : MonoBehaviour
     {
         // ===== [기능 1] 싱글턴 및 데이터 전달 =====
-        public static SceneChangeManager Instance { get; private set; }
-        public object dataToPass;
+        public static SceneChangeManager Instance {private set; get;}
+        
+        private readonly string BATTLE_SCENE_NAME = "BattleSceneTest";
+
+        // ===== 초기화 =====
+        /// <summary>
+        /// 싱글톤 패턴을 위한 초기화
+        /// 중복 인스턴스가 생성되지 않도록 합니다.
+        /// </summary>
         private void Awake()
         {
-            Activate();
+            if (Instance is not null)
+            {
+                Destroy(this);
+                return;
+            }
+            
+            DontDestroyOnLoad(gameObject);
+            Instance = this;
         }
 
         private void OnDestroy()
         {
-            Deactivate();
-        }
-
-        /// <summary>
-        /// 오브젝트 풀링을 위한 활성화 함수
-        /// </summary>
-        public virtual void Activate()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
-
-        /// <summary>
-        /// 오브젝트 풀링을 위한 비활성화 함수
-        /// </summary>
-        public virtual void Deactivate()
-        {
-            // 데이터 정리
-            dataToPass = null;
-            
-            // 싱글톤 참조 정리
-            if (Instance == this)
-            {
-                Instance = null;
-            }
-        }
-        public object GetData()
-        {
-            return dataToPass;
         }
 
         // ===== [기능 2] 씬 전환 =====
-        public void LoadScene(string sceneName, object data = null)
+        public void StartBattleSceneTest(Pawn mainCharacter)
         {
-            Debug.Log($"Loading scene: {sceneName}");
-            dataToPass = data;
-            SceneManager.LoadScene(sceneName);
+            DontDestroyOnLoad(mainCharacter.gameObject);
+            
+            void OnStartBattleSceneTest(Scene scene, LoadSceneMode mode)
+            {
+                SceneManager.sceneLoaded -= OnStartBattleSceneTest;
+                BattleStageFactory.Instance.Create(mainCharacter, Difficulty.GetByStageRound(1));
+            }
+            
+            SceneManager.sceneLoaded += OnStartBattleSceneTest;
+            SceneManager.LoadScene(BATTLE_SCENE_NAME);
         }
     }
 } 

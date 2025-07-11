@@ -33,9 +33,10 @@ namespace Stats
         // --- 생성자 ---
 
         /// IntegerStatValue의 새 인스턴스를 초기화합니다.
-        public IntegerStatValue(int baseValue, int? max = null, int? min = null)
+        public IntegerStatValue(int initialValue, int? max = null, int? min = null)
         {
-            basicValue = baseValue;
+            Debug.Log($"initialValue: {initialValue}");
+            basicValue = initialValue;
             maxValue = max;
             minValue = min;
             modifierListChanged = false;
@@ -106,12 +107,14 @@ namespace Stats
             ApplyMinMax();
         }
 
-        private int GetCurrentValue(){
-            if(BattleStage.now == null)
+        private int GetCurrentValue()
+        {
+            float currentTime;
+            if (BattleStage.now == null)
             {
-                return 0;
+                currentTime = 0;
             }
-            float currentTime = BattleStage.now.GetTime();
+            else currentTime = BattleStage.now.GetTime();
 
             // 만료된 버프를 모두 제거
             while (!modifierHeap.IsEmpty && modifierHeap.Peek() < currentTime)

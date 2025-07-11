@@ -1,3 +1,4 @@
+using BattleSystem;
 using UnityEngine;
 using CardViews;
 using UnityEngine.UI;
@@ -39,14 +40,9 @@ public class ShopSceneManager : MonoBehaviour
     [Header("리롤 버튼")]
     /// 카드 3장을 새로 뽑는(리롤) 버튼
     public Button RerollButton;
-    
-    [Header("카드 생성 팩토리")]
-    /// 실제로 카드를 생성하는 CardFactory 참조
-    public CardFactory cardFactory;
 
     [Header("플레이어 정보")]
-    /// 상점에서 조작할 메인 캐릭터 Pawn
-    public Pawn mainCharacter;
+    private Pawn mainCharacter;
 
     public TMP_Text attackStatValue;
     public TMP_Text defenseStatValue;
@@ -61,6 +57,7 @@ public class ShopSceneManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        mainCharacter = CharacterFactory.Instance.Create(0);
         // 첫 리롤(시작 시 3장 뽑기)
         Reroll();
         
@@ -86,9 +83,9 @@ public class ShopSceneManager : MonoBehaviour
     private void Reroll()
     {
         // cardFactory를 통해 3장의 무작위 카드를 생성
-        Card card1 = cardFactory.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, cardFactory.cardInfos.Count));
-        Card card2 = cardFactory.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, cardFactory.cardInfos.Count));
-        Card card3 = cardFactory.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, cardFactory.cardInfos.Count));
+        Card card1 = CardFactory.Instance.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, CardFactory.Instance.cardInfos.Count));
+        Card card2 = CardFactory.Instance.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, CardFactory.Instance.cardInfos.Count));
+        Card card3 = CardFactory.Instance.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, CardFactory.Instance.cardInfos.Count));
         
         // 각각의 CardView에 해당 카드를 세팅 (UI에 표시)
         cardView1.SetCard(card1);
@@ -143,6 +140,8 @@ public class ShopSceneManager : MonoBehaviour
     /// </summary>
     public void OnBattleSceneChangeTest()
     {
+        Debug.Log("BattleSceneChangeTest");
+        if(mainCharacter == null) Debug.LogError("캐릭터가 초기화되지 않았습니다.");
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
         statRefresh();
     }

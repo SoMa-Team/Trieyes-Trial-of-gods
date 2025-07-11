@@ -113,6 +113,7 @@ namespace CardSystem
         /// <param name="level">카드의 초기 레벨</param>
         public void Activate(int level)
         {
+            Debug.Log($"Card Activated! {cardId}, card level: {level}");
             // 스탯과 강화 정보 초기화
             cardStats = new CardStat(properties, level);
             cardEnhancement = new CardEnhancement(level, 0);

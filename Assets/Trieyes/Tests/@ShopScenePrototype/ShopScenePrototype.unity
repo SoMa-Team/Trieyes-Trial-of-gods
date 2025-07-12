@@ -2070,9 +2070,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardInfos:
-  - {fileID: 11400000, guid: 3d3fe7fc532ad44ffa885316d66fc769, type: 2}
-  - {fileID: 11400000, guid: f04ec0565c1c9427aa5858c8928b089b, type: 2}
-  - {fileID: 11400000, guid: 3ee8775ca443e4679b1c1634afa9cdfc, type: 2}
+  - {fileID: 11400000, guid: 94e367465d498c84e9b87adb1f94811e, type: 2}
+  - {fileID: 11400000, guid: 75b02b6be192110498f57dbc003063e5, type: 2}
+  - {fileID: 11400000, guid: c1af981e4afc13e459b7528c4f6da0ad, type: 2}
 --- !u!4 &889808428
 Transform:
   m_ObjectHideFlags: 0
@@ -3076,9 +3076,6 @@ MonoBehaviour:
   BuyButton3: {fileID: 269003764}
   OnBattleSceneChange: {fileID: 39831105}
   RerollButton: {fileID: 955856479}
-  cardFactory: {fileID: 0}
-  characterFactory: {fileID: 0}
-  mainCharacter: {fileID: 0}
   attackStatValue: {fileID: 97123541}
   defenseStatValue: {fileID: 533670229}
   healthStatValue: {fileID: 1988674398}

@@ -62,7 +62,7 @@ namespace Utils
                 // Application.logMessageReceived 이벤트 등록
                 Application.logMessageReceived += HandleLog;
             }
-            catch (Exception e)
+            catch (System.Exception)
             {
                 //Debug.LogError($"<color=red>[LogToFile] Failed to initialize logging: {e.Message}</color>");
             }
@@ -92,7 +92,7 @@ namespace Utils
                     WriteToFile($"[{GetTimestamp()}] [STACK_TRACE] {stackTrace}");
                 }
             }
-            catch (Exception e)
+            catch (System.Exception)
             {
                 //Debug.LogError($"<color=red>[LogToFile] Failed to write log: {e.Message}</color>");
             }
@@ -111,7 +111,7 @@ namespace Utils
                 logWriter.WriteLine(message);
                 logWriter.Flush();
             }
-            catch (Exception e)
+            catch (System.Exception)
             {
                 //Debug.LogError($"<color=red>[LogToFile] Failed to write to file: {e.Message}</color>");
             }
@@ -151,7 +151,7 @@ namespace Utils
                 // Windows에서 파일 탐색기로 열기
                 System.Diagnostics.Process.Start("explorer.exe", $"/select,\"{logFilePath}\"");
             }
-            catch (Exception e)
+            catch (System.Exception)
             {
                 //Debug.LogError($"<color=red>[LogToFile] Failed to open log file: {e.Message}</color>");
             }
@@ -172,9 +172,9 @@ namespace Utils
             {
                 return File.ReadAllText(logFilePath);
             }
-            catch (Exception e)
+            catch (System.Exception)
             {
-                return $"Failed to read log file: {e.Message}";
+                return $"Failed to read log file";
             }
         }
         
@@ -194,7 +194,7 @@ namespace Utils
                 File.Delete(logFilePath);
                 //Debug.Log("<color=green>[LogToFile] Log file cleared.</color>");
             }
-            catch (Exception e)
+            catch (System.Exception)
             {
                 //Debug.LogError($"<color=red>[LogToFile] Failed to clear log file: {e.Message}</color>");
             }

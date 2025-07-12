@@ -23,7 +23,6 @@ namespace BattleSystem
         private TilePoolingSystem tilePoolingSystem;
         private Tilemap tilemap;
         private Vector3Int lastTileCenter;
-        private bool isTileSystemInitialized = false;
         
         // ===== 콜리전 기반 경계 시스템 =====
         private TileBoundaryCollider boundaryCollider;
@@ -107,7 +106,6 @@ namespace BattleSystem
             tilePoolingSystem = gameObject.AddComponent<TilePoolingSystem>();
             tilePoolingSystem.boundaryThreshold = boundaryThreshold;
             tilePoolingSystem.Initialize(tilemap, ruleTiles);
-            isTileSystemInitialized = true;
 
             Vector3Int initialCenter = Vector3Int.zero;
             tilePoolingSystem.FillTilesWithRandomPattern(initialCenter, gridSize);

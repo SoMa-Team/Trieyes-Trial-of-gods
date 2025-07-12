@@ -18,8 +18,10 @@ namespace CharacterSystem.Enemies
 
         private void Update()
         {
-            if (owner == null || playerTarget == null)
+            if (owner == null || playerTarget == null || owner.isDead)
+            {
                 return;
+            }
 
             // StatSheet에서 최신 MoveSpeed를 반영
             owner.moveSpeed = owner.GetStatValue(Stats.StatType.MoveSpeed);

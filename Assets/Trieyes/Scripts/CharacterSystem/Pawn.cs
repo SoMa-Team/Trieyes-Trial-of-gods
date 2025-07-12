@@ -6,8 +6,9 @@ using RelicSystem;
 using UnityEngine;
 using CardSystem;
 using System;
-using BattleSystem;
+using BattleSystem; 
 using UnityEngine.EventSystems;
+using CharacterSystem.Enemies;
 
 namespace CharacterSystem
 {
@@ -174,6 +175,12 @@ namespace CharacterSystem
             if (relics != null)
             {
                 relics.Clear();
+            }
+
+            Controller.enabled = false;
+            if (Controller is EnemyController)
+            {
+                Destroy(gameObject);
             }
         }
 
@@ -552,7 +559,6 @@ namespace CharacterSystem
             if (eventType == Utils.EventType.OnDeath)
             {
                 //Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
-                isDead = true;
                 HandleDeath();
             }
 
@@ -589,7 +595,7 @@ namespace CharacterSystem
             // TODO : 넉백 확률 스탯 부분 추가 필요
             // ApplyKnockback(damageInfo.attacker);
             
-            if (currentHp <= 0 && previousHP > 0)
+            if (currentHp <= 0)
             {
                 OnEvent(Utils.EventType.OnDeath, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
@@ -603,8 +609,7 @@ namespace CharacterSystem
             if (rb != null)
             {
                 rb.linearVelocity = Vector2.zero;
-                rb.linearVelocity = Vector2.zero;
-                rb.isKinematic = true; // 물리 엔진의 영향을 받지 않도록 설정
+                isDead = true;
             }
             ChangeAnimationState("DEATH"); 
         }

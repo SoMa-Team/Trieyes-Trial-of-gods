@@ -153,7 +153,7 @@ GameObject:
   - component: {fileID: 7519648209047464874}
   m_Layer: 0
   m_Name: Character001
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -188,11 +188,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 100
-  currentHp: 0
+  currentHp: 100
   moveSpeed: 5
-  statPresetSO: {fileID: 11400000, guid: 174e138bcc1157a4b9b72c292f87a14f, type: 2}
+  statPresetSO: {fileID: 11400000, guid: c5e56c2f4e8330e438ab0c02fd6291a2, type: 2}
+  lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 288ab4f26aece4a62ae914df85ede2e5, type: 2}
-  experience: 0
 --- !u!50 &2904251101311056500
 Rigidbody2D:
   serializedVersion: 5

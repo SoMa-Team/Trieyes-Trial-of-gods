@@ -64,7 +64,7 @@ public class CSVToStatPresetSO : EditorWindow
         }
 
         // ScriptableObject 생성
-        string outDir = "Assets/Scripts/Actors/StatsPresets/";
+        string outDir = "Assets/Trieyes/ScriptableObjects/StatsPresets/";
         if (!Directory.Exists(outDir)) Directory.CreateDirectory(outDir);
 
         foreach (var pair in charStatDict)

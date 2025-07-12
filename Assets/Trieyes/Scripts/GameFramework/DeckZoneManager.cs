@@ -12,7 +12,7 @@ namespace DeckViews
     {
         // 덱 카드들이 쌓일 부모 오브젝트(예: HorizontalLayoutGroup 등)
         public Transform deckZone;
-        // 카드 프리팹(CardInDeckView)
+        // 카드 프리팹(DeckCardView)
         public GameObject cardPrefab;
         // 카드 제거 버튼
         public Button removeButton;
@@ -20,8 +20,8 @@ namespace DeckViews
         // 현재 표시 중인 카드 오브젝트들
         private List<GameObject> cardViewsInDeck = new();
         // 카드 선택 상태 관리(최대 2장까지)
-        private CardInDeckView selectedCard1;
-        private CardInDeckView selectedCard2;
+        private DeckCardView selectedCard1;
+        private DeckCardView selectedCard2;
         // 현재 표시 중인 덱 데이터
         private Deck currentDeck;
 
@@ -73,7 +73,7 @@ namespace DeckViews
         /// <summary>
         /// 카드 클릭 시 호출(강조/선택/스왑/제거 UI 관리)
         /// </summary>
-        public void OnCardClicked(CardInDeckView cardView)
+        public void OnCardClicked(DeckCardView cardView)
         {
             // [1] 아무것도 선택 안 했으면 첫 번째 카드 선택
             if (selectedCard1 == null)

@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &373576148167022596
 Transform:
   m_ObjectHideFlags: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   maxHp: 100
   currentHp: 100
   moveSpeed: 5
-  statPresetSO: {fileID: 11400000, guid: b6ca1ab4fbc702f4f91bd07c9d83d7cb, type: 2}
+  statPresetSO: {fileID: 11400000, guid: f1d19ea4c070b4c4383b416bd94a26a7, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 0}
   dropGold: 10
@@ -131,6 +131,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69256d39b1a4d0f43b9c8aa962f71acc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: {fileID: 0}
+  lastMoveDir: {x: 0, y: 0}
   minFollowDistance: 0.1
 --- !u!1001 &1428105835955540023
 PrefabInstance:

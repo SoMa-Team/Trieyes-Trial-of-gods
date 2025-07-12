@@ -354,7 +354,7 @@ MonoBehaviour:
   maxHp: 100
   currentHp: 100
   moveSpeed: 1
-  statPresetSO: {fileID: 11400000, guid: b6ca1ab4fbc702f4f91bd07c9d83d7cb, type: 2}
+  statPresetSO: {fileID: 11400000, guid: a981b9091b7409841b8945448d86cf03, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 0}
   dropGold: 10
@@ -447,11 +447,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 311065436}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6226509dd1ec04e2f8672e53c41a15c8, type: 3}
+  m_Script: {fileID: 11500000, guid: 69256d39b1a4d0f43b9c8aa962f71acc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: {fileID: 311065437}
-  scale: 0.35
+  owner: {fileID: 0}
+  lastMoveDir: {x: 0, y: 0}
+  minFollowDistance: 0.1
 --- !u!1 &421257150
 GameObject:
   m_ObjectHideFlags: 0
@@ -1611,10 +1612,6 @@ PrefabInstance:
     - target: {fileID: 8345329924849153918, guid: 0e9ce564d80394b16ae58b0079d8dfcd, type: 3}
       propertyPath: m_Name
       value: Character001
-      objectReference: {fileID: 0}
-    - target: {fileID: 8345329924849153918, guid: 0e9ce564d80394b16ae58b0079d8dfcd, type: 3}
-      propertyPath: m_TagString
-      value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

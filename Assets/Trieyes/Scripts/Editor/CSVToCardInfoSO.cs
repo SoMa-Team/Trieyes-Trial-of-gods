@@ -16,7 +16,7 @@ public static class CSVToCardInfoSOImporter
         string csvPath = "Assets/Trieyes/Data/CardInfoData/CardInfoData.csv";
 
         // 2. SO 저장 폴더 선택
-        string soOutputPath = "Assets/Trieyes/Scripts/CardSystem/CardInfos/CardInfoSO";
+        string soOutputPath = "Assets/Trieyes/ScriptableObjects/CardInfos";
 
         // 3. CSV 읽기
         var lines = File.ReadAllLines(csvPath);

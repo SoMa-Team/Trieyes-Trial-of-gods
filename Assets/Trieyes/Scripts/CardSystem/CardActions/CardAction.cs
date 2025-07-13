@@ -4,6 +4,7 @@ using UnityEngine;
 using CharacterSystem;
 using CardSystem;
 using StickerSystem;
+using Stats;
 
 namespace CardActions
 {
@@ -23,6 +24,7 @@ namespace CardActions
         /// <param name="deck">카드가 속한 덱</param>
         /// <param name="eventType">발생한 이벤트 타입</param>
         /// <param name="param">이벤트와 함께 전달된 매개변수</param>
+        private List<ActionParam> actionParams = new List<ActionParam>();
         public virtual void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             // 기본 구현은 비어있습니다.
@@ -52,7 +54,22 @@ namespace CardActions
             //카드 액션이 상태를 갖는 경우 DeepCopy 로직을 추가합니다.
         }
 
-        public abstract string[] GetDescriptionParams(Card card);
+        public virtual string[] GetDescriptionParams(Card card)
+        {
+            var descParams = new string[ParamCount];
+            for (int i = 0; i < ParamCount; i++)
+            {
+                var val = GetEffectiveParam(i, card);
+                if (actionParams[i].kind == ParamKind.StatType)
+                    descParams[i] = StatTypeTransformer.StatTypeToKorean((StatType)val);
+                else
+                    descParams[i] = val.ToString();
+            }
+            return descParams;
+        }
         public abstract object GetBaseParam(int index, Card card);
+        
+        public int ParamCount => actionParams.Count;
+        public ActionParam GetParamDef(int index) => actionParams[index];
     }
 } 

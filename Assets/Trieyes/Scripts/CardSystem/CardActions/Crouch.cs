@@ -32,13 +32,5 @@ namespace CardActions
                 owner.statSheet[statType1].AddBuff(new StatModifier(value1, BuffOperationType.Additive));
             }
         }
-
-        public override string[] GetDescriptionParams(Card card)
-        {
-            int level = card.cardEnhancement.level.Value;
-            int value1 = baseValue * level;
-            string koreanStat = StatTypeTransformer.StatTypeToKorean(statType1);
-            return new string[] { koreanStat, value1.ToString() };
-        }
     }
 }

@@ -75,11 +75,5 @@ namespace CardActions
 
             Debug.Log($"<color=green>[Shadow] {deck.GetOwner().gameObject.name} appended other cards {repeatCount}x (excluding {currentCardIndex}): [{string.Join(", ", cardsToAppend)}]</color>");
         }
-        
-        public override string[] GetDescriptionParams(Card card)
-        {
-            int repeatCount = calRepeatCount(card.cardEnhancement.level.Value);
-            return new string[] { repeatCount.ToString() };
-        }
     }
 }

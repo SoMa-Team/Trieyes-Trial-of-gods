@@ -45,13 +45,5 @@ namespace CardActions
                 Debug.Log($"<color=yellow>[PreparingMarch] {statType1} +{value1}. New Value: {owner.statSheet[statType1].Value}</color>");
             }
         }
-
-        public override string[] GetDescriptionParams(Card card)
-        {
-            int level = card.cardEnhancement.level.Value;
-            int value1 = CalValue1(level);
-            string koreanStat = StatTypeTransformer.StatTypeToKorean(statType1);
-            return new string[] { koreanStat, value1.ToString() };
-        }
     }
 }

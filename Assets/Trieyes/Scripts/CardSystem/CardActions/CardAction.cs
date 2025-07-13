@@ -3,6 +3,7 @@ using Utils; // For IEventHandler and EventType
 using UnityEngine;
 using CharacterSystem;
 using CardSystem;
+using StickerSystem;
 
 namespace CardActions
 {
@@ -28,6 +29,23 @@ namespace CardActions
             // 하위 클래스에서 오버라이드하여 구체적인 로직을 구현합니다.
         }
 
+        public virtual object GetEffectiveParam(int index, Card card)
+        {
+            // 카드에 스티커가 있으면 오버라이드
+            if (card.stickerOverrides != null &&
+                card.stickerOverrides.TryGetValue(index, out Sticker sticker))
+            {
+                // 각 액션별로, 각 파라미터 인덱스별 타입 처리
+                if (sticker.type == StickerType.Number)
+                    return sticker.numberValue;
+                else if (sticker.type == StickerType.StatType)
+                    return sticker.statTypeValue;
+            }
+
+            // 없으면 기본 파라미터 반환 (액션별 구현)
+            return GetBaseParam(index, card);
+        }
+
         public virtual CardAction DeepCopy()
         {
             return this;
@@ -35,5 +53,6 @@ namespace CardActions
         }
 
         public abstract string[] GetDescriptionParams(Card card);
+        public abstract object GetBaseParam(int index, Card card);
     }
 } 

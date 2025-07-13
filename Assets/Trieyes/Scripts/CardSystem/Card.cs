@@ -4,6 +4,7 @@ using Stats;
 using CardActions;
 using System;
 using CharacterSystem;
+using StickerSystem;
 
 namespace CardSystem
 {
@@ -86,7 +87,9 @@ namespace CardSystem
         /// 카드의 레벨업과 경험치 시스템을 담당합니다.
         /// </summary>
         public CardEnhancement cardEnhancement;
-
+        
+        public Dictionary<int, Sticker> stickerOverrides = new Dictionary<int, Sticker>();
+        
         /// <summary>
         /// 카드를 소유한 캐릭터(Pawn)입니다.
         /// 카드의 효과가 적용될 대상입니다.

@@ -24,7 +24,7 @@ namespace CardActions
         /// <param name="deck">카드가 속한 덱</param>
         /// <param name="eventType">발생한 이벤트 타입</param>
         /// <param name="param">이벤트와 함께 전달된 매개변수</param>
-        private List<ActionParam> actionParams = new List<ActionParam>();
+        protected List<ActionParam> actionParams;
         public virtual void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             // 기본 구현은 비어있습니다.

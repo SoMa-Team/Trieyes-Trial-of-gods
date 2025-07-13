@@ -17,6 +17,12 @@ namespace CardActions
         public StatType statType1 = StatType.AttackPower;
         public int baseValue = 10;
 
+        public PreparingMarch()
+        {
+            actionParams = new List<ActionParam>();
+            
+        }
+
         public int CalValue1(int cardLevel)
         {
             return baseValue * cardLevel;

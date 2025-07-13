@@ -67,7 +67,11 @@ namespace CardActions
             }
             return descParams;
         }
-        public abstract object GetBaseParam(int index, Card card);
+
+        public virtual object GetBaseParam(int index, Card card)
+        {
+            return actionParams[index].getBaseValue(card);
+        }
         
         public int ParamCount => actionParams.Count;
         public ActionParam GetParamDef(int index) => actionParams[index];

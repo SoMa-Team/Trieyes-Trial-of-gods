@@ -12,6 +12,17 @@ namespace CardActions
     /// </summary>
     public class Shadow : CardAction
     {
+        public int baseRepeatCount = 1;
+
+        public Shadow()
+        {
+            actionParams = new List<ActionParam>
+            {
+                // 반복 횟수 (레벨 연동, 기본값은 레벨)
+                ActionParamFactory.Create(ParamKind.Number, card => card.cardEnhancement.level.Value)
+            };
+        }
+
         public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             if (owner == null || deck == null)
@@ -20,16 +31,16 @@ namespace CardActions
                 return;
             }
 
-            // 호출 순서 재조정 이벤트 감지
             if (eventType == Utils.EventType.CalcActionInitOrder)
             {
                 if (param is ValueTuple<Card, int> tuple)
                 {
                     Card card = tuple.Item1;
-                    int level = card.cardEnhancement.level;
                     int currentCardIndex = tuple.Item2;
 
-                    HandleCalcActionInitOrder(deck, level, currentCardIndex);
+                    int repeatCount = Convert.ToInt32(GetEffectiveParam(0, card));
+
+                    HandleCalcActionInitOrder(deck, repeatCount, currentCardIndex);
                 }
                 else
                 {
@@ -38,19 +49,11 @@ namespace CardActions
             }
         }
 
-        public int calRepeatCount(int cardLevel)
-        {
-            return cardLevel;
-        }
-
         /// <summary>
         /// 자기 자신을 제외한 다른 모든 카드를 'repeatCount'번 추가 호출.
-        /// param은 string[](descParams) 또는 int로 전달될 수 있음.
         /// </summary>
-        private void HandleCalcActionInitOrder(Deck deck, int cardLevel, int currentCardIndex)
+        private void HandleCalcActionInitOrder(Deck deck, int repeatCount, int currentCardIndex)
         {
-            int repeatCount = calRepeatCount(cardLevel); // 기본값
-
             // 덱에 카드가 1개 이하인 경우 효과 없음
             if (deck.Cards.Count <= 1 || currentCardIndex < 0)
             {

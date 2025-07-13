@@ -5,6 +5,7 @@ using Stats;
 using System.Collections.Generic;
 using BattleSystem;
 using Utils;
+using System;
 
 namespace CardActions
 {
@@ -15,17 +16,15 @@ namespace CardActions
     public class PreparingMarch : CardAction
     {
         public StatType statType1 = StatType.AttackPower;
-        public int baseValue = 10;
+        public int baseValue = 7;
 
         public PreparingMarch()
         {
-            actionParams = new List<ActionParam>();
-            
-        }
-
-        public int CalValue1(int cardLevel)
-        {
-            return baseValue * cardLevel;
+            actionParams = new List<ActionParam>
+            {
+                ActionParamFactory.Create(ParamKind.StatType, card => statType1),
+                ActionParamFactory.Create(ParamKind.Number, card => baseValue * card.cardEnhancement.level.Value),
+            };
         }
 
         public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
@@ -39,16 +38,15 @@ namespace CardActions
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
                 Card card = param as Card;
-                Debug.Log($"card: {card?.cardName}");
-                int level = card?.cardEnhancement.level.Value ?? 1;
-                int value1 = CalValue1(level);
+                if (card == null) return;
+                
+                StatType statType = (StatType)GetEffectiveParam(0, card);
+                int value = Convert.ToInt32(GetEffectiveParam(1, card));
 
-                Debug.Log($"level: {level}, value1: {value1}");
+                var modifier = new StatModifier(value, BuffOperationType.Additive);
+                owner.statSheet[statType].AddBuff(modifier);
 
-                var modifier = new StatModifier(value1, BuffOperationType.Additive);
-                owner.statSheet[statType1].AddBuff(modifier);
-
-                Debug.Log($"<color=yellow>[PreparingMarch] {statType1} +{value1}. New Value: {owner.statSheet[statType1].Value}</color>");
+                Debug.Log($"<color=yellow>[PreparingMarch] {statType} +{value}. New Value: {owner.statSheet[statType].Value}</color>");
             }
         }
     }

@@ -107,15 +107,15 @@ namespace DeckViews
                 }
 
                 // 같은 이름의 카드인지 확인
-                if (selectedCard1.card.cardName == selectedCard2.card.cardName)
+                if (selectedCard1.GetCurrentCard().cardName == selectedCard2.GetCurrentCard().cardName)
                 {
                     // 카드 합치기 (Deck에서 처리)
-                    currentDeck.MergeCards(selectedCard1.card, selectedCard2.card);
+                    currentDeck.MergeCards(selectedCard1.GetCurrentCard(), selectedCard2.GetCurrentCard());
                 }
                 else
                 {
                     // 다른 이름이면 기존처럼 스왑
-                    currentDeck.SwapCards(selectedCard1.card, selectedCard2.card);
+                    currentDeck.SwapCards(selectedCard1.GetCurrentCard(), selectedCard2.GetCurrentCard());
                 }
 
                 // 둘 다 선택 해제
@@ -136,7 +136,7 @@ namespace DeckViews
         {
             if (selectedCard1 == null) return;
 
-            currentDeck.RemoveCard(selectedCard1.card);
+            currentDeck.RemoveCard(selectedCard1.GetCurrentCard());
             selectedCard1.SetSelected(false);
             selectedCard1 = null;
             removeButton.interactable = false;

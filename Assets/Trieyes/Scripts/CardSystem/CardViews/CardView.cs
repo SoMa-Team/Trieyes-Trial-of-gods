@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CardSystem;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.Serialization;
 
 namespace CardViews
 {
@@ -13,42 +11,25 @@ namespace CardViews
     /// </summary>
     public class CardView : MonoBehaviour
     {
-        // --- UI 필드 ---
-
-        /// 카드 일러스트 이미지
         public Image illustrationImage;
-        /// 경험치 게이지 이미지
         public Image expFill;
-        /// 카드 이름 텍스트
         public TMP_Text cardNameText;
-        /// 카드 레벨 텍스트
         public TMP_Text levelText;
-        /// 카드 설명 텍스트
         public TMP_Text descriptionText;
-        /// 속성 엠블럼 이미지
         public Image propertyEmblemImage;
-        /// 속성 엠블럼 테이블 (ScriptableObject)
         public PropertyEmblemSO propertyEmblemTable;
-        /// 스탯 타입 엠블럼 테이블 (ScriptableObject)
         public StatTypeEmblemSO statTypeEmblemTable;
-        /// 스탯 타입 엠블럼 이미지
         public Image statTypeEmblemImage;
-        /// 스탯 값 텍스트
         public TMP_Text statIntegerValueText;
+        
+        private Card card;
 
-        // --- 내부 필드 ---
-
-        /// 현재 표시 중인 카드 데이터
-        public Card card;
-
-        // --- public 메서드 ---
-
-        /// <summary>
-        /// 카드 데이터를 설정하고 UI를 갱신합니다.
-        /// </summary>
         public virtual void SetCard(Card card)
-        { 
+        {
             this.card = card;
+            // 액션에 카드 연결 보장 (생성시점에 이미 연결되어 있다면 아래는 필요 X)
+            if (card.cardAction != null)
+                card.cardAction.SetCard(card);
             UpdateView();
         }
 
@@ -58,28 +39,22 @@ namespace CardViews
             return this.card;
         }
 
-        /// <summary>
-        /// 카드의 모든 정보를 UI에 반영합니다.
-        /// </summary>
         public void UpdateView()
         {
-            // 카드 일러스트 및 경험치 게이지 표시
             illustrationImage.sprite = card.illustration;
-            Debug.Log($"cardLevel: {card.cardEnhancement.level.Value}");
             expFill.fillAmount = (float)card.cardEnhancement.exp.Value / (card.cardEnhancement.level.Value * 10);
 
-            // 카드 이름, 설명, 레벨 표시
             cardNameText.text = card.cardName;
-            var descParams = card.cardAction.GetDescriptionParams(card);
+            // 변경: cardAction.GetDescriptionParams()만 호출
+            var descParams = card.cardAction.GetDescriptionParams();
             descriptionText.text = FormatDescription(card.cardDescription, descParams);
-
             levelText.text = $"Lv.{card.cardEnhancement.level.Value}";
             
             // 속성 엠블럼 표시
             if (card.properties != null && card.properties.Length > 0 && propertyEmblemTable != null)
             {
                 propertyEmblemImage.sprite = propertyEmblemTable.GetEmblem(card.properties[0]);
-                propertyEmblemImage.enabled = (propertyEmblemImage.sprite != null); // 없으면 비활성화
+                propertyEmblemImage.enabled = (propertyEmblemImage.sprite != null);
             }
             else
             {
@@ -102,7 +77,6 @@ namespace CardViews
             }
         }
         
-        // --- private 메서드 ---
         private string FormatDescription(string template, string[] descParams)
         {
             if (descParams == null || descParams.Length == 0)
@@ -110,9 +84,7 @@ namespace CardViews
 
             string result = template;
             for (int i = 0; i < descParams.Length; i++)
-            {
                 result = result.Replace("{" + i + "}", descParams[i]);
-            }//TODO : 성능 이슈 있으면 StringBuilder로 고치기
             return result;
         }
     }

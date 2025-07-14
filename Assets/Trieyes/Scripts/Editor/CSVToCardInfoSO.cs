@@ -34,6 +34,7 @@ public static class CSVToCardInfoSOImporter
         int idx_illustration = System.Array.IndexOf(headers, "illustration");
         int idx_cardDescription = System.Array.IndexOf(headers, "cardDescription");
         int idx_eventTypes = System.Array.IndexOf(headers, "eventTypes");
+        int idx_baseParams = System.Array.IndexOf(headers, "baseParams");
 
         for (int i = 1; i < lines.Length; i++)
         {
@@ -87,6 +88,11 @@ public static class CSVToCardInfoSOImporter
                 AssetDatabase.CreateAsset(card, assetPath.Replace(Application.dataPath, "Assets"));
             else
                 EditorUtility.SetDirty(card);
+            
+            if (idx_baseParams >= 0)
+                card.baseParams = values[idx_baseParams].Split('|').ToList();
+            else
+                card.baseParams = new List<string>();
         }
 
         AssetDatabase.SaveAssets();

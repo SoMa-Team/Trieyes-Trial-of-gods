@@ -90,6 +90,8 @@ namespace CardSystem
         
         public Dictionary<int, Sticker> stickerOverrides = new Dictionary<int, Sticker>();
         
+        public List<string> baseParams;
+        
         /// <summary>
         /// 카드를 소유한 캐릭터(Pawn)입니다.
         /// 카드의 효과가 적용될 대상입니다.

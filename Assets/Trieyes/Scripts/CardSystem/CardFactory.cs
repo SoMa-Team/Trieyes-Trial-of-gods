@@ -117,6 +117,9 @@ namespace CardSystem
             card.illustration = info.illustration;
             card.cardDescription = info.cardDescription;
             card.eventTypes = new List<Utils.EventType>(info.eventTypes);
+            card.baseParams = info.baseParams != null
+                ? new List<string>(info.baseParams)
+                : new List<string>();
         }
     }
 } 

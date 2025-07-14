@@ -8,6 +8,7 @@ using CharacterSystem;
 using BattleSystem;
 using Stats;
 using System;
+using StickerSystem;
 using System.Collections.Generic;
 
 /// <summary>
@@ -18,6 +19,9 @@ public class ShopSceneManager : MonoBehaviour
 {
     [Header("카드 슬롯 UI")]
     public List<CardView> shopCardViews;    // 3개 카드뷰를 Inspector에서 순서대로 할당
+    
+    [Header("스티커 슬롯 UI")]
+    public List<StickerView> shopStickerViews;
 
     [Header("구매 버튼")]
     public List<Button> buyButtons;         // 3개 버튼을 Inspector에서 순서대로 할당

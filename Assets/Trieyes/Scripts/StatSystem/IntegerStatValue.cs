@@ -35,7 +35,7 @@ namespace Stats
         /// IntegerStatValue의 새 인스턴스를 초기화합니다.
         public IntegerStatValue(int initialValue, int? max = null, int? min = null)
         {
-            Debug.Log($"initialValue: {initialValue}");
+            // Debug.Log($"initialValue: {initialValue}");
             basicValue = initialValue;
             maxValue = max;
             minValue = min;

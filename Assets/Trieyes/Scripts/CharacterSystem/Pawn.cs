@@ -481,25 +481,21 @@ namespace CharacterSystem
         /// <param name="relic">추가할 유물</param>
         public void AddRelic(Relic relic)
         {
-            if (relic != null)
+            relic.owner = this;
+            relics.Add(relic);
+            
+            // TODO: 유물이 이벤트를 받지 않으면 삭제
+            // 유물의 이벤트 셋을 Pawn의 relicAcceptedEvents에 합치기 (카운트 관리)
+            var relicEvents = relic.GetAcceptedEvents();
+            if (relicEvents != null)
             {
-                relic.SetOwner(this);
-                relics.Add(relic);
-                
-                // 유물의 이벤트 셋을 Pawn의 relicAcceptedEvents에 합치기 (카운트 관리)
-                var relicEvents = relic.GetAcceptedEvents();
-                if (relicEvents != null)
+                foreach (var eventType in relicEvents)
                 {
-                    foreach (var eventType in relicEvents)
-                    {
-                        if (relicAcceptedEvents.ContainsKey(eventType))
-                            relicAcceptedEvents[eventType]++;
-                        else
-                            relicAcceptedEvents[eventType] = 1;
-                    }
+                    if (relicAcceptedEvents.ContainsKey(eventType))
+                        relicAcceptedEvents[eventType]++;
+                    else
+                        relicAcceptedEvents[eventType] = 1;
                 }
-                
-                //Debug.Log($"<color=purple>[RELIC] {gameObject.name} acquired relic: {relic.GetInfo().name}</color>");
             }
         }
 

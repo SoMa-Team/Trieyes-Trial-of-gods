@@ -34,10 +34,13 @@ namespace CardSystem
         /// UI에서 카드의 효과를 설명하는 데 사용됩니다.
         /// </summary>
         [TextArea] public string cardDescription;
+
         /// <summary>
         /// 해당 카드가 반응하는 이벤트 타입들의 리스트입니다.
         /// 이벤트 처리 최적화를 위해 사용됩니다.
         /// </summary>
         public List<Utils.EventType> eventTypes = new();
+            
+        public List<string> baseParams = new List<string>();
     }
 }

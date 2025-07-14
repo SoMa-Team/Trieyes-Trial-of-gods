@@ -120,6 +120,9 @@ namespace CardSystem
             card.baseParams = info.baseParams != null
                 ? new List<string>(info.baseParams)
                 : new List<string>();
+            card.paramWordIndices = info.paramWordIndices != null
+                ? new List<int>(info.paramWordIndices)
+                : new List<int>();
         }
     }
 } 

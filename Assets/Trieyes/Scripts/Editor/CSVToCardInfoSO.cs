@@ -35,6 +35,7 @@ public static class CSVToCardInfoSOImporter
         int idx_cardDescription = System.Array.IndexOf(headers, "cardDescription");
         int idx_eventTypes = System.Array.IndexOf(headers, "eventTypes");
         int idx_baseParams = System.Array.IndexOf(headers, "baseParams");
+        int idx_paramWordIndices = System.Array.IndexOf(headers, "paramWordIndices");
 
         for (int i = 1; i < lines.Length; i++)
         {
@@ -84,11 +85,22 @@ public static class CSVToCardInfoSOImporter
                 .Select(s => (Utils.EventType)System.Enum.Parse(typeof(Utils.EventType), s))
                 .ToList();
             
-            // baseParams (optional)
             if (idx_baseParams >= 0 && !string.IsNullOrWhiteSpace(values[idx_baseParams]))
                 card.baseParams = values[idx_baseParams].Split('|').Select(x => x.Trim()).ToList();
             else
                 card.baseParams = new List<string>();
+            
+            if (idx_paramWordIndices >= 0 && !string.IsNullOrWhiteSpace(values[idx_paramWordIndices]))
+            {
+                card.paramWordIndices = values[idx_paramWordIndices]
+                    .Split('|')
+                    .Select(s => int.Parse(s.Trim()))
+                    .ToList();
+            }
+            else
+            {
+                card.paramWordIndices = new List<int>();
+            }
 
             if (isNew)
                 AssetDatabase.CreateAsset(card, assetPath.Replace(Application.dataPath, "Assets"));

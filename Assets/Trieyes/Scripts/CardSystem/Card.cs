@@ -92,6 +92,8 @@ namespace CardSystem
         
         public List<string> baseParams;
         
+        public List<int> paramWordIndices;
+        
         /// <summary>
         /// 카드를 소유한 캐릭터(Pawn)입니다.
         /// 카드의 효과가 적용될 대상입니다.
@@ -188,6 +190,7 @@ namespace CardSystem
             clone.cardDescription = this.cardDescription;
             clone.eventTypes = new List<Utils.EventType>(this.eventTypes);
             clone.baseParams =  this.baseParams;
+            clone.paramWordIndices = this.paramWordIndices != null ? new List<int>(this.paramWordIndices) : new List<int>();
 
             // 내부 참조 타입 멤버들도 DeepCopy!
             clone.cardAction = this.cardAction?.DeepCopy();

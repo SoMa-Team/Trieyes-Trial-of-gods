@@ -83,16 +83,17 @@ public static class CSVToCardInfoSOImporter
                 .Split('|')
                 .Select(s => (Utils.EventType)System.Enum.Parse(typeof(Utils.EventType), s))
                 .ToList();
+            
+            // baseParams (optional)
+            if (idx_baseParams >= 0 && !string.IsNullOrWhiteSpace(values[idx_baseParams]))
+                card.baseParams = values[idx_baseParams].Split('|').Select(x => x.Trim()).ToList();
+            else
+                card.baseParams = new List<string>();
 
             if (isNew)
                 AssetDatabase.CreateAsset(card, assetPath.Replace(Application.dataPath, "Assets"));
             else
                 EditorUtility.SetDirty(card);
-            
-            if (idx_baseParams >= 0)
-                card.baseParams = values[idx_baseParams].Split('|').ToList();
-            else
-                card.baseParams = new List<string>();
         }
 
         AssetDatabase.SaveAssets();

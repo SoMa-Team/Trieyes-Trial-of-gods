@@ -19,35 +19,16 @@ namespace CardActions
         {
             actionParams = new List<ActionParam>
             {
-                // StatType, 예를 들어 baseParams[0]에 저장되어 있다고 가정
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                 {
-                    // 카드에 baseParams가 있다고 가정
-                    // 예: "AttackPower" 등
-                    // (Enum.Parse는 항상 예외처리 해주는 게 안전)
-                    try
-                    {
-                        return (StatType)Enum.Parse(typeof(StatType), card.baseParams[0]);
-                    }
-                    catch
-                    {
-                        Debug.LogWarning("[PreparingMarch] baseParams[0] 파싱 실패, AttackPower로 대체");
-                        return StatType.AttackPower;
-                    }
+                    string raw = card.baseParams[0];
+                    return StatTypeTransformer.ParseStatType(raw);
                 }),
-                // 숫자, 예: baseParams[1]에 저장, * 레벨
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    int baseValue = 0;
-                    try
-                    {
-                        baseValue = int.Parse(card.baseParams[1]);
-                    }
-                    catch
-                    {
-                        Debug.LogWarning("[PreparingMarch] baseParams[1] 파싱 실패, 10으로 대체");
-                        baseValue = 10;
-                    }
+                    string raw = card.baseParams[1];
+                    if (!int.TryParse(raw, out int baseValue))
+                        throw new InvalidOperationException($"[PreparingMarch] baseParams[1] 변환 실패: {raw}");
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
             };

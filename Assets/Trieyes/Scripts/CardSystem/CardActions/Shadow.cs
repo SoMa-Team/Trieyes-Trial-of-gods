@@ -12,14 +12,18 @@ namespace CardActions
     /// </summary>
     public class Shadow : CardAction
     {
-        public int baseRepeatCount = 1;
-
         public Shadow()
         {
             actionParams = new List<ActionParam>
             {
-                // 반복 횟수 (레벨 연동, 기본값은 레벨)
-                ActionParamFactory.Create(ParamKind.Number, card => card.cardEnhancement.level.Value)
+                // 반복 횟수 (CSV 예: 1)
+                ActionParamFactory.Create(ParamKind.Number, card =>
+                {
+                    string raw = card.baseParams[0];
+                    if (!int.TryParse(raw, out int baseCount))
+                        throw new InvalidOperationException($"[Shadow] baseParams[0] 변환 실패: {raw}");
+                    return baseCount * card.cardEnhancement.level.Value;
+                })
             };
         }
 
@@ -35,10 +39,9 @@ namespace CardActions
             {
                 if (param is ValueTuple<Card, int> tuple)
                 {
-                    Card card = tuple.Item1;
+                    // card 필드를 굳이 쓰지 않고, param에서 직접 꺼낼 수도 있음
                     int currentCardIndex = tuple.Item2;
-
-                    int repeatCount = Convert.ToInt32(GetEffectiveParam(0, card));
+                    int repeatCount = Convert.ToInt32(GetEffectiveParam(0));
 
                     HandleCalcActionInitOrder(deck, repeatCount, currentCardIndex);
                 }
@@ -54,7 +57,6 @@ namespace CardActions
         /// </summary>
         private void HandleCalcActionInitOrder(Deck deck, int repeatCount, int currentCardIndex)
         {
-            // 덱에 카드가 1개 이하인 경우 효과 없음
             if (deck.Cards.Count <= 1 || currentCardIndex < 0)
             {
                 Debug.Log("<color=yellow>[Shadow] Only one card in deck or invalid index, no effect</color>");
@@ -64,7 +66,6 @@ namespace CardActions
             List<int> cardsToAppend = new List<int>();
             List<int> callOrder = deck.GetCallOrder();
 
-            // 자기 자신을 제외한 카드 인덱스를 repeatCount번 추가
             for (int repeat = 0; repeat < repeatCount; repeat++)
             {
                 for (int i = 0; i < deck.Cards.Count; i++)

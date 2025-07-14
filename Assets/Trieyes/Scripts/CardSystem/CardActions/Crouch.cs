@@ -14,31 +14,39 @@ namespace CardActions
     /// </summary>
     public class Crouch : CardAction
     {
-        public StatType statType1 = StatType.Defense;
-        public int baseValue = 10;
-
         public Crouch()
         {
             actionParams = new List<ActionParam>
             {
-                // 첫 번째 파라미터: 스탯타입(기본값: Defense)
-                ActionParamFactory.Create(ParamKind.StatType, card => statType1),
-                // 두 번째 파라미터: 증가량 (레벨에 따라)
-                ActionParamFactory.Create(ParamKind.Number, card => baseValue * card.cardEnhancement.level.Value)
+                // 첫 번째 파라미터: 스탯타입 (CSV에서 예: Defense)
+                ActionParamFactory.Create(ParamKind.StatType, card =>
+                {
+                    string raw = card.baseParams[0];
+                    return StatTypeTransformer.ParseStatType(raw);
+                }),
+                // 두 번째 파라미터: 증가량 (CSV에서 예: 10)
+                ActionParamFactory.Create(ParamKind.Number, card =>
+                {
+                    string raw = card.baseParams[1];
+                    if (!int.TryParse(raw, out int baseValue))
+                        throw new InvalidOperationException($"[Crouch] baseParams[1] 변환 실패: {raw}");
+                    return baseValue * card.cardEnhancement.level.Value;
+                }),
             };
         }
 
         public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
-            if (owner == null || deck == null) return;
+            if (owner == null || deck == null)
+            {
+                Debug.LogWarning("owner 또는 deck이 정의되지 않았습니다.");
+                return;
+            }
+
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
-                Card card = param as Card;
-                if (card == null) return;
-
-                // 스티커 오버라이드 포함 최종 파라미터 값
-                StatType statType = (StatType)GetEffectiveParam(0, card);
-                int value = Convert.ToInt32(GetEffectiveParam(1, card));
+                StatType statType = (StatType)GetEffectiveParam(0);
+                int value = Convert.ToInt32(GetEffectiveParam(1));
 
                 owner.statSheet[statType].AddBuff(new StatModifier(value, BuffOperationType.Additive));
                 Debug.Log($"<color=yellow>[Crouch] {statType} +{value}. New Value: {owner.statSheet[statType].Value}</color>");

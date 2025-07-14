@@ -78,24 +78,28 @@ namespace CardSystem
         /// <param name="CardActionID">설정할 CardAction의 ID</param>
         private void Activate(Card card, int level, int CardActionID)
         {
+            InitCardInfo(card, cardInfos[CardActionID]);
+            CardAction action = null;
+
             switch(CardActionID)
             {
                 case 0:
-                    InitCardInfo(card, cardInfos[CardActionID]);
-                    card.cardAction = new PreparingMarch();
+                    action = new PreparingMarch();
                     break;
                 case 1:
-                    InitCardInfo(card, cardInfos[CardActionID]);
-                    card.cardAction = new Crouch();
+                    action = new Crouch();
                     break;
                 case 2:
-                    InitCardInfo(card, cardInfos[CardActionID]);
-                    card.cardAction = new Shadow();
+                    action = new Shadow();
                     break;
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {CardActionID}");
                     break;
             }
+            // 카드와 액션 연결
+            if (action != null)
+                card.SetCardAction(action);
+
             card?.Activate(level);
         }
 
@@ -112,7 +116,7 @@ namespace CardSystem
             card.properties = info.properties;
             card.illustration = info.illustration;
             card.cardDescription = info.cardDescription;
-            card.eventTypes = new List<Utils.EventType>(info.eventTypes); // 깊은 복사
+            card.eventTypes = new List<Utils.EventType>(info.eventTypes);
         }
     }
 } 

@@ -15,15 +15,41 @@ namespace CardActions
     /// </summary>
     public class PreparingMarch : CardAction
     {
-        public StatType statType1 = StatType.AttackPower;
-        public int baseValue = 7;
-
         public PreparingMarch()
         {
             actionParams = new List<ActionParam>
             {
-                ActionParamFactory.Create(ParamKind.StatType, card => statType1),
-                ActionParamFactory.Create(ParamKind.Number, card => baseValue * card.cardEnhancement.level.Value),
+                // StatType, 예를 들어 baseParams[0]에 저장되어 있다고 가정
+                ActionParamFactory.Create(ParamKind.StatType, card =>
+                {
+                    // 카드에 baseParams가 있다고 가정
+                    // 예: "AttackPower" 등
+                    // (Enum.Parse는 항상 예외처리 해주는 게 안전)
+                    try
+                    {
+                        return (StatType)Enum.Parse(typeof(StatType), card.baseParams[0]);
+                    }
+                    catch
+                    {
+                        Debug.LogWarning("[PreparingMarch] baseParams[0] 파싱 실패, AttackPower로 대체");
+                        return StatType.AttackPower;
+                    }
+                }),
+                // 숫자, 예: baseParams[1]에 저장, * 레벨
+                ActionParamFactory.Create(ParamKind.Number, card =>
+                {
+                    int baseValue = 0;
+                    try
+                    {
+                        baseValue = int.Parse(card.baseParams[1]);
+                    }
+                    catch
+                    {
+                        Debug.LogWarning("[PreparingMarch] baseParams[1] 파싱 실패, 10으로 대체");
+                        baseValue = 10;
+                    }
+                    return baseValue * card.cardEnhancement.level.Value;
+                }),
             };
         }
 
@@ -37,11 +63,9 @@ namespace CardActions
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
-                Card card = param as Card;
-                if (card == null) return;
-                
-                StatType statType = (StatType)GetEffectiveParam(0, card);
-                int value = Convert.ToInt32(GetEffectiveParam(1, card));
+                // 이제 내부 card 필드만 사용!
+                StatType statType = (StatType)GetEffectiveParam(0); // 인덱스 0: 스탯타입
+                int value = Convert.ToInt32(GetEffectiveParam(1));  // 인덱스 1: 숫자
 
                 var modifier = new StatModifier(value, BuffOperationType.Additive);
                 owner.statSheet[statType].AddBuff(modifier);

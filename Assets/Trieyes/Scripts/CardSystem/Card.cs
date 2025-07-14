@@ -106,6 +106,12 @@ namespace CardSystem
         {
             this.cardId = idCounter++;
         }
+        
+        public void SetCardAction(CardAction action)
+        {
+            cardAction = action;
+            cardAction.SetCard(this);
+        }
 
         // --- public 메서드 ---
 

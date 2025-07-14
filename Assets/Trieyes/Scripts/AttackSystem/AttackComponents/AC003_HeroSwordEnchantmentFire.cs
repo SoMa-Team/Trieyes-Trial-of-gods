@@ -8,11 +8,10 @@ using BattleSystem;
 namespace AttackComponents
 {
     /// <summary>
-    /// 캐릭터 소드 공격
+    /// 캐릭터 소드 능력 부여 강화
     /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
-    /// 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-    /// 2. 애니메이션이 종료될 때 까지 Collider를 만들어줍니다. 이 Collider는 각도, 반지름을 가지고 있습니다. 이 값은 여기에 존재합니다.
-    /// 3. 애니메이션이 종료되면 콜라이더를 삭제합니다. 이것은 애니메이션 이벤트에서 처리합니다.
+    /// 7초 동안 검에 무작위 속성을 부여하고, 기본 공격(AC002)에 다음의 추가효과가 적용되고, 추가 피해를 입힙니다.
+    /// - 불꽃 : 공격에 맞은 대상 주변 적들이 불꽃 피해를 입습니다.
     /// </summary>
     public class AC003_HeroSwordEnchantmentFire : AttackComponent
     {

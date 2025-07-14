@@ -78,7 +78,7 @@ namespace CharacterSystem
         /// <summary>
         /// SPUM 프리팹
         /// </summary>
-        protected GameObject pawnPrefab;
+        public GameObject pawnPrefab { get; private set; }
 
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
@@ -92,19 +92,14 @@ namespace CharacterSystem
         // ===== [Unity 생명주기] =====
         protected virtual void Awake()
         {
-            // Awake에서는 아무것도 하지 않음
-            
             rb = GetComponent<Rigidbody2D>();
             Collider = GetComponent<Collider2D>();
+            Controller = GetComponent<Controller>();
 
             if (rb != null)
             {
                 rb.freezeRotation = true;
             }
-
-            Controller = GetComponent<Controller>();
-            // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
-            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
 
             isDead = false;
         }
@@ -119,7 +114,7 @@ namespace CharacterSystem
         }
 
         public virtual void Update() 
-        {    
+        {
         }
 
         // ===== [커스텀 메서드] =====
@@ -134,6 +129,8 @@ namespace CharacterSystem
             pawnPrefab.transform.SetParent(transform);
             pawnPrefab.transform.localPosition = Vector3.zero;
             pawnPrefab.transform.localRotation = Quaternion.identity;
+
+            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
@@ -255,7 +252,7 @@ namespace CharacterSystem
         /// 애니메이션 상태를 변경합니다.
         /// </summary>
         /// <param name="newState">새로운 애니메이션 상태</param>
-        protected virtual void ChangeAnimationState(string newState)
+        public virtual void ChangeAnimationState(string newState)
         {
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {

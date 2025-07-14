@@ -1,6 +1,7 @@
 using UnityEngine;
 using BattleSystem;
 using CharacterSystem;
+using AttackSystem;
 
 public class AnimationController : MonoBehaviour
 {
@@ -18,5 +19,13 @@ public class AnimationController : MonoBehaviour
         if (Collider != null) Collider.enabled = false;
 
         CharacterFactory.Instance.Deactivate(owner);
+    }
+
+    public void AttackOnAnimationStart()
+    {
+    }
+
+    public void AttackOnAnimationEnd()
+    {
     }
 }

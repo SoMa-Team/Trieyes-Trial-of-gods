@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
-using CharacterSystem;
-using Utils;
 
-namespace BattleSystem
+namespace CharacterSystem
 {
     using CharacterID = Int32;
     

@@ -29,8 +29,8 @@ namespace AttackSystem
         public List<Attack> children;
         public List<AttackComponent> components;
         
-        protected Rigidbody2D rb;
-        protected Collider2D attackCollider;
+        public Rigidbody2D rb { get; set; }
+        public Collider2D attackCollider { get; set; }
 
         private void Update()
         {
@@ -97,6 +97,8 @@ namespace AttackSystem
             switch (hitObject.tag)
             {
                 case "Player": 
+                    break;
+                    
                 case "Enemy":
                     if (attacker.gameObject.CompareTag(hitObject.tag))
                         return;

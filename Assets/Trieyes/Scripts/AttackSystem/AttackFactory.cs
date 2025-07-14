@@ -72,7 +72,7 @@ namespace AttackSystem
         /// ID에 해당하는 적 프리팹을 복제하여 Pawn 컴포넌트를 반환합니다.</summary>
         /// <param name="id">적 ID</param>
         /// <returns>생성된 Pawn 컴포넌트</returns>
-        private Attack ClonePrefab(AttackID id)
+        public Attack ClonePrefab(AttackID id)
         {
             var attackObject = Instantiate(GetPrefabById(id));
             var attack = attackObject.GetComponent<Attack>();

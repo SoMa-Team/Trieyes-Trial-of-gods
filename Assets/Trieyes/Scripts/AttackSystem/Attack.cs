@@ -23,6 +23,8 @@ namespace AttackSystem
         // ===== [기능 1] 공격 데이터 및 컴포넌트 관리 =====
         public AttackData attackData; // 기획적으로 논의 필요
         public Pawn attacker; // 공격자 (투사체를 발사한 캐릭터)
+
+        public Pawn target; // 투사체가 다른 고정 대상으로 가는 투사체를 만드는 경우 사용
         public StatSheet statSheet;
 
         [CanBeNull] public Attack parent; // 부모 Attack (null이면 관리자, 아니면 투사체)

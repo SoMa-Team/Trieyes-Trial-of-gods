@@ -212,15 +212,6 @@ namespace CharacterSystem
         }
 
         /// <summary>
-        /// 데미지를 받습니다.
-        /// </summary>
-        /// <param name="damage">받을 데미지</param>
-        public virtual void TakeDamage(int damage)
-        {
-            
-        }
-
-        /// <summary>
         /// 지정된 방향으로 이동합니다.
         /// </summary>
         /// <param name="direction">이동할 방향</param>
@@ -532,7 +523,6 @@ namespace CharacterSystem
         // ===== [기능 3] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
-            Debug.Log("OnEvent 호출");
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
             // if (!IsEventAccepted(eventType))
             // {
@@ -572,7 +562,6 @@ namespace CharacterSystem
                     }
                 }
             }
-            Debug.Log($"isDeckNull: {deck == null}, isCardEventAccepted: {IsCardEventAccepted(eventType)}");
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
@@ -581,7 +570,7 @@ namespace CharacterSystem
             }
         }
 
-        private void ApplyDamage(AttackResult result)
+        public void ApplyDamage(AttackResult result)
         {
             if (result.attacker == null) return;
             
@@ -655,6 +644,7 @@ namespace CharacterSystem
             // TODO END
             
             StatSheet attackStats = CollectAttackStats();
+            ChangeAnimationState("ATTACK");
             Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
         }
 

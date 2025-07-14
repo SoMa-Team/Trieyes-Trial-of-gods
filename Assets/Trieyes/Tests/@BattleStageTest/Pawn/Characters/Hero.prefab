@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8762525943062589552
 Transform:
   m_ObjectHideFlags: 0
@@ -54,7 +54,7 @@ MonoBehaviour:
   moveSpeed: 5
   statPresetSO: {fileID: 11400000, guid: 051c039bce603a64cad4d7ff05ade5f9, type: 2}
   lastestDirection: {x: 0, y: 0}
-  basicAttack: {fileID: 11400000, guid: c049228490cb6ba4788f799562eacf69, type: 2}
+  basicAttack: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
 --- !u!50 &4105170365882426735
 Rigidbody2D:
   serializedVersion: 5
@@ -146,8 +146,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05569e1e7fd024d1e9359bbd46584435, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  q: {fileID: 11400000, guid: c049228490cb6ba4788f799562eacf69, type: 2}
-  w: {fileID: 0}
+  q: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
+  w: {fileID: 11400000, guid: 338969d3ad819d84b96ef4f7dfa1052d, type: 2}
   e: {fileID: 0}
 --- !u!1001 &6613247175159896646
 PrefabInstance:

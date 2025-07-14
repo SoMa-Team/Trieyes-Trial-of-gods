@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 4797988704424728696}
+  - component: {fileID: 5946485072947005738}
   m_Layer: 0
-  m_Name: AC002
+  m_Name: AC003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4797988704424728696
+--- !u!114 &5946485072947005738
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,12 +41,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7cbaa1cbe3715245897170940f82b89, type: 3}
+  m_Script: {fileID: 11500000, guid: 05f6d3b83c985534980bfa27e8106c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   attackAngle: 90
   attackDuration: 0.5
   attackRadius: 2
+  direction: {x: 0, y: 0}
   segments: 8
 --- !u!1 &7855106370752616202
 GameObject:
@@ -147,7 +148,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: HeroSwordRad
+  m_Name: HeroSwordFire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,12 +183,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
+  attackData: {fileID: 11400000, guid: 338969d3ad819d84b96ef4f7dfa1052d, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 4797988704424728696}
+  - {fileID: 5946485072947005738}
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

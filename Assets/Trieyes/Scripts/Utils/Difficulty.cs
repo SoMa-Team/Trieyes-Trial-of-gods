@@ -9,7 +9,7 @@ namespace Utils
         public int EnemyID => 1;
         public float enemyStatMultiplier = 1.0f;
 
-        public float SpawnInterval => 1f / spawnFrequency;
+        public float SpawnInterval => 5f / spawnFrequency;
 
         // ===== [기능 2] 난이도 효과 적용 =====
         public virtual void ApplyDifficultyEffects()

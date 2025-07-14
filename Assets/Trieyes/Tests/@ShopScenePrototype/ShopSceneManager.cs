@@ -62,7 +62,7 @@ public class ShopSceneManager : MonoBehaviour
         Reroll();
         
         // 덱 존 UI를 메인 캐릭터의 덱과 연동 (UI에 덱 표시)
-        DeckZoneManager.Instance.setDeck(mainCharacter.deck);
+        DeckView.Instance.setDeck(mainCharacter.deck);
 
         // 각 버튼에 클릭 이벤트 리스너 연결
         RerollButton.onClick.AddListener(Reroll);
@@ -106,7 +106,7 @@ public class ShopSceneManager : MonoBehaviour
         // 실제 덱에는 딥카피하여 추가 (상점 카드와 별개)
         mainCharacter.deck.AddCard(card.DeepCopy());
         // 덱 UI를 즉시 새로고침
-        DeckZoneManager.Instance.RefreshDeckUI();
+        DeckView.Instance.RefreshDeckUI();
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public class ShopSceneManager : MonoBehaviour
     {
         var card = cardView2.GetCurrentCard();
         mainCharacter.deck.AddCard(card.DeepCopy());
-        DeckZoneManager.Instance.RefreshDeckUI();
+        DeckView.Instance.RefreshDeckUI();
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public class ShopSceneManager : MonoBehaviour
     {
         var card = cardView3.GetCurrentCard();
         mainCharacter.deck.AddCard(card.DeepCopy());
-        DeckZoneManager.Instance.RefreshDeckUI();
+        DeckView.Instance.RefreshDeckUI();
     }
 
     // --- 전투 전환 테스트 메서드 ---

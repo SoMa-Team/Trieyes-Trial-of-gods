@@ -51,6 +51,7 @@ namespace CardViews
         {
             illustrationImage.sprite = card.illustration;
             expFill.fillAmount = (float)card.cardEnhancement.exp.Value / (card.cardEnhancement.level.Value * 10);
+            Debug.Log($"<color=yellow>expFill.fillAmount: {expFill.fillAmount}</color>");
 
             cardNameText.text = card.cardName;
             var descParams = card.cardAction.GetDescriptionParams();

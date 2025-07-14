@@ -187,6 +187,7 @@ namespace CardSystem
             clone.illustration = this.illustration;
             clone.cardDescription = this.cardDescription;
             clone.eventTypes = new List<Utils.EventType>(this.eventTypes);
+            clone.baseParams =  this.baseParams;
 
             // 내부 참조 타입 멤버들도 DeepCopy!
             clone.cardAction = this.cardAction?.DeepCopy();

@@ -76,7 +76,7 @@ namespace CardSystem
             eventTypeCount[Utils.EventType.OnCardPurchase] = 1;
             eventTypeCount[Utils.EventType.OnCardRemove] = 1;
 
-            Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
+            // Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
         }
 
         public void Clear()

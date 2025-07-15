@@ -179,6 +179,11 @@ namespace CharacterSystem
             {
                 Destroy(gameObject);
             }
+            else
+            {
+                // 플레이어가 죽은 것이니 유니티 게임 종료
+                Application.Quit();
+            }
         }
 
         /// <summary>

@@ -132,7 +132,7 @@ public static class CSVToCardInfoSOImporter
             string word = tmp.textInfo.wordInfo[i].GetWord();
             Debug.Log($"[TMP] word: {word}");
             if (System.Text.RegularExpressions.Regex.IsMatch(word, @"^\d+$"))
-                indices.Add(i);ㄴ
+                indices.Add(i);
         }
         GameObject.DestroyImmediate(canvasGo);
         return indices;

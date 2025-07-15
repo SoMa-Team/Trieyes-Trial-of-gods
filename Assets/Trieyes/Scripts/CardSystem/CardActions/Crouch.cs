@@ -22,7 +22,7 @@ namespace CardActions
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                 {
                     string raw = card.baseParams[0];
-                    return StatTypeTransformer.ParseStatType(raw);
+                    return StatTypeTransformer.KoreanToStatType(raw);
                 }),
                 // 두 번째 파라미터: 증가량 (CSV에서 예: 10)
                 ActionParamFactory.Create(ParamKind.Number, card =>

@@ -22,4 +22,8 @@ MonoBehaviour:
   baseParams:
   - Defense
   - 10
-  paramWordIndices: 0600000009000000
+  paramWordRanges:
+  - start: 6
+    end: 6
+  - start: 9
+    end: 9

@@ -99,38 +99,38 @@ namespace CardViews
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            // 1. 디스크립션 영역 클릭 검사
-            if (RectTransformUtility.RectangleContainsScreenPoint(
-                    descriptionText.rectTransform, eventData.position, eventData.pressEventCamera))
-            {
-                int wordIndex = TMP_TextUtilities.FindIntersectingWord(
-                    descriptionText, eventData.position, eventData.pressEventCamera);
-                
-                Debug.Log($"<color=yellow>wordIndex: {wordIndex}</color>");
-
-                if (wordIndex != -1)
-                {
-                    // 2. 선택된 스티커가 있으면 Card에 직접 적용!
-                    var sticker = ShopSceneManager.Instance?.selectedSticker;
-                    if (sticker != null)
-                    {
-                        bool applied = card.TryApplyStickerOverride(wordIndex, sticker);
-                        if (applied)
-                        {
-                            UpdateView(); // 성공 시 바로 뷰 갱신
-                            Debug.Log($"[CardView] 스티커가 {wordIndex}번째 파라미터에 적용됨");
-                        }
-                        else
-                        {
-                            Debug.LogWarning("[CardView] 스티커 적용 실패: 타입 불일치 또는 불가");
-                            // (원하면 피드백 UI 추가)
-                        }
-                        return;
-                    }
-                    // 스티커 없으면 원래 클릭 처리로 fall-through
-                }
-            }
-            // 카드 선택/스왑 등 기존 기능
+            // // 1. 디스크립션 영역 클릭 검사
+            // if (RectTransformUtility.RectangleContainsScreenPoint(
+            //         descriptionText.rectTransform, eventData.position, eventData.pressEventCamera))
+            // {
+            //     int wordIndex = TMP_TextUtilities.FindIntersectingWord(
+            //         descriptionText, eventData.position, eventData.pressEventCamera);
+            //     
+            //     Debug.Log($"<color=yellow>wordIndex: {wordIndex}</color>");
+            //
+            //     if (wordIndex != -1)
+            //     {
+            //         // 2. 선택된 스티커가 있으면 Card에 직접 적용!
+            //         var sticker = ShopSceneManager.Instance?.selectedSticker;
+            //         if (sticker != null)
+            //         {
+            //             bool applied = card.TryApplyStickerOverride(wordIndex, sticker);
+            //             if (applied)
+            //             {
+            //                 UpdateView(); // 성공 시 바로 뷰 갱신
+            //                 Debug.Log($"[CardView] 스티커가 {wordIndex}번째 파라미터에 적용됨");
+            //             }
+            //             else
+            //             {
+            //                 Debug.LogWarning("[CardView] 스티커 적용 실패: 타입 불일치 또는 불가");
+            //                 // (원하면 피드백 UI 추가)
+            //             }
+            //             return;
+            //         }
+            //         // 스티커 없으면 원래 클릭 처리로 fall-through
+            //     }
+            // }
+            // // 카드 선택/스왑 등 기존 기능
             parentDeckView?.OnCardClicked(this);
         }
 

@@ -92,7 +92,7 @@ namespace CardSystem
         
         public List<string> baseParams;
         
-        public List<int> paramWordIndices;
+        public List<ParamWordRange> paramWordRanges;
         
         /// <summary>
         /// 카드를 소유한 캐릭터(Pawn)입니다.
@@ -178,26 +178,26 @@ namespace CardSystem
             cardStats = new CardStat(properties, cardEnhancement.level.Value);
         }
 
-        public bool TryApplyStickerOverride(int paramIndex, Sticker sticker)
-        {
-            if (paramIndex < 0 || paramWordIndices == null
-                               || !paramWordIndices.Contains(paramIndex))
-                return false;
-
-            // [2] 해당 파라미터의 타입과 스티커 타입 일치하는지 체크 (Number/StatType 등)
-            int baseParamIdx = paramWordIndices.IndexOf(paramIndex);
-
-            // 실제 파라미터 타입 정보에 따라 검사
-            var paramKind = cardAction.GetParamDef(baseParamIdx).kind; // ParamKind.Number, .StatType 등
-
-            if ((paramKind == ParamKind.Number && sticker.type != StickerType.Number) ||
-                (paramKind == ParamKind.StatType && sticker.type != StickerType.StatType))
-                return false;
-
-            // [3] 덮어쓰기 (스티커는 항상 마지막에 붙은 것만 반영)
-            stickerOverrides[baseParamIdx] = sticker;
-            return true;
-        }
+        // public bool TryApplyStickerOverride(int paramIndex, Sticker sticker)
+        // {
+        //     if (paramIndex < 0 || paramWordRanges == null
+        //                        || !paramWordRanges.Contains(paramIndex))
+        //         return false;
+        //
+        //     // [2] 해당 파라미터의 타입과 스티커 타입 일치하는지 체크 (Number/StatType 등)
+        //     int baseParamIdx = paramWordRanges.IndexOf(paramIndex);
+        //
+        //     // 실제 파라미터 타입 정보에 따라 검사
+        //     var paramKind = cardAction.GetParamDef(baseParamIdx).kind; // ParamKind.Number, .StatType 등
+        //
+        //     if ((paramKind == ParamKind.Number && sticker.type != StickerType.Number) ||
+        //         (paramKind == ParamKind.StatType && sticker.type != StickerType.StatType))
+        //         return false;
+        //
+        //     // [3] 덮어쓰기 (스티커는 항상 마지막에 붙은 것만 반영)
+        //     stickerOverrides[baseParamIdx] = sticker;
+        //     return true;
+        // }
 
         
         public Card DeepCopy()
@@ -211,7 +211,7 @@ namespace CardSystem
             clone.cardDescription = this.cardDescription;
             clone.eventTypes = new List<Utils.EventType>(this.eventTypes);
             clone.baseParams =  this.baseParams;
-            clone.paramWordIndices = this.paramWordIndices != null ? new List<int>(this.paramWordIndices) : new List<int>();
+            clone.paramWordRanges = this.paramWordRanges != null ? new List<ParamWordRange>(this.paramWordRanges) : new List<ParamWordRange>();
 
             // 내부 참조 타입 멤버들도 DeepCopy!
             clone.cardAction = this.cardAction?.DeepCopy();

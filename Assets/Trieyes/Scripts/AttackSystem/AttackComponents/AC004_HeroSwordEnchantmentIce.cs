@@ -15,7 +15,7 @@ namespace AttackComponents
     /// </summary>
     public class AC004_HeroSwordEnchantmentIce : AttackComponent
     {
-        private const int DEBUFF_ID = 5;
+        private const int DEBUFF_ID = 11;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름

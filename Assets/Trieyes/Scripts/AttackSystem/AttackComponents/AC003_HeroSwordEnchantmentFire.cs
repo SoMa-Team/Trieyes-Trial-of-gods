@@ -15,7 +15,7 @@ namespace AttackComponents
     /// </summary>
     public class AC003_HeroSwordEnchantmentFire : AttackComponent
     {
-        private const int DOT_id = 4;
+        private const int DOT_id = 10;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름

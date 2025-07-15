@@ -48,7 +48,8 @@ namespace StickerSystem
                 typeText.text = "스탯 스티커";
                 background.sprite = statTypeStickerBackground;
             }
-            lifeText.text = sticker.lifeTime.ToString();
+
+            lifeText.text = $"남은 수명 : {sticker.lifeTime}";
         }
     }
 }

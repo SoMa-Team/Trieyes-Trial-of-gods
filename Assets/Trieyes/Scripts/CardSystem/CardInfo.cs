@@ -43,7 +43,6 @@ namespace CardSystem
             
         public List<string> baseParams = new List<string>();
         
-        //파라미터별로 디스크립션 상에서 매칭되는 단어의 인덱스(0-based)
-        public List<int> paramWordIndices = new List<int>();
+        public List<int> paramWordIndices = new();
     }
 }

@@ -6,9 +6,11 @@ using System.Linq;
 using System.Collections.Generic;
 using CardSystem;
 using Utils;
+using TMPro;
 
 public static class CSVToCardInfoSOImporter
 {
+    private const string TMP_FONT_ASSET_PATH = "Assets/Trieyes/Font/SDF/DNFForgedBlade-Bold SDF.asset";
     [MenuItem("Tools/CSVToCardInfoSO")]
     public static void ImportFromCSV()
     {
@@ -35,7 +37,6 @@ public static class CSVToCardInfoSOImporter
         int idx_cardDescription = System.Array.IndexOf(headers, "cardDescription");
         int idx_eventTypes = System.Array.IndexOf(headers, "eventTypes");
         int idx_baseParams = System.Array.IndexOf(headers, "baseParams");
-        int idx_paramWordIndices = System.Array.IndexOf(headers, "paramWordIndices");
 
         for (int i = 1; i < lines.Length; i++)
         {
@@ -90,17 +91,7 @@ public static class CSVToCardInfoSOImporter
             else
                 card.baseParams = new List<string>();
             
-            if (idx_paramWordIndices >= 0 && !string.IsNullOrWhiteSpace(values[idx_paramWordIndices]))
-            {
-                card.paramWordIndices = values[idx_paramWordIndices]
-                    .Split('|')
-                    .Select(s => int.Parse(s.Trim()))
-                    .ToList();
-            }
-            else
-            {
-                card.paramWordIndices = new List<int>();
-            }
+            card.paramWordIndices = ParseParamWordIndicesWithTMP(card.cardDescription);
 
             if (isNew)
                 AssetDatabase.CreateAsset(card, assetPath.Replace(Application.dataPath, "Assets"));
@@ -111,6 +102,40 @@ public static class CSVToCardInfoSOImporter
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log("CardInfoSO 생성/덮어쓰기 완료!");
+    }
+    
+    private static List<int> ParseParamWordIndicesWithTMP(string description)
+    {
+        // --- 에셋에서 TMP 폰트 로드 ---
+        var fontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TMP_FONT_ASSET_PATH);
+        if (fontAsset == null)
+        {
+            Debug.LogError($"TMP 폰트 에셋을 찾을 수 없습니다: {TMP_FONT_ASSET_PATH}");
+            return new List<int>();
+        }
+
+        // --- 임시 Canvas, TMP 객체 생성 ---
+        var canvasGo = new GameObject("TMP_Parser_Canvas", typeof(Canvas));
+        canvasGo.hideFlags = HideFlags.HideAndDontSave;
+        var go = new GameObject("TMPDescParser");
+        go.transform.SetParent(canvasGo.transform);
+        var tmp = go.AddComponent<TextMeshProUGUI>();
+        tmp.font = fontAsset;
+        tmp.text = description;
+        tmp.ForceMeshUpdate();
+
+        Debug.Log($"[TMP] text: {tmp.text} / wordCount: {tmp.textInfo.wordCount}");
+
+        var indices = new List<int>();
+        for (int i = 0; i < tmp.textInfo.wordCount; i++)
+        {
+            string word = tmp.textInfo.wordInfo[i].GetWord();
+            Debug.Log($"[TMP] word: {word}");
+            if (System.Text.RegularExpressions.Regex.IsMatch(word, @"^\d+$"))
+                indices.Add(i);ㄴ
+        }
+        GameObject.DestroyImmediate(canvasGo);
+        return indices;
     }
 }
 #endif

@@ -178,6 +178,27 @@ namespace CardSystem
             cardStats = new CardStat(properties, cardEnhancement.level.Value);
         }
 
+        public bool TryApplyStickerOverride(int paramIndex, Sticker sticker)
+        {
+            if (paramIndex < 0 || paramWordIndices == null
+                               || !paramWordIndices.Contains(paramIndex))
+                return false;
+
+            // [2] 해당 파라미터의 타입과 스티커 타입 일치하는지 체크 (Number/StatType 등)
+            int baseParamIdx = paramWordIndices.IndexOf(paramIndex);
+
+            // 실제 파라미터 타입 정보에 따라 검사
+            var paramKind = cardAction.GetParamDef(baseParamIdx).kind; // ParamKind.Number, .StatType 등
+
+            if ((paramKind == ParamKind.Number && sticker.type != StickerType.Number) ||
+                (paramKind == ParamKind.StatType && sticker.type != StickerType.StatType))
+                return false;
+
+            // [3] 덮어쓰기 (스티커는 항상 마지막에 붙은 것만 반영)
+            stickerOverrides[baseParamIdx] = sticker;
+            return true;
+        }
+
         
         public Card DeepCopy()
         {

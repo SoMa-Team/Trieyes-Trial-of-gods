@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using CardActions;
+using System;
+using EventType = Utils.EventType;
 
 namespace CardSystem
 {
@@ -116,6 +118,9 @@ namespace CardSystem
             card.properties = info.properties;
             card.illustration = info.illustration;
             card.cardDescription = info.cardDescription;
+            card.eventTypes = info.eventTypes != null
+                ? new List<EventType>(info.eventTypes)
+                : new List<EventType>();
             card.eventTypes = new List<Utils.EventType>(info.eventTypes);
             card.baseParams = info.baseParams != null
                 ? new List<string>(info.baseParams)

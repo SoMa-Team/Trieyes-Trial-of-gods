@@ -1799,8 +1799,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 822883980}
+  - component: {fileID: 822883981}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: StickerFactory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1825,6 +1826,18 @@ RectTransform:
   m_AnchoredPosition: {x: 912.6135, y: 343.8747}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &822883981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 822883979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbbd010c8663441f9c9500f355b50c16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &889808426
 GameObject:
   m_ObjectHideFlags: 0
@@ -1855,9 +1868,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardInfos:
-  - {fileID: 11400000, guid: ee1300950e64c4215b92956c0fd91586, type: 2}
-  - {fileID: 11400000, guid: e78273a7bac0a422682c736af6cb55f0, type: 2}
-  - {fileID: 11400000, guid: 16fb7337cf1d34935a5f4e76c4b461e5, type: 2}
+  - {fileID: 11400000, guid: e9235046056664a848f3112c29d70c74, type: 2}
+  - {fileID: 11400000, guid: b480be37cab414c309f742dd1ca43a10, type: 2}
+  - {fileID: 11400000, guid: fffb63e20bebc4cc0a6c9e7654a33d9d, type: 2}
 --- !u!4 &889808428
 Transform:
   m_ObjectHideFlags: 0
@@ -2436,10 +2449,14 @@ MonoBehaviour:
   - {fileID: 1680141326}
   - {fileID: 1446646913}
   - {fileID: 1698712554}
-  buyButtons:
+  shopStickerViews:
+  - {fileID: 2126182969}
+  buyCardButtons:
   - {fileID: 631915056}
   - {fileID: 250387853}
   - {fileID: 269003764}
+  buyStickerButtons:
+  - {fileID: 1465498861}
   deckView: {fileID: 1520009915}
   rerollButton: {fileID: 955856479}
   battleButton: {fileID: 39831105}
@@ -3228,7 +3245,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6939721734965781272, guid: 266d8d30cf0544b2dad5a19558306ad7, type: 3}
       propertyPath: m_Name
-      value: BuyButton3
+      value: BuyStickerButton
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3268,6 +3285,17 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &1465498861 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7771553601265387981, guid: 266d8d30cf0544b2dad5a19558306ad7, type: 3}
+  m_PrefabInstance: {fileID: 1465498855}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465498857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1520009910
 GameObject:
   m_ObjectHideFlags: 0
@@ -4598,6 +4626,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3859521133909745150, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
   m_PrefabInstance: {fileID: 2126182965}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2126182969 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6053877444818545275, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
+  m_PrefabInstance: {fileID: 2126182965}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff83de7d5a0746568491a12344dc470d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -23,8 +23,11 @@ public class ShopSceneManager : MonoBehaviour
     [Header("스티커 슬롯 UI")]
     public List<StickerView> shopStickerViews;
 
-    [Header("구매 버튼")]
-    public List<Button> buyButtons;         // 3개 버튼을 Inspector에서 순서대로 할당
+    [Header("카드 구매 버튼")]
+    public List<Button> buyCardButtons;         // 3개 버튼을 Inspector에서 순서대로 할당
+    
+    [Header("스티커 구매 버튼")]
+    public List<Button> buyStickerButtons;
     
     [Header("덱 UI 연동")]
     public DeckView deckView; 
@@ -38,10 +41,26 @@ public class ShopSceneManager : MonoBehaviour
     public TMP_Text defenseStatText;
     public TMP_Text healthStatText;
     public TMP_Text moveSpeedStatText;
+    
+    public static ShopSceneManager Instance;
 
     // --- 내부 필드 ---
     private Pawn mainCharacter;
     private List<Card> shopCards = new();
+    private List<Sticker> shopStickers = new();
+    
+    public Sticker selectedSticker;
+    private StickerView selectedStickerView;
+    
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(this);
+            return;
+        }
+        Instance = this;
+    }
 
     // --- 초기화 ---
     private void Start()
@@ -59,10 +78,16 @@ public class ShopSceneManager : MonoBehaviour
         if (rerollButton != null) rerollButton.onClick.AddListener(RefreshShopCards);
         if (battleButton != null) battleButton.onClick.AddListener(OnBattleButtonPressed);
 
-        for (int i = 0; i < buyButtons.Count; i++)
+        for (int i = 0; i < buyCardButtons.Count; i++)
         {
             int idx = i; // capture for closure
-            buyButtons[i].onClick.AddListener(() => OnBuyButtonPressed(idx));
+            buyCardButtons[i].onClick.AddListener(() => OnCardBuyButtonPressed(idx));
+        }
+
+        for (int i = 0; i < buyStickerButtons.Count; i++)
+        {
+            int idx = i;
+            buyStickerButtons[i].onClick.AddListener(() => OnStickerBuyButtonPressed(idx));
         }
 
         RefreshStatUI();
@@ -72,6 +97,7 @@ public class ShopSceneManager : MonoBehaviour
     private void RefreshShopCards()
     {
         shopCards.Clear();
+        shopStickers.Clear();
         for (int i = 0; i < shopCardViews.Count; i++)
         {
             Card newCard = CardFactory.Instance.Create(
@@ -81,13 +107,22 @@ public class ShopSceneManager : MonoBehaviour
             shopCards.Add(newCard);
             shopCardViews[i].SetCard(newCard);
         }
+
+        for (int i = 0; i < shopStickerViews.Count; i++)
+        {
+            Sticker newSticker = StickerFactory.Instance.CreateRandomSticker();
+            shopStickers.Add(newSticker);
+            shopStickerViews[i].SetSticker(newSticker);
+        }
         // 구매 버튼 활성화 초기화
-        for (int i = 0; i < buyButtons.Count; i++)
-            buyButtons[i].interactable = true;
+        for (int i = 0; i < buyCardButtons.Count; i++)
+            buyCardButtons[i].interactable = true;
+        for (int i = 0; i < buyStickerButtons.Count; i++)
+            buyStickerButtons[i].interactable = true;
     }
 
     // --- 카드 구매 ---
-    private void OnBuyButtonPressed(int index)
+    private void OnCardBuyButtonPressed(int index)
     {
         if (index < 0 || index >= shopCards.Count)
             return;
@@ -100,10 +135,31 @@ public class ShopSceneManager : MonoBehaviour
         mainCharacter.deck.AddCard(cardToBuy.DeepCopy());
         // UI 갱신
         deckView.RefreshDeckUI();
-        buyButtons[index].interactable = false; // 중복구매 방지
+        buyCardButtons[index].interactable = false; // 중복구매 방지
 
         // 필요하다면 카드 구매 시마다 스탯도 갱신
         RefreshStatUI();
+    }
+
+    private void OnStickerBuyButtonPressed(int index)
+    {
+        if (index < 0 || index >= shopStickers.Count)
+            return;
+
+        // 1. 이전 선택 해제(SticekrView에서 selected 구현 되면 추가)
+        // if (selectedStickerView != null)
+        //     selectedStickerView.SetSelected(false);
+
+        // 2. 새로 선택
+        Debug.Log("<color=yellow>Sticker Selected!</color>");
+        selectedSticker = shopStickers[index];
+        selectedStickerView = shopStickerViews[index];
+
+        // 3. 하이라이트 효과 (StickerView에서 구현 필요)
+        //selectedStickerView.SetSelected(true);
+
+        // 4. 카드뷰들에 "스티커 적용 모드" 안내 등 필요하다면 표시
+        // (예시: CardView에 isStickerApplyMode 등)
     }
 
     // --- 전투 진입 ---

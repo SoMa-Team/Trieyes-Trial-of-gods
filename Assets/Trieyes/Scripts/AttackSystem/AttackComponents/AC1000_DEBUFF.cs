@@ -41,6 +41,9 @@ namespace AttackComponents
                 target = attack.target;
             }
             DEBUFFHandlerByIndividual();
+
+            // 디버프를 주고 바로 소멸
+            AttackFactory.Instance.Deactivate(attack);
         }
 
         private void DEBUFFHandlerByIndividual()
@@ -78,19 +81,6 @@ namespace AttackComponents
                 default:
                     break;
             }
-        }
-
-        // DOT 클래스의 Update 함수는 dotInterval 마다 호출되며, dotDuration 만큼 지속됩니다.
-        protected override void Update()
-        {
-            if (target == null || target.isDead || debuffDuration <= 0f || currentDebuffDuration >= debuffDuration)
-            {
-                // 디버프 효과는 StatModifier 시스템에서 자동으로 만료되므로 별도 처리 불필요
-                AttackFactory.Instance.Deactivate(attack);
-                return;
-            }
-
-            currentDebuffDuration += Time.deltaTime;
         }
     }
 }

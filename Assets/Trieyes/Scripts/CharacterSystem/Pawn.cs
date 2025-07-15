@@ -64,6 +64,10 @@ namespace CharacterSystem
         /// 기본 공격이자 관리자 공격
         /// </summary>
         public AttackData basicAttack;
+
+        public bool bIsLockAttack = false;
+        public AttackData skillAttack001;
+        public AttackData skillAttack002;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -610,6 +614,7 @@ namespace CharacterSystem
         /// 공격속도 스탯을 기반으로 공격 쿨다운을 계산합니다.
         /// 공격속도 10 = 60fps 기준 1초에 1개 발사
         /// </summary>
+
         protected virtual void CalculateAttackCooldown()
         {
             int attackSpeed = GetStatValue(StatType.AttackSpeed);
@@ -623,9 +628,15 @@ namespace CharacterSystem
         /// <summary>
         /// 자동공격을 수행합니다.
         /// </summary>
+        
+        public bool CheckTimeInterval()
+        {
+            return Time.time - lastAttackTime >= attackCooldown ? true : false;
+        }
+
         public virtual void PerformAutoAttack()
         {
-            if (Time.time - lastAttackTime >= attackCooldown)
+            if (CheckTimeInterval() && !bIsLockAttack)
             {
                 // 공격 쿨다운 계산 (스탯 변경 시 대응)
                 CalculateAttackCooldown();
@@ -651,6 +662,19 @@ namespace CharacterSystem
             StatSheet attackStats = CollectAttackStats();
             ChangeAnimationState("ATTACK");
             Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
+        }
+
+        public void ExecuteSkillAttack(AttackData skillAttack)
+        {
+            _ExecuteSkillAttack(skillAttack);
+        }
+
+        protected virtual void _ExecuteSkillAttack(AttackData skillAttack)
+        {
+            if (skillAttack == null) return;
+            StatSheet attackStats = CollectAttackStats();
+            ChangeAnimationState("ATTACK");
+            Attack attack = AttackFactory.Instance.Create(skillAttack, this, null, LastMoveDirection);
         }
 
         // ===== [내부 클래스] =====

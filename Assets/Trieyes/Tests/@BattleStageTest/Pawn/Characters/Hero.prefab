@@ -55,6 +55,8 @@ MonoBehaviour:
   statPresetSO: {fileID: 11400000, guid: 051c039bce603a64cad4d7ff05ade5f9, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
+  skillAttack001: {fileID: 11400000, guid: 3a51829e5249d0340a4b3b55a6c1f803, type: 2}
+  skillAttack002: {fileID: 0}
 --- !u!50 &4105170365882426735
 Rigidbody2D:
   serializedVersion: 5
@@ -133,6 +135,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   owner: {fileID: 6424139744733695351}
   lastMoveDir: {x: 0, y: 0}
+  skillAction001: {fileID: 2646095123555208786, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
+  skillAction002: {fileID: -5947426782392501359, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
   joystick: {fileID: 0}
 --- !u!114 &2543392400981761397
 MonoBehaviour:
@@ -147,7 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   q: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
-  w: {fileID: 11400000, guid: 338969d3ad819d84b96ef4f7dfa1052d, type: 2}
+  w: {fileID: 0}
   e: {fileID: 0}
 --- !u!1001 &6613247175159896646
 PrefabInstance:

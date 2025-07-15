@@ -15,9 +15,18 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "attack",
+                    "name": "skill001",
                     "type": "Button",
-                    "id": "9c847e90-fe84-418f-8741-b1963d980872",
+                    "id": "e061fd11-1144-4903-8eca-13b723f898f7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "skill002",
+                    "type": "Button",
+                    "id": "ed03ddd8-4f0d-4771-8a86-79dffaa0d1dc",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -82,12 +91,23 @@
                 },
                 {
                     "name": "",
-                    "id": "48e73e03-4d63-4ec9-8088-1f83c20c54c8",
+                    "id": "f64a4d82-53c8-4abe-a5c7-cab8ffc367b7",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "attack",
+                    "action": "skill001",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d5e56443-c5c8-4b16-840d-aedcbe5f5971",
+                    "path": "<Keyboard>/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "skill002",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

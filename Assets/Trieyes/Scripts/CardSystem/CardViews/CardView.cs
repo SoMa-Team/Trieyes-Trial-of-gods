@@ -5,6 +5,8 @@ using CardSystem;
 using UnityEngine.EventSystems;
 using DeckViews;
 using System.Collections.Generic;
+using StickerSystem;
+using Utils;
 
 namespace CardViews
 {
@@ -26,9 +28,12 @@ namespace CardViews
         public TMP_Text statIntegerValueText;
         public Image selectionOutline;
 
+        public List<Sprite> stickerBackgroundSprites;
+
         // ===== [내부 필드] =====
         private Card card;
         private DeckView parentDeckView;
+        private readonly List<GameObject> activeStickerOverlays = new();
 
         /// <summary>
         /// 상위 덱 뷰 참조 연결
@@ -89,8 +94,76 @@ namespace CardViews
                 statTypeEmblemImage.enabled = false;
                 statIntegerValueText.enabled = false;
             }
+            SyncStickerOverlays();
         }
+        
+        private void SyncStickerOverlays()
+        {
+            // 1. 기존 오버레이 제거
+            foreach (var go in activeStickerOverlays)
+                Destroy(go);
+            activeStickerOverlays.Clear();
 
+            // [중요] 텍스트 메쉬 프로 mesh정보 최신화
+            descriptionText.ForceMeshUpdate();
+
+            // 2. 모든 스티커 파라미터(혹은 stickerOverrides.Keys) 순회
+            foreach (var kv in card.stickerOverrides)
+            {
+                int paramIdx = kv.Key;
+                Sticker sticker = kv.Value;
+
+                if (paramIdx < 0 || card.paramWordRanges == null || paramIdx >= card.paramWordRanges.Count)
+                    continue;
+                var range = card.paramWordRanges[paramIdx];
+                int wordIdx = range.end; // 단어 마지막 위치
+
+                // [안전 체크]
+                if (wordIdx < 0 || wordIdx >= descriptionText.textInfo.wordCount)
+                    continue;
+
+                // 1. 단어의 localRect(좌표+크기)를 얻는다!
+                var wordInfo = descriptionText.textInfo.wordInfo[wordIdx];
+                var localRect = wordInfo.GetLocalRect(descriptionText);
+
+                // 2. 오버레이 이미지 오브젝트 생성
+                var overlayGO = new GameObject($"StickerOverlay_{paramIdx}", typeof(UnityEngine.UI.Image));
+                overlayGO.transform.SetParent(descriptionText.transform.parent, false);
+                
+                overlayGO.transform.SetAsFirstSibling();
+
+                var img = overlayGO.GetComponent<UnityEngine.UI.Image>();
+                int spriteIndex = GetStickerSpriteIndex(sticker.type);
+                img.sprite = stickerBackgroundSprites[spriteIndex];
+                img.color = Color.white;
+
+                // 3. 이미지 RectTransform 세팅
+                var rt = overlayGO.GetComponent<RectTransform>();
+                rt.pivot = new Vector2(0, 1); // 단어 좌상단에 맞춤
+                rt.anchorMin = rt.anchorMax = new Vector2(0, 1);
+                rt.localScale = Vector3.one;
+                rt.localRotation = Quaternion.identity;
+
+                // 실제 단어 영역보다 살짝 크게(여유 padding) 만들고 싶다면:
+                float padding = 6f; // px단위, 원하는만큼 조절
+                rt.sizeDelta = new Vector2(localRect.width + padding, localRect.height + padding);
+                rt.anchoredPosition = new Vector2(localRect.x - padding * 0.5f, localRect.y + padding * 0.5f);
+
+                activeStickerOverlays.Add(overlayGO);
+            }
+        }
+        
+        private int GetStickerSpriteIndex(StickerType type)
+        {
+            switch (type)
+            {
+                case StickerType.StatType: return 0;
+                case StickerType.Number:   return 1;
+                // case StickerType.YourNewType: return 2;
+                default: return 0;
+            }
+        }
+        
         /// <summary>
         /// 카드 설명(템플릿)에 실제 파라미터 값을 대입해 반환
         /// </summary>

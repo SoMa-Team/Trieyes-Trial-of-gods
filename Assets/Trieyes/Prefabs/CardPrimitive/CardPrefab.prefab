@@ -243,11 +243,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3534593497313922165}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00018310547, y: -0.000030517578}
-  m_SizeDelta: {x: 0.16000366, y: -0.94000244}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 212.16, y: 153.06}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &2627263852911461829
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -303,7 +303,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 59.35
+  m_fontSize: 59.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -440,6 +440,9 @@ MonoBehaviour:
   statTypeEmblemImage: {fileID: 7053111705522128237}
   statIntegerValueText: {fileID: 6947130925816549203}
   selectionOutline: {fileID: 6738834770195287453}
+  stickerBackgroundSprites:
+  - {fileID: 3953754183741517761, guid: 0df1c356ab34a4c569cdb24318f5eba3, type: 3}
+  - {fileID: -8921602086792627531, guid: a0dd067f411fb4c1da69331449398659, type: 3}
 --- !u!1 &3596277445555514219
 GameObject:
   m_ObjectHideFlags: 0

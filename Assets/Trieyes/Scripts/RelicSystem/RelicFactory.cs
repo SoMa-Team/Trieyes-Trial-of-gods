@@ -21,9 +21,9 @@ namespace RelicSystem
             relic.relicID = relicID;
             relic.name = data.name;
             relic.description = data.description;
-            relic.filterAttackID = data.filterAttackID;
+            relic.filterAttackIDs = data.filterAttackIDs;
             relic.filterAttackTag = AttackTagManager.GetAttackTagByName(data.filterTag);
-            relic.attackComponentIDs = data.attackComponentIDs.Split(",").Select(int.Parse).ToList();
+            relic.attackComponentIDs = data.attackComponentIDs;
 
             relic.randomOptions = new List<RandomOption>();
             for (int i = 0; i < getRandomOptionCount(relicID); i++)
@@ -32,12 +32,6 @@ namespace RelicSystem
                 relic.randomOptions.Add(randomOption);
             }
             return relic;
-        }
-
-        private static int getBaseAttackComponentID(RelicID id)
-        {
-            // TODO: Relic별 기본 옵션 AttackComponentID를 반환
-            return 0;
         }
 
         private static int getRandomOptionCount(RelicID id)

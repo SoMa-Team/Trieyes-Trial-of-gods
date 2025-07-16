@@ -39,7 +39,7 @@ namespace AttackComponents
         /// </summary>
         public virtual void Activate(Attack attack, Vector2 direction)
         {
-            
+            this.attack = attack;
         }
 
         /// <summary>
@@ -99,11 +99,6 @@ namespace AttackComponents
         {
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
-        }
-
-        public void SetAttack(Attack attack)
-        {
-            this.attack = attack;
         }
     }
 } 

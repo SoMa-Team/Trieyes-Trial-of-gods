@@ -7,6 +7,7 @@ using AttackComponents;
 using BattleSystem;
 using Stats;
 using JetBrains.Annotations;
+using RelicSystem;
 
 namespace AttackSystem
 {
@@ -31,6 +32,7 @@ namespace AttackSystem
         
         protected Rigidbody2D rb;
         protected Collider2D attackCollider;
+        public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
 
         private void Update()
         {
@@ -53,11 +55,6 @@ namespace AttackSystem
             if (rb is not null)
             {
                 rb.gravityScale = 0f; // 중력 비활성화
-            }
-
-            foreach (var attackComponent in components)
-            {
-                attackComponent.SetAttack(this);
             }
         }
 
@@ -93,7 +90,8 @@ namespace AttackSystem
             
             // tag null 체크 추가
             if (string.IsNullOrEmpty(hitObject.tag)) return;
-                
+            
+            // TODO: Layer 충돌 적용 필요
             switch (hitObject.tag)
             {
                 case "Player": 
@@ -177,6 +175,8 @@ namespace AttackSystem
             parent = null;
             
             gameObject.SetActive(false);
+            
+            relicStats.Clear();
         }
         
         // ===== [기능 9] 이벤트 처리 =====
@@ -213,6 +213,23 @@ namespace AttackSystem
         public void AddAttack(Attack newAttack)
         {
             children.Add(newAttack);
+        }
+
+        public void AddAttackComponent(AttackComponent attackComponent)
+        {
+            attackComponent.transform.SetParent(transform);
+            components.Add(attackComponent);
+            attackComponent.Activate(this, Vector2.zero);
+        }
+
+        public void ApplyRelicStat(RelicStatType statType, int value)
+        {
+            if (!relicStats.ContainsKey(statType))
+            {
+                relicStats[statType] = 0;
+            }
+
+            relicStats[statType] += value;
         }
     }
 } 

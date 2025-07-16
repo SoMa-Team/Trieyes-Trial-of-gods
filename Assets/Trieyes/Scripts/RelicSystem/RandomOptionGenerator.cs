@@ -11,8 +11,8 @@ namespace RelicSystem
             var randomOption = new RandomOption();
             
             randomOption.FilterTag = AttackTag.Range;
-            randomOption.RelicStatType = RelicStatType.AOE;
-            randomOption.value = 10;
+            randomOption.RelicStatType = RelicStatType.ProjectileCount;
+            randomOption.value = 2;
             
             return randomOption;
         }

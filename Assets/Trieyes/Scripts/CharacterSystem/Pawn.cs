@@ -12,6 +12,13 @@ using CharacterSystem.Enemies;
 
 namespace CharacterSystem
 {
+    public enum PawnAttackType
+    {
+        BasicAttack,
+        Skill1, 
+        Skill2,
+    }
+    
     /// <summary>
     /// 게임 내 모든 캐릭터의 기본이 되는 클래스입니다.
     /// 캐릭터의 기본적인 속성과 동작을 정의합니다.
@@ -484,8 +491,6 @@ namespace CharacterSystem
             relic.owner = this;
             relics.Add(relic);
             
-            // TODO: 유물이 이벤트를 받지 않으면 삭제
-            // 유물의 이벤트 셋을 Pawn의 relicAcceptedEvents에 합치기 (카운트 관리)
             var relicEvents = relic.GetAcceptedEvents();
             if (relicEvents != null)
             {
@@ -646,15 +651,21 @@ namespace CharacterSystem
         /// <summary>
         /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack에게 전달합니다.
         /// </summary>
-        protected virtual void ExecuteAttack()
+        protected virtual void ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
             // TODO : Scene 통합 이후 제거 필요
             if (AttackFactory.Instance is null)
                 return;
             // TODO END
-            
-            StatSheet attackStats = CollectAttackStats();
-            Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
+
+            switch (attackType)
+            {
+                case PawnAttackType.BasicAttack:
+                    Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
+                    break;
+                case PawnAttackType.Skill1: break;
+                case PawnAttackType.Skill2: break;
+            }
         }
 
         // ===== [내부 클래스] =====

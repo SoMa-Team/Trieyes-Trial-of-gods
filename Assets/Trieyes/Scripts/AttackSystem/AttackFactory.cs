@@ -1,4 +1,5 @@
 using System;
+using AttackComponents;
 using BattleSystem;
 using CharacterSystem;
 using JetBrains.Annotations;
@@ -29,8 +30,37 @@ namespace AttackSystem
         public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
         {
             var attack = ClonePrefab(attackData.attackId);
+            
             attack.attackData = attackData;
             attack.parent = parent;
+
+            foreach (var relic in attacker.relics)
+            {
+                if (relic.filterAttackTag is not null && !attack.attackData.tags.Contains(relic.filterAttackTag.Value))
+                    continue;
+                if (relic.filterAttackIDs is not null && !relic.filterAttackIDs.Contains(attack.attackData.attackId))
+                    continue;
+                
+                // relic의 mainOption의 attackTag 혹은 attackID가 일치하는 상황
+                foreach (var attackComponentID in relic.attackComponentIDs)
+                {
+                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, attack, direction);
+                    attack.AddAttackComponent(attackComponent);
+                }
+            }
+
+            foreach (var relic in attacker.relics)
+            {
+                foreach (var randomOption in relic.randomOptions)
+                {
+                    if (!attack.attackData.tags.Contains(randomOption.FilterTag))
+                        continue;
+                    
+                    // RandomOption이 Attack의 Tag를 포함함
+                    attack.ApplyRelicStat(randomOption.RelicStatType, randomOption.value);
+                }
+            }
+            
             Activate(attack, attacker, parent, direction);
             return attack;
         }

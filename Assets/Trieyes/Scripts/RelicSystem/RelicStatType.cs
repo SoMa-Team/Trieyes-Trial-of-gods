@@ -4,5 +4,6 @@ namespace RelicSystem
     {
         AOE,
         Range,
+        ProjectileCount
     }
 }

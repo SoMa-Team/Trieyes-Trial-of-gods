@@ -106,6 +106,7 @@ namespace CardViews
 
             // [중요] 텍스트 메쉬 프로 mesh정보 최신화
             descriptionText.ForceMeshUpdate();
+            var textInfo = descriptionText.textInfo;
 
             // 2. 모든 스티커 파라미터(혹은 stickerOverrides.Keys) 순회
             foreach (var kv in card.stickerOverrides)
@@ -116,42 +117,70 @@ namespace CardViews
                 if (paramIdx < 0 || card.paramWordRanges == null || paramIdx >= card.paramWordRanges.Count)
                     continue;
                 var range = card.paramWordRanges[paramIdx];
-                int wordIdx = range.end; // 단어 마지막 위치
 
-                // [안전 체크]
-                if (wordIdx < 0 || wordIdx >= descriptionText.textInfo.wordCount)
-                    continue;
+                // 1. 줄별로 해당 파라미터 단어 인덱스 그룹핑
+                Dictionary<int, List<int>> lineToWordIdx = new();
+                for (int wordIdx = range.start; wordIdx <= range.end; wordIdx++)
+                {
+                    if (wordIdx < 0 || wordIdx >= textInfo.wordCount)
+                        continue;
+                    int firstCharIdx = textInfo.wordInfo[wordIdx].firstCharacterIndex;
+                    if (firstCharIdx < 0 || firstCharIdx >= textInfo.characterCount)
+                        continue;
 
-                // 1. 단어의 localRect(좌표+크기)를 얻는다!
-                var wordInfo = descriptionText.textInfo.wordInfo[wordIdx];
-                var localRect = wordInfo.GetLocalRect(descriptionText);
+                    int lineNum = textInfo.characterInfo[firstCharIdx].lineNumber;
+                    if (!lineToWordIdx.ContainsKey(lineNum))
+                        lineToWordIdx[lineNum] = new List<int>();
+                    lineToWordIdx[lineNum].Add(wordIdx);
+                }
 
-                // 2. 오버레이 이미지 오브젝트 생성
-                var overlayGO = new GameObject($"StickerOverlay_{paramIdx}", typeof(UnityEngine.UI.Image));
-                overlayGO.transform.SetParent(descriptionText.transform.parent, false);
-                
-                overlayGO.transform.SetAsFirstSibling();
+                // 2. 각 줄에 대해 오버레이 생성
+                foreach (var lineKv in lineToWordIdx)
+                {
+                    var wordIndices = lineKv.Value;
+                    var wordInfoStart = textInfo.wordInfo[wordIndices[0]];
+                    var wordInfoEnd = textInfo.wordInfo[wordIndices[^1]];
 
-                var img = overlayGO.GetComponent<UnityEngine.UI.Image>();
-                int spriteIndex = GetStickerSpriteIndex(sticker.type);
-                img.sprite = stickerBackgroundSprites[spriteIndex];
-                img.color = Color.white;
+                    // 좌상단과 우하단 localRect 얻기
+                    var localRectStart = wordInfoStart.GetLocalRect(descriptionText);
+                    var localRectEnd = wordInfoEnd.GetLocalRect(descriptionText);
 
-                // 3. 이미지 RectTransform 세팅
-                var rt = overlayGO.GetComponent<RectTransform>();
-                rt.pivot = new Vector2(0, 1); // 단어 좌상단에 맞춤
-                rt.anchorMin = rt.anchorMax = new Vector2(0, 1);
-                rt.localScale = Vector3.one;
-                rt.localRotation = Quaternion.identity;
+                    // 줄별로 하나의 오버레이 박스 계산
+                    float left = localRectStart.x;
+                    float right = localRectEnd.x + localRectEnd.width;
+                    float top = localRectStart.y;
+                    float bottom = localRectStart.y - localRectStart.height; // TextMeshPro는 y가 아래로 감소
 
-                // 실제 단어 영역보다 살짝 크게(여유 padding) 만들고 싶다면:
-                float padding = 6f; // px단위, 원하는만큼 조절
-                rt.sizeDelta = new Vector2(localRect.width + padding, localRect.height + padding);
-                rt.anchoredPosition = new Vector2(localRect.x - padding * 0.5f, localRect.y + padding * 0.5f);
+                    float width = right - left;
+                    float height = localRectStart.height; // 한 줄의 높이
 
-                activeStickerOverlays.Add(overlayGO);
+                    // 3. 오버레이 이미지 오브젝트 생성
+                    var overlayGO = new GameObject($"StickerOverlay_{paramIdx}_line{lineKv.Key}", typeof(UnityEngine.UI.Image));
+                    overlayGO.transform.SetParent(descriptionText.transform.parent, false);
+                    overlayGO.transform.SetAsFirstSibling();
+
+                    var img = overlayGO.GetComponent<UnityEngine.UI.Image>();
+                    int spriteIndex = GetStickerSpriteIndex(sticker.type);
+                    img.sprite = stickerBackgroundSprites[spriteIndex];
+                    img.color = Color.white;
+
+                    // 4. 이미지 RectTransform 세팅
+                    var rt = overlayGO.GetComponent<RectTransform>();
+                    rt.pivot = new Vector2(0, 1); // 줄의 좌상단에 맞춤
+                    rt.anchorMin = rt.anchorMax = new Vector2(0, 1);
+                    rt.localScale = Vector3.one;
+                    rt.localRotation = Quaternion.identity;
+
+                    // 실제 단어 영역보다 살짝 크게(여유 padding) 만들고 싶다면:
+                    float padding = 6f; // px단위, 원하는만큼 조절
+                    rt.sizeDelta = new Vector2(width + padding, height + padding);
+                    rt.anchoredPosition = new Vector2(left - padding * 0.5f, top + padding * 0.5f);
+
+                    activeStickerOverlays.Add(overlayGO);
+                }
             }
         }
+
         
         private int GetStickerSpriteIndex(StickerType type)
         {

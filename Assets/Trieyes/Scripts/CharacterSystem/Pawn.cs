@@ -67,7 +67,13 @@ namespace CharacterSystem
 
         public bool bIsLockAttack = false;
         public AttackData skillAttack001;
+
+        private float skillAttack001Cooldown = 0f;
+        private float lastSkillAttack001Time = 0f;
         public AttackData skillAttack002;
+
+        private float skillAttack002Cooldown = 0f;
+        private float lastSkillAttack002Time = 0f;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -152,7 +158,9 @@ namespace CharacterSystem
                 Utils.EventType.OnKilled,
                 Utils.EventType.OnHPUpdated
             );
-           
+
+            skillAttack001Cooldown = skillAttack001.cooldown;
+            skillAttack002Cooldown = skillAttack002.cooldown;
 
             deck.Activate(this, true);
             initBaseStat();
@@ -666,6 +674,26 @@ namespace CharacterSystem
 
         public void ExecuteSkillAttack(AttackData skillAttack)
         {
+            // 쿨타임 체크
+            if (BattleStage.now.GetTime() - lastSkillAttack001Time < skillAttack001Cooldown)
+            {
+                Debug.Log($"<color=red>[SKILL_ATTACK] {gameObject.name} skill attack 001 cooldown: {skillAttack001Cooldown}</color>");
+                return;
+            }
+            if (BattleStage.now.GetTime() - lastSkillAttack002Time < skillAttack002Cooldown)
+            {
+                Debug.Log($"<color=red>[SKILL_ATTACK] {gameObject.name} skill attack 002 cooldown: {skillAttack002Cooldown}</color>");
+                return;
+            }
+
+            if (skillAttack == skillAttack001)
+            {
+                lastSkillAttack001Time = BattleStage.now.GetTime();
+            }
+            else if (skillAttack == skillAttack002)
+            {
+                lastSkillAttack002Time = BattleStage.now.GetTime();
+            }
             _ExecuteSkillAttack(skillAttack);
         }
 

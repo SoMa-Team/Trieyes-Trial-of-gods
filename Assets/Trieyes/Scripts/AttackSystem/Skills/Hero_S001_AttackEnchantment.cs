@@ -16,9 +16,10 @@ namespace AttackComponents
     public class Hero_S001_AttackEnchantment : AttackComponent
     {
         [Header("강화 설정")]
+        public int randomEnchantmentID = 1;
         public float enchantmentDuration = 7f; // 강화 지속 시간
 
-        private Pawn character;
+        private C001_Hero character;
         private float lastEnchantmentTime = 0f;
         private float generationInterval = 1f;
 
@@ -34,11 +35,15 @@ namespace AttackComponents
 
         public override void Activate(Attack attack, Vector2 direction)
         {
-            character = attack.attacker;
+            character = attack.attacker as C001_Hero;
             // 강화 효과 초기화
             attack.attacker.bIsLockAttack = true;
             enchantmentTimer = 0f;
             isActive = true;
+
+            // 랜덤 강화 효과 선택
+            randomEnchantmentID = GetRandomEnchantmentID();
+            SetHeroWeaponElementState(randomEnchantmentID);
         }
 
         protected override void Update()
@@ -67,11 +72,14 @@ namespace AttackComponents
             }
         }
 
+        public override void Deactivate()
+        {
+            character.weaponElementState = C001_Hero.HeroWeaponElementState.None;
+            base.Deactivate();
+        }
+
         private void TriggerRandomEnchantment()
         {
-            // 랜덤 강화 효과 선택
-            int randomEnchantmentID = GetRandomEnchantmentID();
-            
             // 강화 효과 Attack 생성
             Attack enchantmentAttack = AttackFactory.Instance.ClonePrefab(randomEnchantmentID);
             BattleStage.now.AttachAttack(enchantmentAttack);
@@ -99,6 +107,28 @@ namespace AttackComponents
                     return LIGHT_ENCHANTMENT_ID;
                 default:
                     return FIRE_ENCHANTMENT_ID;
+            }
+        }
+        
+        private void SetHeroWeaponElementState(int enchantmentID)
+        {
+            switch (enchantmentID)
+            {
+                case FIRE_ENCHANTMENT_ID:
+                    character.weaponElementState = C001_Hero.HeroWeaponElementState.Fire;
+                    break;
+                case ICE_ENCHANTMENT_ID:
+                    character.weaponElementState = C001_Hero.HeroWeaponElementState.Ice;
+                    break;
+                case LIGHTNING_ENCHANTMENT_ID:
+                    character.weaponElementState = C001_Hero.HeroWeaponElementState.Lightning;
+                    break;
+                case LIGHT_ENCHANTMENT_ID:
+                    character.weaponElementState = C001_Hero.HeroWeaponElementState.Light;
+                    break;
+                default:
+                    character.weaponElementState = C001_Hero.HeroWeaponElementState.None;
+                    break;
             }
         }
     }

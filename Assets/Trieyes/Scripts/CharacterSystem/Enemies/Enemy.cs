@@ -10,11 +10,11 @@ namespace CharacterSystem
     /// <summary>
     /// 사망 시 골드를 드랍하는 기본 적 캐릭터
     /// </summary>
-    public class Enemy001 : Pawn
+    public class Enemy : Pawn
     {
         // ===== [기능 1] 적 기본 정보 =====
         [SerializeField] 
-        private int dropGold = 10; // 드랍할 골드 양
+        protected int dropGold; // 드랍할 골드 양
         
         // ===== [기능 2] 초기화 =====
         protected override void Awake()
@@ -48,10 +48,7 @@ namespace CharacterSystem
         /// 오브젝트 풀링을 위한 비활성화 함수
         /// </summary>
         public override void Deactivate()
-        {
-            // Enemy001 고유 정리 로직
-            dropGold = 10; // 기본값으로 초기화
-            
+        {        
             base.Deactivate();
             ////Debug.Log("Enemy001 Deactivated.");
         }
@@ -78,7 +75,7 @@ namespace CharacterSystem
         /// 사망 시 골드 드랍 처리
         /// </summary>
         /// <param name="param">이벤트 파라미터</param>
-        protected void OnSelfDeath(AttackResult result)
+        protected virtual void OnSelfDeath(AttackResult result)
         {
             ////Debug.Log($"<color=green>{gameObject.name} (Enemy001) is performing its unique death action: Exploding!</color>");
             

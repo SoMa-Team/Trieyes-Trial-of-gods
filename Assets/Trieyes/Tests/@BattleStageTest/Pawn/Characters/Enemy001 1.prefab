@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 373576148167022596}
-  - component: {fileID: 7048805263917066739}
+  - component: {fileID: 5915192236761275079}
   - component: {fileID: 7661104193838161178}
   - component: {fileID: 9097963647980026422}
   - component: {fileID: 3409926898952419185}
@@ -36,7 +36,7 @@ Transform:
   - {fileID: 7568451571699762206}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7048805263917066739
+--- !u!114 &5915192236761275079
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,16 +45,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 9048457892950683038}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47c3dcabfb9b40a4fabdcc6f5a19479f, type: 3}
+  m_Script: {fileID: 11500000, guid: 297282ddf9224a94b9955a65c30cac05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  moveSpeed: 5
+  moveSpeed: 2
   statPresetSO: {fileID: 11400000, guid: f1d19ea4c070b4c4383b416bd94a26a7, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 0}
-  dropGold: 10
+  bIsLockAttack: 0
+  skillAttack001: {fileID: 0}
+  skillAttack002: {fileID: 0}
+  dropGold: 0
+  dropGold: 0
 --- !u!50 &7661104193838161178
 Rigidbody2D:
   serializedVersion: 5

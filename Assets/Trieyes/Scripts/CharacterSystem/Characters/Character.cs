@@ -5,7 +5,7 @@ using Stats;
 
 namespace CharacterSystem
 {
-    public class Character001 : Pawn
+    public class Character : Pawn
     {
         // ===== [필드] =====
         
@@ -15,8 +15,6 @@ namespace CharacterSystem
         protected override void Awake()
         {
             base.Awake();
-
-            this.gold = 1000;
             
             // Collision Layer를 Character로 설정
             gameObject.layer = LayerMask.NameToLayer("Character");

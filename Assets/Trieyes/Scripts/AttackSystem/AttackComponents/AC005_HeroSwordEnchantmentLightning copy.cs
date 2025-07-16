@@ -24,7 +24,7 @@ namespace AttackComponents
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // 번개 연쇄 설정
-        public float chainDamage;
+        public int chainDamage; // Attack.StatSheet.stats 에서 가져와야 함
         public float chainRadius;
         public int chainCount;
 
@@ -32,6 +32,8 @@ namespace AttackComponents
 
         public override void Activate(Attack attack, Vector2 direction)
         {
+            base.Activate(attack, direction);
+
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.pawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
@@ -80,6 +82,7 @@ namespace AttackComponents
             lightningChainAttack.Activate(attack.attacker, direction);
             
             // 번개 연쇄 시작
+            // TO-DO: 한 타겟이 번개 1번 맞고 죽었는데, 다른 번개 맞아야 할 때 에러 발생하는 것 처리
             lightningChainComponent.StartLightningChain(targetPawn.transform.position);
         }
 

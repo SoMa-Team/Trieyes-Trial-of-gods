@@ -56,6 +56,7 @@ namespace AttackComponents
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
             // 새로운 Attack 생성
+            // TO-DO : AttackFactory.Instance.Create 로 변경해야 함
             Attack dotAttack = AttackFactory.Instance.ClonePrefab(DOT_id);
             BattleStage.now.AttachAttack(dotAttack);
             dotAttack.target = targetPawn;

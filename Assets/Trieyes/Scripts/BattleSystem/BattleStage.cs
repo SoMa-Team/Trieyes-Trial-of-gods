@@ -89,5 +89,86 @@ namespace BattleSystem
         {
             return Time.time - startTime;
         }
+
+        public List<Enemy> GetEnemiesInRectRange(Vector2 start, Vector2 end)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in enemies)
+            {
+                // 파괴된 객체 체크
+                if (enemy == null || enemy.transform == null)
+                {
+                    continue;
+                }
+                
+                if (enemy.transform.position.x > start.x && enemy.transform.position.x < end.x &&
+                    enemy.transform.position.y > start.y && enemy.transform.position.y < end.y)
+                {
+                    enemiesInRange.Add(enemy as Enemy);
+                }
+            }
+            return enemiesInRange;
+        }
+
+        public List<Enemy> GetEnemiesInRectRangeOrderByDistance(Vector2 start, Vector2 end)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in enemies)
+            {
+                // 파괴된 객체 체크
+                if (enemy == null || enemy.transform == null)
+                {
+                    continue;
+                }
+                
+                if (enemy.transform.position.x > start.x && enemy.transform.position.x < end.x &&
+                    enemy.transform.position.y > start.y && enemy.transform.position.y < end.y)
+                {
+                    enemiesInRange.Add(enemy as Enemy);
+                }
+            }
+            enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, start).CompareTo(Vector2.Distance(b.transform.position, start)));
+            return enemiesInRange;
+        }
+
+        public List<Enemy> GetEnemiesInCircleRange(Vector2 start, float radius, int count)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in enemies)
+            {
+                // 파괴된 객체 체크
+                if (enemy == null || enemy.transform == null)
+                {
+                    continue;
+                }
+                
+                if (Vector2.Distance(enemy.transform.position, start) < radius)
+                {
+                    enemiesInRange.Add(enemy as Enemy);
+                }
+            }
+            return enemiesInRange;
+        }
+
+        public List<Enemy> GetEnemiesInCircleRangeOrderByDistance(Vector2 start, float radius, int count)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in enemies)
+            {
+                // 파괴된 객체 체크
+                if (enemy == null || enemy.transform == null)
+                {
+                    continue;
+                }
+                
+                if (Vector2.Distance(enemy.transform.position, start) < radius)
+                {
+                    enemiesInRange.Add(enemy as Enemy);
+                }
+            }
+            enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, start).CompareTo(Vector2.Distance(b.transform.position, start)));
+            return enemiesInRange;
+        }
+
     }
 } 

@@ -39,7 +39,7 @@ namespace AttackComponents
         /// </summary>
         public virtual void Activate(Attack attack, Vector2 direction)
         {
-            
+            this.attack = attack;
         }
 
         /// <summary>

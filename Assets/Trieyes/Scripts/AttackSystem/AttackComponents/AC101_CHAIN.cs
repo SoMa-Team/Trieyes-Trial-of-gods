@@ -16,7 +16,7 @@ namespace AttackComponents
     public class AC101_CHAIN : AttackComponent
     {
         [Header("번개 연쇄 설정")]
-        public float chainDamage;
+        public int chainDamage;
         public float chainRadius; // 번개가 전염되는 최대 거리
         public int chainCount; // 번개 전염 횟수
         public float chainDelay; // 연쇄 간격
@@ -28,6 +28,8 @@ namespace AttackComponents
         // 번개 연쇄 상태 관리
         private LightningChainState chainState = LightningChainState.None;
         private float chainTimer = 0f;
+
+        private List<Enemy> targetEnemies = new List<Enemy>();
         private List<Vector2> chainPositions = new List<Vector2>();
         private int currentChainCount = 0;
         private Vector2 currentChainPosition;
@@ -50,6 +52,7 @@ namespace AttackComponents
 
         public override void Activate(Attack attack, Vector2 direction)
         {
+            base.Activate(attack, direction);
             // 초기 상태 설정
             chainState = LightningChainState.None;
             chainTimer = 0f;
@@ -72,7 +75,7 @@ namespace AttackComponents
             InitializeTargetQueue(startPosition);
 
             // 첫 번째 타겟에 데미지 적용
-            ApplyLightningDamage(startPosition);
+            ApplyLightningDamage();
         }
 
         protected override void Update()
@@ -126,14 +129,23 @@ namespace AttackComponents
             }
 
             // 큐에서 다음 타겟을 가져옴
-            Pawn nextTarget = targetQueue.Dequeue();
+            Enemy nextTarget = targetQueue.Dequeue() as Enemy;
+            
+            // 파괴된 객체 체크
+            if (nextTarget == null || nextTarget.transform == null)
+            {
+                Debug.LogWarning("다음 타겟 Enemy가 파괴되었습니다. 건너뜁니다.");
+                ProcessNextChain(); // 재귀적으로 다음 타겟 처리
+                return;
+            }
+            
             Vector2 nextPos = nextTarget.transform.position;
 
             // 번개 VFX 생성
             CreateLightningVFX(currentChainPosition, nextPos);
 
             // 데미지 적용
-            ApplyLightningDamage(nextPos);
+            ApplyLightningDamage();
 
             // 다음 연쇄 준비
             currentChainPosition = nextPos;
@@ -148,50 +160,34 @@ namespace AttackComponents
 
             // 초기 범위에서 모든 적을 찾기
             reusableColliders.Clear();
-            Physics2D.OverlapCircle(startPosition, chainRadius, new ContactFilter2D().NoFilter(), reusableColliders);
+            targetEnemies = BattleStage.now.GetEnemiesInCircleRangeOrderByDistance(startPosition, chainRadius, chainCount);
 
-            // Pawn들을 거리 순으로 정렬할 리스트
-            List<(Pawn pawn, float distance)> sortedTargets = new List<(Pawn, float)>();
-
-            // 모든 적을 거리와 함께 수집 (Controller가 없는 Pawn만 - 즉, 적만)
-            for (int i = 0; i < reusableColliders.Count; i++)
+            foreach (var enemy in targetEnemies)
             {
-                Collider2D collider = reusableColliders[i];
-                if (collider == null) continue;
-
-                Pawn enemy = collider.GetComponent<Pawn>();
-                if (enemy != null && enemy.GetComponent<Controller>() is EnemyController)
+                // 파괴된 객체 체크
+                if (enemy == null || enemy.transform == null)
                 {
-                    float distance = Vector2.Distance(startPosition, enemy.transform.position);
-                    sortedTargets.Add((enemy, distance));
+                    continue;
                 }
-            }
-
-            // 거리 순으로 정렬 (가까운 순)
-            sortedTargets.Sort((a, b) => a.distance.CompareTo(b.distance));
-
-            // chainCount만큼만 큐에 추가
-            int targetCount = Mathf.Min(chainCount, sortedTargets.Count);
-            for (int i = 0; i < targetCount; i++)
-            {
-                targetQueue.Enqueue(sortedTargets[i].pawn);
+                targetQueue.Enqueue(enemy);
             }
 
             Debug.Log($"targetQueue.Count: {targetQueue.Count}");
             foreach (var target in targetQueue)
             {
-                Debug.Log($"targetQueue: {target.pawnName}, Position: {target.transform.position}");
+                if (target != null && target.transform != null)
+                {
+                    Debug.Log($"targetQueue: {target.pawnName}, Position: {target.transform.position}");
+                }
             }
         }
-
-
 
         private void CreateLightningVFX(Vector2 start, Vector2 end)
         {
             // VFX 오브젝트 생성 (실제 구현에서는 오브젝트 풀링 사용 권장)
             if (lightningVFXPrefab != null)
             {
-                GameObject vfxObject = Instantiate(lightningVFXPrefab);
+                GameObject vfxObject = Instantiate(lightningVFXPrefab); // TO-DO : 계층상 자식으로 VFX를 두고 Activate, Deactivate로 처리하기
                 vfxObject.transform.position = (start + end) * 0.5f; // 중간 위치
 
                 // LightningVFX 컴포넌트 찾아서 번개 효과 시작
@@ -206,22 +202,32 @@ namespace AttackComponents
             }
         }
 
-        private void ApplyLightningDamage(Vector2 position)
+        private void ApplyLightningDamage()
         {
-            // 위치에서 Pawn 찾기
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(position, 0.5f);
-            foreach (var collider in colliders)
+            // 큐가 비어있는지 체크
+            if (targetQueue.Count == 0)
             {
-                Pawn target = collider.GetComponent<Pawn>();
-                if (target != null)
-                {
-                    AttackResult result = new AttackResult();
-                    result.attacker = attack.attacker;
-                    result.totalDamage = (int)chainDamage;
-                    target.ApplyDamage(result);
-                    break; // 첫 번째 Pawn에만 데미지 적용
-                }
+                Debug.LogWarning("targetQueue가 비어있습니다. 번개 연쇄를 종료합니다.");
+                chainState = LightningChainState.Finished;
+                return;
             }
+
+            // 제일 가까운 적 1명에게 데미지 적용
+            Enemy targetEnemy = targetQueue.Peek() as Enemy;
+            
+            // 파괴된 객체 체크
+            if (targetEnemy == null || targetEnemy.transform == null)
+            {
+                Debug.LogWarning("타겟 Enemy가 파괴되었습니다. 큐에서 제거합니다.");
+                targetQueue.Dequeue(); // 파괴된 객체 제거
+                ApplyLightningDamage(); // 재귀적으로 다음 타겟 처리
+                return;
+            }
+            
+            AttackResult result = new AttackResult();
+            result.attacker = attack.attacker;
+            result.totalDamage = chainDamage;
+            targetEnemy.ApplyDamage(result);
         }
     }
 

@@ -5,17 +5,18 @@ using Stats;
 
 namespace CharacterSystem
 {
-    public class C001_Hero : Character
+    public enum HeroWeaponElementState
+    {
+        None,
+        Fire,
+        Ice,
+        Lightning,
+        Light,
+    }
+    
+    public class Character001_Hero : Character
     {
         // ===== [필드] =====
-        public enum HeroWeaponElementState
-        {
-            None,
-            Fire,
-            Ice,
-            Lightning,
-            Light,
-        }
 
         public HeroWeaponElementState weaponElementState = HeroWeaponElementState.None;
         

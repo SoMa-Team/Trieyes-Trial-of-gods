@@ -44,13 +44,13 @@ namespace AttackSystem
 
             if (parent is not null)
             {
-                attack.transform.position = parent.transform.position;    
+                attack.transform.position = parent.transform.position;
             }
             else
             {
                 attack.transform.position = attacker.transform.position;
             }
-            
+                        
             var th = Mathf.Atan2(direction.y, direction.x) *  Mathf.Rad2Deg;
             attack.transform.rotation = Quaternion.Euler(new Vector3(0, 0, th));
             

@@ -1,11 +1,7 @@
 using AttackSystem;
 using CharacterSystem;
-using Stats;
 using UnityEngine;
-using System.Threading;
 using BattleSystem;
-using System.Collections.Generic;
-using static CharacterSystem.C001_Hero;
 
 namespace AttackComponents
 {
@@ -20,7 +16,7 @@ namespace AttackComponents
     /// </summary>
     public class Hero_S002_AttackEnchantmentEnhance : AttackComponent
     {
-        private C001_Hero character;
+        private Character001_Hero character;
         private float lastEnchantmentTime = 0f;
         private float generationInterval = 1f;
 
@@ -38,7 +34,7 @@ namespace AttackComponents
 
         public override void Activate(Attack attack, Vector2 direction)
         {
-            character = attack.attacker as C001_Hero;
+            character = attack.attacker as Character001_Hero;
             // 강화 효과 초기화
             attack.attacker.bIsLockAttack = true;
             isActive = true;

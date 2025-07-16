@@ -15,16 +15,16 @@ namespace AttackComponents
 
     public enum DOTCollisionType
     {
-        Individual,
-        AreaRect,
-        AreaCircle,
+        Individual, // 모기처럼 한명한테 붙어서 도트 주는 놈
+        AreaRect, // 네모 장판 범위 내 모든 적에게 도트 주는 놈
+        AreaCircle, // 원형 장판 범위 내 모든 적에게 도트 주는 놈
     }
 
     /// <summary>
     /// 도트 효과 적용
     /// 공격에 맞은 적에게 지속적으로 화상데미지(**도트**)를 입힙니다
     /// </summary>
-    public class AC100_DOT  : AttackComponent
+    public class AC100_AOE  : AttackComponent
     {   
         // 도트 타입 ENUM
         public DOTType dotType;

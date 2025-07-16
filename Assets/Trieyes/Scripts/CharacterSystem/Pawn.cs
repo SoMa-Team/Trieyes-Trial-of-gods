@@ -69,11 +69,11 @@ namespace CharacterSystem
         public AttackData skillAttack001;
 
         private float skillAttack001Cooldown = 0f;
-        private float lastSkillAttack001Time = 0f;
+        private float lastSkillAttack001Time = -999f;
         public AttackData skillAttack002;
 
         private float skillAttack002Cooldown = 0f;
-        private float lastSkillAttack002Time = 0f;
+        private float lastSkillAttack002Time = -999f;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -159,8 +159,8 @@ namespace CharacterSystem
                 Utils.EventType.OnHPUpdated
             );
 
-            skillAttack001Cooldown = skillAttack001.cooldown;
-            skillAttack002Cooldown = skillAttack002.cooldown;
+            skillAttack001Cooldown = skillAttack001 != null ? skillAttack001.cooldown : 0f;
+            skillAttack002Cooldown = skillAttack002 != null ? skillAttack002.cooldown : 0f;
 
             deck.Activate(this, true);
             initBaseStat();
@@ -656,6 +656,17 @@ namespace CharacterSystem
                 lastAttackTime = Time.time;
             }
         }
+
+        public virtual void PerformAutoAttack(AttackData attackData)
+        {
+            if (CheckTimeInterval())
+            {
+                CalculateAttackCooldown();
+                ExecuteAttack(attackData);
+
+                lastAttackTime = Time.time;
+            }
+        }
         
         /// <summary>
         /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack에게 전달합니다.
@@ -670,6 +681,14 @@ namespace CharacterSystem
             StatSheet attackStats = CollectAttackStats();
             ChangeAnimationState("ATTACK");
             Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
+        }
+
+        protected virtual void ExecuteAttack(AttackData attackData)
+        {
+            if (attackData == null) return;
+            StatSheet attackStats = CollectAttackStats();
+            ChangeAnimationState("ATTACK");
+            Attack attack = AttackFactory.Instance.Create(attackData, this, null, LastMoveDirection);
         }
 
         public void ExecuteSkillAttack(AttackData skillAttack)

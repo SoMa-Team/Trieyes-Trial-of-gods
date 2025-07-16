@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 3193531364552535628}
+  - component: {fileID: 6688702165203733951}
   m_Layer: 0
   m_Name: AC005
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3193531364552535628
+--- !u!114 &6688702165203733951
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25e287fa923d5ba40a41739c4792a86f, type: 3}
+  m_Script: {fileID: 11500000, guid: 644c06c9e15484a439f039dbcdf81fc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   attackAngle: 90
@@ -49,10 +49,10 @@ MonoBehaviour:
   attackRadius: 1
   direction: {x: 0, y: 0}
   segments: 8
-  chainDamage: 100
-  chainRadius: 100
-  chainCount: 6
-  chainDelay: 0.4
+  chainDamage: 90
+  chainRadius: 20
+  chainCount: 10
+  chainDelay: 0.1
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -193,7 +193,7 @@ MonoBehaviour:
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 3193531364552535628}
+  - {fileID: 6688702165203733951}
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

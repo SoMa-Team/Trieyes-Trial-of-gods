@@ -1,10 +1,7 @@
 using AttackSystem;
 using CharacterSystem;
-using Stats;
 using UnityEngine;
-using System.Threading;
 using BattleSystem;
-using System.Collections.Generic;
 
 namespace AttackComponents
 {
@@ -19,7 +16,7 @@ namespace AttackComponents
         public int randomEnchantmentID = 1;
         public float enchantmentDuration = 7f; // 강화 지속 시간
 
-        private C001_Hero character;
+        private Character001_Hero character;
         private float lastEnchantmentTime = 0f;
         private float generationInterval = 1f;
 
@@ -35,7 +32,7 @@ namespace AttackComponents
 
         public override void Activate(Attack attack, Vector2 direction)
         {
-            character = attack.attacker as C001_Hero;
+            character = attack.attacker as Character001_Hero;
             // 강화 효과 초기화
             attack.attacker.bIsLockAttack = true;
             enchantmentTimer = 0f;
@@ -74,8 +71,9 @@ namespace AttackComponents
 
         public override void Deactivate()
         {
-            character.weaponElementState = C001_Hero.HeroWeaponElementState.None;
+            character.weaponElementState = HeroWeaponElementState.None;
             base.Deactivate();
+            AttackFactory.Instance.Deactivate(attack);
         }
 
         private void TriggerRandomEnchantment()
@@ -115,19 +113,19 @@ namespace AttackComponents
             switch (enchantmentID)
             {
                 case FIRE_ENCHANTMENT_ID:
-                    character.weaponElementState = C001_Hero.HeroWeaponElementState.Fire;
+                    character.weaponElementState = HeroWeaponElementState.Fire;
                     break;
                 case ICE_ENCHANTMENT_ID:
-                    character.weaponElementState = C001_Hero.HeroWeaponElementState.Ice;
+                    character.weaponElementState = HeroWeaponElementState.Ice;
                     break;
                 case LIGHTNING_ENCHANTMENT_ID:
-                    character.weaponElementState = C001_Hero.HeroWeaponElementState.Lightning;
+                    character.weaponElementState = HeroWeaponElementState.Lightning;
                     break;
                 case LIGHT_ENCHANTMENT_ID:
-                    character.weaponElementState = C001_Hero.HeroWeaponElementState.Light;
+                    character.weaponElementState = HeroWeaponElementState.Light;
                     break;
                 default:
-                    character.weaponElementState = C001_Hero.HeroWeaponElementState.None;
+                    character.weaponElementState = HeroWeaponElementState.None;
                     break;
             }
         }

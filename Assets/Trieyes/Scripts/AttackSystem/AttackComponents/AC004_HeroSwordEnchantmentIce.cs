@@ -59,6 +59,7 @@ namespace AttackComponents
             Attack debuffAttack = AttackFactory.Instance.ClonePrefab(DEBUFF_ID);
             BattleStage.now.AttachAttack(debuffAttack);
             debuffAttack.target = targetPawn;
+            
             var debuffComponent = debuffAttack.components[0] as AC1000_DEBUFF;
             debuffComponent.debuffType = DEBUFFType.DecreaseMoveSpeed;
             debuffComponent.debuffValue = 10;

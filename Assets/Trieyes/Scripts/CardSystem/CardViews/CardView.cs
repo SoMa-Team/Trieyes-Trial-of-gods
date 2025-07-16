@@ -28,7 +28,7 @@ namespace CardViews
         public TMP_Text statIntegerValueText;
         public Image selectionOutline;
 
-        public List<Sprite> stickerBackgroundSprites;
+        public List<Sprite> stickerBackgroundSprites; // [0]=StatType, [1]=Number
 
         // ===== [내부 필드] =====
         private Card card;
@@ -60,19 +60,22 @@ namespace CardViews
         }
 
         /// <summary>
-        /// 카드 정보에 따라 UI 갱신
+        /// 카드 정보에 따라 UI 전체 갱신
         /// </summary>
         public void UpdateView()
         {
+            // 기본 정보/스탯 등 UI 반영
             illustrationImage.sprite = card.illustration;
             expFill.fillAmount = (float)card.cardEnhancement.exp.Value / (card.cardEnhancement.level.Value * 10);
 
             cardNameText.text = card.cardName;
-            var descParams = card.GetEffectiveParamTexts();
-            descriptionText.text = FormatDescription(card.cardDescription, descParams);
             levelText.text = $"Lv.{card.cardEnhancement.level.Value}";
 
-            // --- 속성 엠블럼 처리 ---
+            // 카드 설명의 파라미터 값 적용
+            var descParams = card.GetEffectiveParamTexts();
+            descriptionText.text = FormatDescription(card.cardDescription, descParams);
+
+            // 속성 엠블럼 처리
             if (card.properties != null && card.properties.Length > 0 && propertyEmblemTable != null)
             {
                 propertyEmblemImage.sprite = propertyEmblemTable.GetEmblem(card.properties[0]);
@@ -80,7 +83,7 @@ namespace CardViews
             }
             else propertyEmblemImage.enabled = false;
 
-            // --- 스탯 엠블럼 및 값 표시 ---
+            // 스탯 엠블럼 및 값 표시
             if (card.cardStats.stats.Count > 0 && statTypeEmblemTable != null)
             {
                 var stat = card.cardStats.stats[0];
@@ -94,9 +97,14 @@ namespace CardViews
                 statTypeEmblemImage.enabled = false;
                 statIntegerValueText.enabled = false;
             }
+
+            // --- 스티커 오버레이 ---
             SyncStickerOverlays();
         }
-        
+
+        /// <summary>
+        /// 카드 설명 내 치환 파라미터 단어에 스티커 배경 오버레이 이미지를 생성/배치
+        /// </summary>
         private void SyncStickerOverlays()
         {
             // 1. 기존 오버레이 제거
@@ -104,11 +112,11 @@ namespace CardViews
                 Destroy(go);
             activeStickerOverlays.Clear();
 
-            // [중요] 텍스트 메쉬 프로 mesh정보 최신화
+            // 2. 최신 텍스트 mesh 정보 확보
             descriptionText.ForceMeshUpdate();
             var textInfo = descriptionText.textInfo;
 
-            // 2. 모든 스티커 파라미터(혹은 stickerOverrides.Keys) 순회
+            // 3. 각 스티커 파라미터마다 줄 단위로 오버레이를 생성
             foreach (var kv in card.stickerOverrides)
             {
                 int paramIdx = kv.Key;
@@ -118,7 +126,7 @@ namespace CardViews
                     continue;
                 var range = card.paramWordRanges[paramIdx];
 
-                // 1. 줄별로 해당 파라미터 단어 인덱스 그룹핑
+                // [핵심] 단어 인덱스 → 줄(line) 단위 그룹핑
                 Dictionary<int, List<int>> lineToWordIdx = new();
                 for (int wordIdx = range.start; wordIdx <= range.end; wordIdx++)
                 {
@@ -127,52 +135,48 @@ namespace CardViews
                     int firstCharIdx = textInfo.wordInfo[wordIdx].firstCharacterIndex;
                     if (firstCharIdx < 0 || firstCharIdx >= textInfo.characterCount)
                         continue;
-
                     int lineNum = textInfo.characterInfo[firstCharIdx].lineNumber;
                     if (!lineToWordIdx.ContainsKey(lineNum))
                         lineToWordIdx[lineNum] = new List<int>();
                     lineToWordIdx[lineNum].Add(wordIdx);
                 }
 
-                // 2. 각 줄에 대해 오버레이 생성
+                // 4. 줄별로 하나의 오버레이 박스를 생성
                 foreach (var lineKv in lineToWordIdx)
                 {
                     var wordIndices = lineKv.Value;
                     var wordInfoStart = textInfo.wordInfo[wordIndices[0]];
                     var wordInfoEnd = textInfo.wordInfo[wordIndices[^1]];
 
-                    // 좌상단과 우하단 localRect 얻기
+                    // 각 줄의 "첫 단어"와 "마지막 단어"의 localRect(좌표+크기)
                     var localRectStart = wordInfoStart.GetLocalRect(descriptionText);
                     var localRectEnd = wordInfoEnd.GetLocalRect(descriptionText);
 
-                    // 줄별로 하나의 오버레이 박스 계산
+                    // (줄 내 여러 단어를 커버하는) 오버레이 박스 크기/좌표 계산
                     float left = localRectStart.x;
                     float right = localRectEnd.x + localRectEnd.width;
                     float top = localRectStart.y;
-                    float bottom = localRectStart.y - localRectStart.height; // TextMeshPro는 y가 아래로 감소
-
+                    float height = localRectStart.height;
                     float width = right - left;
-                    float height = localRectStart.height; // 한 줄의 높이
 
-                    // 3. 오버레이 이미지 오브젝트 생성
+                    // 5. 실제 오버레이 이미지 오브젝트 생성 및 배치
                     var overlayGO = new GameObject($"StickerOverlay_{paramIdx}_line{lineKv.Key}", typeof(UnityEngine.UI.Image));
                     overlayGO.transform.SetParent(descriptionText.transform.parent, false);
-                    overlayGO.transform.SetAsFirstSibling();
+                    overlayGO.transform.SetAsFirstSibling(); // 텍스트 뒤에 렌더
 
                     var img = overlayGO.GetComponent<UnityEngine.UI.Image>();
-                    int spriteIndex = GetStickerSpriteIndex(sticker.type);
-                    img.sprite = stickerBackgroundSprites[spriteIndex];
+                    img.sprite = stickerBackgroundSprites[GetStickerSpriteIndex(sticker.type)];
                     img.color = Color.white;
 
-                    // 4. 이미지 RectTransform 세팅
+                    // RectTransform 세팅 (좌상단 anchor/pivot)
                     var rt = overlayGO.GetComponent<RectTransform>();
-                    rt.pivot = new Vector2(0, 1); // 줄의 좌상단에 맞춤
+                    rt.pivot = new Vector2(0, 1);
                     rt.anchorMin = rt.anchorMax = new Vector2(0, 1);
                     rt.localScale = Vector3.one;
                     rt.localRotation = Quaternion.identity;
 
-                    // 실제 단어 영역보다 살짝 크게(여유 padding) 만들고 싶다면:
-                    float padding = 6f; // px단위, 원하는만큼 조절
+                    // padding은 여유롭게(글자가 꽉 차보이지 않게)
+                    float padding = 6f;
                     rt.sizeDelta = new Vector2(width + padding, height + padding);
                     rt.anchoredPosition = new Vector2(left - padding * 0.5f, top + padding * 0.5f);
 
@@ -181,18 +185,19 @@ namespace CardViews
             }
         }
 
-        
+        /// <summary>
+        /// 스티커 타입별 배경 이미지 인덱스 반환
+        /// </summary>
         private int GetStickerSpriteIndex(StickerType type)
         {
             switch (type)
             {
                 case StickerType.StatType: return 0;
                 case StickerType.Number:   return 1;
-                // case StickerType.YourNewType: return 2;
                 default: return 0;
             }
         }
-        
+
         /// <summary>
         /// 카드 설명(템플릿)에 실제 파라미터 값을 대입해 반환
         /// </summary>
@@ -200,7 +205,6 @@ namespace CardViews
         {
             if (descParams == null || descParams.Count == 0)
                 return template;
-
             string result = template;
             for (int i = 0; i < descParams.Count; i++)
                 result = result.Replace("{" + i + "}", descParams[i]);
@@ -208,7 +212,7 @@ namespace CardViews
         }
 
         /// <summary>
-        /// 카드 설명 클릭 시 단어 인덱스 계산 & 스티커 적용 시도.  
+        /// 카드 설명 클릭 시 단어 인덱스 계산 & 스티커 적용 시도.
         /// 아니면 부모 덱 뷰로 카드 클릭 알림.
         /// </summary>
         public void OnPointerClick(PointerEventData eventData)
@@ -219,9 +223,9 @@ namespace CardViews
             {
                 int wordIndex = TMP_TextUtilities.FindIntersectingWord(
                     descriptionText, eventData.position, eventData.pressEventCamera);
-                
+
                 Debug.Log($"[CardView] 클릭 단어 인덱스: {wordIndex}");
-            
+
                 if (wordIndex != -1)
                 {
                     var sticker = ShopSceneManager.Instance?.selectedSticker;
@@ -236,7 +240,6 @@ namespace CardViews
                         else
                         {
                             Debug.LogWarning("[CardView] 스티커 적용 실패: 타입 불일치 또는 불가");
-                            // (추후 피드백 UI 가능)
                         }
                         return;
                     }

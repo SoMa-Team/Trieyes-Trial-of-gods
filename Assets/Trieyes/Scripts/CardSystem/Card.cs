@@ -5,6 +5,8 @@ using CardActions;
 using System;
 using CharacterSystem;
 using StickerSystem;
+using Utils;
+using System.Linq;
 
 namespace CardSystem
 {
@@ -14,211 +16,241 @@ namespace CardSystem
     using CardID = Int32;
 
     /// <summary>
-    /// 카드 시스템의 핵심 클래스입니다.
-    /// 카드의 기본 정보, 액션, 스탯, 강화 정보를 관리합니다.
+    /// 카드의 기본 정보를 담고, 파라미터 치환, 스티커 적용 등 
+    /// 카드의 핵심 데이터와 기능을 관리하는 클래스입니다.
     /// CardInfo와 CardAction을 분리하여 데이터와 로직을 명확히 구분합니다.
     /// </summary>
     public class Card
     {
-        // --- 필드 ---
-
-        /// <summary>
-        /// 카드 ID 생성을 위한 정적 카운터입니다.
-        /// 새로운 카드가 생성될 때마다 자동으로 증가합니다.
-        /// </summary>
+        // ==== [필드] ====
+        
+        /// <summary> 카드 ID 생성을 위한 정적 카운터 </summary>
         private static int idCounter = 0;
 
         [Header("Card Info")]
-        /// <summary>
-        /// 카드의 고유 식별자입니다.
-        /// </summary>
+        /// <summary> 카드의 고유 식별자 (자동 증가) </summary>
         public CardID cardId;
 
-        /// <summary>
-        /// 카드가 가진 속성들의 배열입니다.
-        /// 공격, 방어, 체력 등의 속성을 정의합니다.
-        /// </summary>
+        /// <summary> 카드의 속성 (공격/방어/속도 등) </summary>
         public Property[] properties;
 
-        /// <summary>
-        /// 카드의 희귀도입니다.
-        /// Common, Uncommon, Rare, Epic, Legendary 중 하나입니다.
-        /// </summary>
+        /// <summary> 카드의 희귀도 </summary>
         public Rarity rarity;
 
-        /// <summary>
-        /// 카드의 이름입니다.
-        /// UI에서 표시되는 카드의 제목입니다.
-        /// </summary>
+        /// <summary> 카드명 </summary>
         public string cardName;
 
-        /// <summary>
-        /// 카드의 일러스트레이션 이미지입니다.
-        /// UI에서 카드를 시각적으로 표현하는 데 사용됩니다.
-        /// </summary>
+        /// <summary> 카드 일러스트 이미지 </summary>
         public Sprite illustration;
 
-        /// <summary>
-        /// 카드의 설명 텍스트입니다.
-        /// UI에서 카드의 효과를 설명하는 데 사용됩니다.
-        /// </summary>
+        /// <summary> 카드 설명 (치환 파라미터 포함) </summary>
         [TextArea] public string cardDescription;
 
-        /// <summary>
-        /// 해당 카드가 반응하는 이벤트 타입들의 리스트입니다.
-        /// 이벤트 처리 최적화를 위해 사용됩니다.
-        /// </summary>
+        /// <summary> 카드가 반응하는 이벤트 타입 리스트 </summary>
         public List<Utils.EventType> eventTypes = new();
 
-        /// <summary>
-        /// 카드의 액션을 정의하는 CardAction 객체입니다.
-        /// 카드의 특별한 효과와 로직을 담당합니다.
-        /// </summary>
+        /// <summary> 카드 액션(행동/효과) </summary>
         public CardAction cardAction;
 
-        /// <summary>
-        /// 카드의 스탯 정보를 관리하는 객체입니다.
-        /// 카드의 속성과 레벨에 따른 스탯을 계산합니다.
-        /// </summary>
+        /// <summary> 카드의 현재 스탯 </summary>
         public CardStat cardStats;
 
-        /// <summary>
-        /// 카드의 강화 정보(레벨, 경험치)를 관리하는 객체입니다.
-        /// 카드의 레벨업과 경험치 시스템을 담당합니다.
-        /// </summary>
+        /// <summary> 카드의 강화 정보 (레벨/경험치) </summary>
         public CardEnhancement cardEnhancement;
-        
-        public Dictionary<int, Sticker> stickerOverrides = new Dictionary<int, Sticker>();
-        
+
+        /// <summary> 각 파라미터(치환값)별 스티커 오버라이드 맵 </summary>
+        public Dictionary<int, Sticker> stickerOverrides = new();
+
+        /// <summary> 카드 파라미터의 원본 값 리스트 </summary>
         public List<string> baseParams;
-        
+
+        /// <summary> 각 파라미터가 descriptionText에서 차지하는 [시작, 끝] 단어 인덱스 리스트 </summary>
         public List<ParamWordRange> paramWordRanges;
-        
-        /// <summary>
-        /// 카드를 소유한 캐릭터(Pawn)입니다.
-        /// 카드의 효과가 적용될 대상입니다.
-        /// </summary>
+
+        /// <summary> 카드 소유자 </summary>
         private Pawn owner;
 
-        // --- 생성자 ---
-
-        /// <summary>
-        /// Card의 새 인스턴스를 초기화합니다.
-        /// 자동으로 고유한 cardId를 할당합니다.
-        /// </summary>
+        // ==== [생성자] ====
         public Card()
         {
             this.cardId = idCounter++;
         }
-        
+
+        /// <summary>
+        /// 카드에 액션을 할당 (내부 참조까지 세팅)
+        /// </summary>
         public void SetCardAction(CardAction action)
         {
             cardAction = action;
             cardAction.SetCard(this);
         }
 
-        // --- public 메서드 ---
+        // ==== [카드 기본 기능] ====
 
         /// <summary>
-        /// 카드를 활성화하고 초기화합니다.
-        /// 스탯과 강화 정보를 설정하여 카드를 사용 가능한 상태로 만듭니다.
+        /// 카드를 활성화(초기화)하고 스탯/강화 정보를 준비합니다.
         /// </summary>
-        /// <param name="level">카드의 초기 레벨</param>
         public void Activate(int level)
         {
             Debug.Log($"Card Activated! {cardId}, card level: {level}");
-            // 스탯과 강화 정보 초기화
             cardStats = new CardStat(properties, level);
             cardEnhancement = new CardEnhancement(level, 0);
         }
 
         /// <summary>
-        /// 카드를 비활성화합니다.
-        /// 현재는 구현되지 않았습니다.
+        /// 카드 비활성화 (리소스 해제 등)
         /// </summary>
         public void Deactivate()
         {
-            // TODO: 카드 비활성화 로직 구현
-            // - 리소스 해제
-            // - 이벤트 구독 해제
-            // - 상태 초기화
+            // TODO: 필요시 구현
         }
 
         /// <summary>
-        /// 카드 이벤트를 트리거합니다.
-        /// CardAction의 OnEvent 메서드를 호출하여 카드의 특별한 효과를 실행합니다.
+        /// 카드 이벤트 트리거 (이벤트 발생시 효과 발동)
         /// </summary>
-        /// <param name="eventType">발생한 이벤트 타입</param>
-        /// <param name="deck">카드가 속한 덱</param>
-        /// <param name="param">이벤트와 함께 전달될 추가 매개변수 (선택사항)</param>
         public void TriggerCardEvent(Utils.EventType eventType, CardSystem.Deck deck, object param = null)
         {
-            cardAction.OnEvent(owner, deck, eventType, param);
+            cardAction?.OnEvent(owner, deck, eventType, param);
         }
 
         /// <summary>
-        /// 카드의 소유자를 설정합니다.
-        /// 카드의 효과가 적용될 캐릭터를 지정합니다.
+        /// 카드의 소유자(적용 대상) 설정
         /// </summary>
-        /// <param name="pawn">카드를 소유할 캐릭터</param>
         public void SetOwner(CharacterSystem.Pawn pawn)
         {
             owner = pawn;
         }
 
+        /// <summary>
+        /// 카드 레벨업 및 스탯 갱신
+        /// </summary>
         public void LevelUp()
         {
             cardEnhancement.level.AddToBasicValue(1);
             RefreshStats();
         }
 
+        /// <summary>
+        /// 카드의 현재 스탯을 새로 고침
+        /// </summary>
         public void RefreshStats()
         {
-            // 현재 property와 레벨로 CardStat 새로 생성
             cardStats = new CardStat(properties, cardEnhancement.level.Value);
         }
 
-        // public bool TryApplyStickerOverride(int paramIndex, Sticker sticker)
-        // {
-        //     if (paramIndex < 0 || paramWordRanges == null
-        //                        || !paramWordRanges.Contains(paramIndex))
-        //         return false;
-        //
-        //     // [2] 해당 파라미터의 타입과 스티커 타입 일치하는지 체크 (Number/StatType 등)
-        //     int baseParamIdx = paramWordRanges.IndexOf(paramIndex);
-        //
-        //     // 실제 파라미터 타입 정보에 따라 검사
-        //     var paramKind = cardAction.GetParamDef(baseParamIdx).kind; // ParamKind.Number, .StatType 등
-        //
-        //     if ((paramKind == ParamKind.Number && sticker.type != StickerType.Number) ||
-        //         (paramKind == ParamKind.StatType && sticker.type != StickerType.StatType))
-        //         return false;
-        //
-        //     // [3] 덮어쓰기 (스티커는 항상 마지막에 붙은 것만 반영)
-        //     stickerOverrides[baseParamIdx] = sticker;
-        //     return true;
-        // }
+        // ==== [파라미터-스티커 시스템] ====
 
-        
+        /// <summary>
+        /// 실제로 치환될 파라미터 텍스트 리스트를 반환 (스티커 적용 반영)
+        /// </summary>
+        public List<string> GetEffectiveParamTexts()
+        {
+            var result = new List<string>();
+            for (int i = 0; i < baseParams.Count; i++)
+            {
+                if (stickerOverrides.TryGetValue(i, out var sticker))
+                {
+                    // 스티커로 오버라이드
+                    switch (sticker.type)
+                    {
+                        case StickerType.StatType:
+                            result.Add(StatTypeTransformer.StatTypeToKorean(sticker.statTypeValue));
+                            break;
+                        case StickerType.Number:
+                            result.Add(sticker.numberValue.ToString());
+                            break;
+                        default:
+                            result.Add(""); // 예외 대응
+                            break;
+                    }
+                }
+                else
+                {
+                    var kind = cardAction.GetParamDef(i).kind;
+                    if (kind == ParamKind.StatType)
+                        result.Add(baseParams[i]);
+                    else
+                        result.Add(baseParams[i]);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// (스티커/파라미터 적용 후) 각 파라미터가 차지하는 단어 범위를 다시 계산
+        /// </summary>
+        public void RefreshParamWordRanges()
+        {
+            var values = GetEffectiveParamTexts();
+            var wordCounts = values
+                .ConvertAll(v => string.IsNullOrWhiteSpace(v) ? 1 : v.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length);
+
+            // paramWordRanges를 깊은 복사 후, 오프셋 계산
+            var newRanges = paramWordRanges.Select(r => new ParamWordRange { start = r.start, end = r.end }).ToList();
+            UpdateParamWordRanges(newRanges, wordCounts);
+            paramWordRanges = newRanges;
+        }
+
+        /// <summary>
+        /// paramWordRanges 리스트를 파라미터 단어 수에 따라 갱신합니다.
+        /// </summary>
+        public static void UpdateParamWordRanges(List<ParamWordRange> ranges, List<int> paramWordCounts)
+        {
+            int offset = 0;
+            for (int i = 0; i < ranges.Count; i++)
+            {
+                int oldCount = ranges[i].end - ranges[i].start + 1;
+                int newCount = paramWordCounts[i];
+                ranges[i].start += offset;
+                ranges[i].end = ranges[i].start + newCount - 1;
+                offset += newCount - oldCount;
+            }
+        }
+
+        /// <summary>
+        /// descriptionText의 특정 단어 인덱스에 스티커를 적용
+        /// </summary>
+        public bool TryApplyStickerOverride(int paramWordIndex, Sticker sticker)
+        {
+            if (paramWordRanges == null || paramWordRanges.Count == 0)
+                return false;
+            // paramWordIndex(단어 인덱스)가 어느 파라미터 범위에 속하는지 탐색
+            int baseParamIdx = paramWordRanges.FindIndex(r => r.start <= paramWordIndex && paramWordIndex <= r.end);
+            if (baseParamIdx == -1)
+                return false;
+
+            // 스티커 타입과 파라미터 타입 일치 여부 확인
+            var paramKind = cardAction.GetParamDef(baseParamIdx).kind;
+            if ((paramKind == ParamKind.Number && sticker.type != StickerType.Number) ||
+                (paramKind == ParamKind.StatType && sticker.type != StickerType.StatType))
+                return false;
+
+            // 적용
+            stickerOverrides[baseParamIdx] = sticker;
+            RefreshParamWordRanges();
+            return true;
+        }
+
+        /// <summary>
+        /// Card 객체를 깊은 복사하여 반환
+        /// </summary>
         public Card DeepCopy()
         {
-            var clone = new Card();
-            // 필드들 복사
-            clone.properties = (Property[])this.properties.Clone();
-            clone.rarity = this.rarity;
-            clone.cardName = this.cardName;
-            clone.illustration = this.illustration;
-            clone.cardDescription = this.cardDescription;
-            clone.eventTypes = new List<Utils.EventType>(this.eventTypes);
-            clone.baseParams =  this.baseParams;
-            clone.paramWordRanges = this.paramWordRanges != null ? new List<ParamWordRange>(this.paramWordRanges) : new List<ParamWordRange>();
-
-            // 내부 참조 타입 멤버들도 DeepCopy!
-            clone.cardAction = this.cardAction?.DeepCopy();
-            clone.cardStats = this.cardStats?.DeepCopy();
-            clone.cardEnhancement = this.cardEnhancement?.DeepCopy();
-
+            var clone = new Card
+            {
+                properties = (Property[])this.properties.Clone(),
+                rarity = this.rarity,
+                cardName = this.cardName,
+                illustration = this.illustration,
+                cardDescription = this.cardDescription,
+                eventTypes = new List<Utils.EventType>(this.eventTypes),
+                baseParams = this.baseParams,
+                paramWordRanges = this.paramWordRanges != null ? new List<ParamWordRange>(this.paramWordRanges) : new List<ParamWordRange>(),
+                cardAction = this.cardAction?.DeepCopy(),
+                cardStats = this.cardStats?.DeepCopy(),
+                cardEnhancement = this.cardEnhancement?.DeepCopy()
+            };
             return clone;
         }
     }
-} 
+}

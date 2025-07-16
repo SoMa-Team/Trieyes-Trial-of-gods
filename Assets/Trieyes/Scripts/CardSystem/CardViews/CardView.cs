@@ -41,7 +41,6 @@ namespace CardViews
         public virtual void SetCard(Card card)
         {
             this.card = card;
-            card.cardAction?.SetCard(card);
             SetSelected(false);
             UpdateView();
         }

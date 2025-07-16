@@ -166,11 +166,19 @@ namespace CardSystem
                 }
                 else
                 {
-                    var kind = cardAction.GetParamDef(i).kind;
-                    if (kind == ParamKind.StatType)
-                        result.Add(baseParams[i]);
+                    if (cardAction == null)
+                    {
+                        Debug.LogError("cardAction is null in GetEffectiveParamTexts()");
+                    }
                     else
-                        result.Add(baseParams[i]);
+                    {
+                        var kind = cardAction.GetParamDef(i).kind;
+                        var value = cardAction.GetBaseParam(i);
+                        if (kind == ParamKind.StatType)
+                            result.Add(StatTypeTransformer.StatTypeToKorean((StatType)value));
+                        else
+                            result.Add(value.ToString());
+                    }
                 }
             }
             return result;
@@ -250,6 +258,7 @@ namespace CardSystem
                 cardStats = this.cardStats?.DeepCopy(),
                 cardEnhancement = this.cardEnhancement?.DeepCopy()
             };
+            if(clone.cardAction != null) clone.cardAction.SetCard(clone);
             return clone;
         }
     }

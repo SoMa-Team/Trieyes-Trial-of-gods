@@ -78,8 +78,10 @@ namespace CardSystem
             var action = CreateActionByID(CardActionID);
 
             if (action != null)
+            {
                 card.SetCardAction(action);
                 action.SetCard(card);
+            }
 
             card.Activate(level);
         }

@@ -15,5 +15,27 @@ namespace AttackComponents
     /// </summary>
     public class AC007_HeroFireMeteor : AttackComponent
     {
+        private const int FALL_ID = 14;
+
+        /// <summary>
+        /// 파이어 메테오 공격 활성화
+        /// AC102_FALL 소환하고 바로 종료
+        /// </summary>
+        /// <param name="attack"></param>
+        /// <param name="direction"></param>
+        public override void Activate(Attack attack, Vector2 direction)
+        {
+            base.Activate(attack, direction);
+
+            // AC102_FALL 소환
+            var fallAttack = AttackFactory.Instance.ClonePrefab(FALL_ID);
+            BattleStage.now.AttachAttack(fallAttack);
+            fallAttack.target = attack.target;
+            var fallComponent = fallAttack.components[0] as AC102_FALL;
+            fallComponent.fallXYOffset = new Vector2(1, 1);
+            fallAttack.Activate(attack.attacker, direction);
+
+            AttackFactory.Instance.Deactivate(attack);
+        }
     }
 }

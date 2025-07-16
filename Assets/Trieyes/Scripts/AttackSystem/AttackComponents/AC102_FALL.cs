@@ -15,7 +15,10 @@ namespace AttackComponents
     public class AC102_FALL : AttackComponent
     {
         [Header("낙하 공격 설정")]
-        public float fallDamage = 50f;
+
+        private Vector2 targetPosition;
+        public Vector2 fallXYOffset;
+        public int fallDamage = 100;
         public float fallRadius = 2f; // 공격 범위
         public float fallDuration = 0.5f; // 공격 지속 시간
         public float fallDelay = 0.1f; // 낙하 시작까지의 지연 시간
@@ -27,8 +30,7 @@ namespace AttackComponents
         // 낙하 공격 상태 관리
         private FallAttackState fallState = FallAttackState.None;
         private float fallTimer = 0f;
-        private Vector2 targetPosition;
-        private List<Pawn> hitTargets; // 재사용 가능한 리스트
+        private List<Enemy> hitTargets = new List<Enemy>(); // 재사용 가능한 리스트
 
         // 낙하 공격 상태 열거형
         private enum FallAttackState
@@ -40,9 +42,6 @@ namespace AttackComponents
             Finished
         }
 
-        // 재사용 가능한 콜라이더 리스트 (GC 최적화)
-        private List<Collider2D> reusableColliders = new List<Collider2D>(20);
-
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
@@ -53,7 +52,7 @@ namespace AttackComponents
             hitTargets.Clear();
             
             // 타겟 위치 설정 (공격자의 앞쪽)
-            targetPosition = (Vector2)attacker.transform.position + direction * 3f;
+            targetPosition = (Vector2)attacker.transform.position + fallXYOffset;
             
             // 낙하 공격 시작
             StartFallAttack();
@@ -134,32 +133,12 @@ namespace AttackComponents
         {
             // 낙하 VFX 생성
             CreateFallVFX();
-            
-            // 범위 내 적 탐지 및 데미지 적용 준비
-            DetectTargetsInRange();
-        }
-
-        private void DetectTargetsInRange()
-        {
-            // 재사용 가능한 리스트 초기화
-            reusableColliders.Clear();
-            hitTargets.Clear();
-            
-            // 범위 내 모든 콜라이더 탐지
-            Physics2D.OverlapCircle(targetPosition, fallRadius, new ContactFilter2D().NoFilter(), reusableColliders);
-            
-            // 적만 필터링하여 수집
-            for (int i = 0; i < reusableColliders.Count; i++)
-            {
-                Collider2D collider = reusableColliders[i];
-                if (collider == null) continue;
-
-                Pawn enemy = collider.GetComponent<Pawn>();
-                if (enemy != null && enemy.GetComponent<Controller>() is EnemyController)
-                {
-                    hitTargets.Add(enemy);
-                }
-            }
+        
+            // 착탄 지점에 Radius 반경의 원형 Draw 만들기
+            // GameObject circle = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            // circle.transform.position = targetPosition + fallXYOffset;
+            // circle.transform.localScale = new Vector3(fallRadius * 2, fallRadius * 2, 1);
+            // circle.GetComponent<MeshRenderer>().material.color = Color.red;
         }
 
         private void ApplyImpactDamage()
@@ -167,29 +146,59 @@ namespace AttackComponents
             // 충격 VFX 생성
             CreateImpactVFX();
 
+            // Impact 순간에 범위 내 적들을 다시 탐지
+            DetectTargetsInRange();
+            
             // 탐지된 모든 적에게 데미지 적용
-            for (int i = 0; i < hitTargets.Count; i++)
+            for (int i = hitTargets.Count - 1; i >= 0; i--)
             {
-                Pawn target = hitTargets[i];
-                if (target != null && target.gameObject.activeInHierarchy)
+                Enemy target = hitTargets[i];
+                if (target != null && target.transform != null)
                 {
                     // 데미지 적용
                     ApplyDamageToTarget(target);
                 }
+                else
+                {
+                    // 파괴된 객체 제거
+                    hitTargets.RemoveAt(i);
+                }
             }
         }
+        
+        private void DetectTargetsInRange()
+        {
+            hitTargets.Clear();
+            
+            // Impact 순간의 범위 내 적들을 가져오기
+            var enemiesInRange = BattleStage.now.GetEnemiesInCircleRangeOrderByDistance(targetPosition, fallRadius, 10);
+            
+            // 유효한 적들만 필터링하여 수집
+            foreach (var enemy in enemiesInRange)
+            {
+                if (enemy != null && enemy.transform != null)
+                {
+                    hitTargets.Add(enemy);
+                }
+            }
+            
+            Debug.Log($"<color=blue>[FALL_ATTACK] Impact 순간 범위 내 적 탐지: {hitTargets.Count}명</color>");
+        }
 
-        private void ApplyDamageToTarget(Pawn target)
+        private void ApplyDamageToTarget(Enemy target)
         {
             // AttackResult 생성 및 데미지 처리
             var attackResult = AttackResult.Create(attack, target);
             
             // 기본 데미지 설정
-            attackResult.totalDamage = (int)fallDamage;
-            
-            // DamageProcessor를 통한 데미지 처리
-            DamageProcessor.ProcessHit(attack, target);
-            
+            attackResult.attacker = attack.attacker;
+            attackResult.target = target;
+            attackResult.isCritical = false;
+            attackResult.isEvaded = false;
+            attackResult.totalDamage = fallDamage;
+
+            target.ApplyDamage(attackResult);
+
             Debug.Log($"<color=red>[FALL_ATTACK] {target.pawnName}에게 {attackResult.totalDamage} 데미지 적용</color>");
         }
 

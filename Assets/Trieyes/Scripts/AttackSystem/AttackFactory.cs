@@ -66,7 +66,7 @@ namespace AttackSystem
                 // relic의 mainOption의 attackTag 혹은 attackID가 일치하는 상황
                 foreach (var attackComponentID in relic.attackComponentIDs)
                 {
-                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, attack, Vector2.zero);
+                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, relic.level, attack, Vector2.zero);
                     attack.AddAttackComponent(attackComponent);
                 }
             }

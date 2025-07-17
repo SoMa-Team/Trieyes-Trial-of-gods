@@ -45,10 +45,14 @@ namespace AttackComponents
         /// gameObject는 반드시 AttackComponent를 상속한 Unity Component가 부착되어 있습니다.
         /// </summary>
         /// <param name="id">생성할 공격 컴포넌트의 ID</param>
+        /// <param name="relicLevel"></param>
+        /// <param name="attack"></param>
+        /// <param name="direction"></param>
         /// <returns>생성된 gameObject에 부착된 AttackComponent 객체</returns>
-        public AttackComponent Create(AttackComponentID id, Attack attack, Vector2 direction)
+        public AttackComponent Create(AttackComponentID id, int relicLevel, Attack attack, Vector2 direction)
         {
             var attackComponent = ClonePrefab(id);
+            attackComponent.SetLevel(relicLevel);
             return attackComponent;
         }
         

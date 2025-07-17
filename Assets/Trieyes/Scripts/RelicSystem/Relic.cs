@@ -18,37 +18,14 @@ namespace RelicSystem
         public int relicID;
         public string name;
         public string description;
+        public int level;
+        public int exp;
         public List<int> filterAttackIDs;
         public AttackTag? filterAttackTag;
         public List<int> attackComponentIDs;
 
         public List<RandomOption> randomOptions;
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
         // ===== [기능 3] 이벤트 처리 =====
         [CanBeNull] public Pawn owner; // 유물의 소유자 (Pawn)
         public List<Utils.EventType> acceptedEvents = new List<Utils.EventType>();

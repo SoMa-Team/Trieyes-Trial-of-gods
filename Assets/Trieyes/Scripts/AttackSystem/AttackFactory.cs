@@ -159,7 +159,11 @@ namespace AttackSystem
             var originalAttack = GetPrefabById(id);
             var attackObject = Instantiate(originalAttack.gameObject);
             var attack = attackObject.GetComponent<Attack>();
-            attack.relicStats = originalAttack.relicStats;
+
+            foreach (var key in originalAttack.relicStats.Keys)
+            {
+                attack.relicStats[key] = originalAttack.relicStats[key];
+            }
             return attack;
         }
 

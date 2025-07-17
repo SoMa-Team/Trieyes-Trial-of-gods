@@ -44,7 +44,7 @@ namespace Stats
         
         
         // DeepCopy Method
-        public StatSheet Copy()
+        public StatSheet DeepCopy()
         {
             var copiedSheet = new StatSheet();
             foreach (StatType type in Enum.GetValues(typeof(StatType)))

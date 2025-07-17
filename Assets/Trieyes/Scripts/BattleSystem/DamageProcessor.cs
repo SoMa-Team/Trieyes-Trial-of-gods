@@ -33,6 +33,16 @@ namespace BattleSystem
             {
                 triggerCriticalAttackEvent(result);
             }
+
+            if (result.totalDamage <= 0)
+            {
+                triggerDefendEvent(result);
+            }
+        }
+
+        private static void triggerDefendEvent(AttackResult result)
+        {
+            result.target.OnEvent(Utils.EventType.OnDefend, result);
         }
 
         private static void triggerAttackHitEvent(AttackResult result)

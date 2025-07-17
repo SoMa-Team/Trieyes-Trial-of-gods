@@ -150,7 +150,7 @@ namespace AttackSystem
 
         public void ApplyStatSheet(StatSheet attackerStatSheet)
         {
-            statSheet = attackerStatSheet.Copy();
+            statSheet = attackerStatSheet.DeepCopy();
         }
 
         /// <summary>

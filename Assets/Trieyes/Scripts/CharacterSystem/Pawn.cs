@@ -614,7 +614,14 @@ namespace CharacterSystem
             if (currentHp <= 0)
             {
                 OnEvent(Utils.EventType.OnDeath, result);
+                result.attack.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
+
+                if (result.isCritical)
+                {
+                    result.attack.OnEvent(Utils.EventType.OnKilledByCritical, result);
+                    result.attacker.OnEvent(Utils.EventType.OnKilledByCritical, result);
+                }
             }
         }
 

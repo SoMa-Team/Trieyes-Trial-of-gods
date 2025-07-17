@@ -35,12 +35,13 @@ namespace AttackSystem
             
             // TODO : 수식 논의 필요
             attackResult.isCritical = Random.Range(0f, 100f) < attackStat[StatType.CriticalRate];
+            
             var attackDamageIncreasement = attack.getRelicStat(RelicStatType.DamageIncreasement);
             var pureDamage = attackStat[StatType.AttackPower] * attack.attackData.damageMultiplier *
                 (100 + attackDamageIncreasement) / 100;
             var baseDamage = (int)(pureDamage) * 100 / (100 + targetStat[StatType.Defense]);
             
-            attackResult.totalDamage = attackResult.isCritical ? baseDamage * attackStat[StatType.CriticalDamage] / 100 : baseDamage;
+            attackResult.totalDamage = attackResult.isCritical ? baseDamage * (100 + attackStat[StatType.CriticalDamage]) / 100 : baseDamage;
             attackResult.attackerHealed = attackResult.totalDamage * attackStat[StatType.LifeSteal] / 100;
             attackResult.attackerDamage = attackResult.totalDamage * targetStat[StatType.Reflect] / 100;
 

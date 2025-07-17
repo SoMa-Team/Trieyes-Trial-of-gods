@@ -11,7 +11,7 @@ namespace AttackSystem
 {
     using AttackID = Int32;
 
-    [System.Serializable]
+    [Serializable]
     public class IDAttackPair
     {
         public AttackID id;
@@ -148,10 +148,6 @@ namespace AttackSystem
         {
             attack.Deactivate();
             attack.gameObject.SetActive(false);
-            if (attack.attackData.attackId == 1)
-            {
-                Debug.LogError($"attack 1 is Deactivated!");
-            }
             pushAttack(attack);
         }
 

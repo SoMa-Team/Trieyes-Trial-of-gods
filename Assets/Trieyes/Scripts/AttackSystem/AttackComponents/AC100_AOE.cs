@@ -11,6 +11,8 @@ namespace AttackComponents
         Fire,
         Ice,
         Lightning,
+        Poison,
+        Bleed,
     }
 
     public enum DOTCollisionType

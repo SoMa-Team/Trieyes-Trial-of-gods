@@ -9,191 +9,229 @@ using CharacterSystem.Enemies;
 namespace AttackComponents
 {
     /// <summary>
-    /// 얼음 폭풍 효과
-    /// 지정된 범위에 얼음 폭풍을 생성하여 적들에게 데미지를 입힙니다.
-    /// GC 최적화를 위해 재사용 가능한 리스트를 사용합니다.
+    /// 얼음 폭풍 효과 (무기 속성 연계)
+    /// 얼음 속성이 부여된 무기에서 발동되는 맵 전체 눈보라 효과를 소환합니다.
+    /// AC103_GlobalBlizzard를 생성하여 맵 전체에 눈보라 효과를 적용합니다.
     /// </summary>
     public class AC008_IceStorm : AttackComponent
     {
-        [Header("얼음 폭풍 설정")]
-        public float iceStormDamage = 40f;
-        public float iceStormRadius = 3f;
-        public float iceStormDuration = 2f;
-        public float iceStormDelay = 0.2f;
+        [Header("눈보라 소환 설정")]
+        private const int AC103_GLOBAL = 15;
+        public float summonDelay = 0.5f; // 소환 지연 시간
+        public float vfxDuration = 0.3f; // VFX 지속 시간
 
         [Header("VFX 설정")]
-        public GameObject iceStormVFXPrefab;
-        public float vfxDuration = 0.5f;
+        public GameObject summonVFXPrefab; // 소환 VFX
 
-        // 얼음 폭풍 상태 관리
-        private IceStormState stormState = IceStormState.None;
-        private float stormTimer = 0f;
-        private Vector2 targetPosition;
-        private List<Pawn> hitTargets = new List<Pawn>(10);
+        // 소환 상태 관리
+        private SummonState summonState = SummonState.None;
+        private float summonTimer = 0f;
 
-        // 얼음 폭풍 상태 열거형
-        private enum IceStormState
+        // 소환 상태 열거형
+        private enum SummonState
         {
             None,
             Preparing,
-            Storming,
-            Impact,
+            Summoning,
             Finished
         }
-
-        // 재사용 가능한 콜라이더 리스트 (GC 최적화)
-        private List<Collider2D> reusableColliders = new List<Collider2D>(20);
 
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            stormState = IceStormState.None;
-            stormTimer = 0f;
-            hitTargets.Clear();
+            summonState = SummonState.None;
+            summonTimer = 0f;
             
-            // 타겟 위치 설정
-            targetPosition = (Vector2)attacker.transform.position + direction * 4f;
-            
-            // 얼음 폭풍 시작
-            StartIceStorm();
+            // 눈보라 소환 시작
+            StartBlizzardSummon();
         }
 
-        private void StartIceStorm()
+        private void StartBlizzardSummon()
         {
-            stormState = IceStormState.Preparing;
-            stormTimer = 0f;
+            summonState = SummonState.Preparing;
+            summonTimer = 0f;
             
-            // VFX 생성
-            CreateIceStormVFX();
+            // 소환 VFX 생성
+            CreateSummonVFX();
+            
+            Debug.Log("<color=cyan>[ICE_STORM] 얼음 속성 무기 - 눈보라 소환 시작!</color>");
         }
 
         protected override void Update()
         {
             base.Update();
             
-            // 얼음 폭풍 처리
-            ProcessIceStorm();
+            // 소환 처리
+            ProcessBlizzardSummon();
         }
 
-        private void ProcessIceStorm()
+        private void ProcessBlizzardSummon()
         {
-            switch (stormState)
+            switch (summonState)
             {
-                case IceStormState.None:
+                case SummonState.None:
                     break;
 
-                case IceStormState.Preparing:
-                    stormTimer += Time.deltaTime;
+                case SummonState.Preparing:
+                    summonTimer += Time.deltaTime;
                     
-                    if (stormTimer >= iceStormDelay)
+                    if (summonTimer >= summonDelay)
                     {
-                        stormState = IceStormState.Storming;
-                        stormTimer = 0f;
-                        StartStorming();
+                        summonState = SummonState.Summoning;
+                        summonTimer = 0f;
+                        SummonGlobalBlizzard();
                     }
                     break;
 
-                case IceStormState.Storming:
-                    stormTimer += Time.deltaTime;
+                case SummonState.Summoning:
+                    summonTimer += Time.deltaTime;
                     
-                    if (stormTimer >= iceStormDuration)
+                    if (summonTimer >= vfxDuration)
                     {
-                        stormState = IceStormState.Impact;
-                        stormTimer = 0f;
-                        ApplyStormDamage();
+                        summonState = SummonState.Finished;
                     }
                     break;
 
-                case IceStormState.Impact:
-                    stormTimer += Time.deltaTime;
-                    
-                    if (stormTimer >= vfxDuration)
-                    {
-                        stormState = IceStormState.Finished;
-                    }
-                    break;
-
-                case IceStormState.Finished:
-                    stormState = IceStormState.None;
+                case SummonState.Finished:
+                    summonState = SummonState.None;
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }
         }
 
-        private void StartStorming()
+        private void SummonGlobalBlizzard()
         {
-            // 폭풍 VFX 생성
-            CreateStormVFX();
+            Debug.Log("<color=cyan>[ICE_STORM] AC103_GLOBAL 소환!</color>");
             
-            // 범위 내 적 탐지
-            DetectTargetsInRange();
+            // AttackComponentFactory를 통해 AC103_GLOBAL 컴포넌트 생성
+            var globalBlizzardAttack = AttackFactory.Instance.ClonePrefab(AC103_GLOBAL);
+            BattleStage.now.AttachAttack(globalBlizzardAttack);
+            globalBlizzardAttack.target = attack.target;
+
+            var globalBlizzardComponent = globalBlizzardAttack.components[0] as AC103_GLOBAL;
+            globalBlizzardComponent.globalDamage = attack.statSheet[StatType.AttackPower];
+            globalBlizzardComponent.globalDuration = 6f;
+            globalBlizzardComponent.damageInterval = 0.5f;
+
+            globalBlizzardComponent.additionalDebuffType = AdditionalDebuffType.Frozen;
+            globalBlizzardComponent.additionalDebuffDuration = 2f;
+            globalBlizzardComponent.additionalDebuffChance = 0.3f;
+            globalBlizzardComponent.additionalDebuffMultiplier = 2f;
+
+            globalBlizzardAttack.Activate(attack.attacker, Vector2.zero);
+            
+            // 소환 완료 VFX 생성
+            CreateSummonCompleteVFX();
         }
 
-        private void DetectTargetsInRange()
+        private void CreateSummonVFX()
         {
-            reusableColliders.Clear();
-            hitTargets.Clear();
-            
-            Physics2D.OverlapCircle(targetPosition, iceStormRadius, new ContactFilter2D().NoFilter(), reusableColliders);
-            
-            for (int i = 0; i < reusableColliders.Count; i++)
+            if (summonVFXPrefab != null)
             {
-                Collider2D collider = reusableColliders[i];
-                if (collider == null) continue;
-
-                Pawn enemy = collider.GetComponent<Pawn>();
-                if (enemy != null && enemy.GetComponent<Controller>() is EnemyController)
+                GameObject summonVFX = Instantiate(summonVFXPrefab);
+                summonVFX.transform.position = attacker.transform.position;
+                
+                // 소환 VFX 설정
+                SummonVFX summonComponent = summonVFX.GetComponent<SummonVFX>();
+                if (summonComponent != null)
                 {
-                    hitTargets.Add(enemy);
+                    summonComponent.Initialize(summonDelay);
                 }
+                
+                Destroy(summonVFX, summonDelay + 0.1f);
             }
         }
 
-        private void ApplyStormDamage()
+        private void CreateSummonCompleteVFX()
         {
-            for (int i = 0; i < hitTargets.Count; i++)
+            if (summonVFXPrefab != null)
             {
-                Pawn target = hitTargets[i];
-                if (target != null && target.gameObject.activeInHierarchy)
+                GameObject completeVFX = Instantiate(summonVFXPrefab);
+                completeVFX.transform.position = Vector3.zero; // 맵 중앙
+                
+                // 완료 VFX 설정
+                SummonCompleteVFX completeComponent = completeVFX.GetComponent<SummonCompleteVFX>();
+                if (completeComponent != null)
                 {
-                    ApplyDamageToTarget(target);
+                    completeComponent.Initialize(vfxDuration);
                 }
+                
+                Destroy(completeVFX, vfxDuration + 0.1f);
             }
-            
-            CreateImpactVFX();
-        }
-
-        private void ApplyDamageToTarget(Pawn target)
-        {
-            var attackResult = AttackResult.Create(attack, target);
-            attackResult.totalDamage = (int)iceStormDamage;
-            DamageProcessor.ProcessHit(attack, target);
-        }
-
-        private void CreateIceStormVFX()
-        {
-            // 얼음 폭풍 VFX 생성 로직
-        }
-
-        private void CreateStormVFX()
-        {
-            // 폭풍 VFX 생성 로직
-        }
-
-        private void CreateImpactVFX()
-        {
-            // 충격 VFX 생성 로직
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
             
-            stormState = IceStormState.None;
-            stormTimer = 0f;
-            hitTargets.Clear();
+            summonState = SummonState.None;
+            summonTimer = 0f;
+        }
+    }
+
+    /// <summary>
+    /// 소환 VFX 컴포넌트
+    /// </summary>
+    public class SummonVFX : MonoBehaviour
+    {
+        [Header("소환 VFX 설정")]
+        public float summonDuration = 0.5f;
+        public Color summonColor = Color.cyan;
+
+        private float currentDuration = 0f;
+        private bool isActive = false;
+
+        public void Initialize(float duration)
+        {
+            summonDuration = duration;
+            currentDuration = 0f;
+            isActive = true;
+        }
+
+        private void Update()
+        {
+            if (!isActive) return;
+            
+            currentDuration += Time.deltaTime;
+            
+            if (currentDuration >= summonDuration)
+            {
+                isActive = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 소환 완료 VFX 컴포넌트
+    /// </summary>
+    public class SummonCompleteVFX : MonoBehaviour
+    {
+        [Header("소환 완료 VFX 설정")]
+        public float completeDuration = 0.3f;
+        public Color completeColor = Color.white;
+
+        private float currentDuration = 0f;
+        private bool isActive = false;
+
+        public void Initialize(float duration)
+        {
+            completeDuration = duration;
+            currentDuration = 0f;
+            isActive = true;
+        }
+
+        private void Update()
+        {
+            if (!isActive) return;
+            
+            currentDuration += Time.deltaTime;
+            
+            if (currentDuration >= completeDuration)
+            {
+                isActive = false;
+            }
         }
     }
 } 

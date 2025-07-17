@@ -35,7 +35,7 @@ namespace AttackSystem
             
             // TODO : 수식 논의 필요
             attackResult.isCritical = Random.Range(0f, 100f) < attackStat[StatType.CriticalRate];
-            var attackDamageIncreasement = attack.relicStats[RelicStatType.DamageIncreasement];
+            var attackDamageIncreasement = attack.getRelicStat(RelicStatType.DamageIncreasement);
             var pureDamage = attackStat[StatType.AttackPower] * attack.attackData.damageMultiplier *
                 (100 + attackDamageIncreasement) / 100;
             var baseDamage = (int)(pureDamage) * 100 / (100 + targetStat[StatType.Defense]);

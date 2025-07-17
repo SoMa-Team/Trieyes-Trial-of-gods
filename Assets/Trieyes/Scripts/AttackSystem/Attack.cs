@@ -39,6 +39,8 @@ namespace AttackSystem
         {
             if (!AttackTagManager.isValidRelicStat(relicStatType))
                 throw new Exception("Invalid relic stat type");
+            if (!relicStats.ContainsKey(relicStatType))
+                return 0;
             return relicStats[relicStatType];
         }
 

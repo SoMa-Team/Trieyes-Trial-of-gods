@@ -22,7 +22,7 @@ namespace TagSystem
 
         public static bool isValidRelicStat(RelicStatType relicStatType)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

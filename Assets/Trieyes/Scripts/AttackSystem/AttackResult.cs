@@ -1,4 +1,5 @@
 using CharacterSystem;
+using RelicSystem;
 using Stats;
 using UnityEngine;
 
@@ -32,9 +33,13 @@ namespace AttackSystem
             if (attackResult.isEvaded)
                 return attackResult;
             
-            // TODO : 수식 수정 필요
+            // TODO : 수식 논의 필요
             attackResult.isCritical = Random.Range(0f, 100f) < attackStat[StatType.CriticalRate];
-            var baseDamage = (int)(attackStat[StatType.AttackPower] * attack.attackData.damageMultiplier) * 100 / (100 + targetStat[StatType.Defense]);
+            var attackDamageIncreasement = attack.relicStats[RelicStatType.DamageIncreasement];
+            var pureDamage = attackStat[StatType.AttackPower] * attack.attackData.damageMultiplier *
+                (100 + attackDamageIncreasement) / 100;
+            var baseDamage = (int)(pureDamage) * 100 / (100 + targetStat[StatType.Defense]);
+            
             attackResult.totalDamage = attackResult.isCritical ? baseDamage * attackStat[StatType.CriticalDamage] / 100 : baseDamage;
             attackResult.attackerHealed = attackResult.totalDamage * attackStat[StatType.LifeSteal] / 100;
             attackResult.attackerDamage = attackResult.totalDamage * targetStat[StatType.Reflect] / 100;

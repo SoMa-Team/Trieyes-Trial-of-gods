@@ -48,7 +48,7 @@ namespace AttackSystem
         
         // ===== 공격 등록 기능 =====
         public HashSet<AttackID> registeredAttackIDs = new();
-        public AttackID RegisterRelicAppliedAttack(AttackData attackData, Pawn owner)
+        public AttackData RegisterRelicAppliedAttack(AttackData attackData, Pawn owner)
         {
             // attackData 변조를 막기 위한 Copy 생성
             attackData = attackData.Copy();
@@ -58,9 +58,9 @@ namespace AttackSystem
             // 유물 메인 옵션 적용
             foreach (var relic in owner.relics)
             {
-                if (relic.filterAttackTag is not null && !attack.attackData.tags.Contains(relic.filterAttackTag.Value))
+                if (relic.filterAttackTag is not null && attackData.tags is not null && !attackData.tags.Contains(relic.filterAttackTag.Value))
                     continue;
-                if (relic.filterAttackIDs is not null && !relic.filterAttackIDs.Contains(attack.attackData.attackId))
+                if (relic.filterAttackIDs is not null && !relic.filterAttackIDs.Contains(attackData.attackId))
                     continue;
                 
                 // relic의 mainOption의 attackTag 혹은 attackID가 일치하는 상황
@@ -76,7 +76,7 @@ namespace AttackSystem
             {
                 foreach (var randomOption in relic.randomOptions)
                 {
-                    if (!attack.attackData.tags.Contains(randomOption.FilterTag))
+                    if (attackData.tags is null || !attackData.tags.Contains(randomOption.FilterTag))
                         continue;
                     
                     // RandomOption이 Attack의 Tag를 포함함
@@ -84,7 +84,10 @@ namespace AttackSystem
                 }
             }
 
-            return RegisterAttack(attack);
+            var id = RegisterAttack(attack);
+            var newAttackData = attackData.Copy();
+            newAttackData.attackId = id;
+            return newAttackData;
         }
 
         private AttackID RegisterAttack(Attack attack)
@@ -95,12 +98,10 @@ namespace AttackSystem
             return id;
         }
 
-        public void clearRegisteredAttacks()
+        public void DeregisterAttack(AttackData basicAttack)
         {
-            foreach (var attackID in registeredAttackIDs)
-            {
-                attackPrefab[attackID] = null;
-            }
+            var attackID = basicAttack.attackId;
+            attackPrefab.Remove(attackID);
         }
         
         // ===== 공격 생성 =====
@@ -111,39 +112,9 @@ namespace AttackSystem
             attackData = attackData.Copy();
             
             var attack = ClonePrefab(attackData.attackId);
-            
             attack.attackData = attackData;
+
             attack.parent = parent;
-
-            // 유물 메인 옵션 적용
-            foreach (var relic in attacker.relics)
-            {
-                if (relic.filterAttackTag is not null && !attack.attackData.tags.Contains(relic.filterAttackTag.Value))
-                    continue;
-                if (relic.filterAttackIDs is not null && !relic.filterAttackIDs.Contains(attack.attackData.attackId))
-                    continue;
-                
-                // relic의 mainOption의 attackTag 혹은 attackID가 일치하는 상황
-                foreach (var attackComponentID in relic.attackComponentIDs)
-                {
-                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, attack, direction);
-                    attack.AddAttackComponent(attackComponent);
-                }
-            }
-
-            // 유물 랜덤 옵션 적용
-            foreach (var relic in attacker.relics)
-            {
-                foreach (var randomOption in relic.randomOptions)
-                {
-                    if (!attack.attackData.tags.Contains(randomOption.FilterTag))
-                        continue;
-                    
-                    // RandomOption이 Attack의 Tag를 포함함
-                    attack.ApplyRelicStat(randomOption.RelicStatType, randomOption.value);
-                }
-            }
-            
             Activate(attack, attacker, parent, direction);
             return attack;
         }
@@ -185,8 +156,10 @@ namespace AttackSystem
         /// <returns>생성된 Pawn 컴포넌트</returns>
         private Attack ClonePrefab(AttackID id)
         {
-            var attackObject = Instantiate(GetPrefabById(id));
+            var originalAttack = GetPrefabById(id);
+            var attackObject = Instantiate(originalAttack.gameObject);
             var attack = attackObject.GetComponent<Attack>();
+            attack.relicStats = originalAttack.relicStats;
             return attack;
         }
 
@@ -194,9 +167,9 @@ namespace AttackSystem
         /// ID에 해당하는 적 프리팹을 반환합니다.</summary>
         /// <param name="id">적 ID</param>
         /// <returns>해당하는 GameObject 프리팹</returns>
-        private GameObject GetPrefabById(AttackID id)
+        private Attack GetPrefabById(AttackID id)
         {
-            return attackPrefab[id].gameObject;
+            return attackPrefab[id];
             
             // return id switch
             // {

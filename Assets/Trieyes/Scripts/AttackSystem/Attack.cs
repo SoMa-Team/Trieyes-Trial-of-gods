@@ -144,7 +144,7 @@ namespace AttackSystem
             children = new List<Attack>();
             foreach (var attackComponent in components)
             {
-                attackComponent.Activate(this, direction);
+                AttackComponentFactory.Instance.Activate(attackComponent, this, direction);
             }
         }
 
@@ -178,8 +178,6 @@ namespace AttackSystem
             parent = null;
             
             gameObject.SetActive(false);
-            
-            relicStats.Clear();
         }
         
         // ===== [기능 9] 이벤트 처리 =====
@@ -222,7 +220,6 @@ namespace AttackSystem
         {
             attackComponent.transform.SetParent(transform);
             components.Add(attackComponent);
-            attackComponent.Activate(this, Vector2.zero);
         }
 
         public void ApplyRelicStat(RelicStatType statType, int value)
@@ -231,7 +228,7 @@ namespace AttackSystem
             {
                 relicStats[statType] = 0;
             }
-
+            
             relicStats[statType] += value;
         }
     }

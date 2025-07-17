@@ -49,7 +49,6 @@ namespace AttackComponents
         public AttackComponent Create(AttackComponentID id, Attack attack, Vector2 direction)
         {
             var attackComponent = ClonePrefab(id);
-            Activate(attackComponent, attack, direction);
             return attackComponent;
         }
         
@@ -61,7 +60,7 @@ namespace AttackComponents
         /// <param name="pawn">활성화할 Attack Component</param>
         public void Activate(AttackComponent attackComponent, Attack attack, Vector2 direction)
         {
-            attackComponent.Activate(attack, Vector2.zero);
+            attackComponent.Activate(attack, direction);
         }
 
         /// <summary>

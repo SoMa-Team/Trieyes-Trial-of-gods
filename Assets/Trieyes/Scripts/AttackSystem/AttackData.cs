@@ -21,7 +21,7 @@ namespace AttackSystem
 
         public AttackData Copy()
         {
-            var copy = new AttackData();
+            var copy = CreateInstance<AttackData>();
             copy.attackId = attackId;
             copy.attackName = attackName;
             copy.attackType = attackType;

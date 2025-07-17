@@ -141,7 +141,7 @@ namespace CardViews
                     lineToWordIdx[lineNum].Add(wordIdx);
                 }
 
-                // 4. 줄별로 하나의 오버레이 박스를 생성
+                // 4. 줄별로 나눈 그룹 당 해당 그룹의 배경이 될 하나의 오버레이 박스를 생성
                 foreach (var lineKv in lineToWordIdx)
                 {
                     var wordIndices = lineKv.Value;

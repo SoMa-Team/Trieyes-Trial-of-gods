@@ -12,6 +12,7 @@ namespace CardActions
     /// </summary>
     public class Shadow : CardAction
     {
+        private const int repeatCountIndex = 0;
         public Shadow()
         {
             actionParams = new List<ActionParam>
@@ -44,7 +45,7 @@ namespace CardActions
                 if (param is ValueTuple<Card, int> tuple)
                 {
                     int currentCardIndex = tuple.Item2;
-                    int repeatCount = Convert.ToInt32(GetEffectiveParam(0));
+                    int repeatCount = Convert.ToInt32(GetEffectiveParam(repeatCountIndex));
                     HandleCalcActionInitOrder(deck, repeatCount, currentCardIndex);
                 }
                 else

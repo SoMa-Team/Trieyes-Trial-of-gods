@@ -15,6 +15,8 @@ namespace CardActions
     /// </summary>
     public class PreparingMarch : CardAction
     {
+        private const int firstStatTypeIndex = 0;
+        private const int firstValueIndex = 1;
         public PreparingMarch()
         {
             // actionParams[0]: 증가시킬 스탯 타입 (ex. 공격력)
@@ -52,8 +54,8 @@ namespace CardActions
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
                 // (1) 실제 적용 스탯/수치 가져오기 (스티커/레벨 영향 반영)
-                var statType = (StatType)GetEffectiveParam(0); // 0: 스탯 종류
-                int value = Convert.ToInt32(GetEffectiveParam(1)); // 1: 수치
+                var statType = (StatType)GetEffectiveParam(firstStatTypeIndex); // 0: 스탯 종류
+                int value = Convert.ToInt32(GetEffectiveParam(firstValueIndex)); // 1: 수치
 
                 // (2) 버프 생성 및 적용
                 var modifier = new StatModifier(value, BuffOperationType.Additive);

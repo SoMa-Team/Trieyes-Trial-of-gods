@@ -4,8 +4,8 @@ namespace StickerSystem
 {
     public enum StickerType
     {
+        StatType,
         Number,
-        StatType
     }
 
     public class Sticker

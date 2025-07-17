@@ -32,7 +32,12 @@ namespace AttackComponents
             BattleStage.now.AttachAttack(fallAttack);
             fallAttack.target = attack.target;
             var fallComponent = fallAttack.components[0] as AC102_FALL;
-            fallComponent.fallXYOffset = new Vector2(1, 1);
+            fallComponent.fallXYOffset = Vector2.zero;
+            fallComponent.fallXRandomOffsetMin = -2;
+            fallComponent.fallXRandomOffsetMax = 2;
+            fallComponent.fallYRandomOffsetMin = -2;
+            fallComponent.fallYRandomOffsetMax = 2;
+            
             fallAttack.Activate(attack.attacker, direction);
 
             AttackFactory.Instance.Deactivate(attack);

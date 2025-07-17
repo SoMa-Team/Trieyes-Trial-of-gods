@@ -18,6 +18,11 @@ namespace AttackComponents
 
         private Vector2 targetPosition;
         public Vector2 fallXYOffset;
+
+        public int fallXRandomOffsetMin;
+        public int fallXRandomOffsetMax;
+        public int fallYRandomOffsetMin;
+        public int fallYRandomOffsetMax;
         public int fallDamage = 100;
         public float fallRadius = 2f; // 공격 범위
         public float fallDuration = 0.5f; // 공격 지속 시간
@@ -52,8 +57,16 @@ namespace AttackComponents
             hitTargets.Clear();
             
             // 타겟 위치 설정 (공격자의 앞쪽)
-            targetPosition = (Vector2)attacker.transform.position + fallXYOffset;
-            
+            // fallXYOffset가 0이면 랜덤으로 아니면 그대로 사용
+            if (fallXYOffset == Vector2.zero)
+            {
+                targetPosition = (Vector2)attacker.transform.position + new Vector2(Random.Range(fallXRandomOffsetMin, fallXRandomOffsetMax), Random.Range(fallYRandomOffsetMin, fallYRandomOffsetMax));
+            }
+            else
+            {
+                targetPosition = (Vector2)attacker.transform.position + fallXYOffset;
+            }
+
             // 낙하 공격 시작
             StartFallAttack();
         }
@@ -135,10 +148,16 @@ namespace AttackComponents
             CreateFallVFX();
         
             // 착탄 지점에 Radius 반경의 원형 Draw 만들기
-            // GameObject circle = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            // circle.transform.position = targetPosition + fallXYOffset;
-            // circle.transform.localScale = new Vector3(fallRadius * 2, fallRadius * 2, 1);
-            // circle.GetComponent<MeshRenderer>().material.color = Color.red;
+            // 원형 필드 디버그 (원의 둘레를 그리기)
+            int segments = 16;
+            Vector2 prevPoint = targetPosition + Vector2.right * fallRadius;
+            for (int i = 1; i <= segments; i++)
+            {
+                float angle = (360f / segments) * i * Mathf.Deg2Rad;
+                Vector2 currentPoint = targetPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * fallRadius;
+                Debug.DrawLine(prevPoint, currentPoint, Color.red, 1f);
+                prevPoint = currentPoint;
+            }
         }
 
         private void ApplyImpactDamage()

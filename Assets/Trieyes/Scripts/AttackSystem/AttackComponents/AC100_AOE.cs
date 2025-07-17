@@ -26,6 +26,12 @@ namespace AttackComponents
         AreaCircle, // 원형 장판 범위 내 모든 적에게 도트 주는 놈
     }
 
+    public enum AOEMode
+    {
+        SingleHit, // 1회성 AOE 공격
+        MultiHit,  // 지속적 AOE 공격
+    }
+
     public enum AdditionalBuffType
     {
         None,
@@ -76,12 +82,13 @@ namespace AttackComponents
 
         // AOE 영역 공격 설정
         [Header("AOE 영역 공격 설정")]
+        public AOEMode aoeMode;
         public bool createAreaAttack = false;
         public float areaAttackRadius = 1f;
         public float areaAttackDamage = 20f;
         public float areaAttackTickInterval = 0.5f;
         private float areaAttackTimer = 0f;
-        private List<Pawn> areaAttackTargets = new List<Pawn>(10);
+        private List<Enemy> areaAttackTargets = new List<Enemy>(10);
         private bool buffApplied = false; // 버프 적용 여부 플래그
 
         // AOE VFX 설정
@@ -169,19 +176,42 @@ namespace AttackComponents
 
         private void ProcessAreaAttack()
         {
-            areaAttackTimer += Time.deltaTime;
-            
-            if (areaAttackTimer >= areaAttackTickInterval)
+            if (aoeMode == AOEMode.SingleHit)
             {
                 ApplyAreaAttackDamage();
-                areaAttackTimer = 0f;
+                Debug.Log("<color=yellow>[AC100] SingleHit AOE 공격 실행 완료!</color>");
+                AttackFactory.Instance.Deactivate(attack);
+                return;
+            }
+            else if (dotCollisionType == DOTCollisionType.AreaRect)
+            {
+                // MultiHit 모드: 기존 지속적 AOE 로직
+                areaAttackTimer += Time.deltaTime;
+                
+                if (areaAttackTimer >= areaAttackTickInterval)
+                {
+                    DetectEnemiesInAreaAttackRect();
+                    ApplyAreaAttackDamage();
+                    areaAttackTimer = 0f;
+                }
+            }
+            else if (dotCollisionType == DOTCollisionType.AreaCircle)
+            {
+                DetectEnemiesInAreaAttackCircle();
+                ApplyAreaAttackDamage();
             }
         }
+
+        private void DetectEnemiesInAreaAttackCircle()
+        {
+            throw new NotImplementedException();
+        }
+
 
         private void ApplyAreaAttackDamage()
         {
             // 플레이어 주변 적 탐지
-            DetectEnemiesInAreaAttack();
+            DetectEnemiesInAreaAttackRect();
             
             // 탐지된 적들에게 데미지 적용
             for (int i = 0; i < areaAttackTargets.Count; i++)
@@ -204,25 +234,15 @@ namespace AttackComponents
             }
         }
 
-        private void DetectEnemiesInAreaAttack()
+        private void DetectEnemiesInAreaAttackRect()
         {
             areaAttackTargets.Clear();
             
-            // 플레이어 위치 기준으로 AOE 범위 탐지
-            Vector2 playerPosition = attack.attacker.transform.position;
-            
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(playerPosition, areaAttackRadius);
-            
-            foreach (Collider2D collider in colliders)
-            {
-                if (collider == null) continue;
+            // target 위치 기준으로 AOE 범위 탐지 (SingleHit 모드)
+            Vector2 aoePositionStart = attack.target != null ? (Vector2)attack.target.transform.position : (Vector2)attack.attacker.transform.position;
+            Vector2 aoePositionEnd = aoePositionStart + new Vector2(dotWidth, dotHeight);
 
-                Pawn enemy = collider.GetComponent<Pawn>();
-                if (enemy != null && enemy.GetComponent<Controller>() is EnemyController)
-                {
-                    areaAttackTargets.Add(enemy);
-                }
-            }
+            areaAttackTargets = BattleStage.now.GetEnemiesInRectRange(aoePositionStart, aoePositionEnd);
         }
 
         private void ApplyDamageToEnemy(Pawn enemy)
@@ -360,7 +380,9 @@ namespace AttackComponents
             if (areaAttackVFXPrefab != null)
             {
                 GameObject areaAttackVFX = Instantiate(areaAttackVFXPrefab);
-                areaAttackVFX.transform.position = attack.attacker.transform.position;
+                // target 위치에서 VFX 생성 (SingleHit 모드)
+                Vector3 vfxPosition = attack.target != null ? attack.target.transform.position : attack.attacker.transform.position;
+                areaAttackVFX.transform.position = vfxPosition;
                 
                 // AOE VFX 지속시간 후 제거
                 Destroy(areaAttackVFX, areaAttackVFXDuration);
@@ -369,7 +391,7 @@ namespace AttackComponents
             }
         }
 
-        // DOT 클래스의 Update 함수는 dotInterval 마다 호출되며, dotDuration 만큼 지속됩니다.
+                // DOT 클래스의 Update 함수는 dotInterval 마다 호출되며, dotDuration 만큼 지속됩니다.
         protected override void Update()
         {
             base.Update();
@@ -380,14 +402,18 @@ namespace AttackComponents
                 // AOE 영역 공격 처리
                 ProcessAreaAttack();
                 
-                // 자기장 지속시간 체크
-                if (dotDuration <= 0f)
+                // SingleHit 모드가 아닌 경우에만 지속시간 체크
+                if (aoeMode != AOEMode.SingleHit)
                 {
-                    AttackFactory.Instance.Deactivate(attack);
-                    return;
+                    // 자기장 지속시간 체크
+                    if (dotDuration <= 0f)
+                    {
+                        AttackFactory.Instance.Deactivate(attack);
+                        return;
+                    }
+                    
+                    dotDuration -= Time.deltaTime;
                 }
-                
-                dotDuration -= Time.deltaTime;
             }
             else
             {

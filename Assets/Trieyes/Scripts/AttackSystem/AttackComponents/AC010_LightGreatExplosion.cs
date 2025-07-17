@@ -10,8 +10,8 @@ namespace AttackComponents
 {
     /// <summary>
     /// 빛의 대폭발 효과
-    /// 지정된 범위에 강력한 빛의 폭발을 생성하여 적들에게 대량의 데미지를 입힙니다.
-    /// GC 최적화를 위해 재사용 가능한 리스트를 사용합니다.
+    /// 기본 공격이 맞은 대상 주위에 자그마한 원형 폭발을 일으킵니다.
+    /// AC002의 로직을 기반으로 하여 각 히트된 적에게 AC100을 소환합니다.
     /// </summary>
     public class AC010_LightGreatExplosion : AttackComponent
     {
@@ -22,22 +22,36 @@ namespace AttackComponents
         public float explosionDelay = 0.3f;
         public float chargeTime = 0.5f; // 충전 시간
 
+        // AC002 로직 복사
+        [Header("AC002 공격 설정")]
+        public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
+        public float attackDuration = 1f;
+        public float attackRadius = 1f; // 회전 반지름
+        public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
+
         [Header("VFX 설정")]
         public GameObject explosionVFXPrefab;
         public float vfxDuration = 0.6f;
+
+        // AC100 소환 설정
+        [Header("AC100 소환 설정")]
+        private const int AC100_ID = 10; // AC100의 ID
 
         // 폭발 상태 관리
         private ExplosionState explosionState = ExplosionState.None;
         private float explosionTimer = 0f;
         private float chargeTimer = 0f;
         private Vector2 targetPosition;
-        private List<Pawn> hitTargets = new List<Pawn>(15);
+        private List<Enemy> hitTargets = new List<Enemy>(15);
+
+        // AC002 로직 관련
+        private GameObject weaponGameObject; // 무기 오브젝트 참조
+        private BoxCollider2D attackCollider;
 
         // 폭발 상태 열거형
         private enum ExplosionState
         {
             None,
-            Charging,
             Preparing,
             Exploding,
             Impact,
@@ -50,6 +64,9 @@ namespace AttackComponents
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
+            
+            // AC002 로직 초기화
+            InitializeAC002Logic();
             
             // 초기 상태 설정
             explosionState = ExplosionState.None;
@@ -64,138 +81,81 @@ namespace AttackComponents
             StartExplosion();
         }
 
+        private void InitializeAC002Logic()
+        {
+            // 1. R_Weapon 오브젝트 찾기
+            var pawnPrefab = attack.attacker.pawnPrefab;
+            weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
+
+            if (weaponGameObject == null)
+            {
+                Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                return;
+            }
+
+            // 2. attack 오브젝트를 R_Weapon의 자식으로 설정
+            attack.transform.SetParent(weaponGameObject.transform);
+            attack.transform.localPosition = Vector3.zero;
+            attack.transform.localRotation = Quaternion.identity;
+
+            // 3. attack 오브젝트에 콜라이더 추가 및 설정
+            attackCollider = attack.GetComponent<BoxCollider2D>();
+            if (attackCollider == null)
+            {
+                attackCollider = attack.gameObject.AddComponent<BoxCollider2D>();
+            }
+            attackCollider.offset = new Vector2(0, 0.3f);
+            attackCollider.size = new Vector2(0.16f, 0.56f);
+            attackCollider.isTrigger = true;
+            attackCollider.enabled = true;
+            attack.attackCollider = attackCollider;
+
+            // 4. 애니메이션 트리거
+            attack.attacker.ChangeAnimationState("ATTACK");
+        }
+
+        public override void ProcessComponentCollision(Pawn targetPawn)
+        {
+            // AC100 소환
+            var aoeAttack = AttackFactory.Instance.ClonePrefab(AC100_ID);
+            BattleStage.now.AttachAttack(aoeAttack);
+            aoeAttack.target = targetPawn;
+            
+            // AC100 설정
+            var aoeComponent = aoeAttack.components[0] as AC100_AOE;
+            if (aoeComponent != null)
+            {
+                aoeComponent.aoeMode = AOEMode.SingleHit;
+                aoeComponent.createAreaAttack = true;
+                aoeComponent.areaAttackRadius = 1.5f;
+                aoeComponent.areaAttackDamage = explosionDamage;
+                aoeComponent.areaAttackVFXDuration = 0.3f;
+            }
+            
+            aoeAttack.Activate(attack.attacker, Vector2.zero);
+            
+            Debug.Log($"<color=cyan>[AC010] {targetPawn.pawnName}에게 AC100 AOE 소환</color>");
+        }
+
         private void StartExplosion()
         {
-            explosionState = ExplosionState.Charging;
-            chargeTimer = 0f;
-            
-            // 충전 VFX 생성
-            CreateChargeVFX();
         }
 
         protected override void Update()
         {
             base.Update();
             
-            // 폭발 처리
-            ProcessExplosion();
-        }
-
-        private void ProcessExplosion()
-        {
-            switch (explosionState)
+            // AC002 위치 업데이트
+            if (weaponGameObject != null)
             {
-                case ExplosionState.None:
-                    break;
-
-                case ExplosionState.Charging:
-                    chargeTimer += Time.deltaTime;
-                    
-                    if (chargeTimer >= chargeTime)
-                    {
-                        explosionState = ExplosionState.Preparing;
-                        explosionTimer = 0f;
-                        StartPreparing();
-                    }
-                    break;
-
-                case ExplosionState.Preparing:
-                    explosionTimer += Time.deltaTime;
-                    
-                    if (explosionTimer >= explosionDelay)
-                    {
-                        explosionState = ExplosionState.Exploding;
-                        explosionTimer = 0f;
-                        StartExploding();
-                    }
-                    break;
-
-                case ExplosionState.Exploding:
-                    explosionTimer += Time.deltaTime;
-                    
-                    if (explosionTimer >= explosionDuration)
-                    {
-                        explosionState = ExplosionState.Impact;
-                        explosionTimer = 0f;
-                        ApplyExplosionDamage();
-                    }
-                    break;
-
-                case ExplosionState.Impact:
-                    explosionTimer += Time.deltaTime;
-                    
-                    if (explosionTimer >= vfxDuration)
-                    {
-                        explosionState = ExplosionState.Finished;
-                    }
-                    break;
-
-                case ExplosionState.Finished:
-                    explosionState = ExplosionState.None;
-                    AttackFactory.Instance.Deactivate(attack);
-                    break;
+                attack.transform.position = attack.attacker.transform.position;
             }
-        }
-
-        private void StartPreparing()
-        {
-            // 준비 VFX 생성
-            CreatePreparationVFX();
-        }
-
-        private void StartExploding()
-        {
-            // 폭발 VFX 생성
-            CreateExplosionVFX();
-            
-            // 범위 내 적 탐지
-            DetectTargetsInRange();
-        }
-
-        private void DetectTargetsInRange()
-        {
-            reusableColliders.Clear();
-            hitTargets.Clear();
-            
-            Physics2D.OverlapCircle(targetPosition, explosionRadius, new ContactFilter2D().NoFilter(), reusableColliders);
-            
-            for (int i = 0; i < reusableColliders.Count; i++)
+        
+            attackDuration -= Time.deltaTime;
+            if (attackDuration <= 0f)
             {
-                Collider2D collider = reusableColliders[i];
-                if (collider == null) continue;
-
-                Pawn enemy = collider.GetComponent<Pawn>();
-                if (enemy != null && enemy.GetComponent<Controller>() is EnemyController)
-                {
-                    hitTargets.Add(enemy);
-                }
+                AttackFactory.Instance.Deactivate(attack);
             }
-        }
-
-        private void ApplyExplosionDamage()
-        {
-            for (int i = 0; i < hitTargets.Count; i++)
-            {
-                Pawn target = hitTargets[i];
-                if (target != null && target.gameObject.activeInHierarchy)
-                {
-                    ApplyDamageToTarget(target);
-                }
-            }
-            
-            CreateImpactVFX();
-        }
-
-        private void ApplyDamageToTarget(Pawn target)
-        {
-            var attackResult = AttackResult.Create(attack, target);
-            attackResult.totalDamage = (int)explosionDamage;
-            DamageProcessor.ProcessHit(attack, target);
-        }
-
-        private void CreateChargeVFX()
-        {
-            // 충전 VFX 생성 로직
         }
 
         private void CreatePreparationVFX()
@@ -217,10 +177,14 @@ namespace AttackComponents
         {
             base.Deactivate();
             
-            explosionState = ExplosionState.None;
-            explosionTimer = 0f;
-            chargeTimer = 0f;
-            hitTargets.Clear();
+            // AC002 정리 로직
+            if (weaponGameObject != null)
+            {
+                foreach (var collider in weaponGameObject.GetComponents<BoxCollider2D>())
+                {
+                    Destroy(collider);
+                }
+            }
         }
     }
 } 

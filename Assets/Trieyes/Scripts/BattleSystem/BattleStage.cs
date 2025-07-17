@@ -131,7 +131,7 @@ namespace BattleSystem
             return enemiesInRange;
         }
 
-        public List<Enemy> GetEnemiesInCircleRange(Vector2 start, float radius, int count)
+        public List<Enemy> GetEnemiesInCircleRange(Vector2 start, float radius)
         {
             List<Enemy> enemiesInRange = new List<Enemy>();
             foreach (var enemy in enemies)

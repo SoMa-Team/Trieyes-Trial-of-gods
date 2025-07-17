@@ -634,7 +634,8 @@ namespace CharacterSystem
                 rb.linearVelocity = Vector2.zero;
                 isDead = true;
             }
-            ChangeAnimationState("DEATH"); 
+            
+            ChangeAnimationState("DEATH");
         }
         
         // ===== [기능 12] 자동공격 시스템 =====

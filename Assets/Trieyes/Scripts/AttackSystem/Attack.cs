@@ -124,13 +124,13 @@ namespace AttackSystem
         protected virtual void ProcessAttackCollision(Pawn targetPawn)
         {
             //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
-            DamageProcessor.ProcessHit(this, targetPawn);
-            
             // TODO : OnEvent를 활용한 처리 필요
             foreach (var attackComponent in components)
             {
                 attackComponent.ProcessComponentCollision(targetPawn);
             }
+            
+            DamageProcessor.ProcessHit(this, targetPawn);
         }
 
         /// <summary>

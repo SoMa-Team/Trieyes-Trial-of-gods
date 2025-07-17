@@ -8,6 +8,7 @@ using BattleSystem;
 using Stats;
 using JetBrains.Annotations;
 using RelicSystem;
+using TagSystem;
 
 namespace AttackSystem
 {
@@ -33,6 +34,13 @@ namespace AttackSystem
         protected Rigidbody2D rb;
         protected Collider2D attackCollider;
         public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
+
+        public int getRelicStat(RelicStatType relicStatType)
+        {
+            if (!AttackTagManager.isValidRelicStat(relicStatType))
+                throw new Exception("Invalid relic stat type");
+            return relicStats[relicStatType];
+        }
 
         private void Update()
         {
@@ -131,23 +139,16 @@ namespace AttackSystem
         /// <param name="pawn"></param>
         public virtual void Activate(Pawn attacker, Vector2 direction)
         {
-            this.attacker = attacker;
-
-            ApplyStatSheet(attacker.statSheet);
-            
             children = new List<Attack>();
             foreach (var attackComponent in components)
             {
                 attackComponent.Activate(this, direction);
             }
-            
-            gameObject.SetActive(true);
         }
 
-        private void ApplyStatSheet(StatSheet attackerStatSheet)
+        public void ApplyStatSheet(StatSheet attackerStatSheet)
         {
-            // TODO: statSheet DeepCopy 필요
-            statSheet = attackerStatSheet;
+            statSheet = attackerStatSheet.Copy();
         }
 
         /// <summary>

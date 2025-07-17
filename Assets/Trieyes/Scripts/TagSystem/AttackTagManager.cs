@@ -1,4 +1,5 @@
 using System;
+using RelicSystem;
 
 namespace TagSystem
 {
@@ -17,6 +18,11 @@ namespace TagSystem
                 "range" => AttackTag.Range,
                 _ => throw new Exception("Unknown tag string: " + tagString)
             };
+        }
+
+        public static bool isValidRelicStat(RelicStatType relicStatType)
+        {
+            throw new NotImplementedException();
         }
     }
 }

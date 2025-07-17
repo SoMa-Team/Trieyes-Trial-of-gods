@@ -29,11 +29,15 @@ namespace AttackSystem
 
         public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
         {
+            // attackData 변조를 막기 위한 Copy 생성
+            attackData = attackData.Copy();
+            
             var attack = ClonePrefab(attackData.attackId);
             
             attack.attackData = attackData;
             attack.parent = parent;
 
+            // 유물 메인 옵션 적용
             foreach (var relic in attacker.relics)
             {
                 if (relic.filterAttackTag is not null && !attack.attackData.tags.Contains(relic.filterAttackTag.Value))
@@ -49,6 +53,7 @@ namespace AttackSystem
                 }
             }
 
+            // 유물 랜덤 옵션 적용
             foreach (var relic in attacker.relics)
             {
                 foreach (var randomOption in relic.randomOptions)
@@ -72,22 +77,20 @@ namespace AttackSystem
                 direction = Vector2.right;
             }
 
-            if (parent is not null)
-            {
-                attack.transform.position = parent.transform.position;    
-            }
-            else
-            {
-                attack.transform.position = attacker.transform.position;
-            }
+            attack.transform.position = parent is not null ? parent.transform.position : attacker.transform.position;
             
             var th = Mathf.Atan2(direction.y, direction.x) *  Mathf.Rad2Deg;
             attack.transform.rotation = Quaternion.Euler(new Vector3(0, 0, th));
             
+            attack.attacker = attacker;
+            attack.ApplyStatSheet(parent is not null ? parent.statSheet : attacker.statSheet);
+            
             attack.Activate(attacker, direction.normalized);
             
-            attack.transform.SetParent(BattleStage.now.View.transform);
             BattleStage.now.AttachAttack(attack);
+            
+            attack.transform.SetParent(BattleStage.now.View.transform);
+            attack.gameObject.SetActive(true);
         }
 
         public void Deactivate(Attack attack)

@@ -17,41 +17,41 @@ public class Tester : MonoBehaviour
             }
 
             Debug.Log($"========== Relic [{data.id}] ==========");
-            Debug.Log($"  이름: {data.name}");
-            Debug.Log($"  설명: {data.description}");
+            Debug.Log($"이름: {data.name}");
+            Debug.Log($"설명: {data.description}");
 
             // attackComponentIDs
             if (data.attackComponentIDs != null && data.attackComponentIDs.Count > 0)
             {
-                Debug.Log($"  attackComponentIDs: {string.Join(", ", data.attackComponentIDs)}");
+                Debug.Log($"attackComponentIDs: {string.Join(", ", data.attackComponentIDs)}");
             }
             else
             {
-                Debug.Log($"  attackComponentIDs: (없음)");
+                Debug.Log($"attackComponentIDs: (없음)");
             }
 
             // filterAttackIDs
             if (data.filterAttackIDs != null && data.filterAttackIDs.Count > 0)
             {
-                Debug.Log($"  filterAttackIDs: {string.Join(", ", data.filterAttackIDs)}");
+                Debug.Log($"filterAttackIDs: {string.Join(", ", data.filterAttackIDs)}");
             }
             else if (data.filterAttackIDs == null)
             {
-                Debug.Log($"  filterAttackIDs: null");
+                Debug.Log($"filterAttackIDs: null");
             }
             else
             {
-                Debug.Log($"  filterAttackIDs: (빈 배열)");
+                Debug.Log($"filterAttackIDs: (빈 배열)");
             }
 
             // filterTag
             if (!string.IsNullOrEmpty(data.filterTag))
             {
-                Debug.Log($"  filterTag: {data.filterTag}");
+                Debug.Log($"filterTag: {data.filterTag}");
             }
             else
             {
-                Debug.Log($"  filterTag: null");
+                Debug.Log($"filterTag: null");
             }
 
             Debug.Log("====================================");

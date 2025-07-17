@@ -165,7 +165,7 @@ namespace CardViews
                     overlayGO.transform.SetAsFirstSibling(); // 텍스트 뒤에 렌더
 
                     var img = overlayGO.GetComponent<UnityEngine.UI.Image>();
-                    img.sprite = stickerBackgroundSprites[GetStickerSpriteIndex(sticker.type)];
+                    img.sprite = stickerBackgroundSprites[(int)sticker.type];
                     img.color = Color.white;
 
                     // RectTransform 세팅 (좌상단 anchor/pivot)
@@ -182,19 +182,6 @@ namespace CardViews
 
                     activeStickerOverlays.Add(overlayGO);
                 }
-            }
-        }
-
-        /// <summary>
-        /// 스티커 타입별 배경 이미지 인덱스 반환
-        /// </summary>
-        private int GetStickerSpriteIndex(StickerType type)
-        {
-            switch (type)
-            {
-                case StickerType.StatType: return 0;
-                case StickerType.Number:   return 1;
-                default: return 0;
             }
         }
 

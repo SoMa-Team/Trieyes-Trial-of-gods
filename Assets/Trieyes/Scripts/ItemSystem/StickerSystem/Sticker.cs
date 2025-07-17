@@ -1,13 +1,8 @@
 using Stats;
+using Utils;
 
 namespace StickerSystem
 {
-    public enum StickerType
-    {
-        StatType,
-        Number,
-    }
-
     public class Sticker
     {
         public StickerType type;

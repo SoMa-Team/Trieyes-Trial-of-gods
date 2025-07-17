@@ -3,6 +3,10 @@ using UnityEngine;
 using System;
 using System.Collections;
 using CharacterSystem;
+using CharacterSystem.Enemies;
+using Stats;
+using BattleSystem;
+using System.Collections.Generic;
 
 namespace AttackComponents
 {
@@ -20,6 +24,18 @@ namespace AttackComponents
         Individual, // 모기처럼 한명한테 붙어서 도트 주는 놈
         AreaRect, // 네모 장판 범위 내 모든 적에게 도트 주는 놈
         AreaCircle, // 원형 장판 범위 내 모든 적에게 도트 주는 놈
+    }
+
+    public enum AdditionalBuffType
+    {
+        None,
+        SpeedBoost,
+        AttackSpeedBoost,
+        AttackPowerBoost,
+        DefenseBoost,
+        CriticalChanceBoost,
+        CriticalDamageBoost,
+        MoveSpeedBoost,
     }
 
     /// <summary>
@@ -51,6 +67,28 @@ namespace AttackComponents
         public float dotAngle = 180f;
         public int dotSegments = 8;
 
+        // 추가 버프 설정
+        [Header("추가 버프 설정")]
+        public AdditionalBuffType additionalBuffType = AdditionalBuffType.None;
+        public float additionalBuffDuration = 5f;
+        public float additionalBuffMultiplier = 1.5f;
+        public int additionalBuffValue = 10;
+
+        // AOE 영역 공격 설정
+        [Header("AOE 영역 공격 설정")]
+        public bool createAreaAttack = false;
+        public float areaAttackRadius = 1f;
+        public float areaAttackDamage = 20f;
+        public float areaAttackTickInterval = 0.5f;
+        private float areaAttackTimer = 0f;
+        private List<Pawn> areaAttackTargets = new List<Pawn>(10);
+        private bool buffApplied = false; // 버프 적용 여부 플래그
+
+        // AOE VFX 설정
+        [Header("AOE VFX 설정")]
+        public GameObject areaAttackVFXPrefab;
+        public float areaAttackVFXDuration = 0.3f;
+
         public override void Activate(Attack attack, Vector2 direction)
         {
             if (attack.target != null)
@@ -62,6 +100,20 @@ namespace AttackComponents
             {
                 dotCollisionType = DOTCollisionType.AreaRect;
             }
+
+            // AOE 영역 공격이 활성화된 경우 AOE 로직 시작
+            if (createAreaAttack)
+            {
+                StartAreaAttack();
+            }
+        }
+
+        private void StartAreaAttack()
+        {
+            areaAttackTimer = 0f;
+            areaAttackTargets.Clear();
+            buffApplied = false;
+            Debug.Log("<color=yellow>[AC100] AOE 영역 공격 시작!</color>");
         }
 
         private void DOTHandlerByCollisionType(DOTCollisionType dotCollisionType)
@@ -90,6 +142,9 @@ namespace AttackComponents
 
             target.ApplyDamage(result);
 
+            // 추가 버프 적용
+            ApplyAdditionalBuffEffect(target);
+
             if (target.isDead)
             {
                 AttackFactory.Instance.Deactivate(attack);
@@ -98,7 +153,13 @@ namespace AttackComponents
 
         private void DOTHandlerByAreaRect()
         {
-            throw new NotImplementedException();
+            // 플레이어 주변 AOE 영역 공격 형성
+            if (createAreaAttack)
+            {
+                ProcessAreaAttack();
+            }
+            
+            // AOE 영역 공격이 활성화된 경우 도트 데미지는 AOE에서 처리하므로 여기서는 추가 처리하지 않음
         }
 
         private void DOTHandlerByAreaCircle()
@@ -106,26 +167,247 @@ namespace AttackComponents
             throw new NotImplementedException();
         }
 
+        private void ProcessAreaAttack()
+        {
+            areaAttackTimer += Time.deltaTime;
+            
+            if (areaAttackTimer >= areaAttackTickInterval)
+            {
+                ApplyAreaAttackDamage();
+                areaAttackTimer = 0f;
+            }
+        }
+
+        private void ApplyAreaAttackDamage()
+        {
+            // 플레이어 주변 적 탐지
+            DetectEnemiesInAreaAttack();
+            
+            // 탐지된 적들에게 데미지 적용
+            for (int i = 0; i < areaAttackTargets.Count; i++)
+            {
+                Pawn enemy = areaAttackTargets[i];
+                if (enemy != null && enemy.gameObject.activeInHierarchy)
+                {
+                    ApplyDamageToEnemy(enemy);
+                }
+            }
+            
+            // AOE VFX 생성
+            CreateAreaAttackVFX();
+            
+            // 플레이어에게 버프 적용 (한 번만 적용)
+            if (additionalBuffType != AdditionalBuffType.None && !buffApplied)
+            {
+                ApplyAdditionalBuffEffect(attack.attacker);
+                buffApplied = true;
+            }
+        }
+
+        private void DetectEnemiesInAreaAttack()
+        {
+            areaAttackTargets.Clear();
+            
+            // 플레이어 위치 기준으로 AOE 범위 탐지
+            Vector2 playerPosition = attack.attacker.transform.position;
+            
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(playerPosition, areaAttackRadius);
+            
+            foreach (Collider2D collider in colliders)
+            {
+                if (collider == null) continue;
+
+                Pawn enemy = collider.GetComponent<Pawn>();
+                if (enemy != null && enemy.GetComponent<Controller>() is EnemyController)
+                {
+                    areaAttackTargets.Add(enemy);
+                }
+            }
+        }
+
+        private void ApplyDamageToEnemy(Pawn enemy)
+        {
+            var attackResult = AttackResult.Create(attack, enemy);
+            attackResult.totalDamage = (int)areaAttackDamage;
+            enemy.ApplyDamage(attackResult);
+            
+            Debug.Log($"<color=yellow>[AC100] AOE 영역 공격으로 {enemy.pawnName}에게 {attackResult.totalDamage} 데미지 적용</color>");
+        }
+
+        private void ApplyAdditionalBuffEffect(Pawn target)
+        {
+            switch (additionalBuffType)
+            {
+                case AdditionalBuffType.SpeedBoost:
+                    ApplySpeedBoost(target);
+                    break;
+                case AdditionalBuffType.MoveSpeedBoost:
+                    ApplyMoveSpeedBoost(target);
+                    break;
+                case AdditionalBuffType.AttackSpeedBoost:
+                    ApplyAttackSpeedBoost(target);
+                    break;
+                case AdditionalBuffType.AttackPowerBoost:
+                    ApplyAttackPowerBoost(target);
+                    break;
+                case AdditionalBuffType.DefenseBoost:
+                    ApplyDefenseBoost(target);
+                    break;
+                case AdditionalBuffType.CriticalChanceBoost:
+                    ApplyCriticalChanceBoost(target);
+                    break;
+                case AdditionalBuffType.CriticalDamageBoost:
+                    ApplyCriticalDamageBoost(target);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void ApplySpeedBoost(Pawn target)
+        {
+            var speedBoostModifier = new StatModifier(
+                additionalBuffValue,
+                BuffOperationType.Additive,
+                false,
+                additionalBuffDuration
+            );
+            
+            target.statSheet[StatType.MoveSpeed].AddBuff(speedBoostModifier);
+            Debug.Log($"<color=green>[AC100] {target.pawnName}에게 속도 증가 버프 적용</color>");
+        }
+
+        private void ApplyMoveSpeedBoost(Pawn target)
+        {
+            var moveSpeedBoostModifier = new StatModifier(
+                (int)(additionalBuffMultiplier * 100),
+                BuffOperationType.Multiplicative,
+                false,
+                additionalBuffDuration
+            );
+            
+            target.statSheet[StatType.MoveSpeed].AddBuff(moveSpeedBoostModifier);
+            Debug.Log($"<color=green>[AC100] {target.pawnName}에게 이동속도 증가 버프 적용</color>");
+        }
+
+        private void ApplyAttackSpeedBoost(Pawn target)
+        {
+            var attackSpeedBoostModifier = new StatModifier(
+                additionalBuffValue,
+                BuffOperationType.Additive,
+                false,
+                additionalBuffDuration
+            );
+            
+            target.statSheet[StatType.AttackSpeed].AddBuff(attackSpeedBoostModifier);
+            Debug.Log($"<color=green>[AC100] {target.pawnName}에게 공격속도 증가 버프 적용</color>");
+        }
+
+        private void ApplyAttackPowerBoost(Pawn target)
+        {
+            var attackPowerBoostModifier = new StatModifier(
+                additionalBuffValue,
+                BuffOperationType.Additive,
+                false,
+                additionalBuffDuration
+            );
+            
+            target.statSheet[StatType.AttackPower].AddBuff(attackPowerBoostModifier);
+            Debug.Log($"<color=green>[AC100] {target.pawnName}에게 공격력 증가 버프 적용</color>");
+        }
+
+        private void ApplyDefenseBoost(Pawn target)
+        {
+            var defenseBoostModifier = new StatModifier(
+                additionalBuffValue,
+                BuffOperationType.Additive,
+                false,
+                additionalBuffDuration
+            );
+            
+            target.statSheet[StatType.Defense].AddBuff(defenseBoostModifier);
+            Debug.Log($"<color=green>[AC100] {target.pawnName}에게 방어력 증가 버프 적용</color>");
+        }
+
+        private void ApplyCriticalChanceBoost(Pawn target)
+        {
+            var criticalChanceBoostModifier = new StatModifier(
+                additionalBuffValue,
+                BuffOperationType.Additive,
+                false,
+                additionalBuffDuration
+            );
+            
+            target.statSheet[StatType.CriticalRate].AddBuff(criticalChanceBoostModifier);
+            Debug.Log($"<color=green>[AC100] {target.pawnName}에게 치명타 확률 증가 버프 적용</color>");
+        }
+
+        private void ApplyCriticalDamageBoost(Pawn target)
+        {
+            var criticalDamageBoostModifier = new StatModifier(
+                additionalBuffValue,
+                BuffOperationType.Additive,
+                false,
+                additionalBuffDuration
+            );
+            
+            target.statSheet[StatType.CriticalDamage].AddBuff(criticalDamageBoostModifier);
+            Debug.Log($"<color=green>[AC100] {target.pawnName}에게 치명타 데미지 증가 버프 적용</color>");
+        }
+
+        private void CreateAreaAttackVFX()
+        {
+            if (areaAttackVFXPrefab != null)
+            {
+                GameObject areaAttackVFX = Instantiate(areaAttackVFXPrefab);
+                areaAttackVFX.transform.position = attack.attacker.transform.position;
+                
+                // AOE VFX 지속시간 후 제거
+                Destroy(areaAttackVFX, areaAttackVFXDuration);
+                
+                Debug.Log("<color=blue>[AC100] AOE VFX 생성</color>");
+            }
+        }
 
         // DOT 클래스의 Update 함수는 dotInterval 마다 호출되며, dotDuration 만큼 지속됩니다.
         protected override void Update()
         {
-            if (target == null || target.isDead || dotDuration <= 0f)
-            {
-                AttackFactory.Instance.Deactivate(attack);
-                return;
-            }
-
             base.Update();
-            if (currentDotDuration < dotDuration && currentDotDuration >= dotInterval)
+            
+            // AOE 영역 공격이 활성화된 경우
+            if (createAreaAttack)
             {
-                DOTHandlerByCollisionType(dotCollisionType);
-                currentDotDuration = 0f;
-                dotDuration -= dotInterval;
+                // AOE 영역 공격 처리
+                ProcessAreaAttack();
+                
+                // 자기장 지속시간 체크
+                if (dotDuration <= 0f)
+                {
+                    AttackFactory.Instance.Deactivate(attack);
+                    return;
+                }
+                
+                dotDuration -= Time.deltaTime;
             }
             else
             {
-                currentDotDuration += Time.deltaTime;
+                // 일반 도트 처리
+                if (target == null || target.isDead || dotDuration <= 0f)
+                {
+                    AttackFactory.Instance.Deactivate(attack);
+                    return;
+                }
+                
+                if (currentDotDuration < dotDuration && currentDotDuration >= dotInterval)
+                {
+                    DOTHandlerByCollisionType(dotCollisionType);
+                    currentDotDuration = 0f;
+                    dotDuration -= dotInterval;
+                }
+                else
+                {
+                    currentDotDuration += Time.deltaTime;
+                }
             }
         }
     }

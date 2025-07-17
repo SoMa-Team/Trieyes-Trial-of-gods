@@ -1,17 +1,15 @@
 using AttackSystem;
 using CharacterSystem;
-using Stats;
 using UnityEngine;
 using System.Collections.Generic;
 using BattleSystem;
-using CharacterSystem.Enemies;
 
 namespace AttackComponents
 {
     /// <summary>
     /// 번개 장판 효과
-    /// 지정된 범위에 번개 장판을 생성하여 적들에게 지속 데미지를 입힙니다.
-    /// GC 최적화를 위해 재사용 가능한 리스트를 사용합니다.
+    /// 플레이어 주변에 자기장을 형성하여 닿는 적에게 피해를 주고, 이동속도가 증가합니다.
+    /// AC100을 소환하여 자기장과 버프 기능을 구현합니다.
     /// </summary>
     public class AC009_LightningField : AttackComponent
     {
@@ -20,18 +18,22 @@ namespace AttackComponents
         public float lightningFieldRadius = 2.5f;
         public float lightningFieldDuration = 3f;
         public float lightningFieldDelay = 0.1f;
-        public float lightningTickInterval = 0.5f; // 번개 틱 간격
 
         [Header("VFX 설정")]
-        public GameObject lightningFieldVFXPrefab;
         public float vfxDuration = 0.4f;
+
+        // AC100 소환 설정
+        [Header("AC100 소환 설정")]
+        private const int AC100_ID = 10; // AC100의 ID
+        public float moveSpeedBoostMultiplier = 1.5f; // 이동속도 증가 배율
+        public float moveSpeedBoostDuration = 5f; // 이동속도 증가 지속시간
 
         // 번개 장판 상태 관리
         private LightningFieldState fieldState = LightningFieldState.None;
         private float fieldTimer = 0f;
-        private float tickTimer = 0f;
-        private Vector2 targetPosition;
-        private List<Pawn> hitTargets = new List<Pawn>(10);
+
+        // AC100 인스턴스 관리
+        private Attack summonedAC100;
 
         // 번개 장판 상태 열거형
         private enum LightningFieldState
@@ -43,8 +45,7 @@ namespace AttackComponents
             Finished
         }
 
-        // 재사용 가능한 콜라이더 리스트 (GC 최적화)
-        private List<Collider2D> reusableColliders = new List<Collider2D>(20);
+
 
         public override void Activate(Attack attack, Vector2 direction)
         {
@@ -53,11 +54,6 @@ namespace AttackComponents
             // 초기 상태 설정
             fieldState = LightningFieldState.None;
             fieldTimer = 0f;
-            tickTimer = 0f;
-            hitTargets.Clear();
-            
-            // 타겟 위치 설정
-            targetPosition = (Vector2)attacker.transform.position + direction * 3.5f;
             
             // 번개 장판 시작
             StartLightningField();
@@ -68,8 +64,7 @@ namespace AttackComponents
             fieldState = LightningFieldState.Preparing;
             fieldTimer = 0f;
             
-            // VFX 생성
-            CreateLightningFieldVFX();
+            Debug.Log("<color=cyan>[AC009] 번개 자기장 시작!</color>");
         }
 
         protected override void Update()
@@ -100,14 +95,6 @@ namespace AttackComponents
 
                 case LightningFieldState.Active:
                     fieldTimer += Time.deltaTime;
-                    tickTimer += Time.deltaTime;
-                    
-                    // 번개 틱 처리
-                    if (tickTimer >= lightningTickInterval)
-                    {
-                        ApplyLightningTick();
-                        tickTimer = 0f;
-                    }
                     
                     if (fieldTimer >= lightningFieldDuration)
                     {
@@ -135,91 +122,74 @@ namespace AttackComponents
 
         private void ActivateField()
         {
-            // 장판 VFX 생성
-            CreateFieldVFX();
-            
-            // 범위 내 적 탐지
-            DetectTargetsInRange();
+            // AC100 소환하여 자기장 생성
+            SummonAC100();
         }
 
-        private void DetectTargetsInRange()
+        private void SummonAC100()
         {
-            reusableColliders.Clear();
-            hitTargets.Clear();
+            Debug.Log("<color=yellow>[AC009] AC100 소환하여 자기장 생성!</color>");
             
-            Physics2D.OverlapCircle(targetPosition, lightningFieldRadius, new ContactFilter2D().NoFilter(), reusableColliders);
+            // AC100 생성
+            summonedAC100 = AttackFactory.Instance.ClonePrefab(AC100_ID);
+            BattleStage.now.AttachAttack(summonedAC100);
             
-            for (int i = 0; i < reusableColliders.Count; i++)
+            // AC100 설정
+            var ac100Component = summonedAC100.components[0] as AC100_AOE;
+            if (ac100Component != null)
             {
-                Collider2D collider = reusableColliders[i];
-                if (collider == null) continue;
+                // AOE 영역 공격 설정
+                ac100Component.createAreaAttack = true;
+                ac100Component.areaAttackRadius = lightningFieldRadius;
+                ac100Component.areaAttackDamage = lightningFieldDamage;
+                ac100Component.areaAttackTickInterval = 0.5f;
+                
+                // 이동속도 증가 버프 설정
+                ac100Component.additionalBuffType = AdditionalBuffType.MoveSpeedBoost;
+                ac100Component.additionalBuffDuration = moveSpeedBoostDuration;
+                ac100Component.additionalBuffMultiplier = moveSpeedBoostMultiplier;
+                
+                // 도트 설정
+                ac100Component.dotType = DOTType.Lightning;
+                ac100Component.dotCollisionType = DOTCollisionType.AreaRect;
+                ac100Component.dotDuration = lightningFieldDuration;
+                ac100Component.dotInterval = 0.5f;
 
-                Pawn enemy = collider.GetComponent<Pawn>();
-                if (enemy != null && enemy.GetComponent<Controller>() is EnemyController)
-                {
-                    hitTargets.Add(enemy);
-                }
-            }
-        }
-
-        private void ApplyLightningTick()
-        {
-            // 실시간으로 범위 내 적 재탐지
-            DetectTargetsInRange();
-            
-            for (int i = 0; i < hitTargets.Count; i++)
-            {
-                Pawn target = hitTargets[i];
-                if (target != null && target.gameObject.activeInHierarchy)
-                {
-                    ApplyDamageToTarget(target);
-                }
+                ac100Component.dotWidth = lightningFieldRadius;
+                ac100Component.dotHeight = lightningFieldRadius;
             }
             
-            CreateLightningTickVFX();
-        }
-
-        private void ApplyDamageToTarget(Pawn target)
-        {
-            var attackResult = AttackResult.Create(attack, target);
-            attackResult.totalDamage = (int)lightningFieldDamage;
-            DamageProcessor.ProcessHit(attack, target);
+            // AC100 활성화
+            summonedAC100.Activate(attack.attacker, Vector2.zero);
+            
+            Debug.Log("<color=green>[AC009] AC100 자기장 활성화 완료!</color>");
         }
 
         private void DeactivateField()
         {
-            // 장판 비활성화 VFX 생성
-            CreateDeactivationVFX();
-        }
-
-        private void CreateLightningFieldVFX()
-        {
-            // 번개 장판 VFX 생성 로직
-        }
-
-        private void CreateFieldVFX()
-        {
-            // 활성화된 장판 VFX 생성 로직
-        }
-
-        private void CreateLightningTickVFX()
-        {
-            // 번개 틱 VFX 생성 로직
-        }
-
-        private void CreateDeactivationVFX()
-        {
-            // 비활성화 VFX 생성 로직
+            // AC100 비활성화
+            if (summonedAC100 != null)
+            {
+                AttackFactory.Instance.Deactivate(summonedAC100);
+                summonedAC100 = null;
+            }
+            
+            Debug.Log("<color=cyan>[AC009] 번개 자기장 종료!</color>");
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
             
+            // AC100 정리
+            if (summonedAC100 != null)
+            {
+                AttackFactory.Instance.Deactivate(summonedAC100);
+                summonedAC100 = null;
+            }
+            
             fieldState = LightningFieldState.None;
             fieldTimer = 0f;
-            tickTimer = 0f;
-            hitTargets.Clear();
         }
     }
 } 

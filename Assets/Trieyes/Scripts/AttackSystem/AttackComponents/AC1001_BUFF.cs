@@ -87,7 +87,7 @@ namespace AttackComponents
                     break;
                 case BUFFType.IncreaseMoveSpeed:
                     Debug.Log("IncreaseMoveSpeed Before: " + target.statSheet[StatType.MoveSpeed].Value);
-                    appliedBuff = new StatModifier((int)(buffMultiplier * 100), BuffOperationType.Multiplicative, false, buffDuration);
+                    appliedBuff = new StatModifier((int)buffMultiplier, BuffOperationType.Multiplicative, false, buffDuration);
                     target.statSheet[StatType.MoveSpeed].AddBuff(appliedBuff);
                     Debug.Log("IncreaseMoveSpeed After: " + target.statSheet[StatType.MoveSpeed].Value);
                     break;

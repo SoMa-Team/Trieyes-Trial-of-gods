@@ -1,15 +1,15 @@
 using AttackSystem;
 using CharacterSystem;
 using UnityEngine;
-using System.Collections.Generic;
 using BattleSystem;
+using System;
 
 namespace AttackComponents
 {
     /// <summary>
     /// 번개 장판 효과
     /// 플레이어 주변에 자기장을 형성하여 닿는 적에게 피해를 주고, 이동속도가 증가합니다.
-    /// AC100을 소환하여 자기장과 버프 기능을 구현합니다.
+    /// AC104를 소환하여 따라다니는 자기장과 버프 기능을 구현합니다.
     /// </summary>
     public class AC009_LightningField : AttackComponent
     {
@@ -22,18 +22,19 @@ namespace AttackComponents
         [Header("VFX 설정")]
         public float vfxDuration = 0.4f;
 
-        // AC100 소환 설정
-        [Header("AC100 소환 설정")]
-        private const int AC100_ID = 10; // AC100의 ID
-        public float moveSpeedBoostMultiplier = 1.5f; // 이동속도 증가 배율
-        public float moveSpeedBoostDuration = 5f; // 이동속도 증가 지속시간
+        // AC104 소환 설정
+        [Header("AC104 소환 설정")]
+        private const int AC104_ID = 16; // AC104의 ID
+        private const int AC1001_ID = 13;
+        public float moveSpeedBoostMultiplier; // 이동속도 증가 배율
+        public float moveSpeedBoostDuration; // 이동속도 증가 지속시간
 
         // 번개 장판 상태 관리
         private LightningFieldState fieldState = LightningFieldState.None;
         private float fieldTimer = 0f;
 
-        // AC100 인스턴스 관리
-        private Attack summonedAC100;
+        // AC104 인스턴스 관리
+        private Attack summonedAC104;
 
         // 번개 장판 상태 열거형
         private enum LightningFieldState
@@ -44,8 +45,6 @@ namespace AttackComponents
             Deactivating,
             Finished
         }
-
-
 
         public override void Activate(Attack attack, Vector2 direction)
         {
@@ -122,70 +121,77 @@ namespace AttackComponents
 
         private void ActivateField()
         {
-            // AC100 소환하여 자기장 생성
-            SummonAC100();
+            // AC104 소환하여 따라다니는 자기장 생성
+            SummonAC104();
+
+            // AC1000 버프로 이동속도 증가
+            ApplyMoveSpeedBuff();
         }
 
-        private void SummonAC100()
+        private void ApplyMoveSpeedBuff()
         {
-            Debug.Log("<color=yellow>[AC009] AC100 소환하여 자기장 생성!</color>");
-            
-            // AC100 생성
-            summonedAC100 = AttackFactory.Instance.ClonePrefab(AC100_ID);
-            BattleStage.now.AttachAttack(summonedAC100);
-            
-            // AC100 설정
-            var ac100Component = summonedAC100.components[0] as AC100_AOE;
-            if (ac100Component != null)
-            {
-                // AOE 영역 공격 설정
-                ac100Component.createAreaAttack = true;
-                ac100Component.areaAttackRadius = lightningFieldRadius;
-                ac100Component.areaAttackDamage = lightningFieldDamage;
-                ac100Component.areaAttackTickInterval = 0.5f;
-                
-                // 이동속도 증가 버프 설정
-                ac100Component.additionalBuffType = AdditionalBuffType.MoveSpeedBoost;
-                ac100Component.additionalBuffDuration = moveSpeedBoostDuration;
-                ac100Component.additionalBuffMultiplier = moveSpeedBoostMultiplier;
-                
-                // 도트 설정
-                ac100Component.dotType = DOTType.Lightning;
-                ac100Component.dotCollisionType = DOTCollisionType.AreaRect;
-                ac100Component.dotDuration = lightningFieldDuration;
-                ac100Component.dotInterval = 0.5f;
+            // 플레이어에게 AC1000 버프 적용
 
-                ac100Component.dotWidth = lightningFieldRadius;
-                ac100Component.dotHeight = lightningFieldRadius;
+            var speedBuff = AttackFactory.Instance.ClonePrefab(AC1001_ID);
+            BattleStage.now.AttachAttack(speedBuff);
+            speedBuff.target = attack.attacker;
+
+            var speedBuffComponent = speedBuff.components[0] as AC1001_BUFF;
+            speedBuffComponent.buffType = BUFFType.IncreaseMoveSpeed;
+            speedBuffComponent.buffMultiplier = moveSpeedBoostMultiplier;
+            speedBuffComponent.buffDuration = moveSpeedBoostDuration;
+
+            speedBuff.Activate(attack.attacker, Vector2.zero);
+        }
+
+        private void SummonAC104()
+        {
+            Debug.Log("<color=yellow>[AC009] AC104 소환하여 따라다니는 자기장 생성!</color>");
+            
+            // AC104 생성
+            summonedAC104 = AttackFactory.Instance.ClonePrefab(AC104_ID);
+            BattleStage.now.AttachAttack(summonedAC104);
+            
+            // AC104 설정 (하드코딩)
+            var ac104Component = summonedAC104.components[0] as AC104_FollowingField;
+            if (ac104Component != null)
+            {
+                ac104Component.fieldRadius = lightningFieldRadius;
+                ac104Component.fieldDamage = lightningFieldDamage;
+                ac104Component.fieldTickInterval = 0.5f;
+                ac104Component.fieldDuration = lightningFieldDuration;
+                ac104Component.followPlayer = true;
+                ac104Component.followDistance = 0f;
+                ac104Component.followOffset = Vector2.zero;
             }
             
-            // AC100 활성화
-            summonedAC100.Activate(attack.attacker, Vector2.zero);
+            // AC104 활성화
+            summonedAC104.Activate(attack.attacker, Vector2.zero);
             
-            Debug.Log("<color=green>[AC009] AC100 자기장 활성화 완료!</color>");
+            Debug.Log("<color=green>[AC009] AC104 따라다니는 자기장 활성화 완료!</color>");
         }
 
         private void DeactivateField()
         {
-            // AC100 비활성화
-            if (summonedAC100 != null)
+            // AC104 비활성화
+            if (summonedAC104 != null)
             {
-                AttackFactory.Instance.Deactivate(summonedAC100);
-                summonedAC100 = null;
+                AttackFactory.Instance.Deactivate(summonedAC104);
+                summonedAC104 = null;
             }
             
-            Debug.Log("<color=cyan>[AC009] 번개 자기장 종료!</color>");
+            Debug.Log("<color=cyan>[AC009] AC104 따라다니는 자기장 종료!</color>");
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
             
-            // AC100 정리
-            if (summonedAC100 != null)
+            // AC104 정리
+            if (summonedAC104 != null)
             {
-                AttackFactory.Instance.Deactivate(summonedAC100);
-                summonedAC100 = null;
+                AttackFactory.Instance.Deactivate(summonedAC104);
+                summonedAC104 = null;
             }
             
             fieldState = LightningFieldState.None;

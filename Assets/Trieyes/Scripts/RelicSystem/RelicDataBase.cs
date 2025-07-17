@@ -14,6 +14,8 @@ namespace RelicSystem
         /// <summary>
         /// 반드시 게임 시작 전에서 1번 비동기로 호출해야 합니다!
         /// 호출 예시: await RelicDataBase.InitializeAsync();
+        /// 또한 호출 되는 함수는 반드시 비동기로 선언되어야 합니다.
+        /// ex) private async void Start()
         /// </summary>
         public static async Task InitializeAsync()
         {
@@ -21,9 +23,9 @@ namespace RelicSystem
             if (initialized) return;
 
             // Addressables API:
-            // "RelicInfoSO" 라벨이 붙은 모든 RelicDataSO를 비동기로 로드한다.
+            // "RelicDataSO" 라벨이 붙은 모든 RelicDataSO를 비동기로 로드한다.
             // 두 번째 인자인 람다 함수(so => { ... })는 각각의 SO를 불러올 때마다 실행됨.
-            var handle = Addressables.LoadAssetsAsync<RelicSystem.RelicDataSO>("RelicInfoSO", so =>
+            var handle = Addressables.LoadAssetsAsync<RelicSystem.RelicDataSO>("RelicDataSO", so =>
             {
                 relicDict[so.id] = so;
             });
@@ -36,7 +38,7 @@ namespace RelicSystem
             initialized = true;
         }
 
-        public static RelicDataSO getRelicDataSO(int id)
+        public static RelicDataSO GetRelicDataSO(int id)
         {
             if (!initialized)
             {

@@ -16,7 +16,7 @@ namespace RelicSystem
         {
             var relic = new Relic();
 
-            RelicDataSO data = RelicDataBase.getRelicDataSO(relicID);
+            RelicDataSO data = RelicDataBase.GetRelicDataSO(relicID);
             
             relic.relicID = relicID;
             relic.name = data.name;

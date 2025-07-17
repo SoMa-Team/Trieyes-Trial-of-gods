@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace CardSystem
 {
+    [System.Serializable]
+    public class ParamWordRange
+    {
+        public int start;
+        public int end;
+    }
 /// <summary>
 /// 카드의 기본 정보를 담는 클래스입니다.
 /// 카드의 속성, 희귀도, 이름, 이미지, 설명 등 UI 표시에 필요한 정보를 관리합니다.
@@ -34,10 +40,15 @@ namespace CardSystem
         /// UI에서 카드의 효과를 설명하는 데 사용됩니다.
         /// </summary>
         [TextArea] public string cardDescription;
+
         /// <summary>
         /// 해당 카드가 반응하는 이벤트 타입들의 리스트입니다.
         /// 이벤트 처리 최적화를 위해 사용됩니다.
         /// </summary>
         public List<Utils.EventType> eventTypes = new();
+            
+        public List<string> baseParams = new List<string>();
+        
+        public List<ParamWordRange> paramWordRanges = new List<ParamWordRange>();
     }
 }

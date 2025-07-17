@@ -1,156 +1,186 @@
-using BattleSystem;
 using UnityEngine;
-using CardViews;
 using UnityEngine.UI;
+using TMPro;
 using CardSystem;
+using CardViews;
 using DeckViews;
 using CharacterSystem;
+using BattleSystem;
 using Stats;
-using TMPro;
+using System;
+using StickerSystem;
+using System.Collections.Generic;
 
 /// <summary>
 /// 상점 씬의 핵심 관리 클래스입니다.
-/// 카드 3장을 뽑아 보여주고, 구매/리롤/전투진입 등
-/// 상점에서 발생하는 모든 상호작용을 총괄합니다.
+/// 카드 뽑기/구매/덱 갱신/전투 진입까지 UI-비즈니스 연결을 총괄.
 /// </summary>
 public class ShopSceneManager : MonoBehaviour
 {
-    // --- 필드 ---
+    [Header("카드 슬롯 UI")]
+    public List<CardView> shopCardViews;    // 3개 카드뷰를 Inspector에서 순서대로 할당
+    
+    [Header("스티커 슬롯 UI")]
+    public List<StickerView> shopStickerViews;
 
-    [Header("카드 UI")]
-    /// 상점에서 첫 번째로 보여줄 카드의 CardView 컴포넌트
-    public CardView cardView1;
-    /// 상점에서 두 번째로 보여줄 카드의 CardView 컴포넌트
-    public CardView cardView2;
-    /// 상점에서 세 번째로 보여줄 카드의 CardView 컴포넌트
-    public CardView cardView3;
+    [Header("카드 구매 버튼")]
+    public List<Button> buyCardButtons;         // 3개 버튼을 Inspector에서 순서대로 할당
+    
+    [Header("스티커 구매 버튼")]
+    public List<Button> buyStickerButtons;
+    
+    [Header("덱 UI 연동")]
+    public DeckView deckView; 
 
-    [Header("구매 버튼")]
-    /// 첫 번째 카드를 구매할 때 누르는 버튼
-    public Button BuyButton1;
-    /// 두 번째 카드를 구매할 때 누르는 버튼
-    public Button BuyButton2;
-    /// 세 번째 카드를 구매할 때 누르는 버튼
-    public Button BuyButton3;
+    [Header("리롤 & 전투 진입 버튼")]
+    public Button rerollButton;
+    public Button battleButton;
 
-    [Header("전투 진입용 임시 버튼")]
-    /// 전투 씬으로 넘어가는 테스트용 버튼
-    public Button OnBattleSceneChange;
+    [Header("플레이어 및 스탯 UI")]
+    public TMP_Text attackStatText;
+    public TMP_Text defenseStatText;
+    public TMP_Text healthStatText;
+    public TMP_Text moveSpeedStatText;
+    
+    public static ShopSceneManager Instance;
 
-    [Header("리롤 버튼")]
-    /// 카드 3장을 새로 뽑는(리롤) 버튼
-    public Button RerollButton;
-
-    [Header("플레이어 정보")]
+    // --- 내부 필드 ---
     private Pawn mainCharacter;
+    private List<Card> shopCards = new();
+    private List<Sticker> shopStickers = new();
+    
+    public Sticker selectedSticker;
+    private StickerView selectedStickerView;
+    
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(this);
+            return;
+        }
+        Instance = this;
+    }
 
-    public TMP_Text attackStatValue;
-    public TMP_Text defenseStatValue;
-    public TMP_Text healthStatValue;
-    public TMP_Text moveSpeedStatValue;
-
-    // --- Unity 메서드 ---
-
-    /// <summary>
-    /// 씬이 시작될 때 초기화합니다.
-    /// 카드 3장을 뽑아 보여주고, 버튼들의 클릭 이벤트를 연결합니다.
-    /// </summary>
+    // --- 초기화 ---
     private void Start()
     {
+        // 1. 플레이어/캐릭터 초기화
         mainCharacter = CharacterFactory.Instance.Create(0);
-        // 첫 리롤(시작 시 3장 뽑기)
-        Reroll();
-        
-        // 덱 존 UI를 메인 캐릭터의 덱과 연동 (UI에 덱 표시)
-        DeckZoneManager.Instance.setDeck(mainCharacter.deck);
 
-        // 각 버튼에 클릭 이벤트 리스너 연결
-        RerollButton.onClick.AddListener(Reroll);
-        BuyButton1.onClick.AddListener(BuyCard1);
-        BuyButton2.onClick.AddListener(BuyCard2);
-        BuyButton3.onClick.AddListener(BuyCard3);
-        OnBattleSceneChange.onClick.AddListener(OnBattleSceneChangeTest);
-        
-        statRefresh();
+        // 2. 최초 상점 카드 리롤
+        RefreshShopCards();
+
+        // 3. 덱 UI 연동 (플레이어 덱 표시)
+        deckView.SetDeck(mainCharacter.deck);
+
+        // 4. 각 버튼 리스너 설정
+        if (rerollButton != null) rerollButton.onClick.AddListener(RefreshShopCards);
+        if (battleButton != null) battleButton.onClick.AddListener(OnBattleButtonPressed);
+
+        for (int i = 0; i < buyCardButtons.Count; i++)
+        {
+            int idx = i; // capture for closure
+            buyCardButtons[i].onClick.AddListener(() => OnCardBuyButtonPressed(idx));
+        }
+
+        for (int i = 0; i < buyStickerButtons.Count; i++)
+        {
+            int idx = i;
+            buyStickerButtons[i].onClick.AddListener(() => OnStickerBuyButtonPressed(idx));
+        }
+
+        RefreshStatUI();
     }
 
-    // --- 카드 리롤/뽑기 관련 메서드 ---
-
-    /// <summary>
-    /// 상점에 3장의 새로운 카드를 무작위로 생성해 보여줍니다.
-    /// 매번 카드팩(레벨)과 카드 종류를 랜덤으로 정합니다.
-    /// </summary>
-    private void Reroll()
+    // --- 상점 카드 리롤 ---
+    private void RefreshShopCards()
     {
-        // cardFactory를 통해 3장의 무작위 카드를 생성
-        Card card1 = CardFactory.Instance.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, CardFactory.Instance.cardInfos.Count));
-        Card card2 = CardFactory.Instance.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, CardFactory.Instance.cardInfos.Count));
-        Card card3 = CardFactory.Instance.Create(UnityEngine.Random.Range(1, 4), UnityEngine.Random.Range(0, CardFactory.Instance.cardInfos.Count));
-        
-        // 각각의 CardView에 해당 카드를 세팅 (UI에 표시)
-        cardView1.SetCard(card1);
-        cardView2.SetCard(card2);
-        cardView3.SetCard(card3);
+        shopCards.Clear();
+        shopStickers.Clear();
+        for (int i = 0; i < shopCardViews.Count; i++)
+        {
+            Card newCard = CardFactory.Instance.Create(
+                UnityEngine.Random.Range(1, 4),         // 카드 레벨(1~3)
+                UnityEngine.Random.Range(0, CardFactory.Instance.cardInfos.Count)
+            );
+            shopCards.Add(newCard);
+            shopCardViews[i].SetCard(newCard);
+        }
+
+        for (int i = 0; i < shopStickerViews.Count; i++)
+        {
+            Sticker newSticker = StickerFactory.Instance.CreateRandomSticker();
+            shopStickers.Add(newSticker);
+            shopStickerViews[i].SetSticker(newSticker);
+        }
+        // 구매 버튼 활성화 초기화
+        for (int i = 0; i < buyCardButtons.Count; i++)
+            buyCardButtons[i].interactable = true;
+        for (int i = 0; i < buyStickerButtons.Count; i++)
+            buyStickerButtons[i].interactable = true;
     }
 
-    // --- 카드 구매 관련 메서드 ---
-
-    /// <summary>
-    /// 첫 번째 카드 구매 버튼 클릭 시 호출됩니다.
-    /// 해당 카드를 메인 캐릭터의 덱에 복사본으로 추가하고, 덱 UI를 갱신합니다.
-    /// </summary>
-    public void BuyCard1()
+    // --- 카드 구매 ---
+    private void OnCardBuyButtonPressed(int index)
     {
-        // CardView에서 현재 보이는 카드 객체 참조 획득
-        var card = cardView1.GetCurrentCard();
-        // 실제 덱에는 딥카피하여 추가 (상점 카드와 별개)
-        mainCharacter.deck.AddCard(card.DeepCopy());
-        // 덱 UI를 즉시 새로고침
-        DeckZoneManager.Instance.RefreshDeckUI();
+        if (index < 0 || index >= shopCards.Count)
+            return;
+
+        var cardToBuy = shopCards[index];
+        if (cardToBuy == null)
+            return;
+
+        // 덱에 딥카피로 추가
+        mainCharacter.deck.AddCard(cardToBuy.DeepCopy());
+        // UI 갱신
+        deckView.RefreshDeckUI();
+        buyCardButtons[index].interactable = false; // 중복구매 방지
+
+        // 필요하다면 카드 구매 시마다 스탯도 갱신
+        RefreshStatUI();
     }
 
-    /// <summary>
-    /// 두 번째 카드 구매 버튼 클릭 시 호출됩니다.
-    /// 나머지 동작은 BuyCard1과 동일합니다.
-    /// </summary>
-    public void BuyCard2()
+    private void OnStickerBuyButtonPressed(int index)
     {
-        var card = cardView2.GetCurrentCard();
-        mainCharacter.deck.AddCard(card.DeepCopy());
-        DeckZoneManager.Instance.RefreshDeckUI();
+        if (index < 0 || index >= shopStickers.Count)
+            return;
+
+        // 1. 이전 선택 해제(SticekrView에서 selected 구현 되면 추가)
+        // if (selectedStickerView != null)
+        //     selectedStickerView.SetSelected(false);
+
+        // 2. 새로 선택
+        Debug.Log("<color=yellow>Sticker Selected!</color>");
+        selectedSticker = shopStickers[index];
+        selectedStickerView = shopStickerViews[index];
+
+        // 3. 하이라이트 효과 (StickerView에서 구현 필요)
+        //selectedStickerView.SetSelected(true);
+
+        // 4. 카드뷰들에 "스티커 적용 모드" 안내 등 필요하다면 표시
+        // (예시: CardView에 isStickerApplyMode 등)
     }
 
-    /// <summary>
-    /// 세 번째 카드 구매 버튼 클릭 시 호출됩니다.
-    /// 나머지 동작은 BuyCard1과 동일합니다.
-    /// </summary>
-    public void BuyCard3()
-    {
-        var card = cardView3.GetCurrentCard();
-        mainCharacter.deck.AddCard(card.DeepCopy());
-        DeckZoneManager.Instance.RefreshDeckUI();
-    }
-
-    // --- 전투 전환 테스트 메서드 ---
-
-    /// <summary>
-    /// [임시] 전투 씬 전환 버튼 클릭 시 호출.
-    /// mainCharacter에게 OnBattleSceneChange 이벤트를 발생시켜,
-    /// 카드의 액션/스탯 초기화 등 전투 씬 진입 처리를 실행합니다.
-    /// </summary>
-    public void OnBattleSceneChangeTest()
+    // --- 전투 진입 ---
+    private void OnBattleButtonPressed()
     {
         Debug.Log("BattleSceneChangeTest");
-        if(mainCharacter == null) Debug.LogError("캐릭터가 초기화되지 않았습니다.");
+        if(mainCharacter == null)
+        {
+            Debug.LogError("캐릭터가 초기화되지 않았습니다.");
+            return;
+        }
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        statRefresh();
+        RefreshStatUI();
     }
 
-    private void statRefresh()
+    // --- 스탯 UI 갱신 ---
+    private void RefreshStatUI()
     {
-        attackStatValue.text = $"{mainCharacter.statSheet[StatType.AttackPower].Value}";
-        defenseStatValue.text = $"{mainCharacter.statSheet[StatType.Defense].Value}";
-        healthStatValue.text = $"{mainCharacter.statSheet[StatType.Health].Value}";
-        moveSpeedStatValue.text = $"{mainCharacter.statSheet[StatType.MoveSpeed].Value}";
+        attackStatText.text = mainCharacter.statSheet[StatType.AttackPower].Value.ToString();
+        defenseStatText.text = mainCharacter.statSheet[StatType.Defense].Value.ToString();
+        healthStatText.text = mainCharacter.statSheet[StatType.Health].Value.ToString();
+        moveSpeedStatText.text = mainCharacter.statSheet[StatType.MoveSpeed].Value.ToString();
     }
 }

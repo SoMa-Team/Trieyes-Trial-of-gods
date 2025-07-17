@@ -28,8 +28,8 @@ namespace AttackSystem
         public StatSheet statSheet;
 
         [CanBeNull] public Attack parent; // 부모 Attack (null이면 관리자, 아니면 투사체)
-        public List<Attack> children;
-        public List<AttackComponent> components;
+        public List<Attack> children = new ();
+        public List<AttackComponent> components = new ();
         
         protected Rigidbody2D rb;
         protected Collider2D attackCollider;
@@ -158,8 +158,10 @@ namespace AttackSystem
         /// </summary>
         public virtual void Deactivate()
         {
-            // 컴포넌트 정리
-            // TODO: AttackComponent 초기화 필요시 초기화
+            foreach (var attack in children)
+            {
+                AttackFactory.Instance.Deactivate(attack);
+            }
             children.Clear();
             
             // 물리 속성 초기화
@@ -176,8 +178,6 @@ namespace AttackSystem
             // 참조 정리
             attacker = null;
             parent = null;
-            
-            gameObject.SetActive(false);
         }
         
         // ===== [기능 9] 이벤트 처리 =====

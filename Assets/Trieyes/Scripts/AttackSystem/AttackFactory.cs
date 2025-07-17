@@ -110,11 +110,11 @@ namespace AttackSystem
         {
             // attackData 변조를 막기 위한 Copy 생성
             attackData = attackData.Copy();
-            
-            var attack = ClonePrefab(attackData.attackId);
-            attack.attackData = attackData;
 
-            attack.parent = parent;
+            Attack attack = popAttack(attackData.attackId);
+            if (attack is null)
+                attack = ClonePrefab(attackData.attackId);
+            attack.attackData = attackData;
             Activate(attack, attacker, parent, direction);
             return attack;
         }
@@ -125,9 +125,10 @@ namespace AttackSystem
             {
                 direction = Vector2.right;
             }
-
-            attack.transform.position = parent is not null ? parent.transform.position : attacker.transform.position;
             
+            attack.parent = parent;
+            
+            attack.transform.position = parent is not null ? parent.transform.position : attacker.transform.position;
             var th = Mathf.Atan2(direction.y, direction.x) *  Mathf.Rad2Deg;
             attack.transform.rotation = Quaternion.Euler(new Vector3(0, 0, th));
             
@@ -139,13 +140,41 @@ namespace AttackSystem
             BattleStage.now.AttachAttack(attack);
             
             attack.transform.SetParent(BattleStage.now.View.transform);
+            
             attack.gameObject.SetActive(true);
         }
 
         public void Deactivate(Attack attack)
         {
             attack.Deactivate();
-            Destroy(attack.gameObject);
+            attack.gameObject.SetActive(false);
+            if (attack.attackData.attackId == 1)
+            {
+                Debug.LogError($"attack 1 is Deactivated!");
+            }
+            pushAttack(attack);
+        }
+
+        // ===== 오브젝트 풀링 =====
+        private Dictionary<AttackID, Queue<Attack>> pool = new ();
+        private void pushAttack(Attack attack)
+        {
+            var id = attack.attackData.attackId;
+            if (!pool.ContainsKey(id))
+                pool[id] = new Queue<Attack>();
+            pool[id].Enqueue(attack);
+        }
+        
+        private Attack popAttack(int id)
+        {
+            if (!pool.ContainsKey(id) || pool[id].Count == 0)
+                return null;
+
+            var attack = pool[id].Dequeue();
+            var originalAttack = GetPrefabById(id);
+            foreach (var key in originalAttack.relicStats.Keys)
+                attack.relicStats[key] = originalAttack.relicStats[key];
+            return attack;
         }
         
         // ===== 내부 헬퍼 =====

@@ -31,7 +31,6 @@ namespace Trieyes.Tests.RelicTest.Scripts
                 var itemAngle = Mathf.Lerp(0, 360, (float)i / (projectileCount));
                 var newDirection = new Vector2(Mathf.Cos(itemAngle * Mathf.Deg2Rad), Mathf.Sin(itemAngle * Mathf.Deg2Rad));
                 var newAttack = AttackFactory.Instance.Create(newAttackData, attack.attacker, attack, newDirection);
-                attack.AddAttack(newAttack);
             }
                 
             AttackFactory.Instance.Deactivate(attack);

@@ -16,8 +16,7 @@ namespace StickerSystem
             }
             Instance = this;
         }
-
-        // "생성자" 대신 Activate로 초기화
+        
         public Sticker CreateNumberSticker(int value, int lifeTime = 1)
         {
             var sticker = new Sticker();

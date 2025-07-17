@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using AttackComponents;
 using BattleSystem;
 using CharacterSystem;
@@ -8,6 +10,13 @@ using UnityEngine;
 namespace AttackSystem
 {
     using AttackID = Int32;
+
+    [System.Serializable]
+    public class IDAttackPair
+    {
+        public AttackID id;
+        public Attack attackPrefab;
+    }
     
     public class AttackFactory : MonoBehaviour
     {
@@ -22,10 +31,79 @@ namespace AttackSystem
             }
 
             Instance = this;
+            InitAttackPrefab();
             DontDestroyOnLoad(gameObject);
         }
+
+        private void InitAttackPrefab()
+        {
+            foreach (var attackPair in rawAttackPrefab)
+            {
+                attackPrefab[attackPair.id] = attackPair.attackPrefab;
+            }
+        }
+
+        public List<IDAttackPair> rawAttackPrefab;
+        private Dictionary<AttackID, Attack> attackPrefab = new (); // 공격 프리팹 배열
         
-        public Attack[] attackPrefab; // 공격 프리팹 배열
+        // ===== 공격 등록 기능 =====
+        public HashSet<AttackID> registeredAttackIDs = new();
+        public AttackID RegisterRelicAppliedAttack(AttackData attackData, Pawn owner)
+        {
+            // attackData 변조를 막기 위한 Copy 생성
+            attackData = attackData.Copy();
+            
+            var attack = ClonePrefab(attackData.attackId);
+
+            // 유물 메인 옵션 적용
+            foreach (var relic in owner.relics)
+            {
+                if (relic.filterAttackTag is not null && !attack.attackData.tags.Contains(relic.filterAttackTag.Value))
+                    continue;
+                if (relic.filterAttackIDs is not null && !relic.filterAttackIDs.Contains(attack.attackData.attackId))
+                    continue;
+                
+                // relic의 mainOption의 attackTag 혹은 attackID가 일치하는 상황
+                foreach (var attackComponentID in relic.attackComponentIDs)
+                {
+                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, attack, Vector2.zero);
+                    attack.AddAttackComponent(attackComponent);
+                }
+            }
+
+            // 유물 랜덤 옵션 적용
+            foreach (var relic in owner.relics)
+            {
+                foreach (var randomOption in relic.randomOptions)
+                {
+                    if (!attack.attackData.tags.Contains(randomOption.FilterTag))
+                        continue;
+                    
+                    // RandomOption이 Attack의 Tag를 포함함
+                    attack.ApplyRelicStat(randomOption.RelicStatType, randomOption.value);
+                }
+            }
+
+            return RegisterAttack(attack);
+        }
+
+        private AttackID RegisterAttack(Attack attack)
+        {
+            var id = attackPrefab.Keys.Max() + 1;
+            registeredAttackIDs.Add(id);
+            attackPrefab[id] = attack;
+            return id;
+        }
+
+        public void clearRegisteredAttacks()
+        {
+            foreach (var attackID in registeredAttackIDs)
+            {
+                attackPrefab[attackID] = null;
+            }
+        }
+        
+        // ===== 공격 생성 =====
 
         public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
         {

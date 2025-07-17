@@ -179,6 +179,22 @@ PrefabInstance:
       propertyPath: 'attackPrefab.Array.data[1]'
       value: 
       objectReference: {fileID: 2081706559338647884, guid: 0c65ec2833ad74603ac1b843f7cd113e, type: 3}
+    - target: {fileID: 4527419275432876978, guid: 5a32d0106970f4a6baa1ef805e4e7887, type: 3}
+      propertyPath: rawAttackPrefab.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4527419275432876978, guid: 5a32d0106970f4a6baa1ef805e4e7887, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[1].id
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4527419275432876978, guid: 5a32d0106970f4a6baa1ef805e4e7887, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[0].attackPrefab
+      value: 
+      objectReference: {fileID: 2081706559338647884, guid: 02575171311894923895710590c3a1c5, type: 3}
+    - target: {fileID: 4527419275432876978, guid: 5a32d0106970f4a6baa1ef805e4e7887, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[1].attackPrefab
+      value: 
+      objectReference: {fileID: 2081706559338647884, guid: 0c65ec2833ad74603ac1b843f7cd113e, type: 3}
     - target: {fileID: 8891976228650422917, guid: 5a32d0106970f4a6baa1ef805e4e7887, type: 3}
       propertyPath: m_Name
       value: AttackFactory

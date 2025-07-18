@@ -612,6 +612,14 @@ PrefabInstance:
       value: SampleCharacter
       objectReference: {fileID: 0}
     - target: {fileID: 3421697805657425411, guid: 158732bb507374a9598c34cd4c3dc3de, type: 3}
+      propertyPath: rb
+      value: 
+      objectReference: {fileID: 1710666587}
+    - target: {fileID: 3421697805657425411, guid: 158732bb507374a9598c34cd4c3dc3de, type: 3}
+      propertyPath: Collider
+      value: 
+      objectReference: {fileID: 1710666586}
+    - target: {fileID: 3421697805657425411, guid: 158732bb507374a9598c34cd4c3dc3de, type: 3}
       propertyPath: basicAttack
       value: 
       objectReference: {fileID: 11400000, guid: 3f8d75889befb41cc969fc34e8da3a75, type: 2}
@@ -694,6 +702,16 @@ MonoBehaviour:
   owner: {fileID: 1710666580}
   lastMoveDir: {x: 0, y: 0}
   joystick: {fileID: 0}
+--- !u!70 &1710666586 stripped
+CapsuleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 7040964818278521817, guid: 158732bb507374a9598c34cd4c3dc3de, type: 3}
+  m_PrefabInstance: {fileID: 1710666579}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &1710666587 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 16111979999986116, guid: 158732bb507374a9598c34cd4c3dc3de, type: 3}
+  m_PrefabInstance: {fileID: 1710666579}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1745724596
 PrefabInstance:
   m_ObjectHideFlags: 0

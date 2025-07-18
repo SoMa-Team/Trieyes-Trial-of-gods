@@ -50,7 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  moveSpeed: 5
+  rb: {fileID: 8624112004233080383}
+  Collider: {fileID: 7559639709190176891}
   statPresetSO: {fileID: 11400000, guid: f1d19ea4c070b4c4383b416bd94a26a7, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 0}

@@ -32,12 +32,12 @@ namespace CharacterSystem
 
         public int currentHp;
 
-        public float moveSpeed = 5f;
+        public float moveSpeed => GetStatValue(StatType.MoveSpeed);
 
         [Header("Components")] 
-        protected Rigidbody2D rb;
-
-        protected Collider2D Collider;
+        public Rigidbody2D rb;
+        
+        public Collider2D Collider;
 
         protected Controller Controller;
         protected Animator Animator;
@@ -57,7 +57,7 @@ namespace CharacterSystem
         
         public Vector2 lastestDirection;
         // ===== [프로퍼티] =====
-        public int pawnId { get; private set; }
+        public int? enemyID;
         
         public string pawnName { get; protected set; }
         
@@ -137,6 +137,11 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Activate()
         {
+            isDead = false;
+            currentHp = maxHp;
+            
+            Collider.enabled = true;
+            
             // 컴포넌트 초기화
             pawnPrefab = transform.GetChild(0).gameObject;
 
@@ -160,7 +165,6 @@ namespace CharacterSystem
                 Utils.EventType.OnKilled,
                 Utils.EventType.OnHPUpdated
             );
-           
 
             deck.Activate(this, true);
             initBaseStat();
@@ -182,6 +186,12 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Deactivate()
         {
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                isDead = true;
+            }
+            
             //gameObject.SetActive(false);
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
@@ -199,11 +209,7 @@ namespace CharacterSystem
                 relics.Clear();
             }
 
-            Controller.enabled = false;
-            if (Controller is EnemyController)
-            {
-                Destroy(gameObject);
-            }
+            Controller.Deactivate();
         }
 
         /// <summary>
@@ -602,7 +608,8 @@ namespace CharacterSystem
 
         private void ApplyDamage(AttackResult result)
         {
-            if (result.attacker == null) return;
+            // 여러번 OnDeath 이벤트가 발생되지 않기 위한 예외문
+            if (currentHp <= 0) return;
             
             int previousHP = currentHp;
             ChangeHP(-result.totalDamage);
@@ -629,12 +636,7 @@ namespace CharacterSystem
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             // 정지
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-                isDead = true;
-            }
-            
+            Collider.enabled = false;
             ChangeAnimationState("DEATH");
         }
         

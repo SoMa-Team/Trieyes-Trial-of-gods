@@ -23,8 +23,6 @@ namespace CharacterSystem.Enemies
                 return;
             }
 
-            // StatSheet에서 최신 MoveSpeed를 반영
-            owner.moveSpeed = owner.GetStatValue(Stats.StatType.MoveSpeed);
 
             Vector2 toPlayer = (playerTarget.position - transform.position);
             float dist = toPlayer.magnitude;
@@ -41,8 +39,6 @@ namespace CharacterSystem.Enemies
         public override void Activate(Pawn pawn)
         {
             base.Activate(pawn);
-            
-            pawn = GetComponent<Pawn>();
 
             var playerObj = BattleStage.now.mainCharacter.gameObject;
 

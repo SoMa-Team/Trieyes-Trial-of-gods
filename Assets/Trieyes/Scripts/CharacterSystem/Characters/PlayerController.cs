@@ -26,8 +26,6 @@ namespace CharacterSystem
             {
                 return;
             }
-            // StatSheet에서 최신 MoveSpeed를 반영
-            owner.moveSpeed = owner.GetStatValue(Stats.StatType.MoveSpeed);
             // 조이스틱 입력값으로 이동
             Vector2 moveDir = new Vector2(joystick.Horizontal, joystick.Vertical);
             this.moveDir = moveDir.normalized;

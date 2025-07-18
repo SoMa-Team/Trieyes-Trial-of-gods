@@ -108,9 +108,9 @@ namespace BattleSystem
             battleStage.Deactivate();
 
             // 캐릭터 정리
-            foreach (var characters in battleStage.characters)
+            foreach (var character in battleStage.characters)
             {
-                characters.Deactivate();
+                CharacterFactory.Instance.Deactivate(character);
             }
 
             // 적 정리

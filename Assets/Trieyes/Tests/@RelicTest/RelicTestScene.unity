@@ -184,8 +184,12 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4527419275432876978, guid: 5a32d0106970f4a6baa1ef805e4e7887, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[0].id
+      value: 720001
+      objectReference: {fileID: 0}
+    - target: {fileID: 4527419275432876978, guid: 5a32d0106970f4a6baa1ef805e4e7887, type: 3}
       propertyPath: rawAttackPrefab.Array.data[1].id
-      value: 1
+      value: 720002
       objectReference: {fileID: 0}
     - target: {fileID: 4527419275432876978, guid: 5a32d0106970f4a6baa1ef805e4e7887, type: 3}
       propertyPath: rawAttackPrefab.Array.data[0].attackPrefab
@@ -436,8 +440,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1fdbc778e9e62a49a57e1a1aae88e84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackComponentPrefabs:
-  - {fileID: 282642695651491907, guid: e1b6e46e153eb492e94781f52baf124d, type: 3}
+  rawAttackComponentPrefabs:
+  - id: 720001
+    attackComponent: {fileID: 1094151612124042278, guid: e1b6e46e153eb492e94781f52baf124d, type: 3}
 --- !u!4 &951836251
 Transform:
   m_ObjectHideFlags: 0

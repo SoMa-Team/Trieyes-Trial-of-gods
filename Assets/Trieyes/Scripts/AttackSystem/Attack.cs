@@ -34,6 +34,7 @@ namespace AttackSystem
         protected Rigidbody2D rb;
         protected Collider2D attackCollider;
         public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
+        public int objectID; // 공격 조회를 위한 ID
 
         public int getRelicStat(RelicStatType relicStatType)
         {

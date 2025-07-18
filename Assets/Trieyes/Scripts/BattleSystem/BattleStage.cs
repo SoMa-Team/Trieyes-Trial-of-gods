@@ -22,8 +22,8 @@ namespace BattleSystem
         public Difficulty difficulty;
         public Pawn mainCharacter;
         public List<Pawn> characters = new ();
-        public List<Pawn> enemies = new ();
-        public List<Attack> attacks = new ();
+        public Dictionary<int, Pawn> enemies = new ();
+        public Dictionary<int, Attack> attacks = new ();
         public SpawnManager spawnManager;
 
         // ===== 스테이지 활성화, 비활성화 =====
@@ -50,16 +50,6 @@ namespace BattleSystem
         {
             now = null;
             View.gameObject.SetActive(false);
-
-            foreach (var enemy in enemies)
-            {
-                EnemyFactory.Instance.Deactivate(enemy);
-            }
-            
-            foreach (var attack in attacks)
-            {
-                AttackFactory.Instance.Deactivate(attack);
-            }
         }
 
         // ===== 적 관리 =====
@@ -74,12 +64,22 @@ namespace BattleSystem
         {
             enemy.transform.SetParent(View.transform);
             enemy.transform.position = spawnPoint.position;
-            enemies.Add(enemy);
+            enemies.Add(enemy.objectID, enemy);
+        }
+        
+        public void RemoveEnemy(Pawn enemy)
+        {
+            enemies.Remove(enemy.objectID);
         }
 
         public void AttachAttack(Attack attack)
         {
-            attacks.Add(attack);
+            attacks.Add(attack.objectID, attack);
+        }
+
+        public void RemoveAttack(Attack attack)
+        {
+            attacks.Remove(attack.objectID);
         }
         
         // ===== 시간 관리 관련 =====

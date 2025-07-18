@@ -20,6 +20,7 @@ namespace AttackSystem
     
     public class AttackFactory : MonoBehaviour
     {
+        private static int _attackObjectID = 0; 
         public static AttackFactory Instance { get; private set; } // 싱글톤 인스턴스
 
         private void Awake()
@@ -105,7 +106,6 @@ namespace AttackSystem
         }
         
         // ===== 공격 생성 =====
-
         public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
         {
             // attackData 변조를 막기 위한 Copy 생성
@@ -148,6 +148,7 @@ namespace AttackSystem
         {
             attack.Deactivate();
             attack.gameObject.SetActive(false);
+            BattleStage.now.RemoveAttack(attack);
             pushAttack(attack);
         }
 
@@ -189,7 +190,14 @@ namespace AttackSystem
             {
                 attack.relicStats[key] = originalAttack.relicStats[key];
             }
+
+            attack.objectID = GetObjectID();
             return attack;
+        }
+
+        private int GetObjectID()
+        {
+            return _attackObjectID++;
         }
 
         /// <summary>

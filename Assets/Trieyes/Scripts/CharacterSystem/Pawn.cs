@@ -27,16 +27,13 @@ namespace CharacterSystem
     {
         // ===== [필드] =====
         [Header("Pawn Settings")]
-
         public int maxHp = 100;
-
         public int currentHp;
 
         public float moveSpeed => GetStatValue(StatType.MoveSpeed);
 
         [Header("Components")] 
         public Rigidbody2D rb;
-        
         public Collider2D Collider;
 
         protected Controller Controller;
@@ -58,6 +55,7 @@ namespace CharacterSystem
         public Vector2 lastestDirection;
         // ===== [프로퍼티] =====
         public int? enemyID;
+        public bool isEnemy => enemyID is not null; 
         
         public string pawnName { get; protected set; }
         
@@ -71,8 +69,13 @@ namespace CharacterSystem
         /// 기본 공격이자 관리자 공격
         /// </summary>
         public AttackData basicAttack;
-
         private AttackData backupBasicAttack;
+        
+        public AttackData skill1Attack;
+        private AttackData backupSkill1Attack;
+        
+        public AttackData skill2Attack;
+        private AttackData backupSkill2Attack;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -97,6 +100,8 @@ namespace CharacterSystem
         
         protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>();
         public bool isDead { get; protected set; }
+        
+        public int objectID;
 
         // ===== [Unity 생명주기] =====
         protected virtual void Awake()
@@ -178,6 +183,12 @@ namespace CharacterSystem
             {
                 backupBasicAttack = basicAttack.Copy();
                 basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+                
+                backupSkill1Attack = skill1Attack.Copy();
+                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
+                
+                backupSkill2Attack = skill2Attack.Copy();
+                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
             }
         }
 
@@ -186,12 +197,6 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Deactivate()
         {
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-                isDead = true;
-            }
-            
             //gameObject.SetActive(false);
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
@@ -201,6 +206,8 @@ namespace CharacterSystem
             {
                 AttackFactory.Instance.DeregisterAttack(basicAttack);
                 basicAttack = backupBasicAttack;
+                skill1Attack = backupSkill1Attack;
+                skill2Attack = backupSkill2Attack;
             }
             
             // 리스트 초기화
@@ -637,6 +644,8 @@ namespace CharacterSystem
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             // 정지
             Collider.enabled = false;
+            isDead = true;
+            rb.linearVelocity = Vector3.zero;
             ChangeAnimationState("DEATH");
         }
         
@@ -678,18 +687,17 @@ namespace CharacterSystem
         /// </summary>
         protected virtual void ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
-            // TODO : Scene 통합 이후 제거 필요
-            if (AttackFactory.Instance is null)
-                return;
-            // TODO END
-
             switch (attackType)
             {
                 case PawnAttackType.BasicAttack:
-                    Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
+                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
                     break;
-                case PawnAttackType.Skill1: break;
-                case PawnAttackType.Skill2: break;
+                case PawnAttackType.Skill1:
+                    AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
+                    break;
+                case PawnAttackType.Skill2:
+                    AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
+                    break;
             }
         }
 

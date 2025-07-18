@@ -15,6 +15,13 @@ namespace BattleSystem
     /// </summary>
     public class EnemyFactory : MonoBehaviour
     {
+        // ===== 객체의 조회를 위한 ID =====
+        private static int _enemyObjectID;
+        private int getObjectID()
+        {
+            return _enemyObjectID++;
+        }
+        
         // ===== 싱글톤 =====
         public static EnemyFactory Instance { private set; get; }
         
@@ -76,6 +83,7 @@ namespace BattleSystem
         {
             enemy.Deactivate();
             enemy.gameObject.SetActive(false);
+            BattleStage.now.RemoveEnemy(enemy);
             pushEnemy(enemy.enemyID.Value, enemy);
         }
         
@@ -89,6 +97,7 @@ namespace BattleSystem
         {
             var enemyObject = Instantiate(GetPrefabById(id));
             var enemy = enemyObject.GetComponent<Pawn>();
+            enemy.objectID = getObjectID();
             return enemy;
         }
 

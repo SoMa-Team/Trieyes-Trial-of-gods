@@ -12,7 +12,7 @@ public class AnimationController : MonoBehaviour
 
     public void DestroyOnDeath()
     {
-        if (owner.enemyID is null)
+        if (!owner.isEnemy)
         {
             CharacterFactory.Instance.Deactivate(owner);   
         }

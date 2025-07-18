@@ -16,7 +16,7 @@ namespace AttackComponents
     /// </summary>
     public class AC003_HeroSwordEnchantmentFire : AttackComponent
     {
-        private const int DOT_id = 10;
+        private const int AC100_ID = 10;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
@@ -28,6 +28,17 @@ namespace AttackComponents
         private FireAttackState attackState = FireAttackState.None;
         private float attackTimer = 0f;
         private Vector2 attackDirection;
+
+        // 불꽃 도트 데미지 필드
+        public AOETargetType dotCollisionType = AOETargetType.SingleTarget;
+        public AOEShapeType dotShapeType = AOEShapeType.None;
+        public AOEMode dotMode = AOEMode.MultiHit;
+        public float dotRadius = 0f;
+        public float dotWidth = 0f;
+        public float dotHeight = 0f;
+        public int dotDamage = 20;
+        public float dotDuration = 2f;
+        public float dotInterval = 0.2f;
 
         // 불꽃 공격 상태 열거형
         private enum FireAttackState
@@ -44,9 +55,12 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = FireAttackState.None;
+            attackState = FireAttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
+
+            // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
+            attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
             // 불꽃 공격 시작
             StartFireAttack();
@@ -85,21 +99,28 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // 새로운 DEBUFF 클래스 사용 - 화상 효과
-            var burnDebuffInfo = new DebuffInfo
-            {
-                debuffType = DEBUFFType.Burn,
-                attack = attack,
-                target = targetPawn,
-                debuffValue = 10,   
-                debuffMultiplier = 1f,
-                debuffDuration = 5f,
-                debuffInterval = 1f,
-                globalDamage = 15
-            };
+            // 단일 대상에게 Tick 데미지를 주는 AOE 소환
+            var aoeAttack = AttackFactory.Instance.ClonePrefab(AC100_ID);
+            BattleStage.now.AttachAttack(aoeAttack);
 
-            var burnDebuff = new DEBUFF();
-            burnDebuff.Activate(burnDebuffInfo);
+            var aoeComponent = aoeAttack.components[0] as AC100_AOE;
+            if (aoeComponent != null)
+            {
+                aoeComponent.aoeTargetType = dotCollisionType;
+                aoeComponent.aoeShapeType = dotShapeType;
+                aoeComponent.aoeMode = dotMode;
+                aoeComponent.aoeDamage = dotDamage;
+                aoeComponent.aoeRadius = dotRadius;
+                aoeComponent.aoeWidth = dotWidth;
+                aoeComponent.aoeHeight = dotHeight;
+                aoeComponent.aoeDuration = dotDuration;
+                aoeComponent.aoeInterval = dotInterval;
+                
+                // target 설정
+                aoeAttack.target = targetPawn;
+            }
+
+            aoeAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         /// <summary>

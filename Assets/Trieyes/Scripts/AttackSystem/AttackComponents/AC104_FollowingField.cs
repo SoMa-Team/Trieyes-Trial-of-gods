@@ -14,10 +14,10 @@ namespace AttackComponents
     /// 플레이어가 이동하면 자기장도 함께 따라다닙니다.
     /// BattleStage 기반 적 감지로 최적화된 성능을 제공합니다.
     /// </summary>
+    public enum FieldShape { Circle, Rect }
+
     public class AC104_FollowingField : AttackComponent
     {
-        public enum FieldShape { Circle, Rect }
-
         [Header("필드 타입 및 크기 설정")]
         public FieldShape fieldShape = FieldShape.Circle;
         public float fieldRadius = 2.5f; // 원형일 때 반지름

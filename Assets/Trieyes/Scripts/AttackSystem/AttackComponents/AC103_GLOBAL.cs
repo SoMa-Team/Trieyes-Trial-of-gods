@@ -64,7 +64,7 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            globalDamageState = GlobalDamageState.None;
+            globalDamageState = GlobalDamageState.Starting;
             globalDamageTimer = 0f;
             damageTimer = 0f;
             affectedEnemies.Clear();

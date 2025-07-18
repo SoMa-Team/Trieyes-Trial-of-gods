@@ -268,12 +268,15 @@ namespace AttackComponents
             burnAttack.target = target;
 
             var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.dotDamage = globalDamage;
-            burnComponent.dotDuration = debuffDuration;
-            burnComponent.dotInterval = debuffInterval;
-            burnComponent.dotType = DOTType.Fire;
-            burnComponent.dotCollisionType = DOTCollisionType.Individual;
-            burnComponent.target = target;
+            burnComponent.aoeDamage = globalDamage;
+            burnComponent.aoeDuration = debuffDuration;
+            burnComponent.aoeInterval = debuffInterval;
+            burnComponent.aoeTargetType = AOETargetType.SingleTarget;
+            burnComponent.aoeShapeType = AOEShapeType.None;
+            burnComponent.aoeRadius = 0f;
+            burnComponent.aoeWidth = 0f;
+            burnComponent.aoeHeight = 0f;
+            burnComponent.aoeMode = AOEMode.SingleHit;
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }
@@ -286,12 +289,15 @@ namespace AttackComponents
             burnAttack.target = target;
 
             var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.dotDamage = globalDamage;
-            burnComponent.dotDuration = debuffDuration;
-            burnComponent.dotInterval = debuffInterval;
-            burnComponent.dotType = DOTType.Poison;
-            burnComponent.dotCollisionType = DOTCollisionType.Individual;
-            burnComponent.target = target;
+            burnComponent.aoeDamage = globalDamage;
+            burnComponent.aoeDuration = debuffDuration;
+            burnComponent.aoeInterval = debuffInterval; 
+            burnComponent.aoeTargetType = AOETargetType.SingleTarget;
+            burnComponent.aoeShapeType = AOEShapeType.None;
+            burnComponent.aoeRadius = 0f;
+            burnComponent.aoeWidth = 0f;
+            burnComponent.aoeHeight = 0f;
+            burnComponent.aoeMode = AOEMode.SingleHit;
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }
@@ -304,12 +310,15 @@ namespace AttackComponents
             burnAttack.target = target;
 
             var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.dotDamage = globalDamage;
-            burnComponent.dotDuration = debuffDuration;
-            burnComponent.dotInterval = debuffInterval;
-            burnComponent.dotType = DOTType.Bleed;
-            burnComponent.dotCollisionType = DOTCollisionType.Individual;
-            burnComponent.target = target;
+            burnComponent.aoeDamage = globalDamage;
+            burnComponent.aoeDuration = debuffDuration;
+            burnComponent.aoeInterval = debuffInterval;
+            burnComponent.aoeTargetType = AOETargetType.SingleTarget;
+            burnComponent.aoeShapeType = AOEShapeType.None;
+            burnComponent.aoeRadius = 0f;
+            burnComponent.aoeWidth = 0f;
+            burnComponent.aoeHeight = 0f;
+            burnComponent.aoeMode = AOEMode.SingleHit;
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }

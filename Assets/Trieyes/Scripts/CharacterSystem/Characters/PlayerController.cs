@@ -14,6 +14,7 @@ namespace CharacterSystem
         // public InputActionReference moveAction;
         // public InputActionReference attackAction;
         // public Vector2 moveDir = Vector2.zero;
+        public Character character;
         public InputActionReference skillAction001;
         public InputActionReference skillAction002;
 
@@ -25,7 +26,9 @@ namespace CharacterSystem
 
         public override void Activate(Pawn pawn)
         {
-            base.Activate(pawn);
+            base.Activate(pawn as Character);
+            character = pawn as Character;
+            
             skillAction001.action.Enable();
             skillAction002.action.Enable();
             
@@ -42,7 +45,7 @@ namespace CharacterSystem
 
         public override void ProcessInputActions()
         {
-            if (owner == null || joystick == null)
+            if (character == null || joystick == null)
             {
                 return;
             }
@@ -57,17 +60,21 @@ namespace CharacterSystem
             // 스킬 확인
             if (skillAction001.action.triggered)
             {
-                owner.ExecuteSkillAttack(owner.skillAttack001);
+                owner.ExecuteSkillAttack001(owner.skillAttack001);
             }
             if (skillAction002.action.triggered)
             {
-                owner.ExecuteSkillAttack(owner.skillAttack002);
+                owner.ExecuteSkillAttack002(owner.skillAttack002);
             }
         }
 
         private void Update()
         {
-            owner.PerformAutoAttack(); // 자동 공격
+            if (character != null)
+            {
+                // 매개변수가 있는 버전을 호출하여 Character001_Hero의 오버라이딩된 메서드가 실행되도록 함
+                character.PerformAutoAttack(character.basicAttack);
+            }
         }
     }
 } 

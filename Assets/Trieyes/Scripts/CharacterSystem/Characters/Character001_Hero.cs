@@ -19,6 +19,9 @@ namespace CharacterSystem
         // ===== [필드] =====
 
         public HeroWeaponElementState weaponElementState = HeroWeaponElementState.None;
+        public bool activateLight = false;
+
+        public bool lockBasicAttack = false;
         
         // Pawn의 추상 멤버 구현
         
@@ -47,6 +50,17 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+        }
+
+        public override void PerformAutoAttack(AttackData attackData)
+        {
+            if (lockBasicAttack) return;
+            base.PerformAutoAttack(attackData);
+        }
+
+        public void ExecuteSkillAttack(AttackData attackData)
+        {
+            base._ExecuteSkillAttack(attackData);
         }
 
         public override void Deactivate()

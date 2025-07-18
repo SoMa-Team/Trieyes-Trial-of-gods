@@ -65,15 +65,14 @@ namespace CharacterSystem
         /// </summary>
         public AttackData basicAttack;
 
-        public bool bIsLockAttack = false;
         public AttackData skillAttack001;
 
-        private float skillAttack001Cooldown = 0f;
-        private float lastSkillAttack001Time = -999f;
+        public float skillAttack001Cooldown = 0f;
+        public float lastSkillAttack001Time = -999f;
         public AttackData skillAttack002;
 
-        private float skillAttack002Cooldown = 0f;
-        private float lastSkillAttack002Time = -999f;
+        public float skillAttack002Cooldown = 0f;
+        public float lastSkillAttack002Time = -999f;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -644,7 +643,7 @@ namespace CharacterSystem
 
         public virtual void PerformAutoAttack()
         {
-            if (CheckTimeInterval() && !bIsLockAttack)
+            if (CheckTimeInterval())
             {
                 // 공격 쿨다운 계산 (스탯 변경 시 대응)
                 CalculateAttackCooldown();
@@ -691,7 +690,7 @@ namespace CharacterSystem
             Attack attack = AttackFactory.Instance.Create(attackData, this, null, LastMoveDirection);
         }
 
-        public void ExecuteSkillAttack(AttackData skillAttack)
+        public void ExecuteSkillAttack001(AttackData skillAttack)
         {
             // 쿨타임 체크
             if (BattleStage.now.GetTime() - lastSkillAttack001Time < skillAttack001Cooldown)
@@ -699,20 +698,28 @@ namespace CharacterSystem
                 Debug.Log($"<color=red>[SKILL_ATTACK] {gameObject.name} skill attack 001 cooldown: {skillAttack001Cooldown}</color>");
                 return;
             }
+
+            if (skillAttack == skillAttack001)
+            {
+                lastSkillAttack001Time = BattleStage.now.GetTime();
+            }
+
+            _ExecuteSkillAttack(skillAttack);
+        }
+
+        public void ExecuteSkillAttack002(AttackData skillAttack)
+        {
             if (BattleStage.now.GetTime() - lastSkillAttack002Time < skillAttack002Cooldown)
             {
                 Debug.Log($"<color=red>[SKILL_ATTACK] {gameObject.name} skill attack 002 cooldown: {skillAttack002Cooldown}</color>");
                 return;
             }
 
-            if (skillAttack == skillAttack001)
-            {
-                lastSkillAttack001Time = BattleStage.now.GetTime();
-            }
-            else if (skillAttack == skillAttack002)
+            if (skillAttack == skillAttack002)
             {
                 lastSkillAttack002Time = BattleStage.now.GetTime();
             }
+
             _ExecuteSkillAttack(skillAttack);
         }
 

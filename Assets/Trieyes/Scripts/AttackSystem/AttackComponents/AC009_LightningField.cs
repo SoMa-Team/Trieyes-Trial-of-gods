@@ -27,7 +27,7 @@ namespace AttackComponents
         [Header("AC104 소환 설정")]
         private const int AC104_ID = 16; // AC104의 ID
         private const int AC1001_ID = 13;
-        public float moveSpeedBoostMultiplier = 1f; // 이동속도 증가 배율
+        public float moveSpeedBoostMultiplier; // 이동속도 증가 배율
         public float moveSpeedBoostDuration; // 이동속도 증가 지속시간
 
         // 번개 장판 상태 관리
@@ -136,7 +136,7 @@ namespace AttackComponents
             {
                 buffType = BUFFType.IncreaseMoveSpeed,
                 attack = attack,
-                targets = new List<Pawn> { attack.attacker },
+                target = attack.attacker,
                 buffValue = 10,
                 buffMultiplier = moveSpeedBoostMultiplier,
                 buffDuration = moveSpeedBoostDuration,

@@ -16,20 +16,31 @@ namespace AttackComponents
     /// </summary>
     public class AC006_HeroSwordEnchantmentHeaven : AttackComponent
     {
-        private const int BUFF_ID = 13;
-        private const int DEBUFF_ID = 11;
         private const int AC100_ID = 10;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
 
-        public Vector2 direction;
-        public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
-
         // FSM 상태 관리
         private HeavenAttackState attackState = HeavenAttackState.None;
         private float attackTimer = 0f;
         private Vector2 attackDirection;
+
+        public Vector2 direction;
+        public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
+
+        // Skill 002에 대하여 AOE 공격 발동 시 AOE의 기본 정보들
+        public AOETargetType dotCollisionType = AOETargetType.AreaAroundTarget;
+        public AOEShapeType dotShapeType = AOEShapeType.Circle;
+        public AOEMode dotMode = AOEMode.SingleHit;
+        public float dotRadius = 3f;
+        public float dotWidth = 1f;
+        public float dotHeight = 1f;
+        public int dotDamage = 100;
+        public float dotDuration = 1f;
+        public float dotInterval = 1f;
+
+
 
         // 천상 공격 상태 열거형
         private enum HeavenAttackState
@@ -46,19 +57,16 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = HeavenAttackState.None;
+            attackState = HeavenAttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
-            
-            // 천상 공격 시작
-            StartHeavenAttack();
+
+            // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
+            attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
         }
 
         private void StartHeavenAttack()
         {
-            attackState = HeavenAttackState.Preparing;
-            attackTimer = 0f;
-            
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.pawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
@@ -87,63 +95,37 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // 새로운 BUFF 클래스 사용 - Haste 효과 (이동속도 + 공격속도 증가)
-            var hasteBuffInfo = new BuffInfo
-            {
-                buffType = BUFFType.Haste,
-                attack = attack,
-                targets = new List<Pawn> { attack.attacker }, // 자신에게 버프
-                buffValue = 10,
-                buffMultiplier = 1.5f,
-                buffDuration = 7f,
-                buffInterval = 1f,
-                globalHeal = 0
-            };
-
-            var hasteBuff = new BUFF();
-            hasteBuff.Activate(hasteBuffInfo);
-
-            // 새로운 BUFF 클래스 사용 - 공격범위 증가
-            var rangeBuffInfo = new BuffInfo
-            {
-                buffType = BUFFType.IncreaseAttackRangeAdd,
-                attack = attack,
-                targets = new List<Pawn> { attack.attacker }, // 자신에게 버프
-                buffValue = 3,
-                buffMultiplier = 1f,
-                buffDuration = 7f,
-                buffInterval = 1f,
-                globalHeal = 0
-            };
-
-            var rangeBuff = new BUFF();
-            rangeBuff.Activate(rangeBuffInfo);
-
-            // 새로운 DEBUFF 클래스 사용 - 방어력 감소
-            var debuffInfo = new DebuffInfo
-            {
-                debuffType = DEBUFFType.DecreaseDefense,
-                attack = attack,
-                target = attack.attacker, // 자신에게 디버프
-                debuffValue = 10,
-                debuffMultiplier = 0.5f,
-                debuffDuration = 7f,
-                debuffInterval = 1f,
-                globalDamage = 0
-            };
-
-            var debuff = new DEBUFF();
-            debuff.Activate(debuffInfo);
-
             // 빛 속성일 때 AOE 공격
             var hero = attack.attacker as Character001_Hero;
-            if (hero.weaponElementState == HeroWeaponElementState.Light)
+            if (hero != null && hero.weaponElementState == HeroWeaponElementState.Light && hero.activateLight)
             {
-                var aoeAttack = AttackFactory.Instance.ClonePrefab(AC100_ID);
+                SpawnAC100Attack(targetPawn);
+            }
+        }
+        
+        /// <summary>
+        /// Light 속성일 때 AC100 AOE 공격을 소환합니다
+        /// </summary>
+        /// <param name="targetPawn">타겟 적</param>
+        private void SpawnAC100Attack(Pawn targetPawn)
+        {
+            var aoeAttack = AttackFactory.Instance.ClonePrefab(AC100_ID);
+            if (aoeAttack != null)
+            {
                 BattleStage.now.AttachAttack(aoeAttack);
-                aoeAttack.target = targetPawn;
-                
+
+                var aoeComponent = aoeAttack.components[0] as AC100_AOE;
+                aoeComponent.aoeTargetType = dotCollisionType;
+                aoeComponent.aoeShapeType = dotShapeType;
+                aoeComponent.aoeMode = dotMode;
+                aoeComponent.aoeRadius = dotRadius;
+                aoeComponent.aoeDamage = dotDamage;
+                aoeComponent.aoeDuration = dotDuration;
+                aoeComponent.aoeInterval = dotInterval;
+
                 aoeAttack.Activate(attack.attacker, Vector2.zero);
+                
+                Debug.Log("<color=cyan>[AC006] Light 속성으로 AC100 AOE 공격 소환!</color>");
             }
         }
 
@@ -208,6 +190,38 @@ namespace AttackComponents
             
             // 천상 공격 상태 처리
             ProcessHeavenAttackState();
+
+            if (attackState == HeavenAttackState.Active && attack.attackCollider != null)
+            {
+                DrawFanShapeDebug();
+            }
+        }
+
+        /// <summary>
+        /// 부채꼴 모양을 Scene 뷰에 디버그 라인으로 그립니다.
+        /// </summary>
+        private void DrawFanShapeDebug()
+        {
+            if (attack.attackCollider is PolygonCollider2D collider)
+            {
+                Vector2[] points = collider.points;
+                
+                // 부채꼴 모양 그리기
+                for (int i = 0; i < points.Length - 1; i++)
+                {
+                    Vector3 startPos = attack.transform.position + new Vector3(points[i].x, points[i].y, 0);
+                    Vector3 endPos = attack.transform.position + new Vector3(points[i + 1].x, points[i + 1].y, 0);
+                    Debug.DrawLine(startPos, endPos, Color.yellow, 0.1f);
+                }
+                
+                // 마지막 점과 첫 번째 점을 연결 (폐곡선 만들기)
+                if (points.Length > 2)
+                {
+                    Vector3 lastPos = attack.transform.position + new Vector3(points[points.Length - 1].x, points[points.Length - 1].y, 0);
+                    Vector3 firstPos = attack.transform.position + new Vector3(points[1].x, points[1].y, 0);
+                    Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
+                }
+            }
         }
 
         private void ProcessHeavenAttackState()
@@ -220,11 +234,12 @@ namespace AttackComponents
                 case HeavenAttackState.Preparing:
                     attackTimer += Time.deltaTime;
                     
+                    StartHeavenAttack();
+                    
                     if (attackTimer >= 0.1f) // 준비 시간
                     {
                         attackState = HeavenAttackState.Active;
                         attackTimer = 0f;
-                        ActivateHeavenAttack();
                     }
                     break;
 
@@ -239,7 +254,6 @@ namespace AttackComponents
                     {
                         attackState = HeavenAttackState.Finishing;
                         attackTimer = 0f;
-                        FinishHeavenAttack();
                     }
                     break;
 
@@ -257,16 +271,6 @@ namespace AttackComponents
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }
-        }
-
-        private void ActivateHeavenAttack()
-        {
-            //debug.log("<color=green>[AC006] 천상 강화 공격 활성화!</color>");
-        }
-
-        private void FinishHeavenAttack()
-        {
-            //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
         }
     }
 }

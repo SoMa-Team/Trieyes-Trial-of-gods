@@ -52,7 +52,7 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            fallState = FallAttackState.None;
+            fallState = FallAttackState.Preparing;
             fallTimer = 0f;
             hitTargets.Clear();
             

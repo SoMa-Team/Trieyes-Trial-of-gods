@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 2055251134368463962}
+  - component: {fileID: 5030295270961169605}
   m_Layer: 0
-  m_Name: AC003
+  m_Name: S_Hero_002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2055251134368463962
+--- !u!114 &5030295270961169605
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,23 +41,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05f6d3b83c985534980bfa27e8106c04, type: 3}
+  m_Script: {fileID: 11500000, guid: 01a31d81b75dfcf449bbf509e93aaf0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackAngle: 90
-  attackDuration: 1
-  attackRadius: 1
-  direction: {x: 0, y: 0}
-  segments: 8
-  dotCollisionType: 0
-  dotShapeType: 0
-  dotMode: 1
-  dotRadius: 0
-  dotWidth: 0
-  dotHeight: 0
-  dotDamage: 20
-  dotDuration: 2
-  dotInterval: 0.2
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,7 +143,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: HeroSwordFire
+  m_Name: HeroSkill002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -192,13 +178,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 338969d3ad819d84b96ef4f7dfa1052d, type: 2}
+  attackData: {fileID: 11400000, guid: 8e5337464fe784d40b77508c84520cc3, type: 2}
   attacker: {fileID: 0}
   target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 2055251134368463962}
+  - {fileID: 5030295270961169605}
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

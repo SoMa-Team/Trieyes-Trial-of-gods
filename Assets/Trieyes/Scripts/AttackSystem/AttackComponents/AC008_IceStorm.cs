@@ -118,7 +118,7 @@ namespace AttackComponents
             globalBlizzardComponent.additionalDebuffType = DEBUFFType.Slow;
             globalBlizzardComponent.additionalDebuffDuration = 2f;
             globalBlizzardComponent.additionalDebuffChance = 0.3f;
-            globalBlizzardComponent.additionalDebuffMultiplier = 2f;
+            globalBlizzardComponent.additionalDebuffMultiplier = 0f;
 
             globalBlizzardAttack.Activate(attack.attacker, Vector2.zero);
             

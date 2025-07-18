@@ -40,9 +40,12 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = AttackState.None;
+            attackState = AttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
+
+            // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
+            attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
             // 공격 시작
             StartAttack();
@@ -70,6 +73,7 @@ namespace AttackComponents
             var collider = attack.attackCollider as PolygonCollider2D;
 
             // 부채꼴 모양의 콜라이더 포인트 생성
+            Debug.Log($"<color=green>[AC002] attackRadius: {attackRadius}, attackAngle: {attackAngle}</color>");
             Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
@@ -101,7 +105,7 @@ namespace AttackComponents
             Vector2 clockwiseDirection = RotateVector2D(direction, -halfAngle);
             Vector2 counterClockwiseDirection = RotateVector2D(direction, halfAngle);
 
-            ////debug.log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
+            Debug.Log($"<color=cyan>[AC002] radius: {radius}, halfAngle: {halfAngle}</color>");
             
             // 부채꼴 호를 따라 점들 생성
             for (int i = 0; i <= segments; i++)
@@ -111,8 +115,12 @@ namespace AttackComponents
                 // 시계 방향에서 시계 반대 방향으로 보간
                 Vector2 currentDirection = Vector2.Lerp(clockwiseDirection, counterClockwiseDirection, t).normalized;
                 points[i + 1] = currentDirection * radius;
+                
+                if (i == 0 || i == segments)
+                {
+                    Debug.Log($"<color=yellow>[AC002] Point {i + 1}: {points[i + 1]}, radius: {radius}</color>");
+                }
             }
-            
             return points;
         }
 
@@ -140,6 +148,12 @@ namespace AttackComponents
             
             // 공격 상태 처리
             ProcessAttackState();
+            
+            // Active 상태일 때 부채꼴 모양을 지속적으로 그리기
+            if (attackState == AttackState.Active && attack.attackCollider != null)
+            {
+                DrawFanShapeDebug();
+            }
         }
 
         private void ProcessAttackState()
@@ -199,6 +213,33 @@ namespace AttackComponents
         private void FinishAttack()
         {
             //debug.log("<color=cyan>[AC002] 부채꼴 공격 종료!</color>");
+        }
+
+        /// <summary>
+        /// 부채꼴 모양을 Scene 뷰에 디버그 라인으로 그립니다.
+        /// </summary>
+        private void DrawFanShapeDebug()
+        {
+            if (attack.attackCollider is PolygonCollider2D collider)
+            {
+                Vector2[] points = collider.points;
+                
+                // 부채꼴 모양 그리기
+                for (int i = 0; i < points.Length - 1; i++)
+                {
+                    Vector3 startPos = attack.transform.position + new Vector3(points[i].x, points[i].y, 0);
+                    Vector3 endPos = attack.transform.position + new Vector3(points[i + 1].x, points[i + 1].y, 0);
+                    Debug.DrawLine(startPos, endPos, Color.yellow, 0.1f);
+                }
+                
+                // 마지막 점과 첫 번째 점을 연결 (폐곡선 만들기)
+                if (points.Length > 2)
+                {
+                    Vector3 lastPos = attack.transform.position + new Vector3(points[points.Length - 1].x, points[points.Length - 1].y, 0);
+                    Vector3 firstPos = attack.transform.position + new Vector3(points[1].x, points[1].y, 0);
+                    Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
+                }
+            }
         }
     }
 }

@@ -36,7 +36,7 @@ namespace AttackComponents
         public BUFFType buffType;
 
         public Attack attack;
-        public List<Pawn> targets;
+        public Pawn target;
         public int buffValue = 10;
 
         public float buffInterval = 1f;
@@ -62,7 +62,7 @@ namespace AttackComponents
         public int globalHeal = 10;
 
         public Attack attack;
-        public List<Pawn> targets;
+        public Pawn target;
 
         private const int AC100_SINGLE_AOE = 10;
 
@@ -74,13 +74,10 @@ namespace AttackComponents
             buffDuration = buffInfo.buffDuration;
             buffInterval = buffInfo.buffInterval;
             globalHeal = buffInfo.globalHeal;
-            targets = buffInfo.targets;
+            target = buffInfo.target;
             attack = buffInfo.attack;
 
-            foreach (var target in targets)
-            {
-                ApplyBuffEffect(target);
-            }
+            ApplyBuffEffect(target);
         }
 
         private void ApplyBuffEffect(Pawn target)
@@ -148,7 +145,7 @@ namespace AttackComponents
             // null 체크 추가
             if (target == null || target.statSheet == null)
             {
-                Debug.LogWarning($"<color=yellow>[BUFF] ApplyIncreaseSpeedEffect: target 또는 statSheet가 null입니다.</color>");
+                //Debug.LogWarning($"<color=yellow>[BUFF] ApplyIncreaseSpeedEffect: target 또는 statSheet가 null입니다.</color>");
                 return;
             }
 
@@ -160,7 +157,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.MoveSpeed].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 이동속도 증가 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 이동속도 증가 효과 적용</color>");
         }
 
         private void ApplyIncreaseAttackSpeedEffect(Pawn target)
@@ -173,7 +170,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.AttackSpeed].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격속도 증가 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격속도 증가 효과 적용</color>");
         }
 
         private void ApplyIncreaseAttackPowerEffect(Pawn target)
@@ -186,7 +183,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.AttackPower].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격력 증가 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격력 증가 효과 적용</color>");
         }
 
         private void ApplyIncreaseDefenseEffect(Pawn target)
@@ -199,7 +196,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.Defense].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 방어력 증가 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 방어력 증가 효과 적용</color>");
         }
 
         private void ApplyIncreaseCriticalChanceEffect(Pawn target)
@@ -212,7 +209,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.CriticalRate].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 크리티컬 확률 증가 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 크리티컬 확률 증가 효과 적용</color>");
         }
 
         private void ApplyIncreaseCriticalDamageEffect(Pawn target)
@@ -225,11 +222,13 @@ namespace AttackComponents
             );
             target.statSheet[StatType.CriticalDamage].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 크리티컬 데미지 증가 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 크리티컬 데미지 증가 효과 적용</color>");
         }
 
         private void ApplyIncreaseMoveSpeedEffect(Pawn target)
         {
+            //Debug.Log("이전 이동속도: " + target.statSheet[StatType.MoveSpeed].Value);
+
             var buffModifier = new StatModifier(
                 (int)(buffMultiplier), // 30% 증가
                 BuffOperationType.Multiplicative,
@@ -238,7 +237,8 @@ namespace AttackComponents
             );
             target.statSheet[StatType.MoveSpeed].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 이동속도 증가 효과 적용</color>");
+            //Debug.Log("이후 이동속도: " + target.statSheet[StatType.MoveSpeed].Value);
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 이동속도 증가 효과 적용</color>");
         }
 
         private void ApplyIncreaseAttackRangeAddEffect(Pawn target)
@@ -251,7 +251,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.AttackRange].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격범위 증가 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격범위 증가 효과 적용</color>");
         }
 
         private void ApplyIncreaseAttackRangeMultiEffect(Pawn target)
@@ -264,7 +264,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.AttackRange].AddBuff(buffModifier);
             
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격범위 증가 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격범위 증가 효과 적용</color>");
         }
 
         private void ApplyHasteEffect(Pawn target)
@@ -286,7 +286,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.AttackSpeed].AddBuff(attackSpeedBuff);
 
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 헤이스트 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 헤이스트 효과 적용</color>");
         }
 
         private void ApplyBerserkEffect(Pawn target)
@@ -308,7 +308,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.Defense].AddBuff(defenseDebuff);
 
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 버서크 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 버서크 효과 적용</color>");
         }
 
         private void ApplyShieldEffect(Pawn target)
@@ -322,7 +322,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.Defense].AddBuff(shieldBuff);
 
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 실드 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 실드 효과 적용</color>");
         }
 
         private void ApplyRegenerationEffect(Pawn target)
@@ -333,12 +333,15 @@ namespace AttackComponents
             healAttack.target = target;
 
             var healComponent = healAttack.components[0] as AC100_AOE;
-            healComponent.dotDamage = -globalHeal; // 음수로 하면 힐링
-            healComponent.dotDuration = buffDuration;
-            healComponent.dotInterval = buffInterval;
-            healComponent.dotType = DOTType.Heal;
-            healComponent.dotCollisionType = DOTCollisionType.Individual;
-            healComponent.target = target;
+            healComponent.aoeDamage = -globalHeal; // 음수로 하면 힐링
+            healComponent.aoeDuration = buffDuration;
+            healComponent.aoeInterval = buffInterval;
+            healComponent.aoeTargetType = AOETargetType.SingleTarget;
+            healComponent.aoeShapeType = AOEShapeType.None;
+            healComponent.aoeRadius = 0f;
+            healComponent.aoeWidth = 0f;
+            healComponent.aoeHeight = 0f;
+            healComponent.aoeMode = AOEMode.SingleHit;
 
             healAttack.Activate(attack.attacker, Vector2.zero);
         }
@@ -354,7 +357,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.Defense].AddBuff(invincibilityBuff);
 
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 무적 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 무적 효과 적용</color>");
         }
 
         private void ApplyStealthEffect(Pawn target)
@@ -368,7 +371,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.CriticalRate].AddBuff(stealthBuff);
 
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 은신 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 은신 효과 적용</color>");
         }
 
         private void ApplyRageEffect(Pawn target)
@@ -390,7 +393,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.CriticalDamage].AddBuff(criticalDamageBuff);
 
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 분노 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 분노 효과 적용</color>");
         }
 
         private void ApplyProtectionEffect(Pawn target)
@@ -404,7 +407,7 @@ namespace AttackComponents
             );
             target.statSheet[StatType.Defense].AddBuff(defenseBuff);
 
-            Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 보호 효과 적용</color>");
+            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 보호 효과 적용</color>");
         }
     }
 }

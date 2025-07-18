@@ -8,70 +8,67 @@ using System.Collections.Generic;
 
 namespace AttackComponents
 {
-    public enum DOTType
+    public enum AOETargetType
     {
-        Fire,
-        Ice,
-        Lightning,
-        Poison,
-        Bleed,
-
-        Heal,
+        SingleTarget,      // 단일 대상에게만 데미지
+        AreaAroundTarget,  // 대상 주변에 AOE
+        AreaAtPosition     // 좌표 기반 AOE
     }
 
-    public enum DOTCollisionType
+    public enum AOEShapeType
     {
-        Individual, // 모기처럼 한명한테 붙어서 도트 주는 놈
-        AreaRect, // 네모 장판 범위 내 모든 적에게 도트 주는 놈
-        AreaCircle, // 원형 장판 범위 내 모든 적에게 도트 주는 놈
+        None,    // 형태 없음, 단일 타격
+        Rect,    // 직사각형
+        Circle   // 원형
     }
 
     public enum AOEMode
     {
-        SingleHit, // 1회성 AOE 공격
-        MultiHit,  // 지속적 AOE 공격
+        SingleHit, // 1회 발동
+        MultiHit   // N회 발동
     }
 
     public enum AdditionalBuffType
     {
         None,
         SpeedBoost,
+        MoveSpeedBoost,
         AttackSpeedBoost,
         AttackPowerBoost,
         DefenseBoost,
         CriticalChanceBoost,
-        CriticalDamageBoost,
-        MoveSpeedBoost,
+        CriticalDamageBoost
     }
 
     /// <summary>
-    /// 도트 효과 적용
-    /// 공격에 맞은 적에게 지속적으로 화상데미지(**도트**)를 입힙니다
+    /// AOE 공격 컴포넌트
+    /// 다양한 타겟팅, 형태, 발동 방식을 지원하는 AOE 공격을 구현합니다.
     /// </summary>
-    public class AC100_AOE  : AttackComponent
+    public class AC100_AOE : AttackComponent
     {   
-        // 도트 타입 ENUM
-        public DOTType dotType;
+        // AOE 타겟팅 설정
+        [Header("AOE 타겟팅 설정")]
+        public AOETargetType aoeTargetType = AOETargetType.SingleTarget;
 
-        // 도트 콜리전 타입 (개별 Pawn에 적용되는지, Box Collider로 장판처럼 적용되는지)
-        public DOTCollisionType dotCollisionType;
-        public int dotDamage = 10;
-        public float dotDuration = 10f;
+        // AOE 형태 설정
+        [Header("AOE 형태 설정")]
+        public AOEShapeType aoeShapeType = AOEShapeType.None;
+        public float aoeWidth = 1f;    // Rect 형태일 때 가로
+        public float aoeHeight = 1f;   // Rect 형태일 때 세로
+        public float aoeRadius = 1f;   // Circle 형태일 때 반지름
 
-        public float currentDotDuration = 0f;
-        public float dotInterval = 1f;
+        // AOE 발동 설정
+        [Header("AOE 발동 설정")]
+        public AOEMode aoeMode = AOEMode.SingleHit;
+        public int aoeDamage = 20;
+        public float aoeDuration = 5f;     // MultiHit 모드에서 사용
+        public float aoeInterval = 1f;     // MultiHit 모드에서 사용
 
-        // 도트 콜리전 타입이 Individual일 때 사용되는 값
-        public Pawn target;
-
-        // 도트 콜리전 타입이 AreaRect일 때 사용되는 값
-        public float dotWidth = 1f;
-        public float dotHeight = 1f;
-
-        // 도트 콜리전 타입이 AreaCircle일 때 사용되는 값
-        public float dotRadius = 1f;
-        public float dotAngle = 180f;
-        public int dotSegments = 8;
+        // AOE 상태 관리
+        private float aoeTimer = 0f;
+        private float aoeDurationTimer = 0f;
+        private List<Enemy> aoeTargets = new List<Enemy>(10);
+        private bool aoeActivated = false;
 
         // 추가 버프 설정
         [Header("추가 버프 설정")]
@@ -80,23 +77,12 @@ namespace AttackComponents
         public float additionalBuffMultiplier = 1.5f;
         public int additionalBuffValue = 10;
 
-        // AOE 영역 공격 설정
-        [Header("AOE 영역 공격 설정")]
-        public AOEMode aoeMode;
-        public bool createAreaAttack = false;
-        public float areaAttackRadius = 1f;
-        public float areaAttackDamage = 20f;
-        public float areaAttackTickInterval = 0.5f;
-        private float areaAttackTimer = 0f;
-        private List<Enemy> areaAttackTargets = new List<Enemy>(10);
-        private bool buffApplied = false; // 버프 적용 여부 플래그
-
         // AOE VFX 설정
         [Header("AOE VFX 설정")]
-        public GameObject areaAttackVFXPrefab;
-        public float areaAttackVFXDuration = 0.3f;
+        public GameObject aoeVFXPrefab;
+        public float aoeVFXDuration = 0.3f;
 
-        // FSM 상태 관리 (기존 타이머 변수 활용)
+        // FSM 상태 관리
         private AOEAttackState attackState = AOEAttackState.None;
 
         // AOE 공격 상태 열거형
@@ -114,176 +100,249 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = AOEAttackState.None;
-            currentDotDuration = 0f;
-            areaAttackTimer = 0f;
+            attackState = AOEAttackState.Preparing;
+            aoeTimer = 0f;
+            aoeDurationTimer = 0f;
+            aoeTargets.Clear();
+            aoeActivated = false;
             
-            if (attack.target != null)
-            {
-                dotCollisionType = DOTCollisionType.Individual;
-                target = attack.target;
-            }
-            else
-            {
-                dotCollisionType = DOTCollisionType.AreaRect;
-            }
-
             // AOE 공격 시작
-            StartAOEAttack();
+            StartAC100Attack();
         }
 
-        private void StartAOEAttack()
+        private void StartAC100Attack()
         {
             attackState = AOEAttackState.Preparing;
-            currentDotDuration = 0f;
-            areaAttackTimer = 0f;
-            
-            // AOE 영역 공격이 활성화된 경우 AOE 로직 시작
-            if (createAreaAttack)
-            {
-                StartAreaAttack();
-            }
+            aoeTimer = 0f;
+            aoeDurationTimer = 0f;
             
             Debug.Log("<color=orange>[AC100] AOE 공격 시작!</color>");
         }
 
-        private void StartAreaAttack()
+        protected override void Update()
         {
-            areaAttackTimer = 0f;
-            areaAttackTargets.Clear();
-            buffApplied = false;
-            Debug.Log("<color=yellow>[AC100] AOE 영역 공격 시작!</color>");
-        }
-
-        private void DOTHandlerByCollisionType(DOTCollisionType dotCollisionType)
-        {
-            switch (dotCollisionType)
-            {
-                case DOTCollisionType.Individual:
-                    DOTHandlerByIndividual();
-                    break;
-                case DOTCollisionType.AreaRect:
-                    DOTHandlerByAreaRect();
-                    break;
-                case DOTCollisionType.AreaCircle:
-                    DOTHandlerByAreaCircle();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void DOTHandlerByIndividual()
-        {
-            AttackResult result = new AttackResult();
-            result.attacker = attack.attacker;
-            result.totalDamage = dotDamage;
-
-            target.ApplyDamage(result);
-
-            // 추가 버프 적용
-            ApplyAdditionalBuffEffect(target);
-
-            if (target.isDead)
-            {
-                AttackFactory.Instance.Deactivate(attack);
-            }
-        }
-
-        private void DOTHandlerByAreaRect()
-        {
-            // 플레이어 주변 AOE 영역 공격 형성
-            if (createAreaAttack)
-            {
-                ProcessAreaAttack();
-            }
+            base.Update();
             
-            // AOE 영역 공격이 활성화된 경우 도트 데미지는 AOE에서 처리하므로 여기서는 추가 처리하지 않음
+            // AOE 공격 상태 처리
+            ProcessAC100AttackState();
         }
 
-        private void DOTHandlerByAreaCircle()
+        private void ProcessAC100AttackState()
         {
-            throw new NotImplementedException();
-        }
-
-        private void ProcessAreaAttack()
-        {
-            if (aoeMode == AOEMode.SingleHit)
+            switch (attackState)
             {
-                ApplyAreaAttackDamage();
-                Debug.Log("<color=yellow>[AC100] SingleHit AOE 공격 실행 완료!</color>");
-                AttackFactory.Instance.Deactivate(attack);
-                return;
-            }
-            else if (dotCollisionType == DOTCollisionType.AreaRect)
-            {
-                // MultiHit 모드: 기존 지속적 AOE 로직
-                areaAttackTimer += Time.deltaTime;
-                
-                if (areaAttackTimer >= areaAttackTickInterval)
-                {
-                    DetectEnemiesInAreaAttackRect();
-                    ApplyAreaAttackDamage();
-                    areaAttackTimer = 0f;
-                }
-            }
-            else if (dotCollisionType == DOTCollisionType.AreaCircle)
-            {
-                DetectEnemiesInAreaAttackCircle();
-                ApplyAreaAttackDamage();
+                case AOEAttackState.None:
+                    break;
+
+                case AOEAttackState.Preparing:
+                    aoeTimer += Time.deltaTime;
+                    
+                    if (aoeTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = AOEAttackState.Active;
+                        aoeTimer = 0f;
+                        ActivateAC100Attack();
+                    }
+                    break;
+
+                case AOEAttackState.Active:
+                    aoeTimer += Time.deltaTime;
+                    aoeDurationTimer += Time.deltaTime;
+                    
+                    // AOE 공격 처리
+                    ProcessAC100Attack();
+                    
+                    // 종료 조건 체크
+                    if (ShouldFinishAC100Attack())
+                    {
+                        attackState = AOEAttackState.Finishing;
+                        aoeTimer = 0f;
+                        FinishAC100Attack();
+                    }
+                    break;
+
+                case AOEAttackState.Finishing:
+                    aoeTimer += Time.deltaTime;
+                    
+                    if (aoeTimer >= 0.1f) // 종료 시간
+                    {
+                        attackState = AOEAttackState.Finished;
+                    }
+                    break;
+
+                case AOEAttackState.Finished:
+                    attackState = AOEAttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
             }
         }
 
-        private void DetectEnemiesInAreaAttackCircle()
+        private void ProcessAC100Attack()
         {
-            throw new NotImplementedException();
+            switch (aoeMode)
+            {
+                case AOEMode.SingleHit:
+                    // 1회 발동
+                    if (!aoeActivated)
+                    {
+                        ExecuteAC100Attack();
+                        aoeActivated = true;
+                    }
+                    break;
+
+                case AOEMode.MultiHit:
+                    // N회 발동
+                    if (aoeTimer >= aoeInterval)
+                    {
+                        ExecuteAC100Attack();
+                        aoeTimer = 0f;
+                    }
+                    break;
+            }
         }
 
-
-        private void ApplyAreaAttackDamage()
+        private void ExecuteAC100Attack()
         {
-            // 플레이어 주변 적 탐지
-            DetectEnemiesInAreaAttackRect();
+            switch (aoeTargetType)
+            {
+                case AOETargetType.SingleTarget:
+                    ExecuteSingleTargetAttack();
+                    break;
+                case AOETargetType.AreaAroundTarget:
+                    ExecuteAreaAroundTargetAttack();
+                    break;
+                case AOETargetType.AreaAtPosition:
+                    ExecuteAreaAtPositionAttack();
+                    break;
+            }
+        }
+
+        private void ExecuteSingleTargetAttack()
+        {
+            if (attack.target == null) return;
+
+            // 단일 대상에게 데미지 적용
+            var attackResult = AttackResult.Create(attack, attack.target);
+            attackResult.totalDamage = aoeDamage;
+            attack.target.ApplyDamage(attackResult);
+
+            // 버프 적용
+            ApplyAdditionalBuffEffect(attack.target);
+
+            Debug.Log($"<color=yellow>[AC100] 단일 대상 {attack.target.pawnName}에게 {aoeDamage} 데미지 적용</color>");
+        }
+
+        private void ExecuteAreaAroundTargetAttack()
+        {
+            Vector2 aoePosition = attack.target != null ? 
+                (Vector2)attack.target.transform.position : 
+                (Vector2)attack.attacker.transform.position;
+
+            ExecuteAreaAttack(aoePosition);
+        }
+
+        private void ExecuteAreaAtPositionAttack()
+        {
+            Vector2 aoePosition = (Vector2)attack.attacker.transform.position;
+            ExecuteAreaAttack(aoePosition);
+        }
+
+        private void ExecuteAreaAttack(Vector2 aoePosition)
+        {
+            // AOE 범위 내 적 탐지
+            DetectEnemiesInAOE(aoePosition);
             
             // 탐지된 적들에게 데미지 적용
-            for (int i = 0; i < areaAttackTargets.Count; i++)
+            for (int i = 0; i < aoeTargets.Count; i++)
             {
-                Pawn enemy = areaAttackTargets[i];
+                Pawn enemy = aoeTargets[i];
                 if (enemy != null && enemy.gameObject.activeInHierarchy)
                 {
-                    ApplyDamageToEnemy(enemy);
+                    var attackResult = AttackResult.Create(attack, enemy);
+                    attackResult.totalDamage = aoeDamage;
+                    enemy.ApplyDamage(attackResult);
                 }
             }
             
             // AOE VFX 생성
-            CreateAreaAttackVFX();
+            CreateAC100VFX(aoePosition);
             
-            // 플레이어에게 버프 적용 (한 번만 적용)
-            if (additionalBuffType != AdditionalBuffType.None && !buffApplied)
+            // 공격자에게 버프 적용 (한 번만 적용)
+            if (additionalBuffType != AdditionalBuffType.None && !aoeActivated)
             {
                 ApplyAdditionalBuffEffect(attack.attacker);
-                buffApplied = true;
+            }
+
+            Debug.Log($"<color=yellow>[AC100] AOE 공격으로 {aoeTargets.Count}명에게 {aoeDamage} 데미지 적용</color>");
+        }
+
+        private void DetectEnemiesInAOE(Vector2 aoePosition)
+        {
+            aoeTargets.Clear();
+            
+            switch (aoeShapeType)
+            {
+                case AOEShapeType.None:
+                    // 형태가 없으면 단일 대상만 처리
+                    if (attack.target != null)
+                    {
+                        aoeTargets.Add(attack.target as Enemy);
+                    }
+                    break;
+
+                case AOEShapeType.Rect:
+                    // 직사각형 범위 탐지
+                    Vector2 rectStart = aoePosition - new Vector2(aoeWidth * 0.5f, aoeHeight * 0.5f);
+                    Vector2 rectEnd = aoePosition + new Vector2(aoeWidth * 0.5f, aoeHeight * 0.5f);
+                    aoeTargets = BattleStage.now.GetEnemiesInRectRange(rectStart, rectEnd);
+                    break;
+
+                case AOEShapeType.Circle:
+                    // 원형 범위 탐지
+                    aoeTargets = BattleStage.now.GetEnemiesInCircleRange(aoePosition, aoeRadius);
+                    break;
             }
         }
 
-        private void DetectEnemiesInAreaAttackRect()
+        private bool ShouldFinishAC100Attack()
         {
-            areaAttackTargets.Clear();
-            
-            // target 위치 기준으로 AOE 범위 탐지 (SingleHit 모드)
-            Vector2 aoePositionStart = attack.target != null ? (Vector2)attack.target.transform.position : (Vector2)attack.attacker.transform.position;
-            Vector2 aoePositionEnd = aoePositionStart + new Vector2(dotWidth, dotHeight);
-
-            areaAttackTargets = BattleStage.now.GetEnemiesInRectRange(aoePositionStart, aoePositionEnd);
+            switch (aoeMode)
+            {
+                case AOEMode.SingleHit:
+                    // 1회 발동이면 바로 종료
+                    return aoeActivated;
+                    
+                case AOEMode.MultiHit:
+                    // N회 발동이면 지속시간 체크
+                    return aoeDurationTimer >= aoeDuration;
+                    
+                default:
+                    return true;
+            }
         }
 
-        private void ApplyDamageToEnemy(Pawn enemy)
+        private void ActivateAC100Attack()
         {
-            var attackResult = AttackResult.Create(attack, enemy);
-            attackResult.totalDamage = (int)areaAttackDamage;
-            enemy.ApplyDamage(attackResult);
-            
-            Debug.Log($"<color=yellow>[AC100] AOE 영역 공격으로 {enemy.pawnName}에게 {attackResult.totalDamage} 데미지 적용</color>");
+            Debug.Log("<color=green>[AC100] AOE 공격 활성화!</color>");
+        }
+
+        private void FinishAC100Attack()
+        {
+            Debug.Log("<color=orange>[AC100] AOE 공격 종료!</color>");
+        }
+
+        private void CreateAC100VFX(Vector2 position)
+        {
+            if (aoeVFXPrefab != null)
+            {
+                GameObject aoeVFX = Instantiate(aoeVFXPrefab);
+                aoeVFX.transform.position = position;
+                
+                // AOE VFX 지속시간 후 제거
+                Destroy(aoeVFX, aoeVFXDuration);
+                
+                Debug.Log("<color=blue>[AC100] AOE VFX 생성</color>");
+            }
         }
 
         private void ApplyAdditionalBuffEffect(Pawn target)
@@ -318,215 +377,135 @@ namespace AttackComponents
 
         private void ApplySpeedBoost(Pawn target)
         {
-            var speedBoostModifier = new StatModifier(
-                additionalBuffValue,
-                BuffOperationType.Additive,
-                false,
-                additionalBuffDuration
-            );
-            
-            target.statSheet[StatType.MoveSpeed].AddBuff(speedBoostModifier);
+            var buffInfo = new BuffInfo
+            {
+                buffType = BUFFType.Haste,
+                attack = attack,
+                target = target,
+                buffValue = additionalBuffValue,
+                buffMultiplier = additionalBuffMultiplier,
+                buffDuration = additionalBuffDuration,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
+
+            var buff = new BUFF();
+            buff.Activate(buffInfo);
             Debug.Log($"<color=green>[AC100] {target.pawnName}에게 속도 증가 버프 적용</color>");
         }
 
         private void ApplyMoveSpeedBoost(Pawn target)
         {
-            var moveSpeedBoostModifier = new StatModifier(
-                (int)(additionalBuffMultiplier * 100),
-                BuffOperationType.Multiplicative,
-                false,
-                additionalBuffDuration
-            );
-            
-            target.statSheet[StatType.MoveSpeed].AddBuff(moveSpeedBoostModifier);
+            var buffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseMoveSpeed,
+                attack = attack,
+                target = target,
+                buffValue = additionalBuffValue,
+                buffMultiplier = additionalBuffMultiplier,
+                buffDuration = additionalBuffDuration,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
+
+            var buff = new BUFF();
+            buff.Activate(buffInfo);
             Debug.Log($"<color=green>[AC100] {target.pawnName}에게 이동속도 증가 버프 적용</color>");
         }
 
         private void ApplyAttackSpeedBoost(Pawn target)
         {
-            var attackSpeedBoostModifier = new StatModifier(
-                additionalBuffValue,
-                BuffOperationType.Additive,
-                false,
-                additionalBuffDuration
-            );
-            
-            target.statSheet[StatType.AttackSpeed].AddBuff(attackSpeedBoostModifier);
+            var buffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseAttackSpeed,
+                attack = attack,
+                target = target,
+                buffValue = additionalBuffValue,
+                buffMultiplier = additionalBuffMultiplier,
+                buffDuration = additionalBuffDuration,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
+
+            var buff = new BUFF();
+            buff.Activate(buffInfo);
             Debug.Log($"<color=green>[AC100] {target.pawnName}에게 공격속도 증가 버프 적용</color>");
         }
 
         private void ApplyAttackPowerBoost(Pawn target)
         {
-            var attackPowerBoostModifier = new StatModifier(
-                additionalBuffValue,
-                BuffOperationType.Additive,
-                false,
-                additionalBuffDuration
-            );
-            
-            target.statSheet[StatType.AttackPower].AddBuff(attackPowerBoostModifier);
+            var buffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseAttackPower,
+                attack = attack,
+                target = target,
+                buffValue = additionalBuffValue,
+                buffMultiplier = additionalBuffMultiplier,
+                buffDuration = additionalBuffDuration,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
+
+            var buff = new BUFF();
+            buff.Activate(buffInfo);
             Debug.Log($"<color=green>[AC100] {target.pawnName}에게 공격력 증가 버프 적용</color>");
         }
 
         private void ApplyDefenseBoost(Pawn target)
         {
-            var defenseBoostModifier = new StatModifier(
-                additionalBuffValue,
-                BuffOperationType.Additive,
-                false,
-                additionalBuffDuration
-            );
-            
-            target.statSheet[StatType.Defense].AddBuff(defenseBoostModifier);
+            var buffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseDefense,
+                attack = attack,
+                target = target,
+                buffValue = additionalBuffValue,
+                buffMultiplier = additionalBuffMultiplier,
+                buffDuration = additionalBuffDuration,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
+
+            var buff = new BUFF();
+            buff.Activate(buffInfo);
             Debug.Log($"<color=green>[AC100] {target.pawnName}에게 방어력 증가 버프 적용</color>");
         }
 
         private void ApplyCriticalChanceBoost(Pawn target)
         {
-            var criticalChanceBoostModifier = new StatModifier(
-                additionalBuffValue,
-                BuffOperationType.Additive,
-                false,
-                additionalBuffDuration
-            );
-            
-            target.statSheet[StatType.CriticalRate].AddBuff(criticalChanceBoostModifier);
+            var buffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseCriticalChance,
+                attack = attack,
+                target = target,
+                buffValue = additionalBuffValue,
+                buffMultiplier = additionalBuffMultiplier,
+                buffDuration = additionalBuffDuration,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
+
+            var buff = new BUFF();
+            buff.Activate(buffInfo);
             Debug.Log($"<color=green>[AC100] {target.pawnName}에게 치명타 확률 증가 버프 적용</color>");
         }
 
         private void ApplyCriticalDamageBoost(Pawn target)
         {
-            var criticalDamageBoostModifier = new StatModifier(
-                additionalBuffValue,
-                BuffOperationType.Additive,
-                false,
-                additionalBuffDuration
-            );
-            
-            target.statSheet[StatType.CriticalDamage].AddBuff(criticalDamageBoostModifier);
+            var buffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseCriticalDamage,
+                attack = attack,
+                target = target,
+                buffValue = additionalBuffValue,
+                buffMultiplier = additionalBuffMultiplier,
+                buffDuration = additionalBuffDuration,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
+
+            var buff = new BUFF();
+            buff.Activate(buffInfo);
             Debug.Log($"<color=green>[AC100] {target.pawnName}에게 치명타 데미지 증가 버프 적용</color>");
-        }
-
-        private void CreateAreaAttackVFX()
-        {
-            if (areaAttackVFXPrefab != null)
-            {
-                GameObject areaAttackVFX = Instantiate(areaAttackVFXPrefab);
-                // target 위치에서 VFX 생성 (SingleHit 모드)
-                Vector3 vfxPosition = attack.target != null ? attack.target.transform.position : attack.attacker.transform.position;
-                areaAttackVFX.transform.position = vfxPosition;
-                
-                // AOE VFX 지속시간 후 제거
-                Destroy(areaAttackVFX, areaAttackVFXDuration);
-                
-                Debug.Log("<color=blue>[AC100] AOE VFX 생성</color>");
-            }
-        }
-
-                // DOT 클래스의 Update 함수는 dotInterval 마다 호출되며, dotDuration 만큼 지속됩니다.
-        protected override void Update()
-        {
-            base.Update();
-            
-            // AOE 공격 상태 처리
-            ProcessAOEAttackState();
-        }
-
-        private void ProcessAOEAttackState()
-        {
-            switch (attackState)
-            {
-                case AOEAttackState.None:
-                    break;
-
-                case AOEAttackState.Preparing:
-                    currentDotDuration += Time.deltaTime;
-                    
-                    if (currentDotDuration >= 0.1f) // 준비 시간
-                    {
-                        attackState = AOEAttackState.Active;
-                        currentDotDuration = 0f;
-                        ActivateAOEAttack();
-                    }
-                    break;
-
-                case AOEAttackState.Active:
-                    currentDotDuration += Time.deltaTime;
-                    areaAttackTimer += Time.deltaTime;
-                    
-                    // AOE 영역 공격이 활성화된 경우
-                    if (createAreaAttack)
-                    {
-                        // AOE 영역 공격 처리
-                        ProcessAreaAttack();
-                        
-                        // SingleHit 모드가 아닌 경우에만 지속시간 체크
-                        if (aoeMode != AOEMode.SingleHit)
-                        {
-                            // 자기장 지속시간 체크
-                            if (dotDuration <= 0f)
-                            {
-                                attackState = AOEAttackState.Finishing;
-                                currentDotDuration = 0f;
-                                FinishAOEAttack();
-                                return;
-                            }
-                            
-                            dotDuration -= Time.deltaTime;
-                        }
-                    }
-                    else
-                    {
-                        // 일반 도트 처리
-                        if (target == null || target.isDead || dotDuration <= 0f)
-                        {
-                            attackState = AOEAttackState.Finishing;
-                            currentDotDuration = 0f;
-                            FinishAOEAttack();
-                            return;
-                        }
-                        
-                        if (currentDotDuration < dotDuration && currentDotDuration >= dotInterval)
-                        {
-                            DOTHandlerByCollisionType(dotCollisionType);
-                            currentDotDuration = 0f;
-                            dotDuration -= dotInterval;
-                        }
-                    }
-                    
-                    // 공격 종료 조건 체크
-                    if (dotDuration <= 0f)
-                    {
-                        attackState = AOEAttackState.Finishing;
-                        currentDotDuration = 0f;
-                        FinishAOEAttack();
-                    }
-                    break;
-
-                case AOEAttackState.Finishing:
-                    currentDotDuration += Time.deltaTime;
-                    
-                    if (currentDotDuration >= 0.1f) // 종료 시간
-                    {
-                        attackState = AOEAttackState.Finished;
-                    }
-                    break;
-
-                case AOEAttackState.Finished:
-                    attackState = AOEAttackState.None;
-                    AttackFactory.Instance.Deactivate(attack);
-                    break;
-            }
-        }
-
-        private void ActivateAOEAttack()
-        {
-            Debug.Log("<color=green>[AC100] AOE 공격 활성화!</color>");
-        }
-
-        private void FinishAOEAttack()
-        {
-            Debug.Log("<color=orange>[AC100] AOE 공격 종료!</color>");
         }
     }
 }

@@ -480,6 +480,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4797988704424728696, guid: eb0ba8aaab4b97c478763e24d2fa8240, type: 3}
+      propertyPath: segments
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4797988704424728696, guid: eb0ba8aaab4b97c478763e24d2fa8240, type: 3}
+      propertyPath: attackAngle
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 4797988704424728696, guid: eb0ba8aaab4b97c478763e24d2fa8240, type: 3}
+      propertyPath: attackRadius
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4797988704424728696, guid: eb0ba8aaab4b97c478763e24d2fa8240, type: 3}
+      propertyPath: attackDuration
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 9211212146730400434, guid: eb0ba8aaab4b97c478763e24d2fa8240, type: 3}
       propertyPath: m_Name
       value: HeroSwordRad
@@ -698,6 +714,10 @@ PrefabInstance:
     - target: {fileID: 1553043495906535806, guid: aa00e925cf34580439f470dc6bfe2155, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2517999292956121073, guid: aa00e925cf34580439f470dc6bfe2155, type: 3}
+      propertyPath: dotRadius
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9211212146730400434, guid: aa00e925cf34580439f470dc6bfe2155, type: 3}
       propertyPath: m_Name
@@ -932,6 +952,68 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1203495300224284827, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
   m_PrefabInstance: {fileID: 6856816294734624699}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1366649101
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1861634741}
+    m_Modifications:
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9211212146730400434, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+      propertyPath: m_Name
+      value: HeroSkill002
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+--- !u!4 &1366649102 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1553043495906535806, guid: 9cba3cf0f3a9ed744b371a6316d0f9e6, type: 3}
+  m_PrefabInstance: {fileID: 1366649101}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1381705232
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1149,6 +1231,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1861634741}
     m_Modifications:
+    - target: {fileID: 519565357092245493, guid: ff85869717c876d40b475f6a1be81a20, type: 3}
+      propertyPath: skillAttack001
+      value: 
+      objectReference: {fileID: 11400000, guid: 3a51829e5249d0340a4b3b55a6c1f803, type: 2}
+    - target: {fileID: 519565357092245493, guid: ff85869717c876d40b475f6a1be81a20, type: 3}
+      propertyPath: skillAttack002
+      value: 
+      objectReference: {fileID: 11400000, guid: 8e5337464fe784d40b77508c84520cc3, type: 2}
     - target: {fileID: 1541045329464624103, guid: ff85869717c876d40b475f6a1be81a20, type: 3}
       propertyPath: m_Name
       value: Hero
@@ -1160,7 +1250,7 @@ PrefabInstance:
     - target: {fileID: 2543392400981761397, guid: ff85869717c876d40b475f6a1be81a20, type: 3}
       propertyPath: w
       value: 
-      objectReference: {fileID: 11400000, guid: 9b2eb2de4301e0548abd884fe5e31ad0, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 8762525943062589552, guid: ff85869717c876d40b475f6a1be81a20, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1273,6 +1363,7 @@ Transform:
   - {fileID: 2124510785184576328}
   - {fileID: 1257226223}
   - {fileID: 4775749821779051774}
+  - {fileID: 1366649102}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1881846435 stripped
@@ -1754,6 +1845,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6256741257565850654, guid: e691739f1c487064d8d459b9e2d38f09, type: 3}
+      propertyPath: enchantmentDuration
+      value: 14
+      objectReference: {fileID: 0}
     - target: {fileID: 9211212146730400434, guid: e691739f1c487064d8d459b9e2d38f09, type: 3}
       propertyPath: m_Name
       value: HeroSkill001
@@ -1826,6 +1921,10 @@ PrefabInstance:
     - target: {fileID: 1553043495906535806, guid: 8f5ca310bfb54cb49997a6ef06a99b73, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7070757861086913797, guid: 8f5ca310bfb54cb49997a6ef06a99b73, type: 3}
+      propertyPath: moveSpeedBoostMultiplier
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9211212146730400434, guid: 8f5ca310bfb54cb49997a6ef06a99b73, type: 3}
       propertyPath: m_Name
@@ -2087,17 +2186,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2124510785184576329}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
-      propertyPath: 'attackPrefab.Array.data[11]'
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: 'attackPrefab.Array.data[12]'
       value: 
       objectReference: {fileID: 1257226228}
-    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
-      propertyPath: 'attackPrefab.Array.data[13]'
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: 'attackPrefab.Array.data[14]'
       value: 

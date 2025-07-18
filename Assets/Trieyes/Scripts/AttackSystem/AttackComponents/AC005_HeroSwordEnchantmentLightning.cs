@@ -4,6 +4,7 @@ using Stats;
 using UnityEngine;
 using System.Threading;
 using BattleSystem;
+using System;
 
 namespace AttackComponents
 {
@@ -50,9 +51,12 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = LightningAttackState.None;
+            attackState = LightningAttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
+            
+            // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
+            attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
             // 번개 공격 시작
             StartLightningAttack();
@@ -68,7 +72,7 @@ namespace AttackComponents
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                //debug.logError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -86,7 +90,7 @@ namespace AttackComponents
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
             
-            Debug.Log("<color=yellow>[AC005] 번개 강화 공격 시작!</color>");
+            //debug.log("<color=yellow>[AC005] 번개 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
@@ -135,7 +139,7 @@ namespace AttackComponents
             Vector2 clockwiseDirection = RotateVector2D(direction, -halfAngle);
             Vector2 counterClockwiseDirection = RotateVector2D(direction, halfAngle);
 
-            //Debug.Log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
+            ////debug.log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
             
             // 부채꼴 호를 따라 점들 생성
             for (int i = 0; i <= segments; i++)
@@ -174,7 +178,37 @@ namespace AttackComponents
             
             // 번개 공격 상태 처리
             ProcessLightningAttackState();
+
+            if (attackState == LightningAttackState.Active && attack.attackCollider != null)
+            {
+                DrawFanShapeDebug();
+            }
         }
+
+        private void DrawFanShapeDebug()
+        {
+            if (attack.attackCollider is PolygonCollider2D collider)
+            {
+                Vector2[] points = collider.points;
+                
+                // 부채꼴 모양 그리기
+                for (int i = 0; i < points.Length - 1; i++)
+                {
+                    Vector3 startPos = attack.transform.position + new Vector3(points[i].x, points[i].y, 0);
+                    Vector3 endPos = attack.transform.position + new Vector3(points[i + 1].x, points[i + 1].y, 0);
+                    Debug.DrawLine(startPos, endPos, Color.yellow, 0.1f);
+                }
+                
+                // 마지막 점과 첫 번째 점을 연결 (폐곡선 만들기)
+                if (points.Length > 2)
+                {
+                    Vector3 lastPos = attack.transform.position + new Vector3(points[points.Length - 1].x, points[points.Length - 1].y, 0);
+                    Vector3 firstPos = attack.transform.position + new Vector3(points[1].x, points[1].y, 0);
+                    Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
+                }
+            }
+        }
+
 
         private void ProcessLightningAttackState()
         {
@@ -227,12 +261,12 @@ namespace AttackComponents
 
         private void ActivateLightningAttack()
         {
-            Debug.Log("<color=green>[AC005] 번개 강화 공격 활성화!</color>");
+            //debug.log("<color=green>[AC005] 번개 강화 공격 활성화!</color>");
         }
 
         private void FinishLightningAttack()
         {
-            Debug.Log("<color=yellow>[AC005] 번개 강화 공격 종료!</color>");
+            //debug.log("<color=yellow>[AC005] 번개 강화 공격 종료!</color>");
         }
     }
 }

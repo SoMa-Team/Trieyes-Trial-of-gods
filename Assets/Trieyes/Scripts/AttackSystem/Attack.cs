@@ -23,8 +23,8 @@ namespace AttackSystem
     public class Attack : MonoBehaviour, IEventHandler
     {
         // ===== [기능 1] 공격 데이터 및 컴포넌트 관리 =====
-        public AttackData attackData; // 기획적으로 논의 필요
-        public Pawn attacker; // 공격자 (투사체를 발사한 캐릭터)
+        public AttackData attackData;
+        public Pawn attacker; // 공격자 (투사체를 발사한 Pawn)
         public StatSheet statSheet;
 
         [CanBeNull] public Attack parent; // 부모 Attack (null이면 관리자, 아니면 투사체)
@@ -123,14 +123,12 @@ namespace AttackSystem
         /// <param name="targetPawn">피격 대상</param>
         protected virtual void ProcessAttackCollision(Pawn targetPawn)
         {
-            //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
-            // TODO : OnEvent를 활용한 처리 필요
+            DamageProcessor.ProcessHit(this, targetPawn);
+            
             foreach (var attackComponent in components)
             {
                 attackComponent.ProcessComponentCollision(targetPawn);
             }
-            
-            DamageProcessor.ProcessHit(this, targetPawn);
         }
 
         /// <summary>

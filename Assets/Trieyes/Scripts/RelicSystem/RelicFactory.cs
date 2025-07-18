@@ -16,7 +16,7 @@ namespace RelicSystem
         {
             var relic = new Relic();
 
-            RelicDataSO data = RelicDataBase.getRelicDataSO(relicID);
+            RelicDataSO data = RelicDataBase.GetRelicDataSO(relicID);
             
             relic.relicID = relicID;
             relic.name = data.name;
@@ -27,25 +27,11 @@ namespace RelicSystem
 
             relic.randomOptions = new List<RandomOption>();
             
-            // TODO: 실제 코드 주석 해제해야 함
-            // for (int i = 0; i < getRandomOptionCount(relicID); i++)
-            // {
-            //     var randomOption = RandomOptionGenerator.Create(relicID);
-            //     relic.randomOptions.Add(randomOption);
-            // }
-            
-            // TODO : 테스트용 코드 지워야 함
-            var randomOption = new RandomOption();
-            randomOption.FilterTag = AttackTag.Range;
-            randomOption.RelicStatType = RelicStatType.DamageIncreasement;
-            randomOption.value = 10;
-            relic.randomOptions.Add(randomOption);
-            randomOption = new RandomOption();
-            randomOption.FilterTag = AttackTag.Range;
-            randomOption.RelicStatType = RelicStatType.ProjectileCount;
-            randomOption.value = 2;
-            relic.randomOptions.Add(randomOption);
-            // TODO END : 테스트용 코드 끝
+            for (int i = 0; i < getRandomOptionCount(relicID); i++)
+            {
+                var randomOption = RandomOptionGenerator.Create(relicID);
+                relic.randomOptions.Add(randomOption);
+            }
             
             return relic;
         }

@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using AttackSystem;
 using UnityEngine;
 using CharacterSystem;
+using UnityEngine.Serialization;
 using Utils;
 
 namespace AttackComponents
@@ -14,11 +16,20 @@ namespace AttackComponents
     /// </summary>
     public class AttackComponentFactory : MonoBehaviour
     {
+        [Serializable]
+        public class IDAttackComponentPair
+        {
+            public AttackComponentID id;
+            public AttackComponent attackComponent;
+        }
+        
         // ===== 싱글톤 =====
         public static AttackComponentFactory Instance {private set; get;}
-
+        
+        
         // ===== 프리팹 =====
-        public GameObject[] attackComponentPrefabs; // 공격 컴포넌트 프리팹 배열
+        public List<IDAttackComponentPair> rawAttackComponentPrefabs;
+        private Dictionary<AttackComponentID, AttackComponent> attackComponentPrefabs = new (); // 공격 컴포넌트 프리팹 배열
 
         // ===== 초기화 =====
         
@@ -33,9 +44,18 @@ namespace AttackComponents
                 Destroy(gameObject);
                 return;
             }
-            
+
+            InitAttackComponentPrefabs();
             DontDestroyOnLoad(gameObject);
             Instance = this;
+        }
+
+        private void InitAttackComponentPrefabs()
+        {
+            foreach (var pair in rawAttackComponentPrefabs)
+            {
+                attackComponentPrefabs[pair.id] = pair.attackComponent;
+            }
         }
 
         // ===== 공격 컴포넌트 생성 =====
@@ -96,7 +116,7 @@ namespace AttackComponents
         private GameObject GetPrefabById(AttackComponentID id)
         {
             // TODO: characterID와 characterPrefab 매칭 필요
-            return attackComponentPrefabs[id];
+            return attackComponentPrefabs[id].gameObject;
             
             // return id switch
             // {

@@ -10,6 +10,7 @@ namespace TagSystem
             // TODO: Tag종류에 따라 수정 필요
             return tagString switch
             {
+                "" => null,
                 "fire" => AttackTag.Fire,
                 "water" => AttackTag.Water,
                 "earth" => AttackTag.Earth,

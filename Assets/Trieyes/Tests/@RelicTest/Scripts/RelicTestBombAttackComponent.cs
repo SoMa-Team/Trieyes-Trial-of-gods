@@ -8,17 +8,19 @@ namespace Trieyes.Tests.RelicTest.Scripts
 {
     public class RelicTestBombAttackComponent : AttackComponent
     {
-        public int projectileCount = 8;
+        public int defaultProjectileCount = 8;
+        [SerializeField] private int projectileCount = 8;
         public AttackData newAttackData;
         
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
-            projectileCount += attack.getRelicStat(RelicStatType.ProjectileCount);
+            projectileCount = defaultProjectileCount + attack.getRelicStat(RelicStatType.ProjectileCount);
         }
 
         public override void Deactivate()
         {
+            projectileCount = defaultProjectileCount;
             base.Deactivate();
         }
 

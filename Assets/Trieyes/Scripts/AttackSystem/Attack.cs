@@ -160,6 +160,11 @@ namespace AttackSystem
             {
                 AttackFactory.Instance.Deactivate(attack);
             }
+
+            foreach (var attackComponent in components)
+            {
+                AttackComponentFactory.Instance.Deactivate(attackComponent);
+            }
             children.Clear();
             
             // 물리 속성 초기화

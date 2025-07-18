@@ -93,8 +93,8 @@ namespace CardSystem
         {
             switch (id)
             {
-                case 0: return new PreparingMarch();
-                case 1: return new Crouch();
+                case 0: return new Card001_PreparingMarch();
+                case 1: return new Card002_Crouch();
                 case 2: return new Shadow();
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {id}");

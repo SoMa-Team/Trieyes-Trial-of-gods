@@ -3,8 +3,11 @@ using CharacterSystem;
 using System.Collections.Generic;
 using AttackSystem;
 using JetBrains.Annotations;
+using Stats;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using Utils;
+using EventType = UnityEngine.EventType;
 
 namespace BattleSystem
 {
@@ -25,6 +28,14 @@ namespace BattleSystem
         public Dictionary<int, Pawn> enemies = new ();
         public Dictionary<int, Attack> attacks = new ();
         public SpawnManager spawnManager;
+
+        public void Update()
+        {
+            if (Time.time - startTime >= difficulty.battleLength)
+            {
+                OnBattleClear();
+            }
+        }
 
         // ===== 스테이지 활성화, 비활성화 =====
 
@@ -80,6 +91,19 @@ namespace BattleSystem
         public void RemoveAttack(Attack attack)
         {
             attacks.Remove(attack.objectID);
+        }
+
+        // 전투 클리어 시 호출
+        public void OnBattleClear()
+        {
+            Debug.LogError("OnBattleClear");
+            BattleStageFactory.Instance.Deactivate(this);
+        }
+        
+        // 플레이어 사망 시 호출
+        public void OnPlayerDeath()
+        {
+            // TODO : Character 클래스 분리 후 구현
         }
         
         // ===== 시간 관리 관련 =====

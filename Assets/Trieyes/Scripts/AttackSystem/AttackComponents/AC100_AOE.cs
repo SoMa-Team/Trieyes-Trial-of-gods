@@ -1,9 +1,7 @@
 using AttackSystem;
 using UnityEngine;
 using System;
-using System.Collections;
 using CharacterSystem;
-using CharacterSystem.Enemies;
 using Stats;
 using BattleSystem;
 using System.Collections.Generic;
@@ -17,6 +15,8 @@ namespace AttackComponents
         Lightning,
         Poison,
         Bleed,
+
+        Heal,
     }
 
     public enum DOTCollisionType
@@ -96,8 +96,28 @@ namespace AttackComponents
         public GameObject areaAttackVFXPrefab;
         public float areaAttackVFXDuration = 0.3f;
 
+        // FSM 상태 관리 (기존 타이머 변수 활용)
+        private AOEAttackState attackState = AOEAttackState.None;
+
+        // AOE 공격 상태 열거형
+        private enum AOEAttackState
+        {
+            None,
+            Preparing,
+            Active,
+            Finishing,
+            Finished
+        }
+
         public override void Activate(Attack attack, Vector2 direction)
         {
+            base.Activate(attack, direction);
+            
+            // 초기 상태 설정
+            attackState = AOEAttackState.None;
+            currentDotDuration = 0f;
+            areaAttackTimer = 0f;
+            
             if (attack.target != null)
             {
                 dotCollisionType = DOTCollisionType.Individual;
@@ -108,11 +128,23 @@ namespace AttackComponents
                 dotCollisionType = DOTCollisionType.AreaRect;
             }
 
+            // AOE 공격 시작
+            StartAOEAttack();
+        }
+
+        private void StartAOEAttack()
+        {
+            attackState = AOEAttackState.Preparing;
+            currentDotDuration = 0f;
+            areaAttackTimer = 0f;
+            
             // AOE 영역 공격이 활성화된 경우 AOE 로직 시작
             if (createAreaAttack)
             {
                 StartAreaAttack();
             }
+            
+            Debug.Log("<color=orange>[AC100] AOE 공격 시작!</color>");
         }
 
         private void StartAreaAttack()
@@ -396,45 +428,105 @@ namespace AttackComponents
         {
             base.Update();
             
-            // AOE 영역 공격이 활성화된 경우
-            if (createAreaAttack)
+            // AOE 공격 상태 처리
+            ProcessAOEAttackState();
+        }
+
+        private void ProcessAOEAttackState()
+        {
+            switch (attackState)
             {
-                // AOE 영역 공격 처리
-                ProcessAreaAttack();
-                
-                // SingleHit 모드가 아닌 경우에만 지속시간 체크
-                if (aoeMode != AOEMode.SingleHit)
-                {
-                    // 자기장 지속시간 체크
-                    if (dotDuration <= 0f)
+                case AOEAttackState.None:
+                    break;
+
+                case AOEAttackState.Preparing:
+                    currentDotDuration += Time.deltaTime;
+                    
+                    if (currentDotDuration >= 0.1f) // 준비 시간
                     {
-                        AttackFactory.Instance.Deactivate(attack);
-                        return;
+                        attackState = AOEAttackState.Active;
+                        currentDotDuration = 0f;
+                        ActivateAOEAttack();
+                    }
+                    break;
+
+                case AOEAttackState.Active:
+                    currentDotDuration += Time.deltaTime;
+                    areaAttackTimer += Time.deltaTime;
+                    
+                    // AOE 영역 공격이 활성화된 경우
+                    if (createAreaAttack)
+                    {
+                        // AOE 영역 공격 처리
+                        ProcessAreaAttack();
+                        
+                        // SingleHit 모드가 아닌 경우에만 지속시간 체크
+                        if (aoeMode != AOEMode.SingleHit)
+                        {
+                            // 자기장 지속시간 체크
+                            if (dotDuration <= 0f)
+                            {
+                                attackState = AOEAttackState.Finishing;
+                                currentDotDuration = 0f;
+                                FinishAOEAttack();
+                                return;
+                            }
+                            
+                            dotDuration -= Time.deltaTime;
+                        }
+                    }
+                    else
+                    {
+                        // 일반 도트 처리
+                        if (target == null || target.isDead || dotDuration <= 0f)
+                        {
+                            attackState = AOEAttackState.Finishing;
+                            currentDotDuration = 0f;
+                            FinishAOEAttack();
+                            return;
+                        }
+                        
+                        if (currentDotDuration < dotDuration && currentDotDuration >= dotInterval)
+                        {
+                            DOTHandlerByCollisionType(dotCollisionType);
+                            currentDotDuration = 0f;
+                            dotDuration -= dotInterval;
+                        }
                     }
                     
-                    dotDuration -= Time.deltaTime;
-                }
-            }
-            else
-            {
-                // 일반 도트 처리
-                if (target == null || target.isDead || dotDuration <= 0f)
-                {
-                    AttackFactory.Instance.Deactivate(attack);
-                    return;
-                }
-                
-                if (currentDotDuration < dotDuration && currentDotDuration >= dotInterval)
-                {
-                    DOTHandlerByCollisionType(dotCollisionType);
-                    currentDotDuration = 0f;
-                    dotDuration -= dotInterval;
-                }
-                else
-                {
+                    // 공격 종료 조건 체크
+                    if (dotDuration <= 0f)
+                    {
+                        attackState = AOEAttackState.Finishing;
+                        currentDotDuration = 0f;
+                        FinishAOEAttack();
+                    }
+                    break;
+
+                case AOEAttackState.Finishing:
                     currentDotDuration += Time.deltaTime;
-                }
+                    
+                    if (currentDotDuration >= 0.1f) // 종료 시간
+                    {
+                        attackState = AOEAttackState.Finished;
+                    }
+                    break;
+
+                case AOEAttackState.Finished:
+                    attackState = AOEAttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
             }
+        }
+
+        private void ActivateAOEAttack()
+        {
+            Debug.Log("<color=green>[AC100] AOE 공격 활성화!</color>");
+        }
+
+        private void FinishAOEAttack()
+        {
+            Debug.Log("<color=orange>[AC100] AOE 공격 종료!</color>");
         }
     }
 }

@@ -47,7 +47,6 @@ namespace AttackComponents
         /// </summary>
         public virtual void Deactivate()
         {
-            
         }
 
         // ===== [기능 3] 충돌 처리 =====

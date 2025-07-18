@@ -3,6 +3,7 @@ using CharacterSystem;
 using UnityEngine;
 using BattleSystem;
 using System;
+using System.Collections.Generic;
 
 namespace AttackComponents
 {
@@ -26,7 +27,7 @@ namespace AttackComponents
         [Header("AC104 소환 설정")]
         private const int AC104_ID = 16; // AC104의 ID
         private const int AC1001_ID = 13;
-        public float moveSpeedBoostMultiplier; // 이동속도 증가 배율
+        public float moveSpeedBoostMultiplier = 1f; // 이동속도 증가 배율
         public float moveSpeedBoostDuration; // 이동속도 증가 지속시간
 
         // 번개 장판 상태 관리
@@ -130,18 +131,21 @@ namespace AttackComponents
 
         private void ApplyMoveSpeedBuff()
         {
-            // 플레이어에게 AC1000 버프 적용
+            // 새로운 BUFF 클래스 사용 - 이동속도 증가
+            var speedBuffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseMoveSpeed,
+                attack = attack,
+                targets = new List<Pawn> { attack.attacker },
+                buffValue = 10,
+                buffMultiplier = moveSpeedBoostMultiplier,
+                buffDuration = moveSpeedBoostDuration,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
 
-            var speedBuff = AttackFactory.Instance.ClonePrefab(AC1001_ID);
-            BattleStage.now.AttachAttack(speedBuff);
-            speedBuff.target = attack.attacker;
-
-            var speedBuffComponent = speedBuff.components[0] as AC1001_BUFF;
-            speedBuffComponent.buffType = BUFFType.IncreaseMoveSpeed;
-            speedBuffComponent.buffMultiplier = moveSpeedBoostMultiplier;
-            speedBuffComponent.buffDuration = moveSpeedBoostDuration;
-
-            speedBuff.Activate(attack.attacker, Vector2.zero);
+            var speedBuff = new BUFF();
+            speedBuff.Activate(speedBuffInfo);
         }
 
         private void SummonAC104()

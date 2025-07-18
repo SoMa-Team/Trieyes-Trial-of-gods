@@ -4,6 +4,7 @@ using Stats;
 using UnityEngine;
 using System.Threading;
 using BattleSystem;
+using System.Collections.Generic;
 
 namespace AttackComponents
 {
@@ -17,6 +18,7 @@ namespace AttackComponents
     {
         private const int BUFF_ID = 13;
         private const int DEBUFF_ID = 11;
+        private const int AC100_ID = 10;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
@@ -24,14 +26,45 @@ namespace AttackComponents
         public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
+        // FSM 상태 관리
+        private HeavenAttackState attackState = HeavenAttackState.None;
+        private float attackTimer = 0f;
+        private Vector2 attackDirection;
+
+        // 천상 공격 상태 열거형
+        private enum HeavenAttackState
+        {
+            None,
+            Preparing,
+            Active,
+            Finishing,
+            Finished
+        }
+
         public override void Activate(Attack attack, Vector2 direction)
         {
+            base.Activate(attack, direction);
+            
+            // 초기 상태 설정
+            attackState = HeavenAttackState.None;
+            attackTimer = 0f;
+            attackDirection = direction.normalized;
+            
+            // 천상 공격 시작
+            StartHeavenAttack();
+        }
+
+        private void StartHeavenAttack()
+        {
+            attackState = HeavenAttackState.Preparing;
+            attackTimer = 0f;
+            
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.pawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                //debug.logError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -42,48 +75,76 @@ namespace AttackComponents
             attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
             var collider = attack.attackCollider as PolygonCollider2D;
 
-            // 방향 벡터 → 각도 (라디안)
-            direction = direction.normalized;
-            Debug.Log($"direction: {direction}");
-
             // 부채꼴 모양의 콜라이더 포인트 생성
-            Vector2[] points = CreateFanShapePoints(direction, attackAngle, attackRadius);
+            Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
+            
+            //debug.log("<color=white>[AC006] 천상 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // AC1001_BUFF 버프 생성
-            // 새로운 Attack 생성
-            var buffAttack = AttackFactory.Instance.ClonePrefab(BUFF_ID);
-            BattleStage.now.AttachAttack(buffAttack);
-            buffAttack.target = targetPawn;
-            var buffComponent = buffAttack.components[0] as AC1001_BUFF;
-            buffComponent.buffType = BUFFType.IncreaseSpeed;
-            buffComponent.buffValue = 10;
-            buffComponent.buffDuration = 7f;
-            buffAttack.Activate(attack.attacker, direction);
+            // 새로운 BUFF 클래스 사용 - Haste 효과 (이동속도 + 공격속도 증가)
+            var hasteBuffInfo = new BuffInfo
+            {
+                buffType = BUFFType.Haste,
+                attack = attack,
+                targets = new List<Pawn> { attack.attacker }, // 자신에게 버프
+                buffValue = 10,
+                buffMultiplier = 1.5f,
+                buffDuration = 7f,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
 
-            buffAttack = AttackFactory.Instance.ClonePrefab(BUFF_ID);
-            BattleStage.now.AttachAttack(buffAttack);
-            buffAttack.target = targetPawn;
-            buffComponent = buffAttack.components[0] as AC1001_BUFF;
-            buffComponent.buffType = BUFFType.IncreaseAttackRangeAdd;
-            buffComponent.buffValue = 3;
-            buffComponent.buffDuration = 7f;
-            buffAttack.Activate(attack.attacker, direction);
+            var hasteBuff = new BUFF();
+            hasteBuff.Activate(hasteBuffInfo);
 
-            buffAttack = AttackFactory.Instance.ClonePrefab(DEBUFF_ID);
-            BattleStage.now.AttachAttack(buffAttack);
-            buffAttack.target = targetPawn;
-            var debuffComponent = buffAttack.components[0] as AC1000_DEBUFF;
-            debuffComponent.debuffType = DEBUFFType.DecreaseDefense;
-            debuffComponent.debuffValue = 10;
-            debuffComponent.debuffDuration = 7f;
-            buffAttack.Activate(attack.attacker, direction);
+            // 새로운 BUFF 클래스 사용 - 공격범위 증가
+            var rangeBuffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseAttackRangeAdd,
+                attack = attack,
+                targets = new List<Pawn> { attack.attacker }, // 자신에게 버프
+                buffValue = 3,
+                buffMultiplier = 1f,
+                buffDuration = 7f,
+                buffInterval = 1f,
+                globalHeal = 0
+            };
+
+            var rangeBuff = new BUFF();
+            rangeBuff.Activate(rangeBuffInfo);
+
+            // 새로운 DEBUFF 클래스 사용 - 방어력 감소
+            var debuffInfo = new DebuffInfo
+            {
+                debuffType = DEBUFFType.DecreaseDefense,
+                attack = attack,
+                target = attack.attacker, // 자신에게 디버프
+                debuffValue = 10,
+                debuffMultiplier = 0.5f,
+                debuffDuration = 7f,
+                debuffInterval = 1f,
+                globalDamage = 0
+            };
+
+            var debuff = new DEBUFF();
+            debuff.Activate(debuffInfo);
+
+            // 빛 속성일 때 AOE 공격
+            var hero = attack.attacker as Character001_Hero;
+            if (hero.weaponElementState == HeroWeaponElementState.Light)
+            {
+                var aoeAttack = AttackFactory.Instance.ClonePrefab(AC100_ID);
+                BattleStage.now.AttachAttack(aoeAttack);
+                aoeAttack.target = targetPawn;
+                
+                aoeAttack.Activate(attack.attacker, Vector2.zero);
+            }
         }
 
         /// <summary>
@@ -108,7 +169,7 @@ namespace AttackComponents
             Vector2 clockwiseDirection = RotateVector2D(direction, -halfAngle);
             Vector2 counterClockwiseDirection = RotateVector2D(direction, halfAngle);
 
-            //Debug.Log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
+            ////debug.log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
             
             // 부채꼴 호를 따라 점들 생성
             for (int i = 0; i <= segments; i++)
@@ -144,14 +205,68 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
-            attack.transform.position = attack.attacker.transform.position;
-            attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+            
+            // 천상 공격 상태 처리
+            ProcessHeavenAttackState();
+        }
 
-            attackDuration -= Time.deltaTime;
-            if (attackDuration <= 0f)
+        private void ProcessHeavenAttackState()
+        {
+            switch (attackState)
             {
-                AttackFactory.Instance.Deactivate(attack);
+                case HeavenAttackState.None:
+                    break;
+
+                case HeavenAttackState.Preparing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = HeavenAttackState.Active;
+                        attackTimer = 0f;
+                        ActivateHeavenAttack();
+                    }
+                    break;
+
+                case HeavenAttackState.Active:
+                    attackTimer += Time.deltaTime;
+                    
+                    // 위치 업데이트
+                    attack.transform.position = attack.attacker.transform.position;
+                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    
+                    if (attackTimer >= attackDuration)
+                    {
+                        attackState = HeavenAttackState.Finishing;
+                        attackTimer = 0f;
+                        FinishHeavenAttack();
+                    }
+                    break;
+
+                case HeavenAttackState.Finishing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 종료 시간
+                    {
+                        attackState = HeavenAttackState.Finished;
+                    }
+                    break;
+
+                case HeavenAttackState.Finished:
+                    attackState = HeavenAttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
             }
+        }
+
+        private void ActivateHeavenAttack()
+        {
+            //debug.log("<color=green>[AC006] 천상 강화 공격 활성화!</color>");
+        }
+
+        private void FinishHeavenAttack()
+        {
+            //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
         }
     }
 }

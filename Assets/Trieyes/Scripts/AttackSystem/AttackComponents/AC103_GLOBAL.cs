@@ -14,18 +14,6 @@ namespace AttackComponents
     /// 맵 전체에 걸쳐 지속적으로 공격 효과를 입히는 컴포넌트입니다.
     /// GC 최적화를 위해 재사용 가능한 리스트를 사용합니다.
     /// </summary>
-    public enum AdditionalDebuffType
-    {
-        None,
-        Slow,
-        Frozen,
-        Stun,
-        Burn,
-        Poison,
-        Bleed,
-        Shock,
-        Freeze
-    }
     
     public class AC103_GLOBAL : AttackComponent
     {
@@ -44,7 +32,7 @@ namespace AttackComponents
         // 공격 효과 상태 관리
         private GlobalDamageState globalDamageState = GlobalDamageState.None;
 
-        public AdditionalDebuffType additionalDebuffType;
+        public DEBUFFType additionalDebuffType;
         private float globalDamageTimer = 0f;
         private float damageTimer = 0f;
         private List<Enemy> affectedEnemies = new List<Enemy>(10); // 재사용 가능한 리스트
@@ -172,11 +160,12 @@ namespace AttackComponents
         {
             affectedEnemies.Clear();
             
-            // BattleStage를 통해 모든 적을 가져오기
+            // BattleStage를 통해 모든 적을 가져오기 
             var allEnemies = BattleStage.now.enemies;
             
             foreach (var enemy in allEnemies)
             {
+                // TO-DO: BattleStage Remove가 정상 동작하면은 Checking 지우기
                 if (enemy != null && enemy.transform != null && enemy.gameObject.activeInHierarchy)
                 {
                     affectedEnemies.Add(enemy as Enemy);
@@ -220,138 +209,19 @@ namespace AttackComponents
             enemy.ApplyDamage(attackResult);
             
             // 슬로우 효과 적용
-            ApplyAdditionalDebuffEffect(enemy);
+            var debuffInfo = new DebuffInfo();
+            debuffInfo.debuffType = additionalDebuffType;
+            debuffInfo.attack = attack;
+            debuffInfo.target = enemy;
+            debuffInfo.debuffDuration = additionalDebuffDuration;
+            debuffInfo.debuffMultiplier = additionalDebuffMultiplier;
+            debuffInfo.debuffInterval = 1f;
+            debuffInfo.globalDamage = 0;
+            
+            var debuff = new DEBUFF();
+            debuff.Activate(debuffInfo);
 
             Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 {attackResult.totalDamage} 데미지 적용</color>");
-        }
-
-        private void ApplyAdditionalDebuffEffect(Enemy enemy)
-        {
-            switch (additionalDebuffType)
-            {
-                case AdditionalDebuffType.Slow:
-                    ApplySlowEffect(enemy);
-                    break;
-
-                case AdditionalDebuffType.Frozen:
-                    ApplyFrozenEffect(enemy);
-                    break;
-
-                case AdditionalDebuffType.Stun:
-                    ApplyStunEffect(enemy);
-                    break;
-
-                case AdditionalDebuffType.Burn:
-                    ApplyBurnEffect(enemy);
-                    break;
-
-                case AdditionalDebuffType.Poison:
-                    ApplyPoisonEffect(enemy);
-                    break;
-
-                case AdditionalDebuffType.Bleed:
-                    ApplyBleedEffect(enemy);
-                    break;
-
-                case AdditionalDebuffType.Shock:
-                    ApplyShockEffect(enemy);
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        private void ApplySlowEffect(Enemy enemy)
-        {
-            // 이동속도 감소 효과 적용
-            var additionalDebuffModifier = new StatModifier(
-                -(int)(additionalDebuffMultiplier * 100), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                additionalDebuffDuration
-            );
-            
-            enemy.statSheet[StatType.MoveSpeed].AddBuff(additionalDebuffModifier);
-            
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 슬로우 효과 적용</color>");
-        }
-
-        private void ApplyFrozenEffect(Enemy enemy)
-        {
-            // 얼려지는 효과 = N 초동안 이동속도가 0이면 됨
-            var additionalDebuffModifier = new StatModifier(0, BuffOperationType.Multiplicative, false, additionalDebuffDuration);
-            enemy.statSheet[StatType.MoveSpeed].AddBuff(additionalDebuffModifier);
-
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 얼려지는 효과 적용</color>");
-        }
-
-        private void ApplyStunEffect(Enemy enemy)
-        {
-            // 스턴 효과 = N 초동안 이동속도가 0이면 됨
-            var additionalDebuffModifier = new StatModifier(0, BuffOperationType.Multiplicative, false, additionalDebuffDuration);
-            enemy.statSheet[StatType.MoveSpeed].AddBuff(additionalDebuffModifier);
-
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 스턴 효과 적용</color>");
-        }
-
-        private void ApplyBurnEffect(Enemy enemy)
-        {
-            // AC100의 단일 AOE 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC100_SINGLE_AOE);
-            BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = enemy;
-
-            var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.dotDamage = globalDamage;
-            burnComponent.dotDuration = additionalDebuffDuration;
-            burnComponent.dotInterval = 1f;
-            burnComponent.dotType = DOTType.Fire;
-            burnComponent.dotCollisionType = DOTCollisionType.Individual;
-            burnComponent.target = enemy;
-
-            burnAttack.Activate(attack.attacker, Vector2.zero);
-        }
-
-        private void ApplyPoisonEffect(Enemy enemy)
-        {
-            // AC100의 단일 AOE 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC100_SINGLE_AOE);
-            BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = enemy;
-
-            var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.dotDamage = globalDamage;
-            burnComponent.dotDuration = additionalDebuffDuration;
-            burnComponent.dotInterval = 1f;
-            burnComponent.dotType = DOTType.Poison;
-            burnComponent.dotCollisionType = DOTCollisionType.Individual;
-            burnComponent.target = enemy;
-
-            burnAttack.Activate(attack.attacker, Vector2.zero);
-        }
-
-        private void ApplyBleedEffect(Enemy enemy)
-        {
-            // AC100의 단일 AOE 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC100_SINGLE_AOE);
-            BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = enemy;
-
-            var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.dotDamage = globalDamage;
-            burnComponent.dotDuration = additionalDebuffDuration;
-            burnComponent.dotInterval = 1f;
-            burnComponent.dotType = DOTType.Bleed;
-            burnComponent.dotCollisionType = DOTCollisionType.Individual;
-            burnComponent.target = enemy;
-
-            burnAttack.Activate(attack.attacker, Vector2.zero);
-        }
-
-        private void ApplyShockEffect(Enemy enemy)
-        {
-            throw new NotImplementedException();
         }
 
         private void EndGlobalDamage()

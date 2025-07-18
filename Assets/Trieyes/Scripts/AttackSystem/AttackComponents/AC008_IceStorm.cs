@@ -115,7 +115,7 @@ namespace AttackComponents
             globalBlizzardComponent.globalDuration = 6f;
             globalBlizzardComponent.damageInterval = 0.5f;
 
-            globalBlizzardComponent.additionalDebuffType = AdditionalDebuffType.Frozen;
+            globalBlizzardComponent.additionalDebuffType = DEBUFFType.Slow;
             globalBlizzardComponent.additionalDebuffDuration = 2f;
             globalBlizzardComponent.additionalDebuffChance = 0.3f;
             globalBlizzardComponent.additionalDebuffMultiplier = 2f;

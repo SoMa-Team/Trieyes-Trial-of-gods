@@ -30,10 +30,39 @@ namespace AttackComponents
 
         public float chainDelay;
 
+        // FSM 상태 관리
+        private LightningAttackState attackState = LightningAttackState.None;
+        private float attackTimer = 0f;
+        private Vector2 attackDirection;
+
+        // 번개 공격 상태 열거형
+        private enum LightningAttackState
+        {
+            None,
+            Preparing,
+            Active,
+            Finishing,
+            Finished
+        }
+
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
+            
+            // 초기 상태 설정
+            attackState = LightningAttackState.None;
+            attackTimer = 0f;
+            attackDirection = direction.normalized;
+            
+            // 번개 공격 시작
+            StartLightningAttack();
+        }
 
+        private void StartLightningAttack()
+        {
+            attackState = LightningAttackState.Preparing;
+            attackTimer = 0f;
+            
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.pawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
@@ -50,16 +79,14 @@ namespace AttackComponents
             attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
             var collider = attack.attackCollider as PolygonCollider2D;
 
-            // 방향 벡터 → 각도 (라디안)
-            direction = direction.normalized;
-            Debug.Log($"direction: {direction}");
-
             // 부채꼴 모양의 콜라이더 포인트 생성
-            Vector2[] points = CreateFanShapePoints(direction, attackAngle, attackRadius);
+            Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
+            
+            Debug.Log("<color=yellow>[AC005] 번개 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
@@ -144,14 +171,68 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
-            attack.transform.position = attack.attacker.transform.position;
-            attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+            
+            // 번개 공격 상태 처리
+            ProcessLightningAttackState();
+        }
 
-            attackDuration -= Time.deltaTime;
-            if (attackDuration <= 0f)
+        private void ProcessLightningAttackState()
+        {
+            switch (attackState)
             {
-                AttackFactory.Instance.Deactivate(attack);
+                case LightningAttackState.None:
+                    break;
+
+                case LightningAttackState.Preparing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = LightningAttackState.Active;
+                        attackTimer = 0f;
+                        ActivateLightningAttack();
+                    }
+                    break;
+
+                case LightningAttackState.Active:
+                    attackTimer += Time.deltaTime;
+                    
+                    // 위치 업데이트
+                    attack.transform.position = attack.attacker.transform.position;
+                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    
+                    if (attackTimer >= attackDuration)
+                    {
+                        attackState = LightningAttackState.Finishing;
+                        attackTimer = 0f;
+                        FinishLightningAttack();
+                    }
+                    break;
+
+                case LightningAttackState.Finishing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 종료 시간
+                    {
+                        attackState = LightningAttackState.Finished;
+                    }
+                    break;
+
+                case LightningAttackState.Finished:
+                    attackState = LightningAttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
             }
+        }
+
+        private void ActivateLightningAttack()
+        {
+            Debug.Log("<color=green>[AC005] 번개 강화 공격 활성화!</color>");
+        }
+
+        private void FinishLightningAttack()
+        {
+            Debug.Log("<color=yellow>[AC005] 번개 강화 공격 종료!</color>");
         }
     }
 }

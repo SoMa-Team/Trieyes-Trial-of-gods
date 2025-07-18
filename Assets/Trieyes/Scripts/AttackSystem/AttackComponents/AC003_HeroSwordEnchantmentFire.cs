@@ -4,6 +4,7 @@ using Stats;
 using UnityEngine;
 using System.Threading;
 using BattleSystem;
+using System.Collections.Generic;
 
 namespace AttackComponents
 {
@@ -23,14 +24,45 @@ namespace AttackComponents
         public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
+        // FSM 상태 관리
+        private FireAttackState attackState = FireAttackState.None;
+        private float attackTimer = 0f;
+        private Vector2 attackDirection;
+
+        // 불꽃 공격 상태 열거형
+        private enum FireAttackState
+        {
+            None,
+            Preparing,
+            Active,
+            Finishing,
+            Finished
+        }
+
         public override void Activate(Attack attack, Vector2 direction)
         {
+            base.Activate(attack, direction);
+            
+            // 초기 상태 설정
+            attackState = FireAttackState.None;
+            attackTimer = 0f;
+            attackDirection = direction.normalized;
+            
+            // 불꽃 공격 시작
+            StartFireAttack();
+        }
+
+        private void StartFireAttack()
+        {
+            attackState = FireAttackState.Preparing;
+            attackTimer = 0f;
+            
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.pawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                //debug.logError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -41,26 +73,33 @@ namespace AttackComponents
             attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
             var collider = attack.attackCollider as PolygonCollider2D;
 
-            // 방향 벡터 → 각도 (라디안)
-            direction = direction.normalized;
-            Debug.Log($"direction: {direction}");
-
             // 부채꼴 모양의 콜라이더 포인트 생성
-            Vector2[] points = CreateFanShapePoints(direction, attackAngle, attackRadius);
+            Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
+            
+            //debug.log("<color=orange>[AC003] 불꽃 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // 새로운 Attack 생성
-            // TO-DO : AttackFactory.Instance.Create 로 변경해야 함
-            Attack dotAttack = AttackFactory.Instance.ClonePrefab(DOT_id);
-            BattleStage.now.AttachAttack(dotAttack);
-            dotAttack.target = targetPawn;
-            dotAttack.Activate(attack.attacker, direction);
+            // 새로운 DEBUFF 클래스 사용 - 화상 효과
+            var burnDebuffInfo = new DebuffInfo
+            {
+                debuffType = DEBUFFType.Burn,
+                attack = attack,
+                target = targetPawn,
+                debuffValue = 10,   
+                debuffMultiplier = 1f,
+                debuffDuration = 5f,
+                debuffInterval = 1f,
+                globalDamage = 15
+            };
+
+            var burnDebuff = new DEBUFF();
+            burnDebuff.Activate(burnDebuffInfo);
         }
 
         /// <summary>
@@ -85,7 +124,7 @@ namespace AttackComponents
             Vector2 clockwiseDirection = RotateVector2D(direction, -halfAngle);
             Vector2 counterClockwiseDirection = RotateVector2D(direction, halfAngle);
 
-            //Debug.Log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
+            ////debug.log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
             
             // 부채꼴 호를 따라 점들 생성
             for (int i = 0; i <= segments; i++)
@@ -121,14 +160,68 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
-            attack.transform.position = attack.attacker.transform.position;
-            attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+            
+            // 불꽃 공격 상태 처리
+            ProcessFireAttackState();
+        }
 
-            attackDuration -= Time.deltaTime;
-            if (attackDuration <= 0f)
+        private void ProcessFireAttackState()
+        {
+            switch (attackState)
             {
-                AttackFactory.Instance.Deactivate(attack);
+                case FireAttackState.None:
+                    break;
+
+                case FireAttackState.Preparing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = FireAttackState.Active;
+                        attackTimer = 0f;
+                        ActivateFireAttack();
+                    }
+                    break;
+
+                case FireAttackState.Active:
+                    attackTimer += Time.deltaTime;
+                    
+                    // 위치 업데이트
+                    attack.transform.position = attack.attacker.transform.position;
+                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    
+                    if (attackTimer >= attackDuration)
+                    {
+                        attackState = FireAttackState.Finishing;
+                        attackTimer = 0f;
+                        FinishFireAttack();
+                    }
+                    break;
+
+                case FireAttackState.Finishing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 종료 시간
+                    {
+                        attackState = FireAttackState.Finished;
+                    }
+                    break;
+
+                case FireAttackState.Finished:
+                    attackState = FireAttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
             }
+        }
+
+        private void ActivateFireAttack()
+        {
+            //debug.log("<color=green>[AC003] 불꽃 강화 공격 활성화!</color>");
+        }
+
+        private void FinishFireAttack()
+        {
+            //debug.log("<color=orange>[AC003] 불꽃 강화 공격 종료!</color>");
         }
     }
 }

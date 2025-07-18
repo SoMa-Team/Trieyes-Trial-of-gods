@@ -4,6 +4,7 @@ using Stats;
 using UnityEngine;
 using System.Threading;
 using BattleSystem;
+using System.Collections.Generic;
 
 namespace AttackComponents
 {
@@ -23,8 +24,39 @@ namespace AttackComponents
         public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
+        // FSM 상태 관리
+        private IceAttackState attackState = IceAttackState.None;
+        private float attackTimer = 0f;
+        private Vector2 attackDirection;
+
+        // 얼음 공격 상태 열거형
+        private enum IceAttackState
+        {
+            None,
+            Preparing,
+            Active,
+            Finishing,
+            Finished
+        }
+
         public override void Activate(Attack attack, Vector2 direction)
         {
+            base.Activate(attack, direction);
+            
+            // 초기 상태 설정
+            attackState = IceAttackState.None;
+            attackTimer = 0f;
+            attackDirection = direction.normalized;
+            
+            // 얼음 공격 시작
+            StartIceAttack();
+        }
+
+        private void StartIceAttack()
+        {
+            attackState = IceAttackState.Preparing;
+            attackTimer = 0f;
+            
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.pawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
@@ -41,31 +73,33 @@ namespace AttackComponents
             attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
             var collider = attack.attackCollider as PolygonCollider2D;
 
-            // 방향 벡터 → 각도 (라디안)
-            direction = direction.normalized;
-            Debug.Log($"direction: {direction}");
-
             // 부채꼴 모양의 콜라이더 포인트 생성
-            Vector2[] points = CreateFanShapePoints(direction, attackAngle, attackRadius);
+            Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
+            
+            Debug.Log("<color=cyan>[AC004] 얼음 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // 새로운 Attack 생성
-            Attack debuffAttack = AttackFactory.Instance.ClonePrefab(DEBUFF_ID);
-            BattleStage.now.AttachAttack(debuffAttack);
-            debuffAttack.target = targetPawn;
-            
-            var debuffComponent = debuffAttack.components[0] as AC1000_DEBUFF;
-            debuffComponent.debuffType = DEBUFFType.DecreaseMoveSpeed;
-            debuffComponent.debuffValue = 10;
-            debuffComponent.debuffMultiplier = 0.5f;
-            debuffComponent.debuffDuration = 5f;
-            debuffAttack.Activate(attack.attacker, direction);
+            // 새로운 DEBUFF 클래스 사용
+            var debuffInfo = new DebuffInfo
+            {
+                debuffType = DEBUFFType.Slow,
+                attack = attack,
+                target = targetPawn,
+                debuffValue = 10,
+                debuffMultiplier = 15f,
+                debuffDuration = 5f,
+                debuffInterval = 1f,
+                globalDamage = 0
+            };
+
+            var debuff = new DEBUFF();
+            debuff.Activate(debuffInfo);
         }
 
         /// <summary>
@@ -126,14 +160,68 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
-            attack.transform.position = attack.attacker.transform.position;
-            attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+            
+            // 얼음 공격 상태 처리
+            ProcessIceAttackState();
+        }
 
-            attackDuration -= Time.deltaTime;
-            if (attackDuration <= 0f)
+        private void ProcessIceAttackState()
+        {
+            switch (attackState)
             {
-                AttackFactory.Instance.Deactivate(attack);
+                case IceAttackState.None:
+                    break;
+
+                case IceAttackState.Preparing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = IceAttackState.Active;
+                        attackTimer = 0f;
+                        ActivateIceAttack();
+                    }
+                    break;
+
+                case IceAttackState.Active:
+                    attackTimer += Time.deltaTime;
+                    
+                    // 위치 업데이트
+                    attack.transform.position = attack.attacker.transform.position;
+                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    
+                    if (attackTimer >= attackDuration)
+                    {
+                        attackState = IceAttackState.Finishing;
+                        attackTimer = 0f;
+                        FinishIceAttack();
+                    }
+                    break;
+
+                case IceAttackState.Finishing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 종료 시간
+                    {
+                        attackState = IceAttackState.Finished;
+                    }
+                    break;
+
+                case IceAttackState.Finished:
+                    attackState = IceAttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
             }
+        }
+
+        private void ActivateIceAttack()
+        {
+            Debug.Log("<color=green>[AC004] 얼음 강화 공격 활성화!</color>");
+        }
+
+        private void FinishIceAttack()
+        {
+            Debug.Log("<color=cyan>[AC004] 얼음 강화 공격 종료!</color>");
         }
     }
 }

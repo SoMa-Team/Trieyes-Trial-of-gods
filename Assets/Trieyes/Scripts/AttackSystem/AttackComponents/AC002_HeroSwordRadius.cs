@@ -20,14 +20,45 @@ namespace AttackComponents
         public float attackRadius = 1f; // 회전 반지름
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
+        // FSM 상태 관리
+        private AttackState attackState = AttackState.None;
+        private float attackTimer = 0f;
+        private Vector2 attackDirection;
+
+        // 공격 상태 열거형
+        private enum AttackState
+        {
+            None,
+            Preparing,
+            Active,
+            Finishing,
+            Finished
+        }
+
         public override void Activate(Attack attack, Vector2 direction)
         {
+            base.Activate(attack, direction);
+            
+            // 초기 상태 설정
+            attackState = AttackState.None;
+            attackTimer = 0f;
+            attackDirection = direction.normalized;
+            
+            // 공격 시작
+            StartAttack();
+        }
+
+        private void StartAttack()
+        {
+            attackState = AttackState.Preparing;
+            attackTimer = 0f;
+            
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.pawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                //Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                //debug.logError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -38,16 +69,14 @@ namespace AttackComponents
             attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
             var collider = attack.attackCollider as PolygonCollider2D;
 
-            // 방향 벡터 → 각도 (라디안)
-            direction = direction.normalized;
-            //Debug.Log($"direction: {direction}");
-
             // 부채꼴 모양의 콜라이더 포인트 생성
-            Vector2[] points = CreateFanShapePoints(direction, attackAngle, attackRadius);
+            Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
+            
+            //debug.log("<color=cyan>[AC002] 부채꼴 공격 시작!</color>");
         }
 
         /// <summary>
@@ -72,7 +101,7 @@ namespace AttackComponents
             Vector2 clockwiseDirection = RotateVector2D(direction, -halfAngle);
             Vector2 counterClockwiseDirection = RotateVector2D(direction, halfAngle);
 
-            //Debug.Log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
+            ////debug.log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
             
             // 부채꼴 호를 따라 점들 생성
             for (int i = 0; i <= segments; i++)
@@ -108,14 +137,68 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
-            attack.transform.position = attack.attacker.transform.position;
-            attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+            
+            // 공격 상태 처리
+            ProcessAttackState();
+        }
 
-            attackDuration -= Time.deltaTime;
-            if (attackDuration <= 0f)
+        private void ProcessAttackState()
+        {
+            switch (attackState)
             {
-                AttackFactory.Instance.Deactivate(attack);
+                case AttackState.None:
+                    break;
+
+                case AttackState.Preparing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = AttackState.Active;
+                        attackTimer = 0f;
+                        ActivateAttack();
+                    }
+                    break;
+
+                case AttackState.Active:
+                    attackTimer += Time.deltaTime;
+                    
+                    // 위치 업데이트
+                    attack.transform.position = attack.attacker.transform.position;
+                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    
+                    if (attackTimer >= attackDuration)
+                    {
+                        attackState = AttackState.Finishing;
+                        attackTimer = 0f;
+                        FinishAttack();
+                    }
+                    break;
+
+                case AttackState.Finishing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 종료 시간
+                    {
+                        attackState = AttackState.Finished;
+                    }
+                    break;
+
+                case AttackState.Finished:
+                    attackState = AttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
             }
+        }
+
+        private void ActivateAttack()
+        {
+            //debug.log("<color=green>[AC002] 부채꼴 공격 활성화!</color>");
+        }
+
+        private void FinishAttack()
+        {
+            //debug.log("<color=cyan>[AC002] 부채꼴 공격 종료!</color>");
         }
     }
 }

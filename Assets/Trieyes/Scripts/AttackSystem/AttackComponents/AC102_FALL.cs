@@ -60,7 +60,9 @@ namespace AttackComponents
             // fallXYOffset가 0이면 랜덤으로 아니면 그대로 사용
             if (fallXYOffset == Vector2.zero)
             {
-                targetPosition = (Vector2)attacker.transform.position + new Vector2(Random.Range(fallXRandomOffsetMin, fallXRandomOffsetMax), Random.Range(fallYRandomOffsetMin, fallYRandomOffsetMax));
+                targetPosition = (Vector2)attacker.transform.position + 
+                new Vector2(Random.Range(fallXRandomOffsetMin, fallXRandomOffsetMax), 
+                Random.Range(fallYRandomOffsetMin, fallYRandomOffsetMax));
             }
             else
             {

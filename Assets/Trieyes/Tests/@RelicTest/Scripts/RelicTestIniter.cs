@@ -14,6 +14,9 @@ public class RelicTestIniter: BattleSystemTest
 
         Pawn character = this.character;
         
+        character.AddRelic(RelicFactory.Create(0));
+        character.AddRelic(RelicFactory.Create(1));
+        
         character.basicAttack = attackData;
         Difficulty difficulty = Difficulty.GetByStageRound(stageRound);
         BattleStage battleStage = BattleStageFactory.Instance.Create(character, difficulty);

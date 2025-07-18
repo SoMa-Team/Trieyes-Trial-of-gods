@@ -14,11 +14,7 @@ namespace Trieyes.Tests.RelicTest.Scripts
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
-
-            if (attack.relicStats.ContainsKey(RelicStatType.ProjectileCount))
-            {
-                projectileCount += attack.relicStats[RelicStatType.ProjectileCount];   
-            }
+            projectileCount += attack.getRelicStat(RelicStatType.ProjectileCount);
         }
 
         public override void Deactivate()
@@ -32,10 +28,9 @@ namespace Trieyes.Tests.RelicTest.Scripts
                 
             for (int i = 0; i < projectileCount; i++)
             {
-                var itemAngle = Mathf.Lerp(0, 360, (float)i / (projectileCount - 1));
+                var itemAngle = Mathf.Lerp(0, 360, (float)i / (projectileCount));
                 var newDirection = new Vector2(Mathf.Cos(itemAngle * Mathf.Deg2Rad), Mathf.Sin(itemAngle * Mathf.Deg2Rad));
                 var newAttack = AttackFactory.Instance.Create(newAttackData, attack.attacker, attack, newDirection);
-                attack.AddAttack(newAttack);
             }
                 
             AttackFactory.Instance.Deactivate(attack);

@@ -71,6 +71,8 @@ namespace CharacterSystem
         /// 기본 공격이자 관리자 공격
         /// </summary>
         public AttackData basicAttack;
+
+        private AttackData backupBasicAttack;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -165,8 +167,14 @@ namespace CharacterSystem
             
             gameObject.SetActive(true);
             
-            // TODO : EnemyController 없음
             Controller.Activate(this);
+            
+            // relic에 따른 Attack 적용
+            if (relics.Count > 0)
+            {
+                backupBasicAttack = basicAttack.Copy();
+                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+            }
         }
 
         /// <summary>
@@ -177,6 +185,13 @@ namespace CharacterSystem
             //gameObject.SetActive(false);
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
+            
+            // Relic에 따른 Attack 초기화
+            if (relics.Count > 0)
+            {
+                AttackFactory.Instance.DeregisterAttack(basicAttack);
+                basicAttack = backupBasicAttack;
+            }
             
             // 리스트 초기화
             if (relics != null)
@@ -599,7 +614,14 @@ namespace CharacterSystem
             if (currentHp <= 0)
             {
                 OnEvent(Utils.EventType.OnDeath, result);
+                result.attack.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
+
+                if (result.isCritical)
+                {
+                    result.attack.OnEvent(Utils.EventType.OnKilledByCritical, result);
+                    result.attacker.OnEvent(Utils.EventType.OnKilledByCritical, result);
+                }
             }
         }
 
@@ -612,7 +634,8 @@ namespace CharacterSystem
                 rb.linearVelocity = Vector2.zero;
                 isDead = true;
             }
-            ChangeAnimationState("DEATH"); 
+            
+            ChangeAnimationState("DEATH");
         }
         
         // ===== [기능 12] 자동공격 시스템 =====

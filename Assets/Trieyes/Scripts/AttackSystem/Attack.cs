@@ -8,6 +8,7 @@ using BattleSystem;
 using Stats;
 using JetBrains.Annotations;
 using RelicSystem;
+using TagSystem;
 
 namespace AttackSystem
 {
@@ -27,12 +28,21 @@ namespace AttackSystem
         public StatSheet statSheet;
 
         [CanBeNull] public Attack parent; // 부모 Attack (null이면 관리자, 아니면 투사체)
-        public List<Attack> children;
-        public List<AttackComponent> components;
+        public List<Attack> children = new ();
+        public List<AttackComponent> components = new ();
         
         protected Rigidbody2D rb;
         protected Collider2D attackCollider;
         public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
+
+        public int getRelicStat(RelicStatType relicStatType)
+        {
+            if (!AttackTagManager.isValidRelicStat(relicStatType))
+                throw new Exception("Invalid relic stat type");
+            if (!relicStats.ContainsKey(relicStatType))
+                return 0;
+            return relicStats[relicStatType];
+        }
 
         private void Update()
         {
@@ -114,13 +124,13 @@ namespace AttackSystem
         protected virtual void ProcessAttackCollision(Pawn targetPawn)
         {
             //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
-            DamageProcessor.ProcessHit(this, targetPawn);
-            
             // TODO : OnEvent를 활용한 처리 필요
             foreach (var attackComponent in components)
             {
                 attackComponent.ProcessComponentCollision(targetPawn);
             }
+            
+            DamageProcessor.ProcessHit(this, targetPawn);
         }
 
         /// <summary>
@@ -131,23 +141,16 @@ namespace AttackSystem
         /// <param name="pawn"></param>
         public virtual void Activate(Pawn attacker, Vector2 direction)
         {
-            this.attacker = attacker;
-
-            ApplyStatSheet(attacker.statSheet);
-            
             children = new List<Attack>();
             foreach (var attackComponent in components)
             {
-                attackComponent.Activate(this, direction);
+                AttackComponentFactory.Instance.Activate(attackComponent, this, direction);
             }
-            
-            gameObject.SetActive(true);
         }
 
-        private void ApplyStatSheet(StatSheet attackerStatSheet)
+        public void ApplyStatSheet(StatSheet attackerStatSheet)
         {
-            // TODO: statSheet DeepCopy 필요
-            statSheet = attackerStatSheet;
+            statSheet = attackerStatSheet.DeepCopy();
         }
 
         /// <summary>
@@ -155,8 +158,10 @@ namespace AttackSystem
         /// </summary>
         public virtual void Deactivate()
         {
-            // 컴포넌트 정리
-            // TODO: AttackComponent 초기화 필요시 초기화
+            foreach (var attack in children)
+            {
+                AttackFactory.Instance.Deactivate(attack);
+            }
             children.Clear();
             
             // 물리 속성 초기화
@@ -173,10 +178,6 @@ namespace AttackSystem
             // 참조 정리
             attacker = null;
             parent = null;
-            
-            gameObject.SetActive(false);
-            
-            relicStats.Clear();
         }
         
         // ===== [기능 9] 이벤트 처리 =====
@@ -219,7 +220,6 @@ namespace AttackSystem
         {
             attackComponent.transform.SetParent(transform);
             components.Add(attackComponent);
-            attackComponent.Activate(this, Vector2.zero);
         }
 
         public void ApplyRelicStat(RelicStatType statType, int value)
@@ -228,7 +228,7 @@ namespace AttackSystem
             {
                 relicStats[statType] = 0;
             }
-
+            
             relicStats[statType] += value;
         }
     }

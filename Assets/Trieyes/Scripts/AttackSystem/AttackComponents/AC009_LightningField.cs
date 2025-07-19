@@ -23,10 +23,8 @@ namespace AttackComponents
         [Header("VFX 설정")]
         public float vfxDuration = 0.4f;
 
-        // AC104 소환 설정
-        [Header("AC104 소환 설정")]
-        private const int AC104_ID = 16; // AC104의 ID
-        private const int AC1001_ID = 13;
+        // 버프 설정
+        [Header("버프 설정")]
         public float moveSpeedBoostMultiplier; // 이동속도 증가 배율
         public float moveSpeedBoostDuration; // 이동속도 증가 지속시간
 
@@ -153,11 +151,11 @@ namespace AttackComponents
             Debug.Log("<color=yellow>[AC009] AC104 소환하여 따라다니는 자기장 생성!</color>");
             
             // AC104 생성
-            summonedAC104 = AttackFactory.Instance.ClonePrefab(AC104_ID);
+            summonedAC104 = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC105_FollowingField);
             BattleStage.now.AttachAttack(summonedAC104);
             
             // AC104 설정 (하드코딩)
-            var ac104Component = summonedAC104.components[0] as AC104_FollowingField;
+            var ac104Component = summonedAC104.components[0] as AC105_FollowingField;
             if (ac104Component != null)
             {
                 ac104Component.fieldRadius = lightningFieldRadius;

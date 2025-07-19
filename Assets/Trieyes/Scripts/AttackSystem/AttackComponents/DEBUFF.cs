@@ -62,7 +62,7 @@ namespace AttackComponents
         public Attack attack;
         public Pawn target;
 
-        private const int AC100_SINGLE_AOE = 10;
+        private const int AC101_SINGLE_DOT = 11;
 
         public void Activate(DebuffInfo debuffInfo)
         {
@@ -262,70 +262,57 @@ namespace AttackComponents
 
         private void ApplyBurnEffect(Pawn target)
         {
-            // AC100의 단일 AOE 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC100_SINGLE_AOE);
+            // AC101의 단일 DOT 효과 적용하면 됨
+            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
             BattleStage.now.AttachAttack(burnAttack);
             burnAttack.target = target;
 
-            var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.aoeDamage = globalDamage;
-            burnComponent.aoeDuration = debuffDuration;
-            burnComponent.aoeInterval = debuffInterval;
-            burnComponent.aoeTargetType = AOETargetType.SingleTarget;
-            burnComponent.aoeShapeType = AOEShapeType.None;
-            burnComponent.aoeRadius = 0f;
-            burnComponent.aoeWidth = 0f;
-            burnComponent.aoeHeight = 0f;
-            burnComponent.aoeMode = AOEMode.SingleHit;
+            var dotComponent = burnAttack.components[0] as AC101_DOT;
+            dotComponent.dotDamage = globalDamage;
+            dotComponent.dotDuration = debuffDuration;
+            dotComponent.dotInterval = debuffInterval;
+            dotComponent.dotTargetType = DOTTargetType.SingleTarget;
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         private void ApplyPoisonEffect(Pawn target)
         {
-            // AC100의 단일 AOE 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC100_SINGLE_AOE);
+            // AC101의 단일 DOT 효과 적용하면 됨
+            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
             BattleStage.now.AttachAttack(burnAttack);
             burnAttack.target = target;
 
-            var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.aoeDamage = globalDamage;
-            burnComponent.aoeDuration = debuffDuration;
-            burnComponent.aoeInterval = debuffInterval; 
-            burnComponent.aoeTargetType = AOETargetType.SingleTarget;
-            burnComponent.aoeShapeType = AOEShapeType.None;
-            burnComponent.aoeRadius = 0f;
-            burnComponent.aoeWidth = 0f;
-            burnComponent.aoeHeight = 0f;
-            burnComponent.aoeMode = AOEMode.SingleHit;
+            var dotComponent = burnAttack.components[0] as AC101_DOT;
+            dotComponent.dotDamage = globalDamage;
+            dotComponent.dotDuration = debuffDuration;
+            dotComponent.dotInterval = debuffInterval; 
+            dotComponent.dotTargetType = DOTTargetType.SingleTarget;
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         private void ApplyBleedEffect(Pawn target)
         {
-            // AC100의 단일 AOE 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC100_SINGLE_AOE);
+            // AC101의 단일 DOT 효과 적용하면 됨
+            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
             BattleStage.now.AttachAttack(burnAttack);
             burnAttack.target = target;
 
-            var burnComponent = burnAttack.components[0] as AC100_AOE;
-            burnComponent.aoeDamage = globalDamage;
-            burnComponent.aoeDuration = debuffDuration;
-            burnComponent.aoeInterval = debuffInterval;
-            burnComponent.aoeTargetType = AOETargetType.SingleTarget;
-            burnComponent.aoeShapeType = AOEShapeType.None;
-            burnComponent.aoeRadius = 0f;
-            burnComponent.aoeWidth = 0f;
-            burnComponent.aoeHeight = 0f;
-            burnComponent.aoeMode = AOEMode.SingleHit;
+            var dotComponent = burnAttack.components[0] as AC101_DOT;
+            dotComponent.dotDamage = globalDamage;
+            dotComponent.dotDuration = debuffDuration;
+            dotComponent.dotInterval = debuffInterval;
+            dotComponent.dotTargetType = DOTTargetType.SingleTarget;
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         private void ApplyShockEffect(Pawn target)
         {
-            throw new NotImplementedException();
+            // 이동속도 0 만들고 + DOT 데미지 주면 됨
+            ApplyFrozenEffect(target);
+            ApplyBleedEffect(target);
         }
     }
 }

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 5844118997863232457}
+  - component: {fileID: 8494832663461597784}
   m_Layer: 0
-  m_Name: AC103
+  m_Name: AC104
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5844118997863232457
+--- !u!114 &8494832663461597784
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,13 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 817fcb6da99ff28418de823eb89b14c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blizzardDamage: 25
-  blizzardDuration: 6
+  globalDamage: 25
+  globalDuration: 6
   damageInterval: 0.5
-  slowEffect: 0.3
-  slowDuration: 2
-  blizzardVFXPrefab: {fileID: 0}
-  vfxDuration: 0.3
+  additionalDebuffDuration: 2
+  additionalDebuffChance: 0.3
+  additionalDebuffMultiplier: 2
+  globalVFXPrefab: {fileID: 0}
+  globalVFXDuration: 0.3
+  additionalDebuffType: 0
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -191,7 +193,7 @@ MonoBehaviour:
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 5844118997863232457}
+  - {fileID: 8494832663461597784}
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

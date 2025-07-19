@@ -16,7 +16,6 @@ namespace AttackComponents
     /// </summary>
     public class AC005_HeroSwordEnchantmentLightning : AttackComponent
     {
-        private const int CHAIN_ID = 12;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
@@ -95,13 +94,13 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // AC101_LightningChain Attack 생성
-            Attack lightningChainAttack = AttackFactory.Instance.ClonePrefab(CHAIN_ID);
+            // AC102_CHAIN Attack 생성
+            Attack lightningChainAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC102_CHAIN);
             BattleStage.now.AttachAttack(lightningChainAttack);
             lightningChainAttack.target = targetPawn;
             
-            // AC101_LightningChain 컴포넌트 설정
-            var lightningChainComponent = lightningChainAttack.components[0] as AC101_CHAIN;
+            // AC102_CHAIN 컴포넌트 설정
+            var lightningChainComponent = lightningChainAttack.components[0] as AC102_CHAIN;
             if (lightningChainComponent != null)
             {
                 lightningChainComponent.chainDamage = chainDamage;

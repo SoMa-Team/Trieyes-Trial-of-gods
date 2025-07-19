@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8783834321740468731}
   - component: {fileID: 4018152355819753735}
   m_Layer: 0
-  m_Name: AC104
+  m_Name: AC105
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -54,9 +54,6 @@ MonoBehaviour:
   followDistance: 0
   followPlayer: 1
   followOffset: {x: 0, y: 0}
-  applyMoveSpeedBuff: 1
-  moveSpeedBuffMultiplier: 1.5
-  moveSpeedBuffDuration: 5
   fieldVFXPrefab: {fileID: 0}
   fieldVFXDuration: 0.3
 --- !u!1 &7855106370752616202

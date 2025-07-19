@@ -16,7 +16,7 @@ namespace AttackComponents
     /// </summary>
     public enum FieldShape { Circle, Rect }
 
-    public class AC104_FollowingField : AttackComponent
+    public class AC105_FollowingField : AttackComponent
     {
         [Header("필드 타입 및 크기 설정")]
         public FieldShape fieldShape = FieldShape.Circle;

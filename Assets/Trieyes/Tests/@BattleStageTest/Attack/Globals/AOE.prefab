@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 7175719141285207572}
+  - component: {fileID: 7535615950411682077}
   m_Layer: 0
-  m_Name: AC103
+  m_Name: AC100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7175719141285207572
+--- !u!114 &7535615950411682077
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,20 +41,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f33d9fb7e2b9f548a9b0592f0b2a8a2, type: 3}
+  m_Script: {fileID: 11500000, guid: c14e1f52728dc25429f50c81ecaa5475, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fallXYOffset: {x: 0, y: 0}
-  fallXRandomOffsetMin: 0
-  fallXRandomOffsetMax: 0
-  fallYRandomOffsetMin: 0
-  fallYRandomOffsetMax: 0
-  fallDamage: 100
-  fallRadius: 2
-  fallDuration: 0.5
-  fallDelay: 0.1
-  fallVFXPrefab: {fileID: 0}
-  vfxDuration: 0.3
+  dotType: 0
+  dotCollisionType: 0
+  dotDamage: 10
+  dotDuration: 10
+  currentDotDuration: 0
+  dotInterval: 1
+  dotWidth: 1
+  dotHeight: 1
+  dotRadius: 1
+  dotAngle: 180
+  dotSegments: 8
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,7 +154,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: FALL
+  m_Name: AOE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -189,13 +189,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: b6e8b4c67ad321b46a4bd5b946f02700, type: 2}
+  attackData: {fileID: 11400000, guid: 01f4091c666ebf4438497b7aa6d6392f, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 7175719141285207572}
+  - {fileID: 7535615950411682077}
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

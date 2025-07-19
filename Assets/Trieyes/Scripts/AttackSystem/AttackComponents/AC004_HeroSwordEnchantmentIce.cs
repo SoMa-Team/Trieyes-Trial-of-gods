@@ -13,11 +13,10 @@ namespace AttackComponents
     /// 캐릭터 소드 능력 부여 강화
     /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
     /// 7초 동안 검에 무작위 속성을 부여하고, 기본 공격(AC002)에 다음의 추가효과가 적용되고, 추가 피해를 입힙니다.
-    /// - 얼음 : 공격에 맞은 대상 주변 적들이 둔화됩니다.
+    /// - 얼음 : 공격에 맞은 적들을 둔화 시킵니다.
     /// </summary>
     public class AC004_HeroSwordEnchantmentIce : AttackComponent
     {
-        private const int DEBUFF_ID = 11;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름

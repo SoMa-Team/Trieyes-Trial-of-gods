@@ -15,7 +15,7 @@ namespace AttackComponents
     /// GC 최적화를 위해 재사용 가능한 리스트를 사용합니다.
     /// </summary>
     
-    public class AC103_GLOBAL : AttackComponent
+    public class AC104_GLOBAL : AttackComponent
     {
         [Header("공격 효과 설정")]
         public int globalDamage = 25; // 공격 효과

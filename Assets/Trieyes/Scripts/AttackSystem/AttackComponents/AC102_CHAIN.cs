@@ -13,7 +13,7 @@ namespace AttackComponents
     /// 지정된 횟수만큼 주변 적을 찾아가면서 번개 데미지를 입힙니다.
     /// GC 최적화를 위해 코루틴 대신 재귀적 처리를 사용합니다.
     /// </summary>
-    public class AC101_CHAIN : AttackComponent
+    public class AC102_CHAIN : AttackComponent
     {
         [Header("번개 연쇄 설정")]
         public int chainDamage;

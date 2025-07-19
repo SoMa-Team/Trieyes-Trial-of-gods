@@ -12,11 +12,10 @@ namespace AttackComponents
     /// 캐릭터 소드 능력 부여 강화
     /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
     /// 7초 동안 검에 무작위 속성을 부여하고, 기본 공격(AC002)에 다음의 추가효과가 적용되고, 추가 피해를 입힙니다.
-    /// - 불꽃 : 공격에 맞은 대상 주변 적들이 불꽃 피해를 입습니다.
+    /// - 불꽃 : 공격에 맞은 대상에게 지속적으로 화상데미지(도트)를 입힙니다.
     /// </summary>
     public class AC003_HeroSwordEnchantmentFire : AttackComponent
     {
-        private const int AC100_ID = 10;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
@@ -30,12 +29,7 @@ namespace AttackComponents
         private Vector2 attackDirection;
 
         // 불꽃 도트 데미지 필드
-        public AOETargetType dotCollisionType = AOETargetType.SingleTarget;
-        public AOEShapeType dotShapeType = AOEShapeType.None;
-        public AOEMode dotMode = AOEMode.MultiHit;
-        public float dotRadius = 0f;
-        public float dotWidth = 0f;
-        public float dotHeight = 0f;
+        public DOTTargetType dotTargetType = DOTTargetType.SingleTarget;
         public int dotDamage = 20;
         public float dotDuration = 2f;
         public float dotInterval = 0.2f;
@@ -99,28 +93,23 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // 단일 대상에게 Tick 데미지를 주는 AOE 소환
-            var aoeAttack = AttackFactory.Instance.ClonePrefab(AC100_ID);
-            BattleStage.now.AttachAttack(aoeAttack);
+            // 단일 대상에게 도트 데미지를 주는 DOT 소환
+            var dotAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC101_DOT);
+            BattleStage.now.AttachAttack(dotAttack);
 
-            var aoeComponent = aoeAttack.components[0] as AC100_AOE;
-            if (aoeComponent != null)
+            var dotComponent = dotAttack.components[0] as AC101_DOT;
+            if (dotComponent != null)
             {
-                aoeComponent.aoeTargetType = dotCollisionType;
-                aoeComponent.aoeShapeType = dotShapeType;
-                aoeComponent.aoeMode = dotMode;
-                aoeComponent.aoeDamage = dotDamage;
-                aoeComponent.aoeRadius = dotRadius;
-                aoeComponent.aoeWidth = dotWidth;
-                aoeComponent.aoeHeight = dotHeight;
-                aoeComponent.aoeDuration = dotDuration;
-                aoeComponent.aoeInterval = dotInterval;
+                dotComponent.dotTargetType = dotTargetType;
+                dotComponent.dotDamage = dotDamage;
+                dotComponent.dotDuration = dotDuration;
+                dotComponent.dotInterval = dotInterval;
                 
                 // target 설정
-                aoeAttack.target = targetPawn;
+                dotAttack.target = targetPawn;
             }
 
-            aoeAttack.Activate(attack.attacker, Vector2.zero);
+            dotAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         /// <summary>
@@ -184,6 +173,11 @@ namespace AttackComponents
             
             // 불꽃 공격 상태 처리
             ProcessFireAttackState();
+
+            if (attackState == FireAttackState.Active && attack.attackCollider != null)
+            {
+                DrawFanShapeDebug();
+            }
         }
 
         private void ProcessFireAttackState()
@@ -243,6 +237,30 @@ namespace AttackComponents
         private void FinishFireAttack()
         {
             //debug.log("<color=orange>[AC003] 불꽃 강화 공격 종료!</color>");
+        }
+
+        private void DrawFanShapeDebug()
+        {
+            if (attack.attackCollider is PolygonCollider2D collider)
+            {
+                Vector2[] points = collider.points;
+                
+                // 부채꼴 모양 그리기
+                for (int i = 0; i < points.Length - 1; i++)
+                {
+                    Vector3 startPos = attack.transform.position + new Vector3(points[i].x, points[i].y, 0);
+                    Vector3 endPos = attack.transform.position + new Vector3(points[i + 1].x, points[i + 1].y, 0);
+                    Debug.DrawLine(startPos, endPos, Color.yellow, 0.1f);
+                }
+                
+                // 마지막 점과 첫 번째 점을 연결 (폐곡선 만들기)
+                if (points.Length > 2)
+                {
+                    Vector3 lastPos = attack.transform.position + new Vector3(points[points.Length - 1].x, points[points.Length - 1].y, 0);
+                    Vector3 firstPos = attack.transform.position + new Vector3(points[1].x, points[1].y, 0);
+                    Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
+                }
+            }
         }
     }
 }

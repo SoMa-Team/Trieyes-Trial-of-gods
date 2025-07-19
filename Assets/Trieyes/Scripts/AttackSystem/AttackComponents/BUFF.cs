@@ -36,13 +36,13 @@ namespace AttackComponents
         public BUFFType buffType;
 
         public Attack attack;
-        public Pawn target;
+        public Pawn target; // 이 친구가 버프의 대상이
         public int buffValue = 10;
+        public float buffMultiplier = 1f;
+        public float buffDuration = 10f;
 
         public float buffInterval = 1f;
         public int globalHeal = 10;
-        public float buffMultiplier = 1f;
-        public float buffDuration = 10f;
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ namespace AttackComponents
         public Attack attack;
         public Pawn target;
 
-        private const int AC100_SINGLE_AOE = 10;
+        private const int AC101_SINGLE_DOT = 11;
 
         public void Activate(BuffInfo buffInfo)
         {
@@ -327,23 +327,14 @@ namespace AttackComponents
 
         private void ApplyRegenerationEffect(Pawn target)
         {
-            // AC100의 단일 AOE 효과를 힐링으로 적용
-            var healAttack = AttackFactory.Instance.ClonePrefab(AC100_SINGLE_AOE);
-            BattleStage.now.AttachAttack(healAttack);
-            healAttack.target = target;
-
-            var healComponent = healAttack.components[0] as AC100_AOE;
-            healComponent.aoeDamage = -globalHeal; // 음수로 하면 힐링
-            healComponent.aoeDuration = buffDuration;
-            healComponent.aoeInterval = buffInterval;
-            healComponent.aoeTargetType = AOETargetType.SingleTarget;
-            healComponent.aoeShapeType = AOEShapeType.None;
-            healComponent.aoeRadius = 0f;
-            healComponent.aoeWidth = 0f;
-            healComponent.aoeHeight = 0f;
-            healComponent.aoeMode = AOEMode.SingleHit;
-
-            healAttack.Activate(attack.attacker, Vector2.zero);
+            // 체력을 주기적으로 회복
+            var healBuff = new StatModifier(
+                globalHeal,
+                BuffOperationType.Additive,
+                false,
+                buffDuration
+            );
+            target.statSheet[StatType.Health].AddBuff(healBuff);
         }
 
         private void ApplyInvincibilityEffect(Pawn target)

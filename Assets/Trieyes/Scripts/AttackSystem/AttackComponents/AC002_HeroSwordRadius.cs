@@ -61,7 +61,7 @@ namespace AttackComponents
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                //debug.logError("R_Weapon을 찾지 못했습니다!");
+                ////Debug.LogError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -73,14 +73,14 @@ namespace AttackComponents
             var collider = attack.attackCollider as PolygonCollider2D;
 
             // 부채꼴 모양의 콜라이더 포인트 생성
-            Debug.Log($"<color=green>[AC002] attackRadius: {attackRadius}, attackAngle: {attackAngle}</color>");
+            //Debug.Log($"<color=green>[AC002] attackRadius: {attackRadius}, attackAngle: {attackAngle}</color>");
             Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
             
-            //debug.log("<color=cyan>[AC002] 부채꼴 공격 시작!</color>");
+            ////Debug.Log("<color=cyan>[AC002] 부채꼴 공격 시작!</color>");
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace AttackComponents
             Vector2 clockwiseDirection = RotateVector2D(direction, -halfAngle);
             Vector2 counterClockwiseDirection = RotateVector2D(direction, halfAngle);
 
-            Debug.Log($"<color=cyan>[AC002] radius: {radius}, halfAngle: {halfAngle}</color>");
+            //Debug.Log($"<color=cyan>[AC002] radius: {radius}, halfAngle: {halfAngle}</color>");
             
             // 부채꼴 호를 따라 점들 생성
             for (int i = 0; i <= segments; i++)
@@ -118,7 +118,7 @@ namespace AttackComponents
                 
                 if (i == 0 || i == segments)
                 {
-                    Debug.Log($"<color=yellow>[AC002] Point {i + 1}: {points[i + 1]}, radius: {radius}</color>");
+                    //Debug.Log($"<color=yellow>[AC002] Point {i + 1}: {points[i + 1]}, radius: {radius}</color>");
                 }
             }
             return points;
@@ -207,12 +207,12 @@ namespace AttackComponents
 
         private void ActivateAttack()
         {
-            //debug.log("<color=green>[AC002] 부채꼴 공격 활성화!</color>");
+            ////Debug.Log("<color=green>[AC002] 부채꼴 공격 활성화!</color>");
         }
 
         private void FinishAttack()
         {
-            //debug.log("<color=cyan>[AC002] 부채꼴 공격 종료!</color>");
+            ////Debug.Log("<color=cyan>[AC002] 부채꼴 공격 종료!</color>");
         }
 
         /// <summary>

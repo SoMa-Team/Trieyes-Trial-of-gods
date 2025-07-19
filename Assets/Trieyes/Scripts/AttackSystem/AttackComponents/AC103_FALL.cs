@@ -12,7 +12,7 @@ namespace AttackComponents
     /// 위에서 아래로 떨어지는 범위 공격 컴포넌트
     /// 지정된 위치에 범위 공격을 수행하며, GC 최적화를 위해 재사용 가능한 리스트를 사용합니다.
     /// </summary>
-    public class AC102_FALL : AttackComponent
+    public class AC103_FALL : AttackComponent
     {
         [Header("낙하 공격 설정")]
 

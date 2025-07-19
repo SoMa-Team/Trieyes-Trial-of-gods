@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 7535615950411682077}
+  - component: {fileID: 5801996999287398140}
   m_Layer: 0
-  m_Name: AC100
+  m_Name: AC101
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7535615950411682077
+--- !u!114 &5801996999287398140
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,20 +41,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c14e1f52728dc25429f50c81ecaa5475, type: 3}
+  m_Script: {fileID: 11500000, guid: bb841ae8bf409f647b7bde6aa3abeafc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dotType: 0
-  dotCollisionType: 0
-  dotDamage: 10
-  dotDuration: 10
-  currentDotDuration: 0
+  dotTargetType: 0
+  dotDamage: 20
+  dotDuration: 5
   dotInterval: 1
-  dotWidth: 1
-  dotHeight: 1
-  dotRadius: 1
-  dotAngle: 180
-  dotSegments: 8
+  additionalBuffType: 0
+  additionalBuffDuration: 5
+  additionalBuffMultiplier: 1.5
+  additionalBuffValue: 10
+  dotVFXPrefab: {fileID: 0}
+  dotVFXDuration: 0.3
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,12 +188,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 01f4091c666ebf4438497b7aa6d6392f, type: 2}
+  attackData: {fileID: 11400000, guid: e517bf62054b1e145aec88cfff886cde, type: 2}
   attacker: {fileID: 0}
+  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 7535615950411682077}
+  - {fileID: 5801996999287398140}
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

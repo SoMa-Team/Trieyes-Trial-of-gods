@@ -25,10 +25,10 @@ namespace AttackComponents
         private bool isActive = false;
 
         // 강화 효과 ID 상수
-        private const int FIRE_ENCHANTMENT_ID = 3;    // AC003_HeroSwordEnchantmentFire
-        private const int ICE_ENCHANTMENT_ID = 4;     // AC004_HeroSwordEnchantmentIce
-        private const int LIGHTNING_ENCHANTMENT_ID = 5; // AC005_HeroSwordEnchantmentLightning
-        private const int LIGHT_ENCHANTMENT_ID = 6;   // AC006_HeroSwordEnchantmentLight
+        private const int FIRE_ENCHANTMENT_ID = (int)AttackComponentID.AC003_HeroSwordEnchantmentFire;    // AC003_HeroSwordEnchantmentFire
+        private const int ICE_ENCHANTMENT_ID = (int)AttackComponentID.AC004_HeroSwordEnchantmentIce;     // AC004_HeroSwordEnchantmentIce
+        private const int LIGHTNING_ENCHANTMENT_ID = (int)AttackComponentID.AC005_HeroSwordEnchantmentLightning; // AC005_HeroSwordEnchantmentLightning
+        private const int LIGHT_ENCHANTMENT_ID = (int)AttackComponentID.AC006_HeroSwordEnchantmentHeaven;   // AC006_HeroSwordEnchantmentLight
 
         public override void Activate(Attack attack, Vector2 direction)
         {
@@ -89,10 +89,10 @@ namespace AttackComponents
 
         private int GetRandomEnchantmentID()
         {
-            // 1-4 사이의 랜덤 숫자 생성
-            // int randomValue = Random.Range(1, 5);
-            int randomValue = 4;
-            
+            // 1-5 사이의 랜덤 숫자 생성
+            // TO-DO : 유물 들어왔을 때 값이 최대를 4에서 5로 늘리는 로직 구현해야 함
+            int randomValue = Random.Range(1, 5);
+                        
             switch (randomValue)
             {
                 case 1:

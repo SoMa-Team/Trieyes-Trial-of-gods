@@ -233,6 +233,10 @@ namespace CharacterSystem
         /// <param name="direction">이동할 방향</param>
         public virtual void Move(Vector2 direction)
         {
+            if(isDead)
+            {
+                return;
+            }
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동

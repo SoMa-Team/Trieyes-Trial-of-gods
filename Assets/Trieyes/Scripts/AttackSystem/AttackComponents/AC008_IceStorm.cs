@@ -11,12 +11,11 @@ namespace AttackComponents
     /// <summary>
     /// 얼음 폭풍 효과 (무기 속성 연계)
     /// 얼음 속성이 부여된 무기에서 발동되는 맵 전체 눈보라 효과를 소환합니다.
-    /// AC103_GlobalBlizzard를 생성하여 맵 전체에 눈보라 효과를 적용합니다.
+    /// AC103_GLOBAL을 생성하여 맵 전체에 눈보라 효과를 적용합니다.
     /// </summary>
     public class AC008_IceStorm : AttackComponent
     {
         [Header("눈보라 소환 설정")]
-        private const int AC103_GLOBAL = 15;
         public float summonDelay = 0.5f; // 소환 지연 시간
         public float vfxDuration = 0.3f; // VFX 지속 시간
 
@@ -103,14 +102,14 @@ namespace AttackComponents
 
         private void SummonGlobalBlizzard()
         {
-            Debug.Log("<color=cyan>[ICE_STORM] AC103_GLOBAL 소환!</color>");
+            Debug.Log("<color=cyan>[ICE_STORM] AC104_GLOBAL 소환!</color>");
             
-            // AttackComponentFactory를 통해 AC103_GLOBAL 컴포넌트 생성
-            var globalBlizzardAttack = AttackFactory.Instance.ClonePrefab(AC103_GLOBAL);
+            // AttackComponentFactory를 통해 AC105_GLOBAL 컴포넌트 생성
+            var globalBlizzardAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC104_GLOBAL);
             BattleStage.now.AttachAttack(globalBlizzardAttack);
             globalBlizzardAttack.target = attack.target;
 
-            var globalBlizzardComponent = globalBlizzardAttack.components[0] as AC103_GLOBAL;
+            var globalBlizzardComponent = globalBlizzardAttack.components[0] as AC104_GLOBAL;
             globalBlizzardComponent.globalDamage = attack.statSheet[StatType.AttackPower];
             globalBlizzardComponent.globalDuration = 6f;
             globalBlizzardComponent.damageInterval = 0.5f;

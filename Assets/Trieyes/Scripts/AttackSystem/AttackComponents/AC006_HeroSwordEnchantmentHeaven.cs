@@ -16,7 +16,6 @@ namespace AttackComponents
     /// </summary>
     public class AC006_HeroSwordEnchantmentHeaven : AttackComponent
     {
-        private const int AC100_ID = 10;
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
@@ -30,9 +29,8 @@ namespace AttackComponents
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // Skill 002에 대하여 AOE 공격 발동 시 AOE의 기본 정보들
-        public AOETargetType dotCollisionType = AOETargetType.AreaAroundTarget;
+        public AOETargetType dotCollisionType = AOETargetType.AreaAtPosition;
         public AOEShapeType dotShapeType = AOEShapeType.Circle;
-        public AOEMode dotMode = AOEMode.SingleHit;
         public float dotRadius = 3f;
         public float dotWidth = 1f;
         public float dotHeight = 1f;
@@ -109,7 +107,7 @@ namespace AttackComponents
         /// <param name="targetPawn">타겟 적</param>
         private void SpawnAC100Attack(Pawn targetPawn)
         {
-            var aoeAttack = AttackFactory.Instance.ClonePrefab(AC100_ID);
+            var aoeAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC100_AOE);
             if (aoeAttack != null)
             {
                 BattleStage.now.AttachAttack(aoeAttack);
@@ -117,11 +115,13 @@ namespace AttackComponents
                 var aoeComponent = aoeAttack.components[0] as AC100_AOE;
                 aoeComponent.aoeTargetType = dotCollisionType;
                 aoeComponent.aoeShapeType = dotShapeType;
-                aoeComponent.aoeMode = dotMode;
                 aoeComponent.aoeRadius = dotRadius;
                 aoeComponent.aoeDamage = dotDamage;
                 aoeComponent.aoeDuration = dotDuration;
                 aoeComponent.aoeInterval = dotInterval;
+
+                // AOE 위치 설정 (타겟 위치)
+                aoeComponent.SetAOEPosition((Vector2)targetPawn.transform.position);
 
                 aoeAttack.Activate(attack.attacker, Vector2.zero);
                 

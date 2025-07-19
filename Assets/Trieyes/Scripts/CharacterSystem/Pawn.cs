@@ -292,7 +292,7 @@ namespace CharacterSystem
         /// <param name="newState">새로운 애니메이션 상태</param>
         protected virtual void ChangeAnimationState(string newState)
         {
-            if (isDead)
+            if (isDead && newState != "DEATH")
                 return;
             
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
@@ -619,7 +619,7 @@ namespace CharacterSystem
         private void ApplyDamage(AttackResult result)
         {
             // 여러번 OnDeath 이벤트가 발생되지 않기 위한 예외문
-            if (currentHp <= 0) return;
+            if (isDead) return;
             
             int previousHP = currentHp;
             ChangeHP(-result.totalDamage);
@@ -648,8 +648,11 @@ namespace CharacterSystem
             // 정지
             Collider.enabled = false;
             rb.linearVelocity = Vector3.zero;
-            ChangeAnimationState("DEATH");
+            
+            if (isDead)
+                return;
             isDead = true;
+            ChangeAnimationState("DEATH");
         }
         
         // ===== [기능 12] 자동공격 시스템 =====

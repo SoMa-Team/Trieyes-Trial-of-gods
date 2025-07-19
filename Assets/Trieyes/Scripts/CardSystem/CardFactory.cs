@@ -93,9 +93,11 @@ namespace CardSystem
         {
             switch (id)
             {
-                case 0: return new Card001_PreparingMarch();
-                case 1: return new Card002_Crouch();
-                case 2: return new Shadow();
+                case 0: return new Card1001_StatBuffOnBattleStartAction();
+                case 1: return new Card1001_StatBuffOnBattleStartAction();;
+                case 2: return new Card1001_StatBuffOnBattleStartAction();;
+                case 3: return new Card1001_StatBuffOnBattleStartAction();;
+                case 4: return new Shadow();
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {id}");
                     return null;

@@ -74,9 +74,9 @@ public static class CSVToCardInfoSOImporter
                 .ToArray();
 
             // illustration
-            card.illustration = Resources.Load<Sprite>(values[idx_illustration]);
+            card.illustration = Resources.Load<Sprite>($"CardIllustration/{values[idx_illustration]}");
             if (card.illustration == null)
-                Debug.LogWarning($"{cardName}: {values[idx_illustration]} Sprite를 Resources에서 못 찾음!");
+                Debug.LogWarning($"{cardName}: CardIllustration/{values[idx_illustration]} Sprite를 Resources에서 못 찾음!");
 
             card.cardDescription = values[idx_cardDescription];
             Debug.Log(card.cardDescription);

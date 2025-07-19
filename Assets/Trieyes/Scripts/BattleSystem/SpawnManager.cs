@@ -19,7 +19,7 @@ namespace BattleSystem
         // ===== 내부 상태 =====
         private bool _isActivate = false;
         private Difficulty _difficulty;
-        private float _elapsedTime;
+        [SerializeField] private float _elapsedTime;
 
         // ===== 초기화 =====
         

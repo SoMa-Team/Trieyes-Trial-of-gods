@@ -29,6 +29,7 @@ namespace Utils
         OnDamageHit,          // 캐릭터에게 적 피사체가 닿았을 경우 호출 (회피/명중 판정 이전)
         OnAttackMiss,         // 공격이 회피당한 경우 호출 (공격자에게 발생)
         OnEvaded,             // 회피 성공 시 호출
+        OnDefend,             // 공격 방어 시 호출되는 이벤트
         
         // ===== 전투 중 적 사망 관련 =====
         OnKilled,             // 적 처치시 호출 (공격이 적용된 뒤)
@@ -44,13 +45,8 @@ namespace Utils
         OnGoldUpdated,        // 골드 소지량이 변할경우 호출 (preGold는 이전 골드량)
         
         // ===== 기존 이벤트들 (하위 호환성) =====
-        OnProjectileKill,     // 투사체로 적 처치시 호출
-        OnCriticalKill,       // 크리티컬로 적 처치시 호출
         OnClear,              // 전투 클리어시 호출
         OnLevelUp,            // 레벨업 이벤트
-        OnStatChange,         // 스탯 변경 이벤트
-        OnDefend,             // 공격 방어 시 호출되는 이벤트
-        OnHit,                // 피격 이벤트
         OnCardPurchase,       // 상점에서 카드 구매시 발동하는 이벤트
         OnCardRemove,         // 덱에서 카드 제거시 발동하는 이벤트
     }

@@ -7,6 +7,8 @@ using AttackComponents;
 using BattleSystem;
 using Stats;
 using JetBrains.Annotations;
+using RelicSystem;
+using TagSystem;
 
 namespace AttackSystem
 {
@@ -21,16 +23,27 @@ namespace AttackSystem
     public class Attack : MonoBehaviour, IEventHandler
     {
         // ===== [기능 1] 공격 데이터 및 컴포넌트 관리 =====
-        public AttackData attackData; // 기획적으로 논의 필요
-        public Pawn attacker; // 공격자 (투사체를 발사한 캐릭터)
+        public AttackData attackData;
+        public Pawn attacker; // 공격자 (투사체를 발사한 Pawn)
         public StatSheet statSheet;
 
         [CanBeNull] public Attack parent; // 부모 Attack (null이면 관리자, 아니면 투사체)
-        public List<Attack> children;
-        public List<AttackComponent> components;
+        public List<Attack> children = new ();
+        public List<AttackComponent> components = new ();
         
         protected Rigidbody2D rb;
         protected Collider2D attackCollider;
+        public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
+        public int objectID; // 공격 조회를 위한 ID
+
+        public int getRelicStat(RelicStatType relicStatType)
+        {
+            if (!AttackTagManager.isValidRelicStat(relicStatType))
+                throw new Exception("Invalid relic stat type");
+            if (!relicStats.ContainsKey(relicStatType))
+                return 0;
+            return relicStats[relicStatType];
+        }
 
         private void Update()
         {
@@ -53,11 +66,6 @@ namespace AttackSystem
             if (rb is not null)
             {
                 rb.gravityScale = 0f; // 중력 비활성화
-            }
-
-            foreach (var attackComponent in components)
-            {
-                attackComponent.SetAttack(this);
             }
         }
 
@@ -93,7 +101,8 @@ namespace AttackSystem
             
             // tag null 체크 추가
             if (string.IsNullOrEmpty(hitObject.tag)) return;
-                
+            
+            // TODO: Layer 충돌 적용 필요
             switch (hitObject.tag)
             {
                 case "Player": 
@@ -115,10 +124,8 @@ namespace AttackSystem
         /// <param name="targetPawn">피격 대상</param>
         protected virtual void ProcessAttackCollision(Pawn targetPawn)
         {
-            //Debug.Log($"<color=orange>[ATTACK_PROJECTILE] {gameObject.name} hit {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             DamageProcessor.ProcessHit(this, targetPawn);
             
-            // TODO : OnEvent를 활용한 처리 필요
             foreach (var attackComponent in components)
             {
                 attackComponent.ProcessComponentCollision(targetPawn);
@@ -133,23 +140,16 @@ namespace AttackSystem
         /// <param name="pawn"></param>
         public virtual void Activate(Pawn attacker, Vector2 direction)
         {
-            this.attacker = attacker;
-
-            ApplyStatSheet(attacker.statSheet);
-            
             children = new List<Attack>();
             foreach (var attackComponent in components)
             {
-                attackComponent.Activate(this, direction);
+                AttackComponentFactory.Instance.Activate(attackComponent, this, direction);
             }
-            
-            gameObject.SetActive(true);
         }
 
-        private void ApplyStatSheet(StatSheet attackerStatSheet)
+        public void ApplyStatSheet(StatSheet attackerStatSheet)
         {
-            // TODO: statSheet DeepCopy 필요
-            statSheet = attackerStatSheet;
+            statSheet = attackerStatSheet.DeepCopy();
         }
 
         /// <summary>
@@ -157,8 +157,15 @@ namespace AttackSystem
         /// </summary>
         public virtual void Deactivate()
         {
-            // 컴포넌트 정리
-            // TODO: AttackComponent 초기화 필요시 초기화
+            foreach (var attack in children)
+            {
+                AttackFactory.Instance.Deactivate(attack);
+            }
+
+            foreach (var attackComponent in components)
+            {
+                AttackComponentFactory.Instance.Deactivate(attackComponent);
+            }
             children.Clear();
             
             // 물리 속성 초기화
@@ -175,8 +182,6 @@ namespace AttackSystem
             // 참조 정리
             attacker = null;
             parent = null;
-            
-            gameObject.SetActive(false);
         }
         
         // ===== [기능 9] 이벤트 처리 =====
@@ -213,6 +218,22 @@ namespace AttackSystem
         public void AddAttack(Attack newAttack)
         {
             children.Add(newAttack);
+        }
+
+        public void AddAttackComponent(AttackComponent attackComponent)
+        {
+            attackComponent.transform.SetParent(transform);
+            components.Add(attackComponent);
+        }
+
+        public void ApplyRelicStat(RelicStatType statType, int value)
+        {
+            if (!relicStats.ContainsKey(statType))
+            {
+                relicStats[statType] = 0;
+            }
+            
+            relicStats[statType] += value;
         }
     }
 } 

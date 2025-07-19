@@ -206,6 +206,8 @@ namespace AttackSystem
         /// <returns>해당하는 GameObject 프리팹</returns>
         private Attack GetPrefabById(AttackID id)
         {
+            if (!attackPrefab.ContainsKey(id))
+                throw new Exception($"Attack (id : {id}) is not exist.");
             return attackPrefab[id];
             
             // return id switch

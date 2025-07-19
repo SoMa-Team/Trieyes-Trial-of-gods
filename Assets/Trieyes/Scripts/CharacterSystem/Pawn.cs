@@ -292,6 +292,9 @@ namespace CharacterSystem
         /// <param name="newState">새로운 애니메이션 상태</param>
         protected virtual void ChangeAnimationState(string newState)
         {
+            if (isDead)
+                return;
+            
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
                 // switch로 각 newStat에 대한 Parameter 값을 변경
@@ -644,9 +647,9 @@ namespace CharacterSystem
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
             // 정지
             Collider.enabled = false;
-            isDead = true;
             rb.linearVelocity = Vector3.zero;
             ChangeAnimationState("DEATH");
+            isDead = true;
         }
         
         // ===== [기능 12] 자동공격 시스템 =====

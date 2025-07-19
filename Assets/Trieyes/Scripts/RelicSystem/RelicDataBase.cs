@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine.AddressableAssets;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace RelicSystem
             // Addressables API:
             // "RelicDataSO" 라벨이 붙은 모든 RelicDataSO를 비동기로 로드한다.
             // 두 번째 인자인 람다 함수(so => { ... })는 각각의 SO를 불러올 때마다 실행됨.
-            var handle = Addressables.LoadAssetsAsync<RelicSystem.RelicDataSO>("RelicDataSO", so =>
+            var handle = Addressables.LoadAssetsAsync<RelicDataSO>("RelicDataSO", so =>
             {
                 relicDict[so.id] = so;
             });
@@ -46,7 +47,9 @@ namespace RelicSystem
                 return null;
             }
             
-            return relicDict.TryGetValue(id, out var so) ? so : null;
+            if (!relicDict.TryGetValue(id, out var so))
+                throw new Exception($"Relic (id : {id}) is not exist.");
+            return so;
         }
     }
 }

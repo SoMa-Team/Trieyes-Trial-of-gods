@@ -84,6 +84,7 @@ namespace BattleSystem
             enemy.Deactivate();
             enemy.gameObject.SetActive(false);
             BattleStage.now.RemoveEnemy(enemy);
+            
             pushEnemy(enemy.enemyID.Value, enemy);
         }
         
@@ -107,6 +108,8 @@ namespace BattleSystem
         /// <returns>해당하는 GameObject 프리팹</returns>
         private GameObject GetPrefabById(EnemyID id)
         {
+            if (!(0 <= id && id < enemyPrefabs.Length))
+                throw new Exception($"Enemy (id : {id}) is not exist.");
             return enemyPrefabs[id];
         }
         

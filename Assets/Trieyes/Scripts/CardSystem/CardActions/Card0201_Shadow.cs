@@ -10,10 +10,10 @@ namespace CardActions
     /// 그림자(Shadow) 카드 액션:
     /// CalcActionInitOrder 이벤트 발생 시 자기 자신을 제외한 덱 내 모든 카드 효과를 지정 횟수만큼 추가 발동시킴.
     /// </summary>
-    public class Shadow : CardAction
+    public class Card0201_Shadow : CardAction
     {
         private const int repeatCountIndex = 0;
-        public Shadow()
+        public Card0201_Shadow()
         {
             actionParams = new List<ActionParam>
             {

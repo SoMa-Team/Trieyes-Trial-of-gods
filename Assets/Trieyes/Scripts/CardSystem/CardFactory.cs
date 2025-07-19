@@ -97,7 +97,7 @@ namespace CardSystem
                 case 1: return new Card1001_StatBuffOnBattleStartAction();;
                 case 2: return new Card1001_StatBuffOnBattleStartAction();;
                 case 3: return new Card1001_StatBuffOnBattleStartAction();;
-                case 4: return new Shadow();
+                case 4: return new Card0201_Shadow();
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {id}");
                     return null;

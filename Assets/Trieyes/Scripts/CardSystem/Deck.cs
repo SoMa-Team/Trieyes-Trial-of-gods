@@ -111,6 +111,7 @@ namespace CardSystem
             switch (eventType)
             {
                 case Utils.EventType.OnBattleSceneChange:
+                    DestoryCardsBeforeBattleStart();
                     CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
@@ -341,6 +342,15 @@ namespace CardSystem
                     Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardName}");
                     cards[cardIndex]?.TriggerCardEvent(eventType, this, cards[cardIndex]);
                 }
+            }
+        }
+
+        public void DestoryCardsBeforeBattleStart()
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                Debug.Log($"DestoryCards: {cards[i].cardName}");
+                cards[i]?.TriggerCardEvent(Utils.EventType.DestoryCardsBeforeBattleStart, this, i);
             }
         }
 

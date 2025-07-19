@@ -13,12 +13,14 @@ public class AnimationController : MonoBehaviour
 
     public void DestroyOnDeath()
     {
-        var rb = owner.GetComponent<Rigidbody2D>();
-        var Collider = owner.GetComponent<Collider2D>();
-        if (rb != null) rb.bodyType = RigidbodyType2D.Static; 
-        if (Collider != null) Collider.enabled = false;
-
-        CharacterFactory.Instance.Deactivate(owner);
+        if (!owner.isEnemy)
+        {
+            CharacterFactory.Instance.Deactivate(owner);   
+        }
+        else
+        {
+            EnemyFactory.Instance.Deactivate(owner);
+        }
     }
 
     public void AttackOnAnimationStart()

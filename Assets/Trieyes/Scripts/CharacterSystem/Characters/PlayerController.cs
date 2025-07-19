@@ -49,8 +49,6 @@ namespace CharacterSystem
             {
                 return;
             }
-            // StatSheet에서 최신 MoveSpeed를 반영
-            owner.moveSpeed = owner.GetStatValue(Stats.StatType.MoveSpeed);
             // 조이스틱 입력값으로 이동
             Vector2 moveDir = new Vector2(joystick.Horizontal, joystick.Vertical);
             this.moveDir = moveDir.normalized;
@@ -70,7 +68,7 @@ namespace CharacterSystem
 
         private void Update()
         {
-            if (character != null)
+            if (character is null)
             {
                 // 매개변수가 있는 버전을 호출하여 Character001_Hero의 오버라이딩된 메서드가 실행되도록 함
                 character.PerformAutoAttack(character.basicAttack);

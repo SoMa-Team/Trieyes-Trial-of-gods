@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using AttackSystem;
 using UnityEngine;
 using CharacterSystem;
+using UnityEngine.Serialization;
 using Utils;
 
 namespace AttackComponents
@@ -13,11 +16,20 @@ namespace AttackComponents
     /// </summary>
     public class AttackComponentFactory : MonoBehaviour
     {
+        [Serializable]
+        public class IDAttackComponentPair
+        {
+            public AttackComponentID id;
+            public AttackComponent attackComponent;
+        }
+        
         // ===== 싱글톤 =====
         public static AttackComponentFactory Instance {private set; get;}
-
+        
+        
         // ===== 프리팹 =====
-        public GameObject[] attackComponentPrefabs; // 공격 컴포넌트 프리팹 배열
+        public List<IDAttackComponentPair> rawAttackComponentPrefabs;
+        private Dictionary<AttackComponentID, AttackComponent> attackComponentPrefabs = new (); // 공격 컴포넌트 프리팹 배열
 
         // ===== 초기화 =====
         
@@ -32,9 +44,18 @@ namespace AttackComponents
                 Destroy(gameObject);
                 return;
             }
-            
+
+            InitAttackComponentPrefabs();
             DontDestroyOnLoad(gameObject);
             Instance = this;
+        }
+
+        private void InitAttackComponentPrefabs()
+        {
+            foreach (var pair in rawAttackComponentPrefabs)
+            {
+                attackComponentPrefabs[pair.id] = pair.attackComponent;
+            }
         }
 
         // ===== 공격 컴포넌트 생성 =====
@@ -44,11 +65,14 @@ namespace AttackComponents
         /// gameObject는 반드시 AttackComponent를 상속한 Unity Component가 부착되어 있습니다.
         /// </summary>
         /// <param name="id">생성할 공격 컴포넌트의 ID</param>
+        /// <param name="relicLevel"></param>
+        /// <param name="attack"></param>
+        /// <param name="direction"></param>
         /// <returns>생성된 gameObject에 부착된 AttackComponent 객체</returns>
-        public AttackComponent Create(AttackComponentID id)
+        public AttackComponent Create(AttackComponentID id, int relicLevel, Attack attack, Vector2 direction)
         {
             var attackComponent = ClonePrefab(id);
-            Activate(attackComponent);
+            attackComponent.SetLevel(relicLevel);
             return attackComponent;
         }
         
@@ -58,9 +82,9 @@ namespace AttackComponents
         /// AttackComponent 활성화합니다.
         /// </summary>
         /// <param name="pawn">활성화할 Attack Component</param>
-        public void Activate(AttackComponent attackComponent)
+        public void Activate(AttackComponent attackComponent, Attack attack, Vector2 direction)
         {
-            attackComponent.Activate(null, Vector2.zero);
+            attackComponent.Activate(attack, direction);
         }
 
         /// <summary>
@@ -92,7 +116,7 @@ namespace AttackComponents
         private GameObject GetPrefabById(AttackComponentID id)
         {
             // TODO: characterID와 characterPrefab 매칭 필요
-            return attackComponentPrefabs[id];
+            return attackComponentPrefabs[id].gameObject;
             
             // return id switch
             // {

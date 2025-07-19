@@ -12,6 +12,13 @@ using CharacterSystem.Enemies;
 
 namespace CharacterSystem
 {
+    public enum PawnAttackType
+    {
+        BasicAttack,
+        Skill1, 
+        Skill2,
+    }
+    
     /// <summary>
     /// 게임 내 모든 캐릭터의 기본이 되는 클래스입니다.
     /// 캐릭터의 기본적인 속성과 동작을 정의합니다.
@@ -20,17 +27,14 @@ namespace CharacterSystem
     {
         // ===== [필드] =====
         [Header("Pawn Settings")]
-
         public int maxHp = 100;
-
         public int currentHp;
 
-        public float moveSpeed = 5f;
+        public float moveSpeed => GetStatValue(StatType.MoveSpeed);
 
         [Header("Components")] 
-        protected Rigidbody2D rb;
-
-        protected Collider2D Collider;
+        public Rigidbody2D rb;
+        public Collider2D Collider;
 
         protected Controller Controller;
         protected Animator Animator;
@@ -50,7 +54,8 @@ namespace CharacterSystem
         
         public Vector2 lastestDirection;
         // ===== [프로퍼티] =====
-        public int pawnId { get; private set; }
+        public int? enemyID;
+        public bool isEnemy => enemyID is not null; 
         
         public string pawnName { get; protected set; }
         
@@ -64,13 +69,15 @@ namespace CharacterSystem
         /// 기본 공격이자 관리자 공격
         /// </summary>
         public AttackData basicAttack;
+        private AttackData backupBasicAttack;
 
-        public AttackData skillAttack001;
-
+        public AttackData skill1Attack;
+        private AttackData backupSkill1Attack;
         public float skillAttack001Cooldown = 0f;
         public float lastSkillAttack001Time = -999f;
-        public AttackData skillAttack002;
-
+        
+        public AttackData skill2Attack;
+        private AttackData backupSkill2Attack;
         public float skillAttack002Cooldown = 0f;
         public float lastSkillAttack002Time = -999f;
         
@@ -87,7 +94,7 @@ namespace CharacterSystem
         /// <summary>
         /// SPUM 프리팹
         /// </summary>
-        public GameObject pawnPrefab { get; private set; }
+        protected GameObject pawnPrefab;
 
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
@@ -97,6 +104,8 @@ namespace CharacterSystem
         
         protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>();
         public bool isDead { get; protected set; }
+        
+        public int objectID;
 
         // ===== [Unity 생명주기] =====
         protected virtual void Awake()
@@ -132,6 +141,11 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Activate()
         {
+            isDead = false;
+            currentHp = maxHp;
+            
+            Collider.enabled = true;
+            
             // 컴포넌트 초기화
             pawnPrefab = transform.GetChild(0).gameObject;
 
@@ -158,16 +172,28 @@ namespace CharacterSystem
                 Utils.EventType.OnHPUpdated
             );
 
-            skillAttack001Cooldown = skillAttack001 != null ? skillAttack001.cooldown : 0f;
-            skillAttack002Cooldown = skillAttack002 != null ? skillAttack002.cooldown : 0f;
+            skillAttack001Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
+            skillAttack002Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
 
             deck.Activate(this, true);
             initBaseStat();
             
             gameObject.SetActive(true);
             
-            // TODO : EnemyController 없음
             Controller.Activate(this);
+            
+            // relic에 따른 Attack 적용
+            if (relics.Count > 0)
+            {
+                backupBasicAttack = basicAttack.Copy();
+                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+                
+                backupSkill1Attack = skill1Attack.Copy();
+                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
+                
+                backupSkill2Attack = skill2Attack.Copy();
+                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+            }
         }
 
         /// <summary>
@@ -179,22 +205,22 @@ namespace CharacterSystem
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
             
+            // Relic에 따른 Attack 초기화
+            if (relics.Count > 0)
+            {
+                AttackFactory.Instance.DeregisterAttack(basicAttack);
+                basicAttack = backupBasicAttack;
+                skill1Attack = backupSkill1Attack;
+                skill2Attack = backupSkill2Attack;
+            }
+            
             // 리스트 초기화
             if (relics != null)
             {
                 relics.Clear();
             }
 
-            Controller.enabled = false;
-            if (Controller is EnemyController)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                // 플레이어가 죽은 것이니 유니티 게임 종료
-                Application.Quit();
-            }
+            Controller.Deactivate();
         }
 
         /// <summary>
@@ -225,6 +251,15 @@ namespace CharacterSystem
                 statSheet[pair.type].SetBasicValue(pair.value);
                 //Debug.Log($"<color=green>[STAT] {gameObject.name} applied stat preset: {pair.type} : {pair.value}</color>");
             }
+        }
+
+        /// <summary>
+        /// 데미지를 받습니다.
+        /// </summary>
+        /// <param name="damage">받을 데미지</param>
+        public virtual void TakeDamage(int damage)
+        {
+            
         }
 
         /// <summary>
@@ -263,8 +298,11 @@ namespace CharacterSystem
         /// 애니메이션 상태를 변경합니다.
         /// </summary>
         /// <param name="newState">새로운 애니메이션 상태</param>
-        public virtual void ChangeAnimationState(string newState)
+        protected virtual void ChangeAnimationState(string newState)
         {
+            if (isDead && newState != "DEATH")
+                return;
+            
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
                 // switch로 각 newStat에 대한 Parameter 값을 변경
@@ -286,10 +324,6 @@ namespace CharacterSystem
                         Animator.SetBool("4_Death", true);
                         break;
                 }
-            }
-            else
-            {
-                //Debug.Log($"<color=red>[ANIMATION] {gameObject.name} animation state '{newState}' not found</color>");
             }
         }
 
@@ -489,25 +523,19 @@ namespace CharacterSystem
         /// <param name="relic">추가할 유물</param>
         public void AddRelic(Relic relic)
         {
-            if (relic != null)
+            relic.owner = this;
+            relics.Add(relic);
+            
+            var relicEvents = relic.GetAcceptedEvents();
+            if (relicEvents != null)
             {
-                relic.SetOwner(this);
-                relics.Add(relic);
-                
-                // 유물의 이벤트 셋을 Pawn의 relicAcceptedEvents에 합치기 (카운트 관리)
-                var relicEvents = relic.GetAcceptedEvents();
-                if (relicEvents != null)
+                foreach (var eventType in relicEvents)
                 {
-                    foreach (var eventType in relicEvents)
-                    {
-                        if (relicAcceptedEvents.ContainsKey(eventType))
-                            relicAcceptedEvents[eventType]++;
-                        else
-                            relicAcceptedEvents[eventType] = 1;
-                    }
+                    if (relicAcceptedEvents.ContainsKey(eventType))
+                        relicAcceptedEvents[eventType]++;
+                    else
+                        relicAcceptedEvents[eventType] = 1;
                 }
-                
-                //Debug.Log($"<color=purple>[RELIC] {gameObject.name} acquired relic: {relic.GetInfo().name}</color>");
             }
         }
 
@@ -590,9 +618,10 @@ namespace CharacterSystem
             }
         }
 
-        public void ApplyDamage(AttackResult result)
+        private void ApplyDamage(AttackResult result)
         {
-            if (result.attacker == null) return;
+            // 여러번 OnDeath 이벤트가 발생되지 않기 위한 예외문
+            if (isDead) return;
             
             int previousHP = currentHp;
             ChangeHP(-result.totalDamage);
@@ -604,20 +633,28 @@ namespace CharacterSystem
             if (currentHp <= 0)
             {
                 OnEvent(Utils.EventType.OnDeath, result);
+                result.attack.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
+
+                if (result.isCritical)
+                {
+                    result.attack.OnEvent(Utils.EventType.OnKilledByCritical, result);
+                    result.attacker.OnEvent(Utils.EventType.OnKilledByCritical, result);
+                }
             }
         }
 
         private void HandleDeath()
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
-            // 정지
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-                isDead = true;
-            }
-            ChangeAnimationState("DEATH"); 
+            // TO-DO : 이부분 테스트 필요
+            Collider.enabled = false;
+            rb.linearVelocity = Vector3.zero;
+            
+            if (isDead)
+                return;
+            isDead = true;
+            ChangeAnimationState("DEATH");
         }
         
         // ===== [기능 12] 자동공격 시스템 =====
@@ -651,88 +688,32 @@ namespace CharacterSystem
             {
                 // 공격 쿨다운 계산 (스탯 변경 시 대응)
                 CalculateAttackCooldown();
-                
+
                 // 공격 수행
                 ExecuteAttack();
-                
+
                 // 마지막 공격 시간 업데이트
                 lastAttackTime = Time.time;
             }
         }
 
-        public virtual void PerformAutoAttack(AttackData attackData)
-        {
-            if (CheckTimeInterval())
-            {
-                CalculateAttackCooldown();
-                ExecuteAttack(attackData);
-
-                lastAttackTime = Time.time;
-            }
-        }
-        
         /// <summary>
         /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack에게 전달합니다.
         /// </summary>
-        protected virtual void ExecuteAttack()
+        protected virtual void ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
-            // TODO : Scene 통합 이후 제거 필요
-            if (AttackFactory.Instance is null)
-                return;
-            // TODO END
-            
-            StatSheet attackStats = CollectAttackStats();
-            ChangeAnimationState("ATTACK");
-            Attack attack = AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
-        }
-
-        protected virtual void ExecuteAttack(AttackData attackData)
-        {
-            if (attackData == null) return;
-            StatSheet attackStats = CollectAttackStats();
-            ChangeAnimationState("ATTACK");
-            Attack attack = AttackFactory.Instance.Create(attackData, this, null, LastMoveDirection);
-        }
-
-        public void ExecuteSkillAttack001(AttackData skillAttack)
-        {
-            // 쿨타임 체크
-            if (BattleStage.now.GetTime() - lastSkillAttack001Time < skillAttack001Cooldown)
+            switch (attackType)
             {
-                Debug.Log($"<color=red>[SKILL_ATTACK] {gameObject.name} skill attack 001 cooldown: {skillAttack001Cooldown}</color>");
-                return;
+                case PawnAttackType.BasicAttack:
+                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
+                    break;
+                case PawnAttackType.Skill1:
+                    AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
+                    break;
+                case PawnAttackType.Skill2:
+                    AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
+                    break;
             }
-
-            if (skillAttack == skillAttack001)
-            {
-                lastSkillAttack001Time = BattleStage.now.GetTime();
-            }
-
-            _ExecuteSkillAttack(skillAttack);
-        }
-
-        public void ExecuteSkillAttack002(AttackData skillAttack)
-        {
-            if (BattleStage.now.GetTime() - lastSkillAttack002Time < skillAttack002Cooldown)
-            {
-                Debug.Log($"<color=red>[SKILL_ATTACK] {gameObject.name} skill attack 002 cooldown: {skillAttack002Cooldown}</color>");
-                return;
-            }
-
-            if (skillAttack == skillAttack002)
-            {
-                lastSkillAttack002Time = BattleStage.now.GetTime();
-            }
-
-            _ExecuteSkillAttack(skillAttack);
-        }
-
-        protected virtual void _ExecuteSkillAttack(AttackData skillAttack)
-        {
-            if (skillAttack == null) return;
-            StatSheet attackStats = CollectAttackStats();
-            ChangeAnimationState("ATTACK");
-            Attack attack = AttackFactory.Instance.Create(skillAttack, this, null, LastMoveDirection);
         }
 
         // ===== [내부 클래스] =====

@@ -1,38 +1,45 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using AttackComponents;
+using TagSystem;
+using Unity.VisualScripting;
+using UnityEngine;
 
 namespace RelicSystem
 {
+    using RelicID = Int32;
+    
     public class RelicFactory
     {
-        // ===== [기능 1] 유물 생성자 딕셔너리 =====
-        private static Dictionary<int, System.Func<Relic>> relicCreators = new()
+        public static Relic Create(RelicID relicID)
         {
-            { 1, () => new Relic001() }
-            // 다른 유물들도 여기에 추가
-        };
+            var relic = new Relic();
 
-        // ===== [기능 2] 유물 생성 메서드 =====
-        public static Relic CreateRelic(int relicId)
-        {
-            if (relicCreators.TryGetValue(relicId, out var creator))
+            RelicDataSO data = RelicDataBase.GetRelicDataSO(relicID);
+            
+            relic.relicID = relicID;
+            relic.name = data.name;
+            relic.description = data.description;
+            relic.filterAttackIDs = data.filterAttackIDs;
+            relic.filterAttackTag = AttackTagManager.GetAttackTagByName(data.filterTag);
+            relic.attackComponentIDs = data.attackComponentIDs;
+
+            relic.randomOptions = new List<RandomOption>();
+            
+            for (int i = 0; i < getRandomOptionCount(relicID); i++)
             {
-                return creator();
+                var randomOption = RandomOptionGenerator.Create(relicID);
+                relic.randomOptions.Add(randomOption);
             }
-            return null;
+            
+            return relic;
         }
 
-        public static List<Relic> CreateRelics(List<int> relicIds)
+        private static int getRandomOptionCount(RelicID id)
         {
-            var relics = new List<Relic>();
-            foreach (var id in relicIds)
-            {
-                var relic = CreateRelic(id);
-                if (relic != null)
-                {
-                    relics.Add(relic);
-                }
-            }
-            return relics;
+            // TODO: 랜덤 옵션의 줄 수가 유동적일 경우 수정
+            return 2;
         }
     }
 } 

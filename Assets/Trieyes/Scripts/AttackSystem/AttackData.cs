@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Stats;
+using TagSystem;
+using UnityEngine.Rendering.Universal.Internal;
 
 namespace AttackSystem
 {
@@ -10,10 +14,23 @@ namespace AttackSystem
         public int attackId;
         public string attackName;
         public AttackType attackType;
+        public List<AttackTag> tags;
         public float cooldown; // Type이 Basic일 경우, 값은 무시됨.
         public float damageMultiplier = 1;
         public string attackIcon;
-        // 기타 공격 관련 정보
+
+        public AttackData Copy()
+        {
+            var copy = CreateInstance<AttackData>();
+            copy.attackId = attackId;
+            copy.attackName = attackName;
+            copy.attackType = attackType;
+            copy.tags = tags.ToList();
+            copy.cooldown = cooldown;
+            copy.damageMultiplier = damageMultiplier;
+            copy.attackIcon = attackIcon;
+            return copy;
+        }
     }
 
     // ===== [기능 2] AttackType Enum =====

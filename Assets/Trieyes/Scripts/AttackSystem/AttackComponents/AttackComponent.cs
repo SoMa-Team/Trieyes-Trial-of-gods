@@ -13,6 +13,8 @@ namespace AttackComponents
     /// </summary>
     public abstract class AttackComponent : MonoBehaviour, IEventHandler
     {
+        private int level; // Relic과 연결될 경우, 자동으로 초기화
+        
         // ===== [기능 1] 기본 정보 =====
         protected Attack attack; // 부모 Attack
         protected Pawn attacker => attack?.attacker; // 소유자 (Attack의 attacker)
@@ -100,9 +102,9 @@ namespace AttackComponents
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
         }
 
-        public void SetAttack(Attack attack)
+        public void SetLevel(int level)
         {
-            this.attack = attack;
+            this.level = level;
         }
     }
 } 

@@ -36,11 +36,20 @@ namespace Stats
                 stat.Value.ClearBuffs();
             }
         }
-        // TODO: DeepCopy 메소드 넣기
 
         // --- 인덱서 ---
 
         /// StatType으로 해당 스탯 값을 조회합니다.
         public IntegerStatValue this[StatType type] => stats[type];
+        
+        
+        // DeepCopy Method
+        public StatSheet DeepCopy()
+        {
+            var copiedSheet = new StatSheet();
+            foreach (StatType type in Enum.GetValues(typeof(StatType)))
+                copiedSheet.stats[type] = stats[type].DeepCopy();
+            return copiedSheet;
+        }
     }
 }

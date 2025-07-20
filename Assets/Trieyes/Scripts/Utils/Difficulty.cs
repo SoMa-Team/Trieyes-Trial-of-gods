@@ -8,6 +8,7 @@ namespace Utils
         public int spawnFrequency => 1;
         public int EnemyID => 1;
         public float enemyStatMultiplier = 1.0f;
+        public int shopLevel = 1;
 
         public float SpawnInterval => 1f / spawnFrequency;
 

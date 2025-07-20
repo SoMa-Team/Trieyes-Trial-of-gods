@@ -30,6 +30,7 @@ public static class CSVToCardInfoSOImporter
         }
 
         var headers = lines[0].Split(',');
+        int idx_Id = System.Array.IndexOf(headers, "Id");
         int idx_soName = System.Array.IndexOf(headers, "soName");
         int idx_cardName = System.Array.IndexOf(headers, "cardName");
         int idx_rarity = System.Array.IndexOf(headers, "rarity");
@@ -45,7 +46,7 @@ public static class CSVToCardInfoSOImporter
             var values = CsvUtils.SplitCsvLine(lines[i]).ToArray();
 
             if (values.Length < headers.Length) continue;
-
+            int Id = int.Parse(values[idx_Id]);
             string cardName = values[idx_cardName];
 
             // SO 파일 경로 생성
@@ -60,7 +61,8 @@ public static class CSVToCardInfoSOImporter
                 card = ScriptableObject.CreateInstance<CardInfo>();
                 isNew = true;
             }
-
+            
+            card.Id = Id;
             card.cardName = cardName;
 
             // rarity

@@ -13,10 +13,10 @@ namespace CardActions
     /// 전투 시작 시 두 스탯을 각각 %만큼 곱연산 버프!
     /// baseParams: [스탯1, %1, 스탯2, %2] (치환/스티커 지원)
     /// </summary>
-    public class Card0301_AbsorbingBlade : Card1001_GenericStatBuffOnBattleStartAction
+    public class Card0601_AbsorbingBlade : Card1001_GenericStatBuffOnBattleStartAction
     {
         private int levelUpValue = 5;
-        public Card0301_AbsorbingBlade()
+        public Card0601_AbsorbingBlade()
             : base(1, true) // 2쌍, Multiplicative
         {
             // 두 Value 파라미터만 30+5*레벨로 오버라이드

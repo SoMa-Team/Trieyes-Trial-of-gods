@@ -9,7 +9,14 @@ public class DamageNumberView : MonoBehaviour
 {
     [NonSerialized] public RectTransform targetRectTransform;
     public TextMeshProUGUI text;
-    
+
+    private void Start()
+    {
+        text.outlineColor = Color.black;
+        text.outlineWidth = 0.2f;
+        // TODO : PrimeTwin으로 점점 FadeOut 적용
+    }
+
     // ===== 초기화 관련 =====
     public void SetDamage(AttackResult result)
     {

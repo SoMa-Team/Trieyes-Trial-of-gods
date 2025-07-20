@@ -98,6 +98,7 @@ namespace BattleSystem
         {
             Debug.LogError("OnBattleClear");
             BattleStageFactory.Instance.Deactivate(this);
+            // Todo: SceneChangeManager 호출
         }
         
         // 플레이어 사망 시 호출

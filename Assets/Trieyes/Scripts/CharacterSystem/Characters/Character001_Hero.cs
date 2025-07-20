@@ -52,17 +52,6 @@ namespace CharacterSystem
             base.Activate();
         }
 
-        public override void PerformAutoAttack(AttackData attackData)
-        {
-            if (lockBasicAttack) return;
-            base.PerformAutoAttack(attackData);
-        }
-
-        public void ExecuteSkillAttack(AttackData attackData)
-        {
-            base._ExecuteSkillAttack(attackData);
-        }
-
         public override void Deactivate()
         {
             base.Deactivate();

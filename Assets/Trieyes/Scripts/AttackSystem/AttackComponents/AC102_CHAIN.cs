@@ -29,7 +29,7 @@ namespace AttackComponents
         private LightningChainState chainState = LightningChainState.None;
         private float chainTimer = 0f;
 
-        private List<Enemy> targetEnemies = new List<Enemy>();
+        public List<Enemy> targetEnemies = new List<Enemy>();
         private List<Vector2> chainPositions = new List<Vector2>();
         private int currentChainCount = 0;
         private Vector2 currentChainPosition;
@@ -165,7 +165,7 @@ namespace AttackComponents
             foreach (var enemy in targetEnemies)
             {
                 // 파괴된 객체 체크
-                if (enemy == null || enemy.transform == null)
+                if (enemy is null || enemy.transform == null)
                 {
                     continue;
                 }
@@ -216,7 +216,7 @@ namespace AttackComponents
             Enemy targetEnemy = targetQueue.Peek() as Enemy;
             
             // 파괴된 객체 체크
-            if (targetEnemy == null || targetEnemy.transform == null)
+            if (targetEnemy is null || targetEnemy.transform == null)
             {
                 Debug.LogWarning("타겟 Enemy가 파괴되었습니다. 큐에서 제거합니다.");
                 targetQueue.Dequeue(); // 파괴된 객체 제거

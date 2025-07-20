@@ -50,7 +50,7 @@ namespace AttackComponents
         // AOE 상태 관리
         private float aoeTimer = 0f;
         private float aoeDurationTimer = 0f;
-        private List<Enemy> aoeTargets = new List<Enemy>(10);
+        public List<Enemy> aoeTargets = new List<Enemy>(10);
         private Vector2 aoePosition; // AOE 위치 (바깥에서 설정)
 
         // AOE VFX 설정

@@ -31,8 +31,8 @@ namespace AttackSystem
         public List<Attack> children = new ();
         public List<AttackComponent> components = new ();
         
-        protected Rigidbody2D rb;
-        protected Collider2D attackCollider;
+        public Rigidbody2D rb;
+        public  Collider2D attackCollider;
         public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
         public int objectID; // 공격 조회를 위한 ID
 

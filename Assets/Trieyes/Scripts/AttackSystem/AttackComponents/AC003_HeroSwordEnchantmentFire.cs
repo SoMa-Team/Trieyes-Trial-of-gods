@@ -34,6 +34,8 @@ namespace AttackComponents
         public float dotDuration = 2f;
         public float dotInterval = 0.2f;
 
+        public AttackData dotAttackData;
+
         // 불꽃 공격 상태 열거형
         private enum FireAttackState
         {
@@ -66,7 +68,7 @@ namespace AttackComponents
             attackTimer = 0f;
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-            var pawnPrefab = attack.attacker.pawnPrefab;
+            var pawnPrefab = attack.attacker.PawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
@@ -94,7 +96,7 @@ namespace AttackComponents
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
             // 단일 대상에게 도트 데미지를 주는 DOT 소환
-            var dotAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC101_DOT);
+            var dotAttack = AttackFactory.Instance.Create(dotAttackData, attack.attacker, null, Vector2.zero);
             BattleStage.now.AttachAttack(dotAttack);
 
             var dotComponent = dotAttack.components[0] as AC101_DOT;
@@ -104,9 +106,7 @@ namespace AttackComponents
                 dotComponent.dotDamage = dotDamage;
                 dotComponent.dotDuration = dotDuration;
                 dotComponent.dotInterval = dotInterval;
-                
-                // target 설정
-                dotAttack.target = targetPawn;
+                dotComponent.dotTargets.Add(targetPawn as Enemy);
             }
 
             dotAttack.Activate(attack.attacker, Vector2.zero);

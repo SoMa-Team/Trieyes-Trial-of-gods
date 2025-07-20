@@ -22,6 +22,8 @@ namespace AttackComponents
         [Header("VFX 설정")]
         public GameObject summonVFXPrefab; // 소환 VFX
 
+        public AttackData globalBlizzardData;
+
         // 소환 상태 관리
         private SummonState summonState = SummonState.None;
         private float summonTimer = 0f;
@@ -105,9 +107,8 @@ namespace AttackComponents
             Debug.Log("<color=cyan>[ICE_STORM] AC104_GLOBAL 소환!</color>");
             
             // AttackComponentFactory를 통해 AC105_GLOBAL 컴포넌트 생성
-            var globalBlizzardAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC104_GLOBAL);
+            var globalBlizzardAttack = AttackFactory.Instance.Create(globalBlizzardData, attack.attacker, null, Vector2.zero);
             BattleStage.now.AttachAttack(globalBlizzardAttack);
-            globalBlizzardAttack.target = attack.target;
 
             var globalBlizzardComponent = globalBlizzardAttack.components[0] as AC104_GLOBAL;
             globalBlizzardComponent.globalDamage = attack.statSheet[StatType.AttackPower];

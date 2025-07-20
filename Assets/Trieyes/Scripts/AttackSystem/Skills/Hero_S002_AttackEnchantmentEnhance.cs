@@ -20,10 +20,10 @@ namespace AttackComponents
         private Character001_Hero character;
         private HeroWeaponElementState weaponElementState;
 
-        private const int FIRE_METEOR_ID = 7;
-        private const int ICE_STORM_ID = 8;
-        private const int LIGHTNING_FIELD_ID = 9;
-        private const int LIGHT_ID = 6;
+        private const int FIRE_METEOR_ID = 1;
+        private const int ICE_STORM_ID = 2;
+        private const int LIGHTNING_FIELD_ID = 3;
+        private const int LIGHT_ID = 4;
 
         // FSM 상태 관리
         private EnhancementState currentState = EnhancementState.None;
@@ -34,6 +34,8 @@ namespace AttackComponents
         // 1회 실행 플래그
         private bool iceStormActivated = false;
         private bool lightningFieldActivated = false;
+
+        public List<AttackData> attackDatas = new List<AttackData>();
 
         // FSM 상태 열거형
         private enum EnhancementState
@@ -227,7 +229,7 @@ namespace AttackComponents
 
         private void ActivateFireMeteor()
         {
-            Attack fireMeteor = AttackFactory.Instance.ClonePrefab(FIRE_METEOR_ID);
+            Attack fireMeteor = AttackFactory.Instance.Create(attackDatas[FIRE_METEOR_ID], character, null, Vector2.zero);
             if (fireMeteor != null)
             {
                 BattleStage.now.AttachAttack(fireMeteor);
@@ -239,7 +241,7 @@ namespace AttackComponents
 
         private void ActivateIceStorm()
         {
-            Attack iceStorm = AttackFactory.Instance.ClonePrefab(ICE_STORM_ID);
+            Attack iceStorm = AttackFactory.Instance.Create(attackDatas[ICE_STORM_ID], character, null, Vector2.zero);
             if (iceStorm != null)
             {
                 BattleStage.now.AttachAttack(iceStorm);
@@ -254,7 +256,7 @@ namespace AttackComponents
 
         private void ActivateLightningField()
         {
-            Attack lightningField = AttackFactory.Instance.ClonePrefab(LIGHTNING_FIELD_ID);
+            Attack lightningField = AttackFactory.Instance.Create(attackDatas[LIGHTNING_FIELD_ID], character, null, Vector2.zero);
             if (lightningField != null)
             {
                 BattleStage.now.AttachAttack(lightningField);

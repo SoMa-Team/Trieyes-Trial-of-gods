@@ -234,14 +234,14 @@ namespace AttackComponents
             {
                 foreach (var enemy in BattleStage.now.enemies)
                 {
-                    if (enemy == null || enemy.transform == null || !enemy.gameObject.activeInHierarchy)
+                    if (enemy.Value is null || enemy.Value.transform == null || !enemy.Value.gameObject.activeInHierarchy)
                         continue;
 
                     bool inRange = false;
                     if (fieldShape == FieldShape.Circle)
                     {
                         // 원형 범위
-                        float distance = Vector2.Distance(enemy.transform.position, fieldPosition);
+                        float distance = Vector2.Distance(enemy.Value.transform.position, fieldPosition);
                         inRange = (distance <= fieldRadius);
                     }
                     else if (fieldShape == FieldShape.Rect)
@@ -249,15 +249,15 @@ namespace AttackComponents
                         // 네모 범위
                         Vector2 min = fieldPosition - new Vector2(fieldWidth, fieldHeight) * 0.5f;
                         Vector2 max = fieldPosition + new Vector2(fieldWidth, fieldHeight) * 0.5f;
-                        Vector2 pos = (Vector2)enemy.transform.position;
+                        Vector2 pos = (Vector2)enemy.Value.transform.position;
                         inRange = (pos.x >= min.x && pos.x <= max.x && pos.y >= min.y && pos.y <= max.y);
                     }
 
                     if (inRange)
                     {
-                        if (enemy.GetComponent<Controller>() is EnemyController)
+                        if (enemy.Value.GetComponent<Controller>() is EnemyController)
                         {
-                            fieldTargets.Add(enemy);
+                            fieldTargets.Add(enemy.Value);
                         }
                     }
                 }

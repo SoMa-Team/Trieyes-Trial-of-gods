@@ -44,6 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01a31d81b75dfcf449bbf509e93aaf0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackDatas:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 9695b9b1aa2306348a23667d80d53bd4, type: 2}
+  - {fileID: 11400000, guid: 587a8c469ff414d4eb66b0aeea5c739d, type: 2}
+  - {fileID: 11400000, guid: 0cf50fb4ad1b6964ca845947442ee0e6, type: 2}
+  - {fileID: 0}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,11 +186,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: 8e5337464fe784d40b77508c84520cc3, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 5030295270961169605}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

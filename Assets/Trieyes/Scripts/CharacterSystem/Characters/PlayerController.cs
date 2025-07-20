@@ -58,11 +58,11 @@ namespace CharacterSystem
             // 스킬 확인
             if (skillAction001.action.triggered)
             {
-                owner.ExecuteSkillAttack001(owner.skillAttack001);
+                owner.ExecuteAttack(PawnAttackType.Skill1);
             }
             if (skillAction002.action.triggered)
             {
-                owner.ExecuteSkillAttack002(owner.skillAttack002);
+                owner.ExecuteAttack(PawnAttackType.Skill2);
             }
         }
 
@@ -71,7 +71,7 @@ namespace CharacterSystem
             if (character is null)
             {
                 // 매개변수가 있는 버전을 호출하여 Character001_Hero의 오버라이딩된 메서드가 실행되도록 함
-                character.PerformAutoAttack(character.basicAttack);
+                character.PerformAutoAttack();
             }
         }
     }

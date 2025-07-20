@@ -44,7 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb2b45022a51af64e8bb30e6b7d4f5c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  randomEnchantmentID: 1
   enchantmentDuration: 7
+  attackDatas:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 338969d3ad819d84b96ef4f7dfa1052d, type: 2}
+  - {fileID: 11400000, guid: c0f5dcad990d6bc46b4024ad7579de80, type: 2}
+  - {fileID: 11400000, guid: a990c769f91a5c149a81621b27af53bd, type: 2}
+  - {fileID: 11400000, guid: 9b2eb2de4301e0548abd884fe5e31ad0, type: 2}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,11 +188,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: 3a51829e5249d0340a4b3b55a6c1f803, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 6256741257565850654}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

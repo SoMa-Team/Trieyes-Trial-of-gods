@@ -25,7 +25,7 @@ namespace AttackComponents
             base.Activate(attack, direction);
 
             // 1. R_Weapon 오브젝트 찾기
-            var pawnPrefab = attack.attacker.pawnPrefab;
+            var pawnPrefab = attack.attacker.PawnPrefab;
             weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
 
             if (weaponGameObject == null)
@@ -52,7 +52,7 @@ namespace AttackComponents
             attack.attackCollider = attackCollider;
 
             // 4. 애니메이션 트리거
-            attack.attacker.ChangeAnimationState("ATTACK");
+            // attack.attacker.ChangeAnimationState("ATTACK");
         }
 
         protected override void Update()

@@ -45,6 +45,8 @@ namespace AttackComponents
             Finished
         }
 
+        public AttackData followingFieldData;
+
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
@@ -151,7 +153,7 @@ namespace AttackComponents
             Debug.Log("<color=yellow>[AC009] AC104 소환하여 따라다니는 자기장 생성!</color>");
             
             // AC104 생성
-            summonedAC104 = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC105_FollowingField);
+            summonedAC104 = AttackFactory.Instance.Create(followingFieldData, attack.attacker, null, Vector2.zero);
             BattleStage.now.AttachAttack(summonedAC104);
             
             // AC104 설정 (하드코딩)

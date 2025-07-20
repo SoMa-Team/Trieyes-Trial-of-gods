@@ -96,6 +96,11 @@ namespace CharacterSystem
         /// </summary>
         protected GameObject pawnPrefab;
 
+        public GameObject PawnPrefab
+        {
+            get { return pawnPrefab; }
+        }
+
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
         /// 이 Pawn이 받을 이벤트들
@@ -618,7 +623,7 @@ namespace CharacterSystem
             }
         }
 
-        private void ApplyDamage(AttackResult result)
+        public void ApplyDamage(AttackResult result)
         {
             // 여러번 OnDeath 이벤트가 발생되지 않기 위한 예외문
             if (isDead) return;
@@ -684,35 +689,44 @@ namespace CharacterSystem
 
         public virtual void PerformAutoAttack()
         {
-            if (CheckTimeInterval())
-            {
-                // 공격 쿨다운 계산 (스탯 변경 시 대응)
-                CalculateAttackCooldown();
-
-                // 공격 수행
-                ExecuteAttack();
-
-                // 마지막 공격 시간 업데이트
-                lastAttackTime = Time.time;
-            }
+            // 공격 수행
+            var res = ExecuteAttack();
         }
 
         /// <summary>
         /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack에게 전달합니다.
         /// </summary>
-        protected virtual void ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
             switch (attackType)
             {
                 case PawnAttackType.BasicAttack:
-                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
-                    break;
+                    if (CheckTimeInterval())
+                    {
+                        return false;
+                    }
+                    CalculateAttackCooldown();
+                    lastAttackTime = Time.time;
+                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
+                    return true;
                 case PawnAttackType.Skill1:
+                    if (skillAttack001Cooldown <= lastSkillAttack001Time)
+                    {
+                        return false;
+                    }
+                    lastSkillAttack001Time = 0f;
                     AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
-                    break;
+                    return true;
                 case PawnAttackType.Skill2:
+                    if (skillAttack002Cooldown <= lastSkillAttack002Time)
+                    {
+                        return false;
+                    }
+                    lastSkillAttack002Time = 0f;
                     AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
-                    break;
+                    return true;
+                default:
+                    return false;
             }
         }
 

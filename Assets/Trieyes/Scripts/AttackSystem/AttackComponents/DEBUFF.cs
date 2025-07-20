@@ -62,7 +62,9 @@ namespace AttackComponents
         public Attack attack;
         public Pawn target;
 
-        private const int AC101_SINGLE_DOT = 11;
+        private const int AC101_SINGLE_DOT = 1;
+
+        public List<AttackData> attackDatas = new List<AttackData>();
 
         public void Activate(DebuffInfo debuffInfo)
         {
@@ -263,15 +265,15 @@ namespace AttackComponents
         private void ApplyBurnEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
             BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = target;
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = globalDamage;
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval;
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
+            dotComponent.dotTargets.Add(target as Enemy);
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }
@@ -279,15 +281,15 @@ namespace AttackComponents
         private void ApplyPoisonEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
             BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = target;
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = globalDamage;
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval; 
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
+            dotComponent.dotTargets.Add(target as Enemy);
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }
@@ -295,15 +297,15 @@ namespace AttackComponents
         private void ApplyBleedEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
             BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = target;
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = globalDamage;
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval;
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
+            dotComponent.dotTargets.Add(target as Enemy);
 
             burnAttack.Activate(attack.attacker, Vector2.zero);
         }

@@ -35,7 +35,7 @@ namespace AttackComponents
         public DEBUFFType additionalDebuffType;
         private float globalDamageTimer = 0f;
         private float damageTimer = 0f;
-        private List<Enemy> affectedEnemies = new List<Enemy>(10); // 재사용 가능한 리스트
+        public List<Enemy> affectedEnemies = new List<Enemy>(10); // 재사용 가능한 리스트
 
         // 공격 효과 상태 열거형
         private enum GlobalDamageState
@@ -166,9 +166,9 @@ namespace AttackComponents
             foreach (var enemy in allEnemies)
             {
                 // TO-DO: BattleStage Remove가 정상 동작하면은 Checking 지우기
-                if (enemy != null && enemy.transform != null && enemy.gameObject.activeInHierarchy)
+                if (enemy.Value is null && enemy.Value.transform != null && enemy.Value.gameObject.activeInHierarchy)
                 {
-                    affectedEnemies.Add(enemy as Enemy);
+                    affectedEnemies.Add(enemy.Value as Enemy);
                 }
             }
             
@@ -183,7 +183,7 @@ namespace AttackComponents
                 Enemy enemy = affectedEnemies[i];
                 
                 // 파괴된 객체 체크
-                if (enemy == null || enemy.transform == null || !enemy.gameObject.activeInHierarchy)
+                if (enemy is null || enemy.transform == null || !enemy.gameObject.activeInHierarchy)
                 {
                     affectedEnemies.RemoveAt(i);
                     continue;

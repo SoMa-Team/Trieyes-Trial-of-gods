@@ -57,7 +57,7 @@ namespace AttackComponents
             attackTimer = 0f;
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-            var pawnPrefab = attack.attacker.pawnPrefab;
+            var pawnPrefab = attack.attacker.PawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {

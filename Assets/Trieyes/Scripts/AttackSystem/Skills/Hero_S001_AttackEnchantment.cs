@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AttackSystem;
 using CharacterSystem;
 using UnityEngine;
@@ -25,11 +26,13 @@ namespace AttackComponents
         private bool isActive = false;
 
         // 강화 효과 ID 상수
-        private const int FIRE_ENCHANTMENT_ID = (int)AttackComponentID.AC003_HeroSwordEnchantmentFire;    // AC003_HeroSwordEnchantmentFire
-        private const int ICE_ENCHANTMENT_ID = (int)AttackComponentID.AC004_HeroSwordEnchantmentIce;     // AC004_HeroSwordEnchantmentIce
-        private const int LIGHTNING_ENCHANTMENT_ID = (int)AttackComponentID.AC005_HeroSwordEnchantmentLightning; // AC005_HeroSwordEnchantmentLightning
-        private const int LIGHT_ENCHANTMENT_ID = (int)AttackComponentID.AC006_HeroSwordEnchantmentHeaven;   // AC006_HeroSwordEnchantmentLight
+        private const int FIRE_ENCHANTMENT_ID = 1;    // AC003_HeroSwordEnchantmentFire
+        private const int ICE_ENCHANTMENT_ID = 2;     // AC004_HeroSwordEnchantmentIce
+        private const int LIGHTNING_ENCHANTMENT_ID = 3; // AC005_HeroSwordEnchantmentLightning
+        private const int LIGHT_ENCHANTMENT_ID = 4;   // AC006_HeroSwordEnchantmentLight
 
+        [SerializeField] public List<AttackData> attackDatas;
+        
         public override void Activate(Attack attack, Vector2 direction)
         {
             character = attack.attacker as Character001_Hero;
@@ -78,12 +81,7 @@ namespace AttackComponents
         private void TriggerRandomEnchantment()
         {
             // 강화 효과 Attack 생성
-            Attack enchantmentAttack = AttackFactory.Instance.ClonePrefab(randomEnchantmentID);
-            BattleStage.now.AttachAttack(enchantmentAttack);
-
-            enchantmentAttack.Activate(character, Vector2.zero);
-            character.ExecuteSkillAttack(enchantmentAttack.attackData);
-
+            AttackFactory.Instance.Create(attackDatas[randomEnchantmentID], attack.attacker, null, attack.attacker.LastMoveDirection);
             Debug.Log($"<color=yellow>[ENCHANTMENT] Random enchantment generated: ID {randomEnchantmentID}</color>");
         }
 

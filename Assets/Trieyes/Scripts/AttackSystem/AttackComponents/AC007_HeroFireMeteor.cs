@@ -15,6 +15,8 @@ namespace AttackComponents
     /// </summary>
     public class AC007_HeroFireMeteor : AttackComponent
     {
+        public AttackData fallAttackData;
+
         /// <summary>
         /// 파이어 메테오 공격 활성화
         /// AC103_FALL 소환하고 바로 종료
@@ -26,9 +28,9 @@ namespace AttackComponents
             base.Activate(attack, direction);
 
             // AC103_FALL 소환
-            var fallAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC103_FALL);
+            var fallAttack = AttackFactory.Instance.Create(fallAttackData, attack.attacker, null, Vector2.zero);
             BattleStage.now.AttachAttack(fallAttack);
-            fallAttack.target = attack.target;
+
             var fallComponent = fallAttack.components[0] as AC103_FALL;
             
             fallComponent.fallXYOffset = Vector2.zero;

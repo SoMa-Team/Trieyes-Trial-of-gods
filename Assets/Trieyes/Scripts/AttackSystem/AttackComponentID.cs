@@ -24,13 +24,13 @@ namespace AttackSystem
         AC009_LightningField = 9,
         
         // AOE 및 DOT 컴포넌트
-        AC100_AOE = 10,
-        AC101_DOT = 11,
+        AC100_AOE = 100,
+        AC101_DOT = 101,
         
         // 특수 공격 컴포넌트
-        AC102_CHAIN = 12,
-        AC103_FALL = 13,
-        AC104_GLOBAL = 14,
-        AC105_FollowingField = 15,
+        AC102_CHAIN = 102,
+        AC103_FALL = 103,
+        AC104_GLOBAL = 104,
+        AC105_FollowingField = 105,
     }
 } 

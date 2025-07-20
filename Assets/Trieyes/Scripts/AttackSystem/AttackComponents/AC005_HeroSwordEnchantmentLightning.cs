@@ -35,6 +35,8 @@ namespace AttackComponents
         private float attackTimer = 0f;
         private Vector2 attackDirection;
 
+        public AttackData chainAttackData;
+
         // 번개 공격 상태 열거형
         private enum LightningAttackState
         {
@@ -67,7 +69,7 @@ namespace AttackComponents
             attackTimer = 0f;
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-            var pawnPrefab = attack.attacker.pawnPrefab;
+            var pawnPrefab = attack.attacker.PawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
@@ -95,9 +97,8 @@ namespace AttackComponents
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
             // AC102_CHAIN Attack 생성
-            Attack lightningChainAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC102_CHAIN);
+            Attack lightningChainAttack = AttackFactory.Instance.Create(chainAttackData, attack.attacker, null, Vector2.zero);
             BattleStage.now.AttachAttack(lightningChainAttack);
-            lightningChainAttack.target = targetPawn;
             
             // AC102_CHAIN 컴포넌트 설정
             var lightningChainComponent = lightningChainAttack.components[0] as AC102_CHAIN;
@@ -107,6 +108,7 @@ namespace AttackComponents
                 lightningChainComponent.chainRadius = chainRadius;
                 lightningChainComponent.chainCount = chainCount;
                 lightningChainComponent.chainDelay = chainDelay;
+                lightningChainComponent.chainRadius = chainRadius;
             }
             
             lightningChainAttack.Activate(attack.attacker, direction);

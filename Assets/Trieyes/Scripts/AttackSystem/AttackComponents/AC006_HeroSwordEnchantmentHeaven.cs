@@ -38,7 +38,7 @@ namespace AttackComponents
         public float dotDuration = 1f;
         public float dotInterval = 1f;
 
-
+        public AttackData aoeAttackData;
 
         // 천상 공격 상태 열거형
         private enum HeavenAttackState
@@ -66,7 +66,7 @@ namespace AttackComponents
         private void StartHeavenAttack()
         {
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-            var pawnPrefab = attack.attacker.pawnPrefab;
+            var pawnPrefab = attack.attacker.PawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
@@ -107,7 +107,7 @@ namespace AttackComponents
         /// <param name="targetPawn">타겟 적</param>
         private void SpawnAC100Attack(Pawn targetPawn)
         {
-            var aoeAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC100_AOE);
+            var aoeAttack = AttackFactory.Instance.Create(aoeAttackData, attack.attacker, null, Vector2.zero);
             if (aoeAttack != null)
             {
                 BattleStage.now.AttachAttack(aoeAttack);

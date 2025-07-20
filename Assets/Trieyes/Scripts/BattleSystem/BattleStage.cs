@@ -120,15 +120,15 @@ namespace BattleSystem
             foreach (var enemy in enemies)
             {
                 // 파괴된 객체 체크
-                if (enemy == null || enemy.transform == null)
+                if (enemy.Value is null || enemy.Value.transform == null)
                 {
                     continue;
                 }
                 
-                if (enemy.transform.position.x > start.x && enemy.transform.position.x < end.x &&
-                    enemy.transform.position.y > start.y && enemy.transform.position.y < end.y)
+                if (enemy.Value.transform.position.x > start.x && enemy.Value.transform.position.x < end.x &&
+                    enemy.Value.transform.position.y > start.y && enemy.Value.transform.position.y < end.y)
                 {
-                    enemiesInRange.Add(enemy as Enemy);
+                    enemiesInRange.Add(enemy.Value as Enemy);
                 }
             }
             return enemiesInRange;
@@ -140,15 +140,15 @@ namespace BattleSystem
             foreach (var enemy in enemies)
             {
                 // 파괴된 객체 체크
-                if (enemy == null || enemy.transform == null)
+                if (enemy.Value is null || enemy.Value.transform == null)
                 {
                     continue;
                 }
                 
-                if (enemy.transform.position.x > start.x && enemy.transform.position.x < end.x &&
-                    enemy.transform.position.y > start.y && enemy.transform.position.y < end.y)
+                if (enemy.Value.transform.position.x > start.x && enemy.Value.transform.position.x < end.x &&
+                    enemy.Value.transform.position.y > start.y && enemy.Value.transform.position.y < end.y)
                 {
-                    enemiesInRange.Add(enemy as Enemy);
+                    enemiesInRange.Add(enemy.Value as Enemy);
                 }
             }
             enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, start).CompareTo(Vector2.Distance(b.transform.position, start)));
@@ -161,14 +161,14 @@ namespace BattleSystem
             foreach (var enemy in enemies)
             {
                 // 파괴된 객체 체크
-                if (enemy == null || enemy.transform == null)
+                if (enemy.Value is null || enemy.Value.transform == null)
                 {
                     continue;
                 }
                 
-                if (Vector2.Distance(enemy.transform.position, start) < radius)
+                if (Vector2.Distance(enemy.Value.transform.position, start) < radius)
                 {
-                    enemiesInRange.Add(enemy as Enemy);
+                    enemiesInRange.Add(enemy.Value as Enemy);
                 }
             }
             return enemiesInRange;
@@ -180,14 +180,14 @@ namespace BattleSystem
             foreach (var enemy in enemies)
             {
                 // 파괴된 객체 체크
-                if (enemy == null || enemy.transform == null)
+                if (enemy.Value is null || enemy.Value.transform == null)
                 {
                     continue;
                 }
                 
-                if (Vector2.Distance(enemy.transform.position, start) < radius)
+                if (Vector2.Distance(enemy.Value.transform.position, start) < radius)
                 {
-                    enemiesInRange.Add(enemy as Enemy);
+                    enemiesInRange.Add(enemy.Value as Enemy);
                 }
             }
             enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, start).CompareTo(Vector2.Distance(b.transform.position, start)));

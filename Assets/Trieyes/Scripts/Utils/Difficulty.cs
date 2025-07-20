@@ -8,6 +8,7 @@ namespace Utils
         public int spawnFrequency => 1;
         public float enemyStatMultiplier = 1.0f;
         public float battleLength => 120; // 초단위
+        public int EnemyID = 0;
         public int shopLevel = 1;
 
         public float SpawnInterval => 1f / spawnFrequency;

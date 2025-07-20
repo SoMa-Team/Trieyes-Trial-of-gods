@@ -35,7 +35,7 @@ namespace AttackComponents
         // 낙하 공격 상태 관리
         private FallAttackState fallState = FallAttackState.None;
         private float fallTimer = 0f;
-        public List<Enemy> hitTargets = new List<Enemy>(); // 재사용 가능한 리스트
+        private List<Enemy> hitTargets = new List<Enemy>(); // 재사용 가능한 리스트
 
         // 낙하 공격 상태 열거형
         private enum FallAttackState

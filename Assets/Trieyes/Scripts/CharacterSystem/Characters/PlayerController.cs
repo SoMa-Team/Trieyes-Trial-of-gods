@@ -53,7 +53,10 @@ namespace CharacterSystem
             Vector2 moveDir = new Vector2(joystick.Horizontal, joystick.Vertical);
             this.moveDir = moveDir.normalized;
             
-            owner.Move(moveDir);
+            if (moveDir.magnitude > 0.1f)
+            {
+                owner.Move(moveDir);
+            }
 
             // 스킬 확인
             if (skillAction001.action.triggered)

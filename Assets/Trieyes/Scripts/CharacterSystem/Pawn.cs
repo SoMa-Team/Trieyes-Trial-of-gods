@@ -117,7 +117,13 @@ namespace CharacterSystem
         {
             rb = GetComponent<Rigidbody2D>();
             Collider = GetComponent<Collider2D>();
+            Collider.enabled = true; // Instantiate에서 Awake가 호출되어 Collider가 설정되는데, 이것이 먼저 호출되는 문제
+
             Controller = GetComponent<Controller>();
+            Controller.Activate(this);
+            
+            pawnPrefab = transform.GetChild(0).gameObject;
+            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
 
             if (rb != null)
             {
@@ -149,17 +155,6 @@ namespace CharacterSystem
             isDead = false;
             currentHp = maxHp;
             
-            Collider.enabled = true;
-            
-            // 컴포넌트 초기화
-            pawnPrefab = transform.GetChild(0).gameObject;
-
-            pawnPrefab.transform.SetParent(transform);
-            pawnPrefab.transform.localPosition = Vector3.zero;
-            pawnPrefab.transform.localRotation = Quaternion.identity;
-
-            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
-            
             // 스탯 시트 초기화
             statSheet = new StatSheet();
             
@@ -184,8 +179,6 @@ namespace CharacterSystem
             initBaseStat();
             
             gameObject.SetActive(true);
-            
-            Controller.Activate(this);
             
             // relic에 따른 Attack 적용
             if (relics.Count > 0)

@@ -190,7 +190,7 @@ namespace AttackComponents
 
         private void ExecuteSingleTargetAttack()
         {
-            if (dotTargets == null) return;
+            if (dotTargets.Count == 0) return;
 
             // 단일 대상에게 데미지 적용
             var attackResult = AttackResult.Create(attack, dotTargets[0]);

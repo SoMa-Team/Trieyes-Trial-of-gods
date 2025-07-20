@@ -680,6 +680,24 @@ namespace CharacterSystem
             return Time.time - lastAttackTime >= attackCooldown ? true : false;
         }
 
+        /// <summary>
+        /// 스킬 쿨타임을 계산합니다.
+        /// </summary>
+        /// <param name="skillType">스킬 타입</param>
+        /// <returns>쿨타임이 지났으면 true, 아니면 false</returns>
+        public bool CheckSkillCooldown(PawnAttackType skillType)
+        {
+            switch (skillType)
+            {
+                case PawnAttackType.Skill1:
+                    return Time.time - lastSkillAttack001Time >= skillAttack001Cooldown;
+                case PawnAttackType.Skill2:
+                    return Time.time - lastSkillAttack002Time >= skillAttack002Cooldown;
+                default:
+                    return false;
+            }
+        }
+
         public virtual void PerformAutoAttack()
         {
             // 공격 수행
@@ -704,23 +722,29 @@ namespace CharacterSystem
                     }
                     return false;
                 case PawnAttackType.Skill1:
-                    if (skillAttack001Cooldown <= lastSkillAttack001Time)
+                    if (CheckSkillCooldown(PawnAttackType.Skill1))
                     {
-                        return false;
+                        lastSkillAttack001Time = 0f;
+                        ChangeAnimationState("ATTACK");
+                        Attack temp = AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
+                        Debug.Log($"<color=yellow>[SKILL1] {temp.gameObject.name} skill1Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
+                        return true;
                     }
-                    lastSkillAttack001Time = 0f;
-                    ChangeAnimationState("ATTACK");
-                    AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
-                    return true;
+                    Debug.Log($"<color=yellow>[SKILL1] {gameObject.name} skillAttack001Cooldown: {skillAttack001Cooldown}, lastSkillAttack001Time: {lastSkillAttack001Time}</color>");
+                    return false;
+
                 case PawnAttackType.Skill2:
-                    if (skillAttack002Cooldown <= lastSkillAttack002Time)
+                    if (CheckSkillCooldown(PawnAttackType.Skill2))
                     {
-                        return false;
+                        lastSkillAttack002Time = 0f;
+                        ChangeAnimationState("ATTACK");
+                        Attack temp = AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
+                        Debug.Log($"<color=yellow>[SKILL2] {temp.gameObject.name} skill2Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
+                        return true;
                     }
-                    lastSkillAttack002Time = 0f;
-                    ChangeAnimationState("ATTACK");
-                    AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
-                    return true;
+                    Debug.Log($"<color=yellow>[SKILL2] {gameObject.name} skillAttack002Cooldown: {skillAttack002Cooldown}, lastSkillAttack002Time: {lastSkillAttack002Time}</color>");
+                    return false;
+                    
                 default:
                     return false;
             }

@@ -172,6 +172,14 @@ namespace AttackComponents
             {
                 ExecuteAC101Attack();
                 dotTimer = 0f;
+                
+                // interval과 duration이 같을 때 1번 발동 후 바로 종료
+                if (dotInterval >= dotDuration)
+                {
+                    attackState = DOTAttackState.Finishing;
+                    dotTimer = 0f;
+                    FinishAC101Attack();
+                }
             }
         }
 

@@ -124,6 +124,14 @@ namespace AttackComponents
                     {
                         ApplyFieldDamage();
                         damageTimer = 0f;
+                        
+                        // interval과 duration이 같을 때 1번 발동 후 바로 종료
+                        if (fieldTickInterval >= fieldDuration)
+                        {
+                            fieldState = FollowingFieldState.Ending;
+                            fieldTimer = 0f;
+                            DeactivateField();
+                        }
                     }
                     
                     // 지속시간 체크

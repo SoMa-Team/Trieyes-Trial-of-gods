@@ -16,14 +16,24 @@ namespace AttackComponents
         [Header("강화 설정")]
         public int randomEnchantmentID = 1;
         public float enchantmentDuration = 7f; // 강화 지속 시간
+        public float generationInterval = 1f; // 강화 효과 생성 간격
 
         private Character001_Hero character;
         private float lastEnchantmentTime = 0f;
-        private float generationInterval = 1f;
 
-        // 강화 효과 상태 관리
+        // FSM 상태 관리
+        private EnchantmentState enchantmentState = EnchantmentState.None;
         private float enchantmentTimer = 0f;
-        private bool isActive = false;
+
+        // 강화 효과 상태 열거형
+        private enum EnchantmentState
+        {
+            None,
+            Preparing,
+            Active,
+            Finishing,
+            Finished
+        }
 
         // 강화 효과 ID 상수
         private const int FIRE_ENCHANTMENT_ID = 1;    // AC003_HeroSwordEnchantmentFire
@@ -35,54 +45,125 @@ namespace AttackComponents
         
         public override void Activate(Attack attack, Vector2 direction)
         {
+            base.Activate(attack, direction);
+            
             character = attack.attacker as Character001_Hero;
+            
+            // 초기 상태 설정
+            enchantmentState = EnchantmentState.Preparing;
             enchantmentTimer = 0f;
-            isActive = true;
-            character.lockBasicAttack = true;
+            lastEnchantmentTime = 0f;
+            
+            // 강화 효과 시작
+            StartEnchantmentEffect();
+        }
 
+        private void StartEnchantmentEffect()
+        {
+            enchantmentState = EnchantmentState.Preparing;
+            enchantmentTimer = 0f;
+            lastEnchantmentTime = 0f;
+            
             // 랜덤 강화 효과 선택
             randomEnchantmentID = GetRandomEnchantmentID();
             SetHeroWeaponElementState(randomEnchantmentID);
+            
+            character.lockBasicAttack = true;
+            
+            Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 시작!</color>");
         }
 
         protected override void Update()
         {
             base.Update();
+            
+            // 강화 효과 상태 처리
+            ProcessEnchantmentState();
+        }
 
-            if (!isActive) return;
-
-            // 강화 효과 타이머 업데이트
-            enchantmentTimer += Time.deltaTime;
-
-            // 1초에 1번 강화 효과 생성
-            if (Time.time - lastEnchantmentTime >= generationInterval)
+        private void ProcessEnchantmentState()
+        {
+            switch (enchantmentState)
             {
-                TriggerRandomEnchantment();
-                lastEnchantmentTime = Time.time;
-            }
+                case EnchantmentState.None:
+                    break;
 
-            // 강화 지속 시간 체크 & 공격 속도에 따른 공격 속도 조절
-            if (enchantmentTimer >= enchantmentDuration)
-            {
-                // 강화 효과 종료
-                isActive = false;
-                AttackFactory.Instance.Deactivate(attack);
+                case EnchantmentState.Preparing:
+                    enchantmentTimer += Time.deltaTime;
+                    
+                    if (enchantmentTimer >= 0.1f) // 준비 시간
+                    {
+                        enchantmentState = EnchantmentState.Active;
+                        enchantmentTimer = 0f;
+                        ActivateEnchantment();
+                    }
+                    break;
+
+                case EnchantmentState.Active:
+                    enchantmentTimer += Time.deltaTime;
+                    
+                    // 1초에 1번 강화 효과 생성
+                    if (Time.time - lastEnchantmentTime >= generationInterval)
+                    {
+                        TriggerRandomEnchantment();
+                        lastEnchantmentTime = Time.time;
+                    }
+                    
+                    if (enchantmentTimer >= enchantmentDuration)
+                    {
+                        enchantmentState = EnchantmentState.Finishing;
+                        enchantmentTimer = 0f;
+                        FinishEnchantment();
+                    }
+                    break;
+
+                case EnchantmentState.Finishing:
+                    enchantmentTimer += Time.deltaTime;
+                    
+                    if (enchantmentTimer >= 0.1f) // 종료 시간
+                    {
+                        enchantmentState = EnchantmentState.Finished;
+                    }
+                    break;
+
+                case EnchantmentState.Finished:
+                    enchantmentState = EnchantmentState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
             }
+        }
+
+        private void ActivateEnchantment()
+        {
+            Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 활성화!</color>");
+        }
+
+        private void FinishEnchantment()
+        {
+            character.weaponElementState = HeroWeaponElementState.None;
+            character.lockBasicAttack = false;
+            
+            Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 종료!</color>");
         }
 
         public override void Deactivate()
         {
+            base.Deactivate();
+            
             character.weaponElementState = HeroWeaponElementState.None;
             character.lockBasicAttack = false;
-            base.Deactivate();
-            AttackFactory.Instance.Deactivate(attack);
+            
+            enchantmentState = EnchantmentState.None;
+            enchantmentTimer = 0f;
+            lastEnchantmentTime = 0f;
         }
 
         private void TriggerRandomEnchantment()
         {
             // 강화 효과 Attack 생성
-            AttackFactory.Instance.Create(attackDatas[randomEnchantmentID], attack.attacker, null, attack.attacker.LastMoveDirection);
-            Debug.Log($"<color=yellow>[ENCHANTMENT] Random enchantment generated: ID {randomEnchantmentID}</color>");
+            AttackFactory.Instance.Create(attackDatas[randomEnchantmentID], character, null, character.LastMoveDirection);
+            Debug.Log($"<color=yellow>[S001] Random enchantment generated: ID {randomEnchantmentID}</color>");
+            Debug.Log($"<color=yellow>[S001] {attack.gameObject.name} attackDatas: {attackDatas[randomEnchantmentID].attackId}, attacker: {character.gameObject.name}</color>");
         }
 
         private int GetRandomEnchantmentID()
@@ -90,7 +171,7 @@ namespace AttackComponents
             // 1-5 사이의 랜덤 숫자 생성
             // TO-DO : 유물 들어왔을 때 값이 최대를 4에서 5로 늘리는 로직 구현해야 함
             int randomValue = Random.Range(1, 5);
-                        
+
             switch (randomValue)
             {
                 case 1:

@@ -78,7 +78,12 @@ namespace AttackComponents
             attack.transform.position = weaponGameObject.transform.position;
             attack.transform.rotation = weaponGameObject.transform.rotation;
 
-            attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
+            // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
+            if (attack.attackCollider == null)
+            {
+                attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
+            }
+            
             var collider = attack.attackCollider as PolygonCollider2D;
 
             // 부채꼴 모양의 콜라이더 포인트 생성
@@ -223,6 +228,49 @@ namespace AttackComponents
             }
         }
 
+        private void ActivateHeavenAttack()
+        {
+            // 콜라이더 활성화 및 방향 업데이트
+            if (attack.attackCollider != null)
+            {
+                attack.attackCollider.enabled = true;
+                
+                // 플레이어의 현재 방향으로 콜라이더 포인트 재계산
+                var collider = attack.attackCollider as PolygonCollider2D;
+                if (collider != null)
+                {
+                    // 현재 플레이어의 이동 방향 가져오기
+                    Vector2 currentDirection = attack.attacker.LastMoveDirection;
+                    if (currentDirection.magnitude < 0.1f)
+                    {
+                        // 이동하지 않을 때는 이전 방향 유지
+                        currentDirection = attackDirection;
+                    }
+                    else
+                    {
+                        attackDirection = currentDirection.normalized;
+                    }
+                    
+                    // 새로운 방향으로 콜라이더 포인트 재계산
+                    Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
+                    collider.points = points;
+                }
+            }
+            
+            //debug.log("<color=green>[AC006] 천상 강화 공격 활성화!</color>");
+        }
+
+        private void FinishHeavenAttack()
+        {
+            // 콜라이더 비활성화 (삭제하지 않고)
+            if (attack.attackCollider != null)
+            {
+                attack.attackCollider.enabled = false;
+            }
+            
+            //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
+        }
+
         private void ProcessHeavenAttackState()
         {
             switch (attackState)
@@ -239,6 +287,7 @@ namespace AttackComponents
                     {
                         attackState = HeavenAttackState.Active;
                         attackTimer = 0f;
+                        ActivateHeavenAttack();
                     }
                     break;
 
@@ -264,6 +313,7 @@ namespace AttackComponents
                     if (attackTimer >= 0.1f) // 종료 시간
                     {
                         attackState = HeavenAttackState.Finished;
+                        FinishHeavenAttack();
                     }
                     break;
 

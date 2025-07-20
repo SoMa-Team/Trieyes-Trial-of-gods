@@ -168,6 +168,14 @@ namespace AttackComponents
             {
                 ExecuteAC100Attack();
                 aoeTimer = 0f;
+                
+                // interval과 duration이 같을 때 1번 발동 후 바로 종료
+                if (aoeInterval >= aoeDuration)
+                {
+                    attackState = AOEAttackState.Finishing;
+                    aoeTimer = 0f;
+                    FinishAC100Attack();
+                }
             }
         }
         

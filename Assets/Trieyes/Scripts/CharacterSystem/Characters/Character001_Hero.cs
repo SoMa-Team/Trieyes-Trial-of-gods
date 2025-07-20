@@ -57,6 +57,37 @@ namespace CharacterSystem
             base.Deactivate();
         }
 
+        // ===== [공격 처리 메서드] =====
+        /// <summary>
+        /// 공격을 실행합니다. lockBasicAttack이 true면 기본 공격을 차단합니다.
+        /// </summary>
+        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        {
+            // lockBasicAttack이 true면 기본 공격 차단
+            if (lockBasicAttack && attackType == PawnAttackType.BasicAttack)
+            {
+                //Debug.Log("<color=red>[HERO] Basic attack blocked by lockBasicAttack!</color>");
+                return false;
+            }
+            
+            return base.ExecuteAttack(attackType);
+        }
+
+        /// <summary>
+        /// 자동 공격을 수행합니다. lockBasicAttack이 true면 자동 공격을 차단합니다.
+        /// </summary>
+        public override void PerformAutoAttack()
+        {
+            // lockBasicAttack이 true면 자동 공격 차단
+            if (lockBasicAttack)
+            {
+                //Debug.Log("<color=red>[HERO] Auto attack blocked by lockBasicAttack!</color>");
+                return;
+            }
+            
+            base.PerformAutoAttack();
+        }
+
         // ===== [이벤트 처리 메서드] =====
         /// <summary>
         /// 이벤트를 처리합니다.

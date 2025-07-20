@@ -225,6 +225,7 @@ namespace AttackComponents
             }
             
             AttackResult result = new AttackResult();
+            result.attack = attack;
             result.attacker = attack.attacker;
             result.totalDamage = chainDamage;
             targetEnemy.ApplyDamage(result);

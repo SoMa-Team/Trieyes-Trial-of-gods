@@ -166,7 +166,7 @@ namespace AttackComponents
             foreach (var enemy in allEnemies)
             {
                 // TO-DO: BattleStage Remove가 정상 동작하면은 Checking 지우기
-                if (enemy.Value is null && enemy.Value.transform != null && enemy.Value.gameObject.activeInHierarchy)
+                if (enemy.Value is not null && enemy.Value.transform != null && enemy.Value.gameObject.activeInHierarchy)
                 {
                     affectedEnemies.Add(enemy.Value as Enemy);
                 }

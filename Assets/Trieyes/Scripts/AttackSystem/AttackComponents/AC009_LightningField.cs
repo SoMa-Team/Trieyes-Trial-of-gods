@@ -154,7 +154,6 @@ namespace AttackComponents
             
             // AC104 생성
             summonedAC104 = AttackFactory.Instance.Create(followingFieldData, attack.attacker, null, Vector2.zero);
-            BattleStage.now.AttachAttack(summonedAC104);
             
             // AC104 설정 (하드코딩)
             var ac104Component = summonedAC104.components[0] as AC105_FollowingField;
@@ -168,9 +167,6 @@ namespace AttackComponents
                 ac104Component.followDistance = 0f;
                 ac104Component.followOffset = Vector2.zero;
             }
-            
-            // AC104 활성화
-            summonedAC104.Activate(attack.attacker, Vector2.zero);
             
             Debug.Log("<color=green>[AC009] AC104 따라다니는 자기장 활성화 완료!</color>");
         }

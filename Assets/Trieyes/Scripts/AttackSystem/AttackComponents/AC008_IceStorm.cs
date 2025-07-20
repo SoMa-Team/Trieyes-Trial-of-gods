@@ -108,7 +108,6 @@ namespace AttackComponents
             
             // AttackComponentFactory를 통해 AC105_GLOBAL 컴포넌트 생성
             var globalBlizzardAttack = AttackFactory.Instance.Create(globalBlizzardData, attack.attacker, null, Vector2.zero);
-            BattleStage.now.AttachAttack(globalBlizzardAttack);
 
             var globalBlizzardComponent = globalBlizzardAttack.components[0] as AC104_GLOBAL;
             globalBlizzardComponent.globalDamage = attack.statSheet[StatType.AttackPower];

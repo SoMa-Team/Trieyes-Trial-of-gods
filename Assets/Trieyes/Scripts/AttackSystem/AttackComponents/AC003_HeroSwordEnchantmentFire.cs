@@ -97,7 +97,6 @@ namespace AttackComponents
         {
             // 단일 대상에게 도트 데미지를 주는 DOT 소환
             var dotAttack = AttackFactory.Instance.Create(dotAttackData, attack.attacker, null, Vector2.zero);
-            BattleStage.now.AttachAttack(dotAttack);
 
             var dotComponent = dotAttack.components[0] as AC101_DOT;
             if (dotComponent != null)
@@ -108,8 +107,6 @@ namespace AttackComponents
                 dotComponent.dotInterval = dotInterval;
                 dotComponent.dotTargets.Add(targetPawn as Enemy);
             }
-
-            dotAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         /// <summary>

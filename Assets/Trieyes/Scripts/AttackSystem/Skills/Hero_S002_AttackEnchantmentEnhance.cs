@@ -230,28 +230,11 @@ namespace AttackComponents
         private void ActivateFireMeteor()
         {
             Attack fireMeteor = AttackFactory.Instance.Create(attackDatas[FIRE_METEOR_ID], character, null, Vector2.zero);
-            if (fireMeteor != null)
-            {
-                BattleStage.now.AttachAttack(fireMeteor);
-                fireMeteor.Activate(character, Vector2.zero);
-
-                Debug.Log("<color=red>[S002] Fire Meteor 발동!</color>");
-            }
         }
 
         private void ActivateIceStorm()
         {
             Attack iceStorm = AttackFactory.Instance.Create(attackDatas[ICE_STORM_ID], character, null, Vector2.zero);
-            if (iceStorm != null)
-            {
-                BattleStage.now.AttachAttack(iceStorm);
-                var iceStormComponent = iceStorm.components[0] as AC008_IceStorm;
-                iceStormComponent.summonDelay = 0.5f;
-                iceStormComponent.vfxDuration = 0.3f;
-
-                iceStorm.Activate(character, Vector2.zero);
-                Debug.Log("<color=cyan>[S002] Ice Storm 발동!</color>");
-            }
         }
 
         private void ActivateLightningField()
@@ -259,13 +242,10 @@ namespace AttackComponents
             Attack lightningField = AttackFactory.Instance.Create(attackDatas[LIGHTNING_FIELD_ID], character, null, Vector2.zero);
             if (lightningField != null)
             {
-                BattleStage.now.AttachAttack(lightningField);
                 var lightningFieldComponent = lightningField.components[0] as AC009_LightningField;
                 lightningFieldComponent.lightningFieldRadius = 2.5f;
                 lightningFieldComponent.lightningFieldDuration = 3f;
                 lightningFieldComponent.lightningFieldDelay = 0.5f;
-
-                lightningField.Activate(character, Vector2.zero);
                 Debug.Log("<color=yellow>[S002] Lightning Field 발동!</color>");
             }
         }

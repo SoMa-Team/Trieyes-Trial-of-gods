@@ -265,6 +265,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: aa5f6b6debcd849e4923f9f2a46d9e56, type: 2}
   attacker: {fileID: 0}
+  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
@@ -299,11 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38644452b0c0466c9a51a80f7d9dd85a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackPrefab:
-  - {fileID: 1818862587}
-  - {fileID: 2005957352}
-  - {fileID: 233105795}
-  - {fileID: 1920537699}
+  attackPrefab: []
 --- !u!4 &233886913
 Transform:
   m_ObjectHideFlags: 0
@@ -353,10 +350,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  moveSpeed: 1
+  moveSpeed: 5
   statPresetSO: {fileID: 11400000, guid: a981b9091b7409841b8945448d86cf03, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 0}
+  skillAttack001: {fileID: 0}
+  skillAttack001Cooldown: 0
+  lastSkillAttack001Time: -999
+  skillAttack002: {fileID: 0}
+  skillAttack002Cooldown: 0
+  lastSkillAttack002Time: -999
   dropGold: 10
 --- !u!4 &311065438
 Transform:
@@ -1077,17 +1080,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3133727569222647774, guid: 5bdf489b2428d433abc5a1e49c21d9fd, type: 3}
   m_PrefabInstance: {fileID: 2186767272843884504}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1818862587 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 680132841833372689, guid: 5bdf489b2428d433abc5a1e49c21d9fd, type: 3}
-  m_PrefabInstance: {fileID: 2186767272843884504}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1885934207
 GameObject:
   m_ObjectHideFlags: 0
@@ -1295,6 +1287,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: aa5f6b6debcd849e4923f9f2a46d9e56, type: 2}
   attacker: {fileID: 0}
+  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
@@ -1450,6 +1443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: aa5f6b6debcd849e4923f9f2a46d9e56, type: 2}
   attacker: {fileID: 0}
+  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
@@ -1641,7 +1635,7 @@ SceneRoots:
   - {fileID: 2014576117}
   - {fileID: 1915942685}
   - {fileID: 1684008975}
+  - {fileID: 1152405888}
   - {fileID: 233886913}
   - {fileID: 1580425200}
   - {fileID: 2001122369}
-  - {fileID: 1152405888}

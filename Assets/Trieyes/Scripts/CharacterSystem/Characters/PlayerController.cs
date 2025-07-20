@@ -52,11 +52,8 @@ namespace CharacterSystem
             // 조이스틱 입력값으로 이동
             Vector2 moveDir = new Vector2(joystick.Horizontal, joystick.Vertical);
             this.moveDir = moveDir.normalized;
-            
-            if (moveDir.magnitude > 0.1f)
-            {
-                owner.Move(moveDir);
-            }
+
+            owner.Move(moveDir);
 
             // 스킬 확인
             if (skillAction001.action.triggered)
@@ -71,9 +68,8 @@ namespace CharacterSystem
 
         private void Update()
         {
-            if (character is null)
+            if (character is not null)
             {
-                // 매개변수가 있는 버전을 호출하여 Character001_Hero의 오버라이딩된 메서드가 실행되도록 함
                 character.PerformAutoAttack();
             }
         }

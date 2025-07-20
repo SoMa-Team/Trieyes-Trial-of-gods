@@ -98,7 +98,6 @@ namespace AttackComponents
         {
             // AC102_CHAIN Attack 생성
             Attack lightningChainAttack = AttackFactory.Instance.Create(chainAttackData, attack.attacker, null, Vector2.zero);
-            BattleStage.now.AttachAttack(lightningChainAttack);
             
             // AC102_CHAIN 컴포넌트 설정
             var lightningChainComponent = lightningChainAttack.components[0] as AC102_CHAIN;
@@ -109,13 +108,10 @@ namespace AttackComponents
                 lightningChainComponent.chainCount = chainCount;
                 lightningChainComponent.chainDelay = chainDelay;
                 lightningChainComponent.chainRadius = chainRadius;
+                
+                // 번개 연쇄 시작
+                lightningChainComponent.StartLightningChain(targetPawn.transform.position);
             }
-            
-            lightningChainAttack.Activate(attack.attacker, direction);
-            
-            // 번개 연쇄 시작
-            // TO-DO: 한 타겟이 번개 1번 맞고 죽었는데, 다른 번개 맞아야 할 때 에러 발생하는 것 처리
-            lightningChainComponent.StartLightningChain(targetPawn.transform.position);
         }
 
         /// <summary>

@@ -696,18 +696,20 @@ namespace CharacterSystem
                 case PawnAttackType.BasicAttack:
                     if (CheckTimeInterval())
                     {
-                        return false;
+                        CalculateAttackCooldown();
+                        lastAttackTime = Time.time;
+                        ChangeAnimationState("ATTACK");
+                        AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
+                        return true;
                     }
-                    CalculateAttackCooldown();
-                    lastAttackTime = Time.time;
-                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
-                    return true;
+                    return false;
                 case PawnAttackType.Skill1:
                     if (skillAttack001Cooldown <= lastSkillAttack001Time)
                     {
                         return false;
                     }
                     lastSkillAttack001Time = 0f;
+                    ChangeAnimationState("ATTACK");
                     AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
                     return true;
                 case PawnAttackType.Skill2:
@@ -716,6 +718,7 @@ namespace CharacterSystem
                         return false;
                     }
                     lastSkillAttack002Time = 0f;
+                    ChangeAnimationState("ATTACK");
                     AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
                     return true;
                 default:

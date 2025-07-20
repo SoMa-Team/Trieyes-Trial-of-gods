@@ -74,9 +74,9 @@ namespace AttackComponents
                 return;
             }
 
-            attack.transform.SetParent(weaponGameObject.transform);
-            attack.transform.localPosition = Vector3.zero;
-            attack.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            // 부모 설정을 하지 않고 위치만 동기화 (성능 최적화)
+            attack.transform.position = weaponGameObject.transform.position;
+            attack.transform.rotation = weaponGameObject.transform.rotation;
 
             attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
             var collider = attack.attackCollider as PolygonCollider2D;
@@ -110,8 +110,6 @@ namespace AttackComponents
             var aoeAttack = AttackFactory.Instance.Create(aoeAttackData, attack.attacker, null, Vector2.zero);
             if (aoeAttack != null)
             {
-                BattleStage.now.AttachAttack(aoeAttack);
-
                 var aoeComponent = aoeAttack.components[0] as AC100_AOE;
                 aoeComponent.aoeTargetType = dotCollisionType;
                 aoeComponent.aoeShapeType = dotShapeType;
@@ -122,8 +120,6 @@ namespace AttackComponents
 
                 // AOE 위치 설정 (타겟 위치)
                 aoeComponent.SetAOEPosition((Vector2)targetPawn.transform.position);
-
-                aoeAttack.Activate(attack.attacker, Vector2.zero);
                 
                 Debug.Log("<color=cyan>[AC006] Light 속성으로 AC100 AOE 공격 소환!</color>");
             }
@@ -191,10 +187,13 @@ namespace AttackComponents
             // 천상 공격 상태 처리
             ProcessHeavenAttackState();
 
+            // 디버그 그리기는 개발 모드에서만 (성능 최적화)
+            #if UNITY_EDITOR
             if (attackState == HeavenAttackState.Active && attack.attackCollider != null)
             {
                 DrawFanShapeDebug();
             }
+            #endif
         }
 
         /// <summary>
@@ -246,9 +245,11 @@ namespace AttackComponents
                 case HeavenAttackState.Active:
                     attackTimer += Time.deltaTime;
                     
-                    // 위치 업데이트
-                    attack.transform.position = attack.attacker.transform.position;
-                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    // 위치 업데이트 (성능 최적화: 필요할 때만)
+                    if (attack.attacker != null)
+                    {
+                        attack.transform.position = attack.attacker.transform.position;
+                    }
                     
                     if (attackTimer >= attackDuration)
                     {

@@ -266,7 +266,6 @@ namespace AttackComponents
         {
             // AC101의 단일 DOT 효과 적용하면 됨
             var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
-            BattleStage.now.AttachAttack(burnAttack);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = globalDamage;
@@ -274,15 +273,12 @@ namespace AttackComponents
             dotComponent.dotInterval = debuffInterval;
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
             dotComponent.dotTargets.Add(target as Enemy);
-
-            burnAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         private void ApplyPoisonEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
             var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
-            BattleStage.now.AttachAttack(burnAttack);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = globalDamage;
@@ -290,15 +286,12 @@ namespace AttackComponents
             dotComponent.dotInterval = debuffInterval; 
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
             dotComponent.dotTargets.Add(target as Enemy);
-
-            burnAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         private void ApplyBleedEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
             var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
-            BattleStage.now.AttachAttack(burnAttack);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = globalDamage;
@@ -307,7 +300,6 @@ namespace AttackComponents
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
             dotComponent.dotTargets.Add(target as Enemy);
 
-            burnAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         private void ApplyShockEffect(Pawn target)

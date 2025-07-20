@@ -191,6 +191,8 @@ namespace BattleSystem
                     cameraSmoothTime
                 );
             }
+            
+            _battleStage.Update();
         }
            
         /// <summary>

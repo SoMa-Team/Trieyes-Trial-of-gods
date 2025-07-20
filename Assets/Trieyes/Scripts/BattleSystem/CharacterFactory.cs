@@ -94,6 +94,8 @@ namespace BattleSystem
         private GameObject GetPrefabById(CharacterID id)
         {
             // TODO: characterID와 characterPrefab 매칭 필요
+            if (!(0 <= id && id < characterPrefabs.Length))
+                throw new Exception($"Character (id : {id}) is not exist.");
             return characterPrefabs[id];
             
             // return id switch

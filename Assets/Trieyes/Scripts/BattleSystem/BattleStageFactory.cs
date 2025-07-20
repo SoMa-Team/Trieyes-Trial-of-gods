@@ -87,11 +87,11 @@ namespace BattleSystem
             // 캐릭터 리스트 초기화
             battleStage.characters = new List<Pawn>();
             battleStage.characters.Add(mainCharacter);
-            battleStage.enemies = new List<Pawn>();
+            battleStage.enemies = new();
             
             // 기타 설정
             battleStage.difficulty = difficulty;
-            battleStage.attacks = new List<Attack>();
+            battleStage.attacks = new ();
             
             // SpawnManager 초기화
             battleStage.spawnManager = SpawnManager.Instance;
@@ -108,21 +108,21 @@ namespace BattleSystem
             battleStage.Deactivate();
 
             // 캐릭터 정리
-            foreach (var characters in battleStage.characters)
+            foreach (var character in battleStage.characters)
             {
-                characters.Deactivate();
+                CharacterFactory.Instance.Deactivate(character);
             }
 
             // 적 정리
-            foreach (var enemy in battleStage.enemies)
+            foreach (var enemy in battleStage.enemies.Values)
             {
                 EnemyFactory.Instance.Deactivate(enemy);
             }
             
             // 공격 정리
-            foreach (var attack in battleStage.attacks)
+            foreach (var attack in battleStage.attacks.Values)
             {
-                // TODO: AttackFactory.Instance.Deactivate(attack);
+                AttackFactory.Instance.Deactivate(attack);
             }
             
             // SpawnManager 비활성화

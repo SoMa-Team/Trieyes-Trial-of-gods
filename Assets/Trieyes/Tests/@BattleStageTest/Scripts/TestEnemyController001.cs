@@ -14,8 +14,6 @@ public class TestEnemyController001 : TestEnemyController
         var pos = transform.position;
         Pawn target = BattleStage.now.mainCharacter;
 
-        owner.moveSpeed = owner.GetStatValue(Stats.StatType.MoveSpeed);
-
         Vector2 toPlayer = (target.transform.position - pos);
         float dist = toPlayer.magnitude;
         if (dist > minFollowDistance)

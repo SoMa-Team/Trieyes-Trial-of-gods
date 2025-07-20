@@ -13,22 +13,20 @@ namespace CardActions
     /// 전투 시작 시 두 스탯을 각각 %만큼 곱연산 버프!
     /// baseParams: [스탯1, %1, 스탯2, %2] (치환/스티커 지원)
     /// </summary>
-    public class Card0301_DestroyRightAndAbsorbAction : Card1001_GenericStatBuffOnBattleStartAction
+    public class Card0301_AbsorbingBlade : Card1001_GenericStatBuffOnBattleStartAction
     {
-        public Card0301_DestroyRightAndAbsorbAction()
-            : base(2, true) // 2쌍, Multiplicative
+        private int levelUpValue = 5;
+        public Card0301_AbsorbingBlade()
+            : base(1, true) // 2쌍, Multiplicative
         {
             // 두 Value 파라미터만 30+5*레벨로 오버라이드
             // actionParams = [Stat0, Value0, Stat1, Value1]
             actionParams[1] = ActionParamFactory.Create(ParamKind.Number, card =>
             {
-                int level = card.cardEnhancement.level.Value;
-                return 30 + 5 * level;
-            });
-            actionParams[3] = ActionParamFactory.Create(ParamKind.Number, card =>
-            {
-                int level = card.cardEnhancement.level.Value;
-                return 30 + 5 * level;
+                string raw = card.baseParams[1];
+                if (!int.TryParse(raw, out int baseValue))
+                    throw new InvalidOperationException($"[GenericStatBuff] baseParams[{1}] 변환 실패: {raw}");
+                return baseValue + levelUpValue * card.cardEnhancement.level.Value;
             });
         }
 

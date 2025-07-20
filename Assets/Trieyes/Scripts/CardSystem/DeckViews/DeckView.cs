@@ -28,6 +28,7 @@ namespace DeckViews
         public void SetDeck(Deck deck)
         {
             currentDeck = deck;
+            currentDeck.setDeckView(this);
             RefreshDeckUI();
         }
 

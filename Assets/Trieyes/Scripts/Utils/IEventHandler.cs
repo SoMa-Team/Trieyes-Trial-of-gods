@@ -17,6 +17,7 @@ namespace Utils
         OnBattleEnd,          // 전투 종료 이벤트
         OnBattleSceneChange,  // 전투 씬 생성 이전 -> 생성하려고 하는 즉시 호출되는 이벤트
         CalcActionInitOrder,  // 카드 액션 호출 순서 계산 이벤트
+        DestoryCardsBeforeBattleStart, // 전투 시작 전 카드 파괴 이벤트
         
         // ===== 상시 호출 관련 =====
         OnTick,               // 전투 시작 후, 30TPS로 호출 (주기적인 감시가 필요한 데이터/동작에 사용)

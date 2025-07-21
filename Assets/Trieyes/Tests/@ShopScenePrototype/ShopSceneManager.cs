@@ -41,11 +41,11 @@ public class ShopSceneManager : MonoBehaviour
     public TMP_Text defenseStatText;
     public TMP_Text healthStatText;
     public TMP_Text moveSpeedStatText;
+    public Pawn mainCharacter;
     
     public static ShopSceneManager Instance;
 
     // --- 내부 필드 ---
-    private Pawn mainCharacter;
     private List<Card> shopCards = new();
     private List<Sticker> shopStickers = new();
     
@@ -65,9 +65,8 @@ public class ShopSceneManager : MonoBehaviour
     // --- 초기화 ---
     private void Start()
     {
-        // 1. 플레이어/캐릭터 초기화
-        mainCharacter = CharacterFactory.Instance.Create(0);
-
+        // 1. 메인 캐릭터 생성
+        CharacterFactory.Instance.Activate(mainCharacter);
         // 2. 최초 상점 카드 리롤
         RefreshShopCards();
 

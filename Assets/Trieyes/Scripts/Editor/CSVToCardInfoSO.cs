@@ -30,6 +30,7 @@ public static class CSVToCardInfoSOImporter
         }
 
         var headers = lines[0].Split(',');
+        int idx_Id = System.Array.IndexOf(headers, "Id");
         int idx_soName = System.Array.IndexOf(headers, "soName");
         int idx_cardName = System.Array.IndexOf(headers, "cardName");
         int idx_rarity = System.Array.IndexOf(headers, "rarity");
@@ -45,7 +46,7 @@ public static class CSVToCardInfoSOImporter
             var values = CsvUtils.SplitCsvLine(lines[i]).ToArray();
 
             if (values.Length < headers.Length) continue;
-
+            int Id = int.Parse(values[idx_Id]);
             string cardName = values[idx_cardName];
 
             // SO 파일 경로 생성
@@ -60,7 +61,8 @@ public static class CSVToCardInfoSOImporter
                 card = ScriptableObject.CreateInstance<CardInfo>();
                 isNew = true;
             }
-
+            
+            card.Id = Id;
             card.cardName = cardName;
 
             // rarity
@@ -74,9 +76,9 @@ public static class CSVToCardInfoSOImporter
                 .ToArray();
 
             // illustration
-            card.illustration = Resources.Load<Sprite>(values[idx_illustration]);
+            card.illustration = Resources.Load<Sprite>($"CardIllustration/{values[idx_illustration]}");
             if (card.illustration == null)
-                Debug.LogWarning($"{cardName}: {values[idx_illustration]} Sprite를 Resources에서 못 찾음!");
+                Debug.LogWarning($"{cardName}: CardIllustration/{values[idx_illustration]} Sprite를 Resources에서 못 찾음!");
 
             card.cardDescription = values[idx_cardDescription];
             Debug.Log(card.cardDescription);

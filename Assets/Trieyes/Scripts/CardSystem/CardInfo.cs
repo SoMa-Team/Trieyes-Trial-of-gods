@@ -14,7 +14,9 @@ namespace CardSystem
 /// 카드의 속성, 희귀도, 이름, 이미지, 설명 등 UI 표시에 필요한 정보를 관리합니다.
 /// CardAction과 분리되어 데이터와 로직을 명확히 구분합니다.
 /// </summary>
-    public class CardInfo : ScriptableObject{
+    public class CardInfo : ScriptableObject
+    {
+        public int Id;
         /// <summary>
         /// 이 카드가 가진 속성들의 배열입니다.
         /// 카드의 기본 스탯을 결정하는 데 사용됩니다.

@@ -70,12 +70,16 @@ namespace CharacterSystem
         /// </summary>
         public AttackData basicAttack;
         private AttackData backupBasicAttack;
-        
+
         public AttackData skill1Attack;
         private AttackData backupSkill1Attack;
+        public float skillAttack1Cooldown = 0f;
+        public float lastSkillAttack1Time = -999f;
         
         public AttackData skill2Attack;
         private AttackData backupSkill2Attack;
+        public float skillAttack2Cooldown = 0f;
+        public float lastSkillAttack2Time = -999f;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -92,6 +96,11 @@ namespace CharacterSystem
         /// </summary>
         protected GameObject pawnPrefab;
 
+        public GameObject PawnPrefab
+        {
+            get { return pawnPrefab; }
+        }
+
         // ===== [이벤트 필터링 시스템] =====
         /// <summary>
         /// 이 Pawn이 받을 이벤트들
@@ -106,19 +115,20 @@ namespace CharacterSystem
         // ===== [Unity 생명주기] =====
         protected virtual void Awake()
         {
-            // Awake에서는 아무것도 하지 않음
-            
             rb = GetComponent<Rigidbody2D>();
             Collider = GetComponent<Collider2D>();
+            Collider.enabled = true; // Instantiate에서 Awake가 호출되어 Collider가 설정되는데, 이것이 먼저 호출되는 문제
+
+            Controller = GetComponent<Controller>();
+            Controller.Activate(this);
+            
+            pawnPrefab = transform.GetChild(0).gameObject;
+            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
 
             if (rb != null)
             {
                 rb.freezeRotation = true;
             }
-
-            Controller = GetComponent<Controller>();
-            // SPUM Prefab 내부에 UnitRoot 오브젝트가 있고, 그 안에 Animator가 있음
-            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
 
             isDead = false;
         }
@@ -133,7 +143,7 @@ namespace CharacterSystem
         }
 
         public virtual void Update() 
-        {    
+        {
         }
 
         // ===== [커스텀 메서드] =====
@@ -144,15 +154,6 @@ namespace CharacterSystem
         {
             isDead = false;
             currentHp = maxHp;
-            
-            Collider.enabled = true;
-            
-            // 컴포넌트 초기화
-            pawnPrefab = transform.GetChild(0).gameObject;
-
-            pawnPrefab.transform.SetParent(transform);
-            pawnPrefab.transform.localPosition = Vector3.zero;
-            pawnPrefab.transform.localRotation = Quaternion.identity;
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
@@ -171,12 +172,13 @@ namespace CharacterSystem
                 Utils.EventType.OnHPUpdated
             );
 
+            skillAttack1Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
+            skillAttack2Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
+
             deck.Activate(this, true);
             initBaseStat();
             
             gameObject.SetActive(true);
-            
-            Controller.Activate(this);
             
             // relic에 따른 Attack 적용
             if (relics.Count > 0)
@@ -264,6 +266,10 @@ namespace CharacterSystem
         /// <param name="direction">이동할 방향</param>
         public virtual void Move(Vector2 direction)
         {
+            if(isDead)
+            {
+                return;
+            }
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동
@@ -290,7 +296,7 @@ namespace CharacterSystem
         /// 애니메이션 상태를 변경합니다.
         /// </summary>
         /// <param name="newState">새로운 애니메이션 상태</param>
-        protected virtual void ChangeAnimationState(string newState)
+        private void ChangeAnimationState(string newState)
         {
             if (isDead && newState != "DEATH")
                 return;
@@ -316,10 +322,6 @@ namespace CharacterSystem
                         Animator.SetBool("4_Death", true);
                         break;
                 }
-            }
-            else
-            {
-                //Debug.Log($"<color=red>[ANIMATION] {gameObject.name} animation state '{newState}' not found</color>");
             }
         }
 
@@ -567,7 +569,6 @@ namespace CharacterSystem
         // ===== [기능 3] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
-            Debug.Log("OnEvent 호출");
             // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
             // if (!IsEventAccepted(eventType))
             // {
@@ -607,7 +608,6 @@ namespace CharacterSystem
                     }
                 }
             }
-            Debug.Log($"isDeckNull: {deck == null}, isCardEventAccepted: {IsCardEventAccepted(eventType)}");
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
@@ -616,7 +616,7 @@ namespace CharacterSystem
             }
         }
 
-        private void ApplyDamage(AttackResult result)
+        public void ApplyDamage(AttackResult result)
         {
             // 여러번 OnDeath 이벤트가 발생되지 않기 위한 예외문
             if (isDead) return;
@@ -645,7 +645,7 @@ namespace CharacterSystem
         private void HandleDeath()
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
-            // 정지
+            // TO-DO : 이부분 테스트 필요
             Collider.enabled = false;
             rb.linearVelocity = Vector3.zero;
             
@@ -660,6 +660,7 @@ namespace CharacterSystem
         /// 공격속도 스탯을 기반으로 공격 쿨다운을 계산합니다.
         /// 공격속도 10 = 60fps 기준 1초에 1개 발사
         /// </summary>
+
         protected virtual void CalculateAttackCooldown()
         {
             int attackSpeed = GetStatValue(StatType.AttackSpeed);
@@ -673,37 +674,79 @@ namespace CharacterSystem
         /// <summary>
         /// 자동공격을 수행합니다.
         /// </summary>
-        public virtual void PerformAutoAttack()
+        
+        public bool CheckTimeInterval()
         {
-            if (Time.time - lastAttackTime >= attackCooldown)
+            return Time.time - lastAttackTime >= attackCooldown ? true : false;
+        }
+
+        /// <summary>
+        /// 스킬 쿨타임을 계산합니다.
+        /// </summary>
+        /// <param name="skillType">스킬 타입</param>
+        /// <returns>쿨타임이 지났으면 true, 아니면 false</returns>
+        public bool CheckSkillCooldown(PawnAttackType skillType)
+        {
+            switch (skillType)
             {
-                // 공격 쿨다운 계산 (스탯 변경 시 대응)
-                CalculateAttackCooldown();
-                
-                // 공격 수행
-                ExecuteAttack();
-                
-                // 마지막 공격 시간 업데이트
-                lastAttackTime = Time.time;
+                case PawnAttackType.Skill1:
+                    return Time.time - lastSkillAttack1Time >= skillAttack1Cooldown;
+                case PawnAttackType.Skill2:
+                    return Time.time - lastSkillAttack2Time >= skillAttack2Cooldown;
+                default:
+                    return false;
             }
         }
-        
+
+        public virtual void PerformAutoAttack()
+        {
+            // 공격 수행
+            var res = ExecuteAttack();
+        }
+
         /// <summary>
         /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack에게 전달합니다.
         /// </summary>
-        protected virtual void ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
             switch (attackType)
             {
                 case PawnAttackType.BasicAttack:
-                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection);
-                    break;
+                    if (CheckTimeInterval())
+                    {
+                        CalculateAttackCooldown();
+                        lastAttackTime = Time.time;
+                        ChangeAnimationState("ATTACK");
+                        AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
+                        return true;
+                    }
+                    return false;
                 case PawnAttackType.Skill1:
-                    AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
-                    break;
+                    if (CheckSkillCooldown(PawnAttackType.Skill1))
+                    {
+                        lastSkillAttack1Time = 0f;
+                        ChangeAnimationState("ATTACK");
+                        Attack temp = AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
+                        Debug.Log($"<color=yellow>[SKILL1] {temp.gameObject.name} skill1Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
+                        return true;
+                    }
+                    Debug.Log($"<color=yellow>[SKILL1] {gameObject.name} skillAttack1Cooldown: {skillAttack1Cooldown}, lastSkillAttack1Time: {lastSkillAttack1Time}</color>");
+                    return false;
+
                 case PawnAttackType.Skill2:
-                    AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
-                    break;
+                    if (CheckSkillCooldown(PawnAttackType.Skill2))
+                    {
+                        lastSkillAttack2Time = 0f;
+                        ChangeAnimationState("ATTACK");
+                        Attack temp = AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
+                        Debug.Log($"<color=yellow>[SKILL2] {temp.gameObject.name} skill2Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
+                        return true;
+                    }
+                    Debug.Log($"<color=yellow>[SKILL2] {gameObject.name} skillAttack2Cooldown: {skillAttack2Cooldown}, lastSkillAttack2Time: {lastSkillAttack2Time}</color>");
+                    return false;
+                    
+                default:
+                    return false;
             }
         }
 

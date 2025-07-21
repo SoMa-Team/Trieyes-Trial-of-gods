@@ -35,6 +35,8 @@ namespace AttackComponents
         private float attackTimer = 0f;
         private Vector2 attackDirection;
 
+        public AttackData chainAttackData;
+
         // 번개 공격 상태 열거형
         private enum LightningAttackState
         {
@@ -67,11 +69,11 @@ namespace AttackComponents
             attackTimer = 0f;
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-            var pawnPrefab = attack.attacker.pawnPrefab;
+            var pawnPrefab = attack.attacker.PawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                //debug.logError("R_Weapon을 찾지 못했습니다!");
+                Debug.LogError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -79,7 +81,12 @@ namespace AttackComponents
             attack.transform.localPosition = Vector3.zero;
             attack.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
-            attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
+            // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
+            if (attack.attackCollider == null)
+            {
+                attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
+            }
+            
             var collider = attack.attackCollider as PolygonCollider2D;
 
             // 부채꼴 모양의 콜라이더 포인트 생성
@@ -95,9 +102,7 @@ namespace AttackComponents
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
             // AC102_CHAIN Attack 생성
-            Attack lightningChainAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC102_CHAIN);
-            BattleStage.now.AttachAttack(lightningChainAttack);
-            lightningChainAttack.target = targetPawn;
+            Attack lightningChainAttack = AttackFactory.Instance.Create(chainAttackData, attack.attacker, null, Vector2.zero);
             
             // AC102_CHAIN 컴포넌트 설정
             var lightningChainComponent = lightningChainAttack.components[0] as AC102_CHAIN;
@@ -107,13 +112,11 @@ namespace AttackComponents
                 lightningChainComponent.chainRadius = chainRadius;
                 lightningChainComponent.chainCount = chainCount;
                 lightningChainComponent.chainDelay = chainDelay;
+                lightningChainComponent.chainRadius = chainRadius;
+                
+                // 번개 연쇄 시작
+                lightningChainComponent.StartLightningChain(targetPawn.transform.position);
             }
-            
-            lightningChainAttack.Activate(attack.attacker, direction);
-            
-            // 번개 연쇄 시작
-            // TO-DO: 한 타겟이 번개 1번 맞고 죽었는데, 다른 번개 맞아야 할 때 에러 발생하는 것 처리
-            lightningChainComponent.StartLightningChain(targetPawn.transform.position);
         }
 
         /// <summary>
@@ -260,11 +263,44 @@ namespace AttackComponents
 
         private void ActivateLightningAttack()
         {
+            // 콜라이더 활성화 및 방향 업데이트
+            if (attack.attackCollider != null)
+            {
+                attack.attackCollider.enabled = true;
+                
+                // 플레이어의 현재 방향으로 콜라이더 포인트 재계산
+                var collider = attack.attackCollider as PolygonCollider2D;
+                if (collider != null)
+                {
+                    // 현재 플레이어의 이동 방향 가져오기
+                    Vector2 currentDirection = attack.attacker.LastMoveDirection;
+                    if (currentDirection.magnitude < 0.1f)
+                    {
+                        // 이동하지 않을 때는 이전 방향 유지
+                        currentDirection = attackDirection;
+                    }
+                    else
+                    {
+                        attackDirection = currentDirection.normalized;
+                    }
+                    
+                    // 새로운 방향으로 콜라이더 포인트 재계산
+                    Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
+                    collider.points = points;
+                }
+            }
+            
             //debug.log("<color=green>[AC005] 번개 강화 공격 활성화!</color>");
         }
 
         private void FinishLightningAttack()
         {
+            // 콜라이더 비활성화 (삭제하지 않고)
+            if (attack.attackCollider != null)
+            {
+                attack.attackCollider.enabled = false;
+            }
+            
             //debug.log("<color=yellow>[AC005] 번개 강화 공격 종료!</color>");
         }
     }

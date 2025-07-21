@@ -47,7 +47,7 @@ namespace AttackComponents
         // DOT 상태 관리
         private float dotTimer = 0f;
         private float dotDurationTimer = 0f;
-        private List<Enemy> dotTargets = new List<Enemy>(10);
+        public List<Enemy> dotTargets = new List<Enemy>(10);
 
         // 추가 버프 설정
         [Header("추가 버프 설정")]
@@ -172,6 +172,14 @@ namespace AttackComponents
             {
                 ExecuteAC101Attack();
                 dotTimer = 0f;
+                
+                // interval과 duration이 같을 때 1번 발동 후 바로 종료
+                if (dotInterval >= dotDuration)
+                {
+                    attackState = DOTAttackState.Finishing;
+                    dotTimer = 0f;
+                    FinishAC101Attack();
+                }
             }
         }
 
@@ -190,20 +198,20 @@ namespace AttackComponents
 
         private void ExecuteSingleTargetAttack()
         {
-            if (attack.target == null) return;
+            if (dotTargets.Count == 0) return;
 
             // 단일 대상에게 데미지 적용
-            var attackResult = AttackResult.Create(attack, attack.target);
+            var attackResult = AttackResult.Create(attack, dotTargets[0]);
             attackResult.totalDamage = dotDamage;
-            attack.target.ApplyDamage(attackResult);
+            dotTargets[0].ApplyDamage(attackResult);
 
             // 버프 적용
-            ApplyAdditionalBuffEffect(attack.target);
+            ApplyAdditionalBuffEffect(dotTargets[0]);
 
             // DOT VFX 생성
-            CreateAC101VFX(attack.target.transform.position);
+            CreateAC101VFX(dotTargets[0].transform.position);
 
-            Debug.Log($"<color=yellow>[AC101] 단일 대상 {attack.target.pawnName}에게 {dotDamage} 데미지 적용</color>");
+            Debug.Log($"<color=yellow>[AC101] 단일 대상 {dotTargets[0].pawnName}에게 {dotDamage} 데미지 적용</color>");
         }
 
         private void ExecuteMultipleTargetsAttack()
@@ -300,7 +308,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -319,7 +326,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -338,7 +344,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -357,7 +362,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -376,7 +380,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -395,7 +398,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -414,7 +416,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();

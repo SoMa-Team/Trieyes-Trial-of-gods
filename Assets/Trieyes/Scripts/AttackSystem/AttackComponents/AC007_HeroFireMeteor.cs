@@ -8,38 +8,123 @@ using BattleSystem;
 namespace AttackComponents
 {
     /// <summary>
-    /// 캐릭터 소드 능력 부여 강화
-    /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
-    /// 7초 동안 검에 무작위 속성을 부여하고, 기본 공격(AC002)에 다음의 추가효과가 적용되고, 추가 피해를 입힙니다.
-    /// 천상 : 이동속도와 사거리가 증가합니다. 방어력이 감소합니다. AC1001_BUFF 버프를 줍니다.
+    /// 파이어 메테오 공격
+    /// AC103_FALL을 소환하고 바로 종료하는 FSM 패턴 구현
     /// </summary>
     public class AC007_HeroFireMeteor : AttackComponent
     {
-        /// <summary>
-        /// 파이어 메테오 공격 활성화
-        /// AC103_FALL 소환하고 바로 종료
-        /// </summary>
-        /// <param name="attack"></param>
-        /// <param name="direction"></param>
+        public AttackData fallAttackData;
+
+        // FSM 상태 관리
+        private FireMeteorState attackState = FireMeteorState.None;
+        private float attackTimer = 0f;
+
+        // 파이어 메테오 공격 상태 열거형
+        private enum FireMeteorState
+        {
+            None,
+            Preparing,
+            Summoning,
+            Finishing,
+            Finished
+        }
+
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
+            
+            // 초기 상태 설정
+            attackState = FireMeteorState.Preparing;
+            attackTimer = 0f;
+            
+            // 파이어 메테오 공격 시작
+            StartFireMeteorAttack();
+        }
 
+        private void StartFireMeteorAttack()
+        {
+            attackState = FireMeteorState.Preparing;
+            attackTimer = 0f;
+            
+            Debug.Log("<color=red>[AC007] 파이어 메테오 공격 시작!</color>");
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            
+            // 파이어 메테오 공격 상태 처리
+            ProcessFireMeteorAttackState();
+        }
+
+        private void ProcessFireMeteorAttackState()
+        {
+            switch (attackState)
+            {
+                case FireMeteorState.None:
+                    break;
+
+                case FireMeteorState.Preparing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = FireMeteorState.Summoning;
+                        attackTimer = 0f;
+                        SummonFireMeteor();
+                    }
+                    break;
+
+                case FireMeteorState.Summoning:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 소환 완료 시간
+                    {
+                        attackState = FireMeteorState.Finishing;
+                        attackTimer = 0f;
+                    }
+                    break;
+
+                case FireMeteorState.Finishing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 종료 시간
+                    {
+                        attackState = FireMeteorState.Finished;
+                    }
+                    break;
+
+                case FireMeteorState.Finished:
+                    attackState = FireMeteorState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
+            }
+        }
+
+        private void SummonFireMeteor()
+        {
             // AC103_FALL 소환
-            var fallAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC103_FALL);
-            BattleStage.now.AttachAttack(fallAttack);
-            fallAttack.target = attack.target;
+            var fallAttack = AttackFactory.Instance.Create(fallAttackData, attack.attacker, null, Vector2.zero);
+            
             var fallComponent = fallAttack.components[0] as AC103_FALL;
+            if (fallComponent != null)
+            {
+                fallComponent.fallXYOffset = Vector2.zero;
+                fallComponent.fallXRandomOffsetMin = -2;
+                fallComponent.fallXRandomOffsetMax = 2;
+                fallComponent.fallYRandomOffsetMin = -2;
+                fallComponent.fallYRandomOffsetMax = 2;
+            }
             
-            fallComponent.fallXYOffset = Vector2.zero;
-            fallComponent.fallXRandomOffsetMin = -2;
-            fallComponent.fallXRandomOffsetMax = 2;
-            fallComponent.fallYRandomOffsetMin = -2;
-            fallComponent.fallYRandomOffsetMax = 2;
-            
-            fallAttack.Activate(attack.attacker, direction);
+            Debug.Log("<color=red>[AC007] AC103_FALL 파이어 메테오 소환 완료!</color>");
+        }
 
-            AttackFactory.Instance.Deactivate(attack);
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            
+            attackState = FireMeteorState.None;
+            attackTimer = 0f;
         }
     }
 }

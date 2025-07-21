@@ -50,7 +50,7 @@ namespace AttackComponents
         // AOE 상태 관리
         private float aoeTimer = 0f;
         private float aoeDurationTimer = 0f;
-        private List<Enemy> aoeTargets = new List<Enemy>(10);
+        public List<Enemy> aoeTargets = new List<Enemy>(10);
         private Vector2 aoePosition; // AOE 위치 (바깥에서 설정)
 
         // AOE VFX 설정
@@ -168,6 +168,14 @@ namespace AttackComponents
             {
                 ExecuteAC100Attack();
                 aoeTimer = 0f;
+                
+                // interval과 duration이 같을 때 1번 발동 후 바로 종료
+                if (aoeInterval >= aoeDuration)
+                {
+                    attackState = AOEAttackState.Finishing;
+                    aoeTimer = 0f;
+                    FinishAC100Attack();
+                }
             }
         }
         

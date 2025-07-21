@@ -30,12 +30,18 @@ namespace CharacterSystem
         // ===== [Unity 생명주기] =====
         public virtual void Activate(Pawn pawn)
         {
+            enabled = true;
             owner = pawn;
         }
 
         public virtual void ProcessInputActions()
         {
             
+        }
+
+        public void Deactivate()
+        {
+            enabled = false;
         }
     }
 }

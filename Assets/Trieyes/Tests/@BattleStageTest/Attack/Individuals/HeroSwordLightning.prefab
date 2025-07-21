@@ -53,6 +53,7 @@ MonoBehaviour:
   chainRadius: 20
   chainCount: 10
   chainDelay: 0.1
+  chainAttackData: {fileID: 11400000, guid: b4e7131ec11fe44418096fdcd556313d, type: 2}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,11 +190,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: a990c769f91a5c149a81621b27af53bd, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 6688702165203733951}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

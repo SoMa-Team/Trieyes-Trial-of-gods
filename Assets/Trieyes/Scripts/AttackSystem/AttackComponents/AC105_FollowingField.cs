@@ -124,6 +124,14 @@ namespace AttackComponents
                     {
                         ApplyFieldDamage();
                         damageTimer = 0f;
+                        
+                        // interval과 duration이 같을 때 1번 발동 후 바로 종료
+                        if (fieldTickInterval >= fieldDuration)
+                        {
+                            fieldState = FollowingFieldState.Ending;
+                            fieldTimer = 0f;
+                            DeactivateField();
+                        }
                     }
                     
                     // 지속시간 체크
@@ -232,7 +240,7 @@ namespace AttackComponents
             
             if (BattleStage.now != null && BattleStage.now.enemies != null)
             {
-                foreach (var enemy in BattleStage.now.enemies)
+                foreach (var enemy in BattleStage.now.enemies.Values)
                 {
                     if (enemy == null || enemy.transform == null || !enemy.gameObject.activeInHierarchy)
                         continue;

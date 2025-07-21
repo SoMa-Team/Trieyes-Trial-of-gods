@@ -20,10 +20,10 @@ namespace AttackComponents
         private Character001_Hero character;
         private HeroWeaponElementState weaponElementState;
 
-        private const int FIRE_METEOR_ID = 7;
-        private const int ICE_STORM_ID = 8;
-        private const int LIGHTNING_FIELD_ID = 9;
-        private const int LIGHT_ID = 6;
+        private const int FIRE_METEOR_ID = 1;
+        private const int ICE_STORM_ID = 2;
+        private const int LIGHTNING_FIELD_ID = 3;
+        private const int LIGHT_ID = 4;
 
         // FSM 상태 관리
         private EnhancementState currentState = EnhancementState.None;
@@ -34,6 +34,8 @@ namespace AttackComponents
         // 1회 실행 플래그
         private bool iceStormActivated = false;
         private bool lightningFieldActivated = false;
+
+        public List<AttackData> attackDatas = new List<AttackData>();
 
         // FSM 상태 열거형
         private enum EnhancementState
@@ -83,8 +85,8 @@ namespace AttackComponents
                     character.activateLight = true;
                     break;
                 default:
-                    // None: character.lastSkillAttack001Time = 0f; 설정하고 바로 종료
-                    character.lastSkillAttack001Time = 0f;
+                    // None: character.lastSkillAttack1Time = 0f; 설정하고 바로 종료
+                    character.lastSkillAttack1Time = 0f;
                     currentState = EnhancementState.Finished;
                     break;
             }
@@ -227,43 +229,23 @@ namespace AttackComponents
 
         private void ActivateFireMeteor()
         {
-            Attack fireMeteor = AttackFactory.Instance.ClonePrefab(FIRE_METEOR_ID);
-            if (fireMeteor != null)
-            {
-                BattleStage.now.AttachAttack(fireMeteor);
-                fireMeteor.Activate(character, Vector2.zero);
-
-                Debug.Log("<color=red>[S002] Fire Meteor 발동!</color>");
-            }
+            Attack fireMeteor = AttackFactory.Instance.Create(attackDatas[FIRE_METEOR_ID], character, null, Vector2.zero);
         }
 
         private void ActivateIceStorm()
         {
-            Attack iceStorm = AttackFactory.Instance.ClonePrefab(ICE_STORM_ID);
-            if (iceStorm != null)
-            {
-                BattleStage.now.AttachAttack(iceStorm);
-                var iceStormComponent = iceStorm.components[0] as AC008_IceStorm;
-                iceStormComponent.summonDelay = 0.5f;
-                iceStormComponent.vfxDuration = 0.3f;
-
-                iceStorm.Activate(character, Vector2.zero);
-                Debug.Log("<color=cyan>[S002] Ice Storm 발동!</color>");
-            }
+            Attack iceStorm = AttackFactory.Instance.Create(attackDatas[ICE_STORM_ID], character, null, Vector2.zero);
         }
 
         private void ActivateLightningField()
         {
-            Attack lightningField = AttackFactory.Instance.ClonePrefab(LIGHTNING_FIELD_ID);
+            Attack lightningField = AttackFactory.Instance.Create(attackDatas[LIGHTNING_FIELD_ID], character, null, Vector2.zero);
             if (lightningField != null)
             {
-                BattleStage.now.AttachAttack(lightningField);
                 var lightningFieldComponent = lightningField.components[0] as AC009_LightningField;
                 lightningFieldComponent.lightningFieldRadius = 2.5f;
                 lightningFieldComponent.lightningFieldDuration = 3f;
                 lightningFieldComponent.lightningFieldDelay = 0.5f;
-
-                lightningField.Activate(character, Vector2.zero);
                 Debug.Log("<color=yellow>[S002] Lightning Field 발동!</color>");
             }
         }

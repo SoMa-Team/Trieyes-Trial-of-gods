@@ -42,7 +42,6 @@ namespace AttackComponents
         public float buffDuration = 10f;
 
         public float buffInterval = 1f;
-        public int globalHeal = 10;
     }
 
     /// <summary>
@@ -59,12 +58,9 @@ namespace AttackComponents
         public float buffDuration = 10f;
 
         public float buffInterval = 1f;
-        public int globalHeal = 10;
 
         public Attack attack;
         public Pawn target;
-
-        private const int AC101_SINGLE_DOT = 11;
 
         public void Activate(BuffInfo buffInfo)
         {
@@ -73,43 +69,42 @@ namespace AttackComponents
             buffMultiplier = buffInfo.buffMultiplier;
             buffDuration = buffInfo.buffDuration;
             buffInterval = buffInfo.buffInterval;
-            globalHeal = buffInfo.globalHeal;
             target = buffInfo.target;
             attack = buffInfo.attack;
 
-            ApplyBuffEffect(target);
+            ApplyBuffEffect();
         }
 
-        private void ApplyBuffEffect(Pawn target)
+        private void ApplyBuffEffect()
         {
             switch (buffType)
             {
                 case BUFFType.IncreaseSpeed:
-                    ApplyIncreaseSpeedEffect(target);
+                    ApplyStatBuff(target, StatType.MoveSpeed, buffValue, buffMultiplier, buffDuration, buffInterval);
                     break;
                 case BUFFType.IncreaseAttackSpeed:
-                    ApplyIncreaseAttackSpeedEffect(target);
+                    ApplyStatBuff(target, StatType.AttackSpeed, buffValue, buffMultiplier, buffDuration, buffInterval);
                     break;
                 case BUFFType.IncreaseAttackPower:
-                    ApplyIncreaseAttackPowerEffect(target);
+                    ApplyStatBuff(target, StatType.AttackPower, buffValue, buffMultiplier, buffDuration, buffInterval);
                     break;
                 case BUFFType.IncreaseDefense:
-                    ApplyIncreaseDefenseEffect(target);
+                    ApplyStatBuff(target, StatType.Defense, buffValue, buffMultiplier, buffDuration, buffInterval);
                     break;
                 case BUFFType.IncreaseCriticalChance:
-                    ApplyIncreaseCriticalChanceEffect(target);
+                    ApplyStatBuff(target, StatType.CriticalRate, buffValue, buffMultiplier, buffDuration, buffInterval);
                     break;
                 case BUFFType.IncreaseCriticalDamage:
-                    ApplyIncreaseCriticalDamageEffect(target);
+                    ApplyStatBuff(target, StatType.CriticalDamage, buffValue, buffMultiplier, buffDuration, buffInterval);
                     break;
                 case BUFFType.IncreaseMoveSpeed:
-                    ApplyIncreaseMoveSpeedEffect(target);
+                    ApplyStatBuff(target, StatType.MoveSpeed, buffValue, buffMultiplier, buffDuration, buffInterval);
                     break;
                 case BUFFType.IncreaseAttackRangeAdd:
-                    ApplyIncreaseAttackRangeAddEffect(target);
+                    ApplyStatBuff(target, StatType.AttackRange, buffValue, 1f, buffDuration, buffInterval);
                     break;
                 case BUFFType.IncreaseAttackRangeMulti:
-                    ApplyIncreaseAttackRangeMultiEffect(target);
+                    ApplyStatBuff(target, StatType.AttackRange, 0, buffMultiplier, buffDuration, buffInterval);
                     break;
                 case BUFFType.Haste:
                     ApplyHasteEffect(target);
@@ -121,7 +116,7 @@ namespace AttackComponents
                     ApplyShieldEffect(target);
                     break;
                 case BUFFType.Regeneration:
-                    ApplyRegenerationEffect(target);
+                    ApplyStatBuff(target, StatType.Health, buffValue, 1f, buffDuration, buffInterval);
                     break;
                 case BUFFType.Invincibility:
                     ApplyInvincibilityEffect(target);
@@ -140,265 +135,91 @@ namespace AttackComponents
             }
         }
 
-        private void ApplyIncreaseSpeedEffect(Pawn target)
+        /// <summary>
+        /// 통합 스탯 버프 적용 함수
+        /// </summary>
+        /// <param name="target">버프 대상</param>
+        /// <param name="statType">적용할 스탯 타입</param>
+        /// <param name="buffValue">가산 버프 값 (0이면 무시)</param>
+        /// <param name="buffMultiplier">승산 버프 배율 (1f면 무시)</param>
+        /// <param name="duration">버프 지속시간</param>
+        /// <param name="interval">버프 간격 (주기적 버프용)</param>
+        private void ApplyStatBuff(Pawn target, StatType statType, int buffValue, float buffMultiplier, float duration, float interval)
         {
             // null 체크 추가
             if (target == null || target.statSheet == null)
             {
-                //Debug.LogWarning($"<color=yellow>[BUFF] ApplyIncreaseSpeedEffect: target 또는 statSheet가 null입니다.</color>");
                 return;
             }
 
-            var buffModifier = new StatModifier(
-                (int)(buffMultiplier), // 30% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.MoveSpeed].AddBuff(buffModifier);
-            
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 이동속도 증가 효과 적용</color>");
-        }
+            // 가산 버프 적용
+            if (buffValue != 0)
+            {
+                var additiveBuff = new StatModifier(
+                    buffValue,
+                    BuffOperationType.Additive,
+                    false,
+                    duration
+                );
+                target.statSheet[statType].AddBuff(additiveBuff);
+            }
 
-        private void ApplyIncreaseAttackSpeedEffect(Pawn target)
-        {
-            var buffModifier = new StatModifier(
-                (int)(buffMultiplier), // 30% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.AttackSpeed].AddBuff(buffModifier);
-            
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격속도 증가 효과 적용</color>");
-        }
-
-        private void ApplyIncreaseAttackPowerEffect(Pawn target)
-        {
-            var buffModifier = new StatModifier(
-                (int)(buffMultiplier), // 30% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.AttackPower].AddBuff(buffModifier);
-            
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격력 증가 효과 적용</color>");
-        }
-
-        private void ApplyIncreaseDefenseEffect(Pawn target)
-        {
-            var buffModifier = new StatModifier(
-                (int)(buffMultiplier), // 30% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.Defense].AddBuff(buffModifier);
-            
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 방어력 증가 효과 적용</color>");
-        }
-
-        private void ApplyIncreaseCriticalChanceEffect(Pawn target)
-        {
-            var buffModifier = new StatModifier(
-                (int)(buffMultiplier), // 30% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.CriticalRate].AddBuff(buffModifier);
-            
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 크리티컬 확률 증가 효과 적용</color>");
-        }
-
-        private void ApplyIncreaseCriticalDamageEffect(Pawn target)
-        {
-            var buffModifier = new StatModifier(
-                (int)(buffMultiplier), // 30% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.CriticalDamage].AddBuff(buffModifier);
-            
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 크리티컬 데미지 증가 효과 적용</color>");
-        }
-
-        private void ApplyIncreaseMoveSpeedEffect(Pawn target)
-        {
-            //Debug.Log("이전 이동속도: " + target.statSheet[StatType.MoveSpeed].Value);
-
-            var buffModifier = new StatModifier(
-                (int)(buffMultiplier), // 30% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.MoveSpeed].AddBuff(buffModifier);
-            
-            //Debug.Log("이후 이동속도: " + target.statSheet[StatType.MoveSpeed].Value);
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 이동속도 증가 효과 적용</color>");
-        }
-
-        private void ApplyIncreaseAttackRangeAddEffect(Pawn target)
-        {
-            var buffModifier = new StatModifier(
-                buffValue,
-                BuffOperationType.Additive,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.AttackRange].AddBuff(buffModifier);
-            
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격범위 증가 효과 적용</color>");
-        }
-
-        private void ApplyIncreaseAttackRangeMultiEffect(Pawn target)
-        {
-            var buffModifier = new StatModifier(
-                (int)(buffMultiplier), // 30% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.AttackRange].AddBuff(buffModifier);
-            
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 공격범위 증가 효과 적용</color>");
+            // 승산 버프 적용
+            if (buffMultiplier != 1f)
+            {
+                var multiplicativeBuff = new StatModifier(
+                    (int)(buffMultiplier), // 승산 배율 그대로 사용
+                    BuffOperationType.Multiplicative,
+                    false,
+                    duration
+                );
+                target.statSheet[statType].AddBuff(multiplicativeBuff);
+            }
         }
 
         private void ApplyHasteEffect(Pawn target)
         {
             // 이동속도와 공격속도 모두 증가
-            var moveSpeedBuff = new StatModifier(
-                (int)(buffMultiplier),
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.MoveSpeed].AddBuff(moveSpeedBuff);
-
-            var attackSpeedBuff = new StatModifier(
-                (int)(buffMultiplier),
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.AttackSpeed].AddBuff(attackSpeedBuff);
-
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 헤이스트 효과 적용</color>");
+            ApplyStatBuff(target, StatType.MoveSpeed, 0, buffMultiplier, buffDuration, buffInterval);
+            ApplyStatBuff(target, StatType.AttackSpeed, 0, buffMultiplier, buffDuration, buffInterval);
         }
 
         private void ApplyBerserkEffect(Pawn target)
         {
             // 공격력 증가, 방어력 감소
-            var attackPowerBuff = new StatModifier(
-                (int)(buffMultiplier * 150), // 50% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.AttackPower].AddBuff(attackPowerBuff);
-
-            var defenseDebuff = new StatModifier(
-                -(int)(buffMultiplier * 50), // 50% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.Defense].AddBuff(defenseDebuff);
-
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 버서크 효과 적용</color>");
+            ApplyStatBuff(target, StatType.AttackPower, 0, buffMultiplier * 1.5f, buffDuration, buffInterval);
+            ApplyStatBuff(target, StatType.Defense, 0, 0.5f, buffDuration, buffInterval); // 50% 감소
         }
 
         private void ApplyShieldEffect(Pawn target)
         {
             // 방어력 대폭 증가
-            var shieldBuff = new StatModifier(
-                (int)(buffMultiplier * 200), // 100% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.Defense].AddBuff(shieldBuff);
-
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 실드 효과 적용</color>");
-        }
-
-        private void ApplyRegenerationEffect(Pawn target)
-        {
-            // 체력을 주기적으로 회복
-            var healBuff = new StatModifier(
-                globalHeal,
-                BuffOperationType.Additive,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.Health].AddBuff(healBuff);
+            ApplyStatBuff(target, StatType.Defense, 0, buffMultiplier * 2f, buffDuration, buffInterval);
         }
 
         private void ApplyInvincibilityEffect(Pawn target)
         {
             // 무적 효과 = 방어력을 매우 높게 설정
-            var invincibilityBuff = new StatModifier(
-                999999, // 거의 무적
-                BuffOperationType.Additive,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.Defense].AddBuff(invincibilityBuff);
-
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 무적 효과 적용</color>");
+            ApplyStatBuff(target, StatType.Defense, 999999, 1f, buffDuration, buffInterval);
         }
 
         private void ApplyStealthEffect(Pawn target)
         {
             // 은신 효과 = 크리티컬 확률 대폭 증가
-            var stealthBuff = new StatModifier(
-                (int)(buffMultiplier * 300), // 200% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.CriticalRate].AddBuff(stealthBuff);
-
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 은신 효과 적용</color>");
+            ApplyStatBuff(target, StatType.CriticalRate, 0, buffMultiplier * 3f, buffDuration, buffInterval);
         }
 
         private void ApplyRageEffect(Pawn target)
         {
             // 분노 효과 = 공격력과 크리티컬 데미지 증가
-            var attackPowerBuff = new StatModifier(
-                (int)(buffMultiplier * 200), // 100% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.AttackPower].AddBuff(attackPowerBuff);
-
-            var criticalDamageBuff = new StatModifier(
-                (int)(buffMultiplier * 150), // 50% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.CriticalDamage].AddBuff(criticalDamageBuff);
-
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 분노 효과 적용</color>");
+            ApplyStatBuff(target, StatType.AttackPower, 0, buffMultiplier * 2f, buffDuration, buffInterval);
+            ApplyStatBuff(target, StatType.CriticalDamage, 0, buffMultiplier * 1.5f, buffDuration, buffInterval);
         }
 
         private void ApplyProtectionEffect(Pawn target)
         {
             // 보호 효과 = 모든 방어 스탯 증가
-            var defenseBuff = new StatModifier(
-                (int)(buffMultiplier * 150), // 50% 증가
-                BuffOperationType.Multiplicative,
-                false,
-                buffDuration
-            );
-            target.statSheet[StatType.Defense].AddBuff(defenseBuff);
-
-            //Debug.Log($"<color=green>[BUFF] {target.pawnName}에게 보호 효과 적용</color>");
+            ApplyStatBuff(target, StatType.Defense, 0, buffMultiplier * 1.5f, buffDuration, buffInterval);
         }
     }
 }

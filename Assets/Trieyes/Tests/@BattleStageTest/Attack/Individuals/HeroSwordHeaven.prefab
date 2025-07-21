@@ -49,6 +49,15 @@ MonoBehaviour:
   attackRadius: 1
   direction: {x: 0, y: 0}
   segments: 8
+  dotCollisionType: 0
+  dotShapeType: 1
+  dotRadius: 10
+  dotWidth: 1
+  dotHeight: 1
+  dotDamage: 100
+  dotDuration: 1
+  dotInterval: 1
+  aoeAttackData: {fileID: 11400000, guid: 01f4091c666ebf4438497b7aa6d6392f, type: 2}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -185,11 +194,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: 9b2eb2de4301e0548abd884fe5e31ad0, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 2517999292956121073}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -11,6 +13,13 @@ namespace CharacterSystem
     /// </summary>
     public class EnemyFactory : MonoBehaviour
     {
+        // ===== 객체의 조회를 위한 ID =====
+        private static int _enemyObjectID;
+        private int getObjectID()
+        {
+            return _enemyObjectID++;
+        }
+        
         // ===== 싱글톤 =====
         public static EnemyFactory Instance { private set; get; }
         
@@ -44,8 +53,13 @@ namespace CharacterSystem
         /// <returns>생성된 gameObject에 부착된 Pawn 객체</returns>
         public Pawn Create(EnemyID id)
         {
-            var enemy = ClonePrefab(id);
+            var enemy = popEnemy(id);
+            if (enemy is null)
+                enemy = ClonePrefab(id);
+            
+            enemy.enemyID = id;
             Activate(enemy);
+            
             return enemy;
         }
 
@@ -57,7 +71,7 @@ namespace CharacterSystem
         public void Activate(Pawn enemy)
         {
             enemy.Activate();
-            // TODO: 적 활성화 로직 구현 필요 + ObjectPooling
+            enemy.gameObject.SetActive(true);
         }
         
         /// <summary>
@@ -66,9 +80,10 @@ namespace CharacterSystem
         public void Deactivate(Pawn enemy)
         {
             enemy.Deactivate();
-            // TODO: 적 비활성화 로직 구현 필요 + ObjectPooling
-            // TODO: 오브젝트 풀링 처리시 삭제 필요
-            Destroy(enemy.gameObject);
+            enemy.gameObject.SetActive(false);
+            BattleStage.now.RemoveEnemy(enemy);
+            
+            pushEnemy(enemy.enemyID.Value, enemy);
         }
         
         // ===== 내부 헬퍼 =====
@@ -81,6 +96,7 @@ namespace CharacterSystem
         {
             var enemyObject = Instantiate(GetPrefabById(id));
             var enemy = enemyObject.GetComponent<Pawn>();
+            enemy.objectID = getObjectID();
             return enemy;
         }
 
@@ -90,16 +106,32 @@ namespace CharacterSystem
         /// <returns>해당하는 GameObject 프리팹</returns>
         private GameObject GetPrefabById(EnemyID id)
         {
-            // TODO: EnemyID와 prefab 매칭 필요
-            return enemyPrefabs[0];
+            if (!(0 <= id && id < enemyPrefabs.Length))
+                throw new Exception($"Enemy (id : {id}) is not exist.");
+            return enemyPrefabs[id];
+        }
+        
+        // Object Pooling
+        private Dictionary<EnemyID, Queue<Pawn>> pool = new ();
+
+        private void pushEnemy(EnemyID id, Pawn enemy)
+        {
+            if (!pool.ContainsKey(id))
+            {
+                pool[id] = new Queue<Pawn>();
+            }
             
-            // return id switch
-            // {
-            //     0 => enemyPrefabs[0],
-            //     1 => enemyPrefabs[1],
-            //     // TODO: 더 많은 적 ID 추가 필요
-            //     _ => null
-            // };
+            pool[id].Enqueue(enemy);
+        }
+
+        private Pawn popEnemy(EnemyID id)
+        {
+            if (!pool.ContainsKey(id))
+                return null;
+            if (pool[id].Count <= 0)
+                return null;
+            
+            return pool[id].Dequeue();
         }
     }
 }

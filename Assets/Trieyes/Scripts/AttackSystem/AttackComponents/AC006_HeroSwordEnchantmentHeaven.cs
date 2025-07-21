@@ -38,7 +38,7 @@ namespace AttackComponents
         public float dotDuration = 1f;
         public float dotInterval = 1f;
 
-
+        public AttackData aoeAttackData;
 
         // 천상 공격 상태 열거형
         private enum HeavenAttackState
@@ -66,19 +66,24 @@ namespace AttackComponents
         private void StartHeavenAttack()
         {
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-            var pawnPrefab = attack.attacker.pawnPrefab;
+            var pawnPrefab = attack.attacker.PawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                //debug.logError("R_Weapon을 찾지 못했습니다!");
+                Debug.LogError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
-            attack.transform.SetParent(weaponGameObject.transform);
-            attack.transform.localPosition = Vector3.zero;
-            attack.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            // 부모 설정을 하지 않고 위치만 동기화 (성능 최적화)
+            attack.transform.position = weaponGameObject.transform.position;
+            attack.transform.rotation = weaponGameObject.transform.rotation;
 
-            attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
+            // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
+            if (attack.attackCollider == null)
+            {
+                attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
+            }
+            
             var collider = attack.attackCollider as PolygonCollider2D;
 
             // 부채꼴 모양의 콜라이더 포인트 생성
@@ -107,11 +112,9 @@ namespace AttackComponents
         /// <param name="targetPawn">타겟 적</param>
         private void SpawnAC100Attack(Pawn targetPawn)
         {
-            var aoeAttack = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC100_AOE);
+            var aoeAttack = AttackFactory.Instance.Create(aoeAttackData, attack.attacker, null, Vector2.zero);
             if (aoeAttack != null)
             {
-                BattleStage.now.AttachAttack(aoeAttack);
-
                 var aoeComponent = aoeAttack.components[0] as AC100_AOE;
                 aoeComponent.aoeTargetType = dotCollisionType;
                 aoeComponent.aoeShapeType = dotShapeType;
@@ -122,8 +125,6 @@ namespace AttackComponents
 
                 // AOE 위치 설정 (타겟 위치)
                 aoeComponent.SetAOEPosition((Vector2)targetPawn.transform.position);
-
-                aoeAttack.Activate(attack.attacker, Vector2.zero);
                 
                 Debug.Log("<color=cyan>[AC006] Light 속성으로 AC100 AOE 공격 소환!</color>");
             }
@@ -191,10 +192,13 @@ namespace AttackComponents
             // 천상 공격 상태 처리
             ProcessHeavenAttackState();
 
+            // 디버그 그리기는 개발 모드에서만 (성능 최적화)
+            #if UNITY_EDITOR
             if (attackState == HeavenAttackState.Active && attack.attackCollider != null)
             {
                 DrawFanShapeDebug();
             }
+            #endif
         }
 
         /// <summary>
@@ -224,6 +228,49 @@ namespace AttackComponents
             }
         }
 
+        private void ActivateHeavenAttack()
+        {
+            // 콜라이더 활성화 및 방향 업데이트
+            if (attack.attackCollider != null)
+            {
+                attack.attackCollider.enabled = true;
+                
+                // 플레이어의 현재 방향으로 콜라이더 포인트 재계산
+                var collider = attack.attackCollider as PolygonCollider2D;
+                if (collider != null)
+                {
+                    // 현재 플레이어의 이동 방향 가져오기
+                    Vector2 currentDirection = attack.attacker.LastMoveDirection;
+                    if (currentDirection.magnitude < 0.1f)
+                    {
+                        // 이동하지 않을 때는 이전 방향 유지
+                        currentDirection = attackDirection;
+                    }
+                    else
+                    {
+                        attackDirection = currentDirection.normalized;
+                    }
+                    
+                    // 새로운 방향으로 콜라이더 포인트 재계산
+                    Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
+                    collider.points = points;
+                }
+            }
+            
+            //debug.log("<color=green>[AC006] 천상 강화 공격 활성화!</color>");
+        }
+
+        private void FinishHeavenAttack()
+        {
+            // 콜라이더 비활성화 (삭제하지 않고)
+            if (attack.attackCollider != null)
+            {
+                attack.attackCollider.enabled = false;
+            }
+            
+            //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
+        }
+
         private void ProcessHeavenAttackState()
         {
             switch (attackState)
@@ -240,15 +287,18 @@ namespace AttackComponents
                     {
                         attackState = HeavenAttackState.Active;
                         attackTimer = 0f;
+                        ActivateHeavenAttack();
                     }
                     break;
 
                 case HeavenAttackState.Active:
                     attackTimer += Time.deltaTime;
                     
-                    // 위치 업데이트
-                    attack.transform.position = attack.attacker.transform.position;
-                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    // 위치 업데이트 (성능 최적화: 필요할 때만)
+                    if (attack.attacker != null)
+                    {
+                        attack.transform.position = attack.attacker.transform.position;
+                    }
                     
                     if (attackTimer >= attackDuration)
                     {
@@ -263,6 +313,7 @@ namespace AttackComponents
                     if (attackTimer >= 0.1f) // 종료 시간
                     {
                         attackState = HeavenAttackState.Finished;
+                        FinishHeavenAttack();
                     }
                     break;
 

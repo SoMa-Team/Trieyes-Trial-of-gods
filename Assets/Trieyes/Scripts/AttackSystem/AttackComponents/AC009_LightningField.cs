@@ -45,6 +45,8 @@ namespace AttackComponents
             Finished
         }
 
+        public AttackData followingFieldData;
+
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
@@ -139,7 +141,6 @@ namespace AttackComponents
                 buffMultiplier = moveSpeedBoostMultiplier,
                 buffDuration = moveSpeedBoostDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var speedBuff = new BUFF();
@@ -151,8 +152,7 @@ namespace AttackComponents
             Debug.Log("<color=yellow>[AC009] AC104 소환하여 따라다니는 자기장 생성!</color>");
             
             // AC104 생성
-            summonedAC104 = AttackFactory.Instance.ClonePrefab((int)AttackComponentID.AC105_FollowingField);
-            BattleStage.now.AttachAttack(summonedAC104);
+            summonedAC104 = AttackFactory.Instance.Create(followingFieldData, attack.attacker, null, Vector2.zero);
             
             // AC104 설정 (하드코딩)
             var ac104Component = summonedAC104.components[0] as AC105_FollowingField;
@@ -166,9 +166,6 @@ namespace AttackComponents
                 ac104Component.followDistance = 0f;
                 ac104Component.followOffset = Vector2.zero;
             }
-            
-            // AC104 활성화
-            summonedAC104.Activate(attack.attacker, Vector2.zero);
             
             Debug.Log("<color=green>[AC009] AC104 따라다니는 자기장 활성화 완료!</color>");
         }

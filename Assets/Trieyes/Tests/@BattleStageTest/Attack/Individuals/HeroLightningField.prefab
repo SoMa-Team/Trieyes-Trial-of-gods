@@ -49,8 +49,9 @@ MonoBehaviour:
   lightningFieldDuration: 3
   lightningFieldDelay: 0.1
   vfxDuration: 0.4
-  moveSpeedBoostMultiplier: 1
+  moveSpeedBoostMultiplier: 10
   moveSpeedBoostDuration: 5
+  followingFieldData: {fileID: 11400000, guid: 9c040a02d2d66f74fa9d13e8c1ba8bbe, type: 2}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,11 +188,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: 0cf50fb4ad1b6964ca845947442ee0e6, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 7070757861086913797}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

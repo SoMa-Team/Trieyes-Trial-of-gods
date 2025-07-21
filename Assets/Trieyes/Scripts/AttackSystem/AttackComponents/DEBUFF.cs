@@ -38,7 +38,6 @@ namespace AttackComponents
         public int debuffValue = 10;
 
         public float debuffInterval = 1f;
-        public int globalDamage = 10;
         public float debuffMultiplier = 1f;
         public float debuffDuration = 10f;
     }
@@ -57,12 +56,13 @@ namespace AttackComponents
         public float debuffDuration = 10f;
 
         public float debuffInterval = 1f;
-        public int globalDamage = 10;
 
         public Attack attack;
         public Pawn target;
 
-        private const int AC101_SINGLE_DOT = 11;
+        private const int AC101_SINGLE_DOT = 1;
+
+        public List<AttackData> attackDatas = new List<AttackData>();
 
         public void Activate(DebuffInfo debuffInfo)
         {
@@ -71,241 +71,164 @@ namespace AttackComponents
             debuffMultiplier = debuffInfo.debuffMultiplier;
             debuffDuration = debuffInfo.debuffDuration;
             debuffInterval = debuffInfo.debuffInterval;
-            globalDamage = debuffInfo.globalDamage;
             target = debuffInfo.target;
             attack = debuffInfo.attack;
 
-            ApplyDebuffEffect(target);
+            ApplyDebuffEffect();
         }
 
-        private void ApplyDebuffEffect(Pawn target)
+        private void ApplyDebuffEffect()
         {
             switch (debuffType)
             {
                 case DEBUFFType.DecreaseSpeed:
-                    ApplyDecreaseSpeedEffect(target);
+                    ApplyStatDebuff(target, StatType.MoveSpeed, debuffValue, debuffMultiplier, debuffDuration, debuffInterval);
                     break;
                 case DEBUFFType.DecreaseAttackSpeed:
-                    ApplyDecreaseAttackSpeedEffect(target);
+                    ApplyStatDebuff(target, StatType.AttackSpeed, debuffValue, debuffMultiplier, debuffDuration, debuffInterval);
                     break;
                 case DEBUFFType.DecreaseAttackPower:
-                    ApplyDecreaseAttackPowerEffect(target);
+                    ApplyStatDebuff(target, StatType.AttackPower, debuffValue, debuffMultiplier, debuffDuration, debuffInterval);
                     break;
                 case DEBUFFType.DecreaseDefense:
-                    ApplyDecreaseDefenseEffect(target);
+                    ApplyStatDebuff(target, StatType.Defense, debuffValue, debuffMultiplier, debuffDuration, debuffInterval);
                     break;
                 case DEBUFFType.DecreaseCriticalChance:
-                    ApplyDecreaseCriticalChanceEffect(target);
+                    ApplyStatDebuff(target, StatType.CriticalRate, debuffValue, debuffMultiplier, debuffDuration, debuffInterval);
                     break;
                 case DEBUFFType.DecreaseCriticalDamage:
-                    ApplyDecreaseCriticalDamageEffect(target);
+                    ApplyStatDebuff(target, StatType.CriticalDamage, debuffValue, debuffMultiplier, debuffDuration, debuffInterval);
                     break;
                 case DEBUFFType.DecreaseMoveSpeed:
-                    ApplyDecreaseMoveSpeedEffect(target);
+                    ApplyStatDebuff(target, StatType.MoveSpeed, debuffValue, debuffMultiplier, debuffDuration, debuffInterval);
                     break;
                 case DEBUFFType.Slow:
                     ApplySlowEffect(target);
                     break;
-
                 case DEBUFFType.Frozen:
                     ApplyFrozenEffect(target);
                     break;
-
                 case DEBUFFType.Stun:
                     ApplyStunEffect(target);
                     break;
-
                 case DEBUFFType.Burn:
                     ApplyBurnEffect(target);
                     break;
-
                 case DEBUFFType.Poison:
                     ApplyPoisonEffect(target);
                     break;
-
                 case DEBUFFType.Bleed:
                     ApplyBleedEffect(target);
                     break;
-
                 case DEBUFFType.Shock:
                     ApplyShockEffect(target);
                     break;
-
+                case DEBUFFType.Freeze:
+                    ApplyFrozenEffect(target);
+                    break;
                 default:
                     break;
             }
         }
 
-        private void ApplyDecreaseSpeedEffect(Pawn target)
+        /// <summary>
+        /// 통합 스탯 디버프 적용 함수
+        /// </summary>
+        /// <param name="target">디버프 대상</param>
+        /// <param name="statType">적용할 스탯 타입</param>
+        /// <param name="debuffValue">가산 디버프 값 (0이면 무시)</param>
+        /// <param name="debuffMultiplier">승산 디버프 배율 (1f면 무시)</param>
+        /// <param name="duration">디버프 지속시간</param>
+        /// <param name="interval">디버프 간격 (주기적 디버프용)</param>
+        private void ApplyStatDebuff(Pawn target, StatType statType, int debuffValue, float debuffMultiplier, float duration, float interval)
         {
-            var debuffModifier = new StatModifier(
-                -(int)(debuffMultiplier), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                debuffDuration
-            );
-        }
+            // null 체크 추가
+            if (target == null || target.statSheet == null)
+            {
+                return;
+            }
 
-        private void ApplyDecreaseAttackSpeedEffect(Pawn target)
-        {
-            var debuffModifier = new StatModifier(
-                -(int)(debuffMultiplier), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                debuffDuration
-            );
-        }
+            // 가산 디버프 적용 (음수 값)
+            if (debuffValue != 0)
+            {
+                var additiveDebuff = new StatModifier(
+                    -debuffValue, // 음수로 적용
+                    BuffOperationType.Additive,
+                    false,
+                    duration
+                );
+                target.statSheet[statType].AddBuff(additiveDebuff);
+            }
 
-        private void ApplyDecreaseAttackPowerEffect(Pawn target)
-        {
-            var debuffModifier = new StatModifier(
-                -(int)(debuffMultiplier), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                debuffDuration
-            );
-        }
-
-        private void ApplyDecreaseDefenseEffect(Pawn target)
-        {
-            var debuffModifier = new StatModifier(
-                -(int)(debuffMultiplier), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                debuffDuration
-            );
-        }
-
-        private void ApplyDecreaseCriticalChanceEffect(Pawn target)
-        {
-            var debuffModifier = new StatModifier(
-                -(int)(debuffMultiplier), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                debuffDuration
-            );
-        }
-
-        private void ApplyDecreaseCriticalDamageEffect(Pawn target)
-        {
-            var debuffModifier = new StatModifier(
-                -(int)(debuffMultiplier), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                debuffDuration
-            );
-        }
-
-        private void ApplyDecreaseMoveSpeedEffect(Pawn target)
-        {
-            var debuffModifier = new StatModifier(
-                -(int)(debuffMultiplier), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                debuffDuration
-            );
+            // 승산 디버프 적용 (1f 미만의 배율)
+            if (debuffMultiplier != 1f)
+            {
+                var multiplicativeDebuff = new StatModifier(
+                    -(int)(debuffMultiplier), // 승산 배율 그대로 사용
+                    BuffOperationType.Multiplicative,
+                    false,
+                    duration
+                );
+                target.statSheet[statType].AddBuff(multiplicativeDebuff);
+            }
         }
 
         private void ApplySlowEffect(Pawn target)
         {
-            // null 체크 추가
-            if (target == null || target.statSheet == null)
-            {
-                Debug.LogWarning($"<color=yellow>[DEBUFF] ApplySlowEffect: target 또는 statSheet가 null입니다.</color>");
-                return;
-            }
-
             // 이동속도 감소 효과 적용
-            var debuffModifier = new StatModifier(
-                -(int)(debuffMultiplier), // 30% 감소
-                BuffOperationType.Multiplicative,
-                false,
-                debuffDuration
-            );
-            
-            target.statSheet[StatType.MoveSpeed].AddBuff(debuffModifier);
-            
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {target.pawnName}에게 슬로우 효과 적용</color>");
+            ApplyStatDebuff(target, StatType.MoveSpeed, 0, debuffMultiplier, debuffDuration, debuffInterval);
         }
 
         private void ApplyFrozenEffect(Pawn target)
         {
-            // null 체크 추가
-            if (target == null || target.statSheet == null)
-            {
-                Debug.LogWarning($"<color=yellow>[DEBUFF] ApplyFrozenEffect: target 또는 statSheet가 null입니다.</color>");
-                return;
-            }
-
             // 얼려지는 효과 = N 초동안 이동속도가 0이면 됨
-            var debuffModifier = new StatModifier(0, BuffOperationType.Multiplicative, false, debuffDuration);
-            target.statSheet[StatType.MoveSpeed].AddBuff(debuffModifier);
-
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {target.pawnName}에게 얼려지는 효과 적용</color>");
+            ApplyStatDebuff(target, StatType.MoveSpeed, 0, 0f, debuffDuration, debuffInterval);
         }
 
         private void ApplyStunEffect(Pawn target)
         {
-            // null 체크 추가
-            if (target == null || target.statSheet == null)
-            {
-                Debug.LogWarning($"<color=yellow>[DEBUFF] ApplyStunEffect: target 또는 statSheet가 null입니다.</color>");
-                return;
-            }
-
             // 스턴 효과 = N 초동안 이동속도가 0이면 됨
-            var debuffModifier = new StatModifier(0, BuffOperationType.Multiplicative, false, debuffDuration);
-            target.statSheet[StatType.MoveSpeed].AddBuff(debuffModifier);
-
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {target.pawnName}에게 스턴 효과 적용</color>");
+            ApplyStatDebuff(target, StatType.MoveSpeed, 0, 0f, debuffDuration, debuffInterval);
         }
 
         private void ApplyBurnEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
-            BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = target;
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
-            dotComponent.dotDamage = globalDamage;
+            dotComponent.dotDamage = debuffValue; // 디버프 값 사용
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval;
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
-
-            burnAttack.Activate(attack.attacker, Vector2.zero);
+            dotComponent.dotTargets.Add(target as Enemy);
         }
 
         private void ApplyPoisonEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
-            BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = target;
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
-            dotComponent.dotDamage = globalDamage;
+            dotComponent.dotDamage = debuffValue; // 디버프 값 사용
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval; 
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
-
-            burnAttack.Activate(attack.attacker, Vector2.zero);
+            dotComponent.dotTargets.Add(target as Enemy);
         }
 
         private void ApplyBleedEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.ClonePrefab(AC101_SINGLE_DOT);
-            BattleStage.now.AttachAttack(burnAttack);
-            burnAttack.target = target;
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
-            dotComponent.dotDamage = globalDamage;
+            dotComponent.dotDamage = debuffValue; // 디버프 값 사용
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval;
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
+            dotComponent.dotTargets.Add(target as Enemy);
 
-            burnAttack.Activate(attack.attacker, Vector2.zero);
         }
 
         private void ApplyShockEffect(Pawn target)

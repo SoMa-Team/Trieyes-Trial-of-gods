@@ -31,6 +31,10 @@ namespace BattleSystem
 
         public void Update()
         {
+            if (difficulty == null)
+            {
+                Debug.LogError("Difficulty is null");
+            }
             if (Time.time - startTime >= difficulty.battleLength)
             {
                 OnBattleClear();

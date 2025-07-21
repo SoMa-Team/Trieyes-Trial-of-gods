@@ -37,7 +37,12 @@ namespace CharacterSystem
                 var canvas = GameObject.Find("Canvas");
                 if (canvas != null)
                 {
+                    Debug.Log("Found Canvas");
                     var found = canvas.GetComponentInChildren<Joystick>(true);
+                    if (found != null)
+                    {
+                        Debug.Log("Found Joystick");
+                    }
                     joystick = found as Joystick;
                 }
             }

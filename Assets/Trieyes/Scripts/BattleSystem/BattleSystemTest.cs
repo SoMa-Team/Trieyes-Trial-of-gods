@@ -12,8 +12,9 @@ namespace BattleSystem
     public class BattleSystemTest: MonoBehaviour
     {
         public BattleStage battleStage;
-        public Pawn character;
         public AttackData attackData;
+        
+        private Pawn character;
         // public Difficulty difficulty;
 
         void Start()

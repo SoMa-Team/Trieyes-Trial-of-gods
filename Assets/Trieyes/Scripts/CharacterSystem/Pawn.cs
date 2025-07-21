@@ -210,15 +210,24 @@ namespace CharacterSystem
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
-            }
-            
-            // 리스트 초기화
-            if (relics != null)
-            {
-                relics.Clear();
-            }
+            }   
 
             Controller.Deactivate();
+        }
+
+        public void ApplyRelic()
+        {
+            if (relics.Count > 0)
+            {
+                backupBasicAttack = basicAttack.Copy();
+                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+                
+                backupSkill1Attack = skill1Attack.Copy();
+                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
+                
+                backupSkill2Attack = skill2Attack.Copy();
+                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+            }
         }
 
         /// <summary>

@@ -141,7 +141,6 @@ namespace AttackComponents
                 buffMultiplier = moveSpeedBoostMultiplier,
                 buffDuration = moveSpeedBoostDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var speedBuff = new BUFF();

@@ -225,7 +225,6 @@ namespace AttackComponents
                 buffMultiplier = 100f,
                 buffDuration = 7f,
                 buffInterval = 7f,
-                globalHeal = 0
             };
 
             var hasteBuff = new BUFF();
@@ -240,7 +239,6 @@ namespace AttackComponents
                 buffMultiplier = 100f,
                 buffDuration = 7f,
                 buffInterval = 7f,
-                globalHeal = 0
             };
 
             var rangeBuff = new BUFF();
@@ -255,7 +253,6 @@ namespace AttackComponents
                 debuffMultiplier = 50f,
                 debuffDuration = 7f,
                 debuffInterval = 7f,
-                globalDamage = 0
             };
 
             var debuff = new DEBUFF();

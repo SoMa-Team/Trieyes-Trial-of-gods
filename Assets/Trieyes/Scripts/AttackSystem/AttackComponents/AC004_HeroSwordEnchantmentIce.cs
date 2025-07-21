@@ -103,7 +103,6 @@ namespace AttackComponents
                 debuffMultiplier = 15f,
                 debuffDuration = 5f,
                 debuffInterval = 1f,
-                globalDamage = 0
             };
 
             var debuff = new DEBUFF();

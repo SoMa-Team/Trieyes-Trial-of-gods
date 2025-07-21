@@ -216,7 +216,6 @@ namespace AttackComponents
             debuffInfo.debuffDuration = additionalDebuffDuration;
             debuffInfo.debuffMultiplier = additionalDebuffMultiplier;
             debuffInfo.debuffInterval = 1f;
-            debuffInfo.globalDamage = 0;
             
             var debuff = new DEBUFF();
             debuff.Activate(debuffInfo);

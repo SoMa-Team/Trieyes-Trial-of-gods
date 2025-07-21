@@ -308,7 +308,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -327,7 +326,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -346,7 +344,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -365,7 +362,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -384,7 +380,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -403,7 +398,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();
@@ -422,7 +416,6 @@ namespace AttackComponents
                 buffMultiplier = additionalBuffMultiplier,
                 buffDuration = additionalBuffDuration,
                 buffInterval = 1f,
-                globalHeal = 0
             };
 
             var buff = new BUFF();

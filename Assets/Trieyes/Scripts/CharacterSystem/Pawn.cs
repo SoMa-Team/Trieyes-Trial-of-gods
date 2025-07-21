@@ -73,13 +73,13 @@ namespace CharacterSystem
 
         public AttackData skill1Attack;
         private AttackData backupSkill1Attack;
-        public float skillAttack001Cooldown = 0f;
-        public float lastSkillAttack001Time = -999f;
+        public float skillAttack1Cooldown = 0f;
+        public float lastSkillAttack1Time = -999f;
         
         public AttackData skill2Attack;
         private AttackData backupSkill2Attack;
-        public float skillAttack002Cooldown = 0f;
-        public float lastSkillAttack002Time = -999f;
+        public float skillAttack2Cooldown = 0f;
+        public float lastSkillAttack2Time = -999f;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -172,8 +172,8 @@ namespace CharacterSystem
                 Utils.EventType.OnHPUpdated
             );
 
-            skillAttack001Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
-            skillAttack002Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
+            skillAttack1Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
+            skillAttack2Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
 
             deck.Activate(this, true);
             initBaseStat();
@@ -296,7 +296,7 @@ namespace CharacterSystem
         /// 애니메이션 상태를 변경합니다.
         /// </summary>
         /// <param name="newState">새로운 애니메이션 상태</param>
-        protected virtual void ChangeAnimationState(string newState)
+        private void ChangeAnimationState(string newState)
         {
             if (isDead && newState != "DEATH")
                 return;
@@ -690,9 +690,9 @@ namespace CharacterSystem
             switch (skillType)
             {
                 case PawnAttackType.Skill1:
-                    return Time.time - lastSkillAttack001Time >= skillAttack001Cooldown;
+                    return Time.time - lastSkillAttack1Time >= skillAttack1Cooldown;
                 case PawnAttackType.Skill2:
-                    return Time.time - lastSkillAttack002Time >= skillAttack002Cooldown;
+                    return Time.time - lastSkillAttack2Time >= skillAttack2Cooldown;
                 default:
                     return false;
             }
@@ -724,25 +724,25 @@ namespace CharacterSystem
                 case PawnAttackType.Skill1:
                     if (CheckSkillCooldown(PawnAttackType.Skill1))
                     {
-                        lastSkillAttack001Time = 0f;
+                        lastSkillAttack1Time = 0f;
                         ChangeAnimationState("ATTACK");
                         Attack temp = AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
                         Debug.Log($"<color=yellow>[SKILL1] {temp.gameObject.name} skill1Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
                         return true;
                     }
-                    Debug.Log($"<color=yellow>[SKILL1] {gameObject.name} skillAttack001Cooldown: {skillAttack001Cooldown}, lastSkillAttack001Time: {lastSkillAttack001Time}</color>");
+                    Debug.Log($"<color=yellow>[SKILL1] {gameObject.name} skillAttack1Cooldown: {skillAttack1Cooldown}, lastSkillAttack1Time: {lastSkillAttack1Time}</color>");
                     return false;
 
                 case PawnAttackType.Skill2:
                     if (CheckSkillCooldown(PawnAttackType.Skill2))
                     {
-                        lastSkillAttack002Time = 0f;
+                        lastSkillAttack2Time = 0f;
                         ChangeAnimationState("ATTACK");
                         Attack temp = AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
                         Debug.Log($"<color=yellow>[SKILL2] {temp.gameObject.name} skill2Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
                         return true;
                     }
-                    Debug.Log($"<color=yellow>[SKILL2] {gameObject.name} skillAttack002Cooldown: {skillAttack002Cooldown}, lastSkillAttack002Time: {lastSkillAttack002Time}</color>");
+                    Debug.Log($"<color=yellow>[SKILL2] {gameObject.name} skillAttack2Cooldown: {skillAttack2Cooldown}, lastSkillAttack2Time: {lastSkillAttack2Time}</color>");
                     return false;
                     
                 default:

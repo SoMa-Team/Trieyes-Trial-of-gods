@@ -85,8 +85,8 @@ namespace AttackComponents
                     character.activateLight = true;
                     break;
                 default:
-                    // None: character.lastSkillAttack001Time = 0f; 설정하고 바로 종료
-                    character.lastSkillAttack001Time = 0f;
+                    // None: character.lastSkillAttack1Time = 0f; 설정하고 바로 종료
+                    character.lastSkillAttack1Time = 0f;
                     currentState = EnhancementState.Finished;
                     break;
             }

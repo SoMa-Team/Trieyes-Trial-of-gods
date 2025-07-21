@@ -106,7 +106,6 @@ namespace AttackSystem
             switch (hitObject.tag)
             {
                 case "Player": 
-                    break;
                     
                 case "Enemy":
                     if (attacker.gameObject.CompareTag(hitObject.tag))

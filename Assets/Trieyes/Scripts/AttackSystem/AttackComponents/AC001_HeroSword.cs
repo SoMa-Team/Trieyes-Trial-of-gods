@@ -20,6 +20,14 @@ namespace AttackComponents
 
         private BoxCollider2D attackCollider;
 
+        protected override void Start()
+        {
+            base.Start();
+
+            // 3. attack 오브젝트에 콜라이더 추가 및 설정
+            attackCollider = attack.GetComponent<BoxCollider2D>();
+        }
+
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
@@ -39,12 +47,6 @@ namespace AttackComponents
             attack.transform.localPosition = Vector3.zero;
             attack.transform.localRotation = Quaternion.identity;
 
-            // 3. attack 오브젝트에 콜라이더 추가 및 설정
-            attackCollider = attack.GetComponent<BoxCollider2D>();
-            if (attackCollider == null)
-            {
-                attackCollider = attack.gameObject.AddComponent<BoxCollider2D>();
-            }
             attackCollider.offset = new Vector2(0, 0.3f);
             attackCollider.size = new Vector2(0.16f, 0.56f);
             attackCollider.isTrigger = true;

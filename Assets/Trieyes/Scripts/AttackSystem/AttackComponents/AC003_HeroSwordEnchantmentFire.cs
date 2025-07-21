@@ -72,7 +72,7 @@ namespace AttackComponents
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                //debug.logError("R_Weapon을 찾지 못했습니다!");
+                Debug.LogError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 

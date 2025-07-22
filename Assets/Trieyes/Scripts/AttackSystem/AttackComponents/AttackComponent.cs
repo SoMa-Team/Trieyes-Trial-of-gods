@@ -4,6 +4,7 @@ using AttackSystem;
 using UnityEngine;
 using CharacterSystem;
 using System;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -93,6 +94,45 @@ namespace AttackComponents
         public virtual void ProcessComponentCollision(Pawn targetPawn)
         {
             
+        }
+
+        // ===== [기능 5] VFX 처리 =====
+        /// <summary>
+        /// VFX를 생성하고 설정합니다. (하위 클래스에서 오버라이드)
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected virtual GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        {
+            // 기본 구현: 하위 클래스에서 오버라이드
+            return null;
+        }
+
+        /// <summary>
+        /// VFX를 재생합니다.
+        /// </summary>
+        /// <param name="vfx">재생할 VFX</param>
+        protected virtual void PlayVFX(GameObject vfx)
+        {
+            if (vfx != null && VFXFactory.Instance != null)
+            {
+                VFXFactory.Instance.PlayVFX(vfx);
+            }
+        }
+
+        /// <summary>
+        /// VFX를 정지하고 반환합니다.
+        /// </summary>
+        /// <param name="vfx">정지할 VFX</param>
+        /// <param name="vfxId">VFX ID</param>
+        protected virtual void StopAndReturnVFX(GameObject vfx, int vfxId)
+        {
+            if (vfx != null && VFXFactory.Instance != null)
+            {
+                VFXFactory.Instance.StopVFX(vfx);
+                VFXFactory.Instance.ReturnVFX(vfx, vfxId);
+            }
         }
 
         // ===== [기능 4] 이벤트 처리 =====

@@ -28,8 +28,8 @@ namespace AttackComponents
 
         // 생성된 VFX 인스턴스
         [Header("VFX Settings")]
-        [SerializeField] private string vfxType = "BasicAttack"; // 사용할 VFX 타입
-        [SerializeField] private GameObject spawnedVFX;
+        [SerializeField] private readonly int VFX_ID = 0; // BASIC_ATTACK VFX ID
+        private GameObject spawnedVFX;
 
         // 공격 상태 열거형
         private enum AttackState
@@ -78,11 +78,11 @@ namespace AttackComponents
             // 부채꼴 중심점 계산 (공격 방향으로 반지름의 절반만큼 이동)
             Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
             
-            // VFX 생성 및 배치
-            spawnedVFX = VFXManager.Instance.SpawnVFXByType(vfxType, vfxPosition, attackDirection);
+            // VFX 생성 및 설정
+            spawnedVFX = CreateAndSetupVFX(vfxPosition, attackDirection);
             
-            // Scale 2배
-            spawnedVFX.transform.localScale = new Vector3(2f, 2f);
+            // VFX 재생
+            PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
             if (attack.attackCollider == null)
@@ -268,12 +268,7 @@ namespace AttackComponents
             // VFX 정리
             if (spawnedVFX != null)
             {
-                // VFXManager를 통해 즉시 풀로 반환
-                if (VFXManager.Instance != null)
-                {
-                    VFXManager.Instance.ReturnVFXByType(spawnedVFX, vfxType, 0f);
-                }
-                
+                StopAndReturnVFX(spawnedVFX, VFX_ID);
                 spawnedVFX = null;
             }
             
@@ -305,6 +300,38 @@ namespace AttackComponents
                     Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
                 }
             }
+        }
+
+        /// <summary>
+        /// VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 기본 VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(VFX_ID, position, direction);
+            
+            // 여기서 VFX의 세부 조정을 할 수 있습니다
+            // 예: 특정 파티클 시스템의 속성 변경, 스케일 조정 등
+            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
+            
+            // Render Alignment 설정
+            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
+            {
+                renderer.alignment = ParticleSystemRenderSpace.Local; // 또는 View, Local
+            }
+
+            vfx.transform.position = position;
+
+            // 방향에 맞게 회전
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
+            vfx.transform.localScale = new Vector3(2f, 2f);
+            
+            return vfx;
         }
     }
 }

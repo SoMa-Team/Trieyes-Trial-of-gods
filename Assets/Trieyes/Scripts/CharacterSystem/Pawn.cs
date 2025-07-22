@@ -124,6 +124,12 @@ namespace CharacterSystem
             
             pawnPrefab = transform.GetChild(0).gameObject;
             Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            
+            // 스탯 시트 초기화
+            statSheet = new StatSheet();
+            
+            deck.Activate(this, true);
+            initBaseStat();
 
             if (rb != null)
             {
@@ -155,9 +161,6 @@ namespace CharacterSystem
             isDead = false;
             currentHp = maxHp;
             
-            // 스탯 시트 초기화
-            statSheet = new StatSheet();
-            
             // 기본 이벤트 등록
             // TODO: 폰에서는 이벤트 필터 안하기
             RegisterAcceptedEvents(
@@ -174,9 +177,6 @@ namespace CharacterSystem
 
             skillAttack1Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
             skillAttack2Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
-
-            deck.Activate(this, true);
-            initBaseStat();
             
             gameObject.SetActive(true);
             
@@ -192,6 +192,8 @@ namespace CharacterSystem
                 backupSkill2Attack = skill2Attack.Copy();
                 skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
             }
+            
+            Controller.Activate(this);
         }
 
         /// <summary>

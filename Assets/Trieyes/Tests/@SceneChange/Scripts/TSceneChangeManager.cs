@@ -73,5 +73,19 @@ namespace GameFramework
             SceneManager.sceneLoaded += OnChangeBattleToShop;
             SceneManager.LoadScene(SHOP_SCENE_NAME);
         }
+        
+        public void ChangeShopToBattle(Character mainCharacter)
+        {
+            mainCharacter.transform.SetParent(null);
+            DontDestroyOnLoad(mainCharacter.gameObject);
+
+            void OnChangeShopToBattle(Scene scene, LoadSceneMode mode)
+            {
+                SceneManager.sceneLoaded -= OnChangeShopToBattle;
+                BattleStageFactory.Instance.Create(mainCharacter, Difficulty.GetByStageRound(stageRound));
+            }
+            SceneManager.sceneLoaded += OnChangeShopToBattle;
+            SceneManager.LoadScene(BATTLE_SCENE_NAME);
+        }
     }
 } 

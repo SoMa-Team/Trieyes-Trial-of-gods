@@ -10,7 +10,9 @@ using Stats;
 using System;
 using StickerSystem;
 using System.Collections.Generic;
+using GameFramework;
 using Utils;
+using System.Collections;
 
 /// <summary>
 /// 상점 씬의 핵심 관리 클래스입니다.
@@ -96,6 +98,36 @@ public class ShopSceneManager : MonoBehaviour
 
         RefreshStatUI();
     }
+    
+    public void Deactivate()
+    {
+        // 1. 버튼 리스너 해제 (중복 AddListener 방지, 메모리 누수 방지)
+        if (rerollButton != null) rerollButton.onClick.RemoveListener(RefreshShopCards);
+        if (battleButton != null) battleButton.onClick.RemoveListener(OnBattleButtonPressed);
+
+        for (int i = 0; i < buyCardButtons.Count; i++)
+            buyCardButtons[i].onClick.RemoveAllListeners();
+
+        for (int i = 0; i < buyStickerButtons.Count; i++)
+            buyStickerButtons[i].onClick.RemoveAllListeners();
+
+        // 2. 내부 참조 해제 (메모리 관리)
+        //mainCharacter = null;
+        selectedSticker = null;
+        selectedStickerView = null;
+        shopCards.Clear();
+        shopStickers.Clear();
+
+        // 3. UI 상태 초기화/리셋 (필요시)
+        // 예: shopCardViews, shopStickerViews 초기화, 덱 UI 리셋 등
+
+        // 4. 싱글턴 참조 해제 (씬 언로드 대비)
+        Instance = null;
+
+        // 5. 오브젝트 비활성화 (혹은 Destroy)
+        // this.gameObject.SetActive(false); // 또는 Destroy(this.gameObject);
+    }
+
 
     // --- 상점 카드 리롤 ---
     private void RefreshShopCards()
@@ -165,18 +197,28 @@ public class ShopSceneManager : MonoBehaviour
         // 4. 카드뷰들에 "스티커 적용 모드" 안내 등 필요하다면 표시
         // (예시: CardView에 isStickerApplyMode 등)
     }
+    
+    private IEnumerator BattleButtonRoutine()
+    {
+        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
+        RefreshStatUI();
+
+        yield return new WaitForSeconds(0.8f); // 0.8초 정도, 원하는 시간으로 변경
+
+        this.Deactivate();
+        TSceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
+    }
 
     // --- 전투 진입 ---
     private void OnBattleButtonPressed()
     {
         Debug.Log("BattleSceneChangeTest");
-        if(mainCharacter == null)
+        if (mainCharacter == null)
         {
             Debug.LogError("캐릭터가 초기화되지 않았습니다.");
             return;
         }
-        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        RefreshStatUI();
+        StartCoroutine(BattleButtonRoutine());
     }
 
     // --- 스탯 UI 갱신 ---

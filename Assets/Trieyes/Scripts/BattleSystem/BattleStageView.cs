@@ -56,6 +56,8 @@ namespace BattleSystem
                 _battleStage = value;
                 _battleStage.View = this;
                 
+                Debug.Log("BattleStageView Set");
+                
                 // TODO: 데이터 UI 동기화 로직 구현 필요
                 CreateTilemap();
                 CreateBattleCamera();

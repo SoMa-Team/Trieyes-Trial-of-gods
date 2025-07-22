@@ -12,27 +12,13 @@ namespace CharacterSystem
         // Pawn의 추상 멤버 구현
         
         // ===== [Unity 생명주기] =====
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            // Collision Layer를 Character로 설정
-            gameObject.layer = LayerMask.NameToLayer("Character");
-            
-            // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
-            Controller = GetComponent<Controller>();
-            if (Controller == null)
-            {
-                throw new System.Exception("PlayerController not found on " + gameObject.name);
-            }
-            Controller.Activate(this);
-        }
-
         protected override void Start()
         {
             base.Start();
             
-            // Character001만 받을 특별한 이벤트들 등록
+            // Collision Layer를 Character로 설정
+            gameObject.layer = LayerMask.NameToLayer("Character");
+            
             RegisterAcceptedEvents(
                 Utils.EventType.OnLevelUp
             );

@@ -70,6 +70,7 @@ namespace CharacterSystem
         /// <param name="enemy">활성화할 적 Pawn</param>
         public void Activate(Pawn enemy)
         {
+            Debug.LogError($"Ennemy {enemy.objectID} is Activated!");
             enemy.Activate();
             enemy.gameObject.SetActive(true);
         }

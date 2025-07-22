@@ -129,7 +129,14 @@ namespace CharacterSystem
 
         protected virtual void OnDestroy()
         {
-            Deactivate();
+            if (isEnemy)
+            {
+                EnemyFactory.Instance.Deactivate(this);
+            }
+            else
+            {
+                CharacterFactory.Instance.Deactivate(this);
+            }
         }
 
         public virtual void Update() 

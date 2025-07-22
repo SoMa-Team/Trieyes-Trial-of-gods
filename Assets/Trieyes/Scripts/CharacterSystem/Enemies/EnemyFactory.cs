@@ -133,5 +133,10 @@ namespace CharacterSystem
             
             return pool[id].Dequeue();
         }
+
+        public void ClearPool()
+        {
+            pool.Clear();
+        }
     }
 }

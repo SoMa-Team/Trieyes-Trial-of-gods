@@ -108,11 +108,14 @@ namespace BattleSystem
                 EnemyFactory.Instance.Deactivate(enemy);
             }
             
+            EnemyFactory.Instance.ClearPool();
+            
             // 공격 정리
             foreach (var attack in new List<Attack>(battleStage.attacks.Values))
             {
                 AttackFactory.Instance.Deactivate(attack);
             }
+            AttackFactory.Instance.ClearPool();
             battleStage.Deactivate();
             // SpawnManager 비활성화
             battleStage.spawnManager.Deactivate();

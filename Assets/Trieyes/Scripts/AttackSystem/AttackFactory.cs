@@ -152,6 +152,11 @@ namespace AttackSystem
             pushAttack(attack);
         }
 
+        public void ClearPool()
+        {
+            pool.Clear();
+        }
+
         // ===== 오브젝트 풀링 =====
         private Dictionary<AttackID, Queue<Attack>> pool = new ();
         private void pushAttack(Attack attack)

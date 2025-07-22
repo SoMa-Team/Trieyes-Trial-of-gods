@@ -96,8 +96,6 @@ namespace BattleSystem
         /// <param name="battleStage">비활성화할 BattleStage</param>
         public void Deactivate(BattleStage battleStage)
         {
-            battleStage.Deactivate();
-
             // 캐릭터 정리
             foreach (var character in battleStage.characters)
             {
@@ -105,17 +103,17 @@ namespace BattleSystem
             }
 
             // 적 정리
-            foreach (var enemy in battleStage.enemies.Values)
+            foreach (var enemy in new List<Pawn>(battleStage.enemies.Values))
             {
                 EnemyFactory.Instance.Deactivate(enemy);
             }
             
             // 공격 정리
-            foreach (var attack in battleStage.attacks.Values)
+            foreach (var attack in new List<Attack>(battleStage.attacks.Values))
             {
                 AttackFactory.Instance.Deactivate(attack);
             }
-            
+            battleStage.Deactivate();
             // SpawnManager 비활성화
             battleStage.spawnManager.Deactivate();
         }

@@ -10,6 +10,7 @@ using Stats;
 using System;
 using StickerSystem;
 using System.Collections.Generic;
+using Utils;
 
 /// <summary>
 /// 상점 씬의 핵심 관리 클래스입니다.
@@ -41,7 +42,6 @@ public class ShopSceneManager : MonoBehaviour
     public TMP_Text defenseStatText;
     public TMP_Text healthStatText;
     public TMP_Text moveSpeedStatText;
-    public Pawn mainCharacter;
     
     public static ShopSceneManager Instance;
 
@@ -51,6 +51,9 @@ public class ShopSceneManager : MonoBehaviour
     
     public Sticker selectedSticker;
     private StickerView selectedStickerView;
+
+    private Pawn mainCharacter;
+    private Difficulty difficulty;
     
     private void Awake()
     {
@@ -63,10 +66,12 @@ public class ShopSceneManager : MonoBehaviour
     }
 
     // --- 초기화 ---
-    private void Start()
+    public void Activate(Character mainCharacter, Difficulty difficulty)
     {
-        // 1. 메인 캐릭터 생성
-        CharacterFactory.Instance.Activate(mainCharacter);
+        this.mainCharacter = mainCharacter;
+        this.difficulty = difficulty;
+        
+        mainCharacter.transform.SetParent(this.transform);
         // 2. 최초 상점 카드 리롤
         RefreshShopCards();
 

@@ -2,6 +2,7 @@ using System;
 using CharacterSystem;
 using System.Collections.Generic;
 using AttackSystem;
+using GameFramework;
 using JetBrains.Annotations;
 using Stats;
 using UnityEngine;
@@ -102,6 +103,7 @@ namespace BattleSystem
         {
             Debug.LogError("OnBattleClear");
             BattleStageFactory.Instance.Deactivate(this);
+            TSceneChangeManager.Instance.ChangeBattleToShop((Character)this.mainCharacter);
             // Todo: SceneChangeManager 호출
         }
         

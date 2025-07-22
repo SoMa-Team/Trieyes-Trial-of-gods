@@ -14,6 +14,7 @@ namespace GameFramework
         public static TSceneChangeManager Instance {private set; get;}
         
         private readonly string BATTLE_SCENE_NAME = "SampleBattleScene";
+        private readonly string SHOP_SCENE_NAME = "SampleShopScene";
         private int stageRound = 12;
 
         // ===== 초기화 =====
@@ -57,6 +58,20 @@ namespace GameFramework
             
             SceneManager.sceneLoaded += OnStartBattleSceneTest;
             SceneManager.LoadScene(BATTLE_SCENE_NAME);
+        }
+
+        public void ChangeBattleToShop(Character mainCharacter)
+        {
+            mainCharacter.transform.SetParent(null);
+            DontDestroyOnLoad(mainCharacter.gameObject);
+
+            void OnChangeBattleToShop(Scene scene, LoadSceneMode mode)
+            {
+                SceneManager.sceneLoaded -= OnChangeBattleToShop;
+                ShopSceneManager.Instance.Activate(mainCharacter, Difficulty.GetByStageRound(stageRound));
+            }
+            SceneManager.sceneLoaded += OnChangeBattleToShop;
+            SceneManager.LoadScene(SHOP_SCENE_NAME);
         }
     }
 } 

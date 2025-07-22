@@ -44,10 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7cbaa1cbe3715245897170940f82b89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackAngle: 90
-  attackDuration: 0.5
+  attackAngle: 120
+  attackDuration: 0.3
   attackRadius: 2
-  segments: 8
+  segments: 12
+  vfxType: BasicAttack
+  spawnedVFX: {fileID: 0}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,6 +190,9 @@ MonoBehaviour:
   children: []
   components:
   - {fileID: 4797988704424728696}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

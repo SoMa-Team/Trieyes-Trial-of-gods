@@ -3,6 +3,7 @@ using CharacterSystem;
 using Stats;
 using UnityEngine;
 using System.Threading;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -24,6 +25,11 @@ namespace AttackComponents
         private AttackState attackState = AttackState.None;
         private float attackTimer = 0f;
         private Vector2 attackDirection;
+
+        // 생성된 VFX 인스턴스
+        [Header("VFX Settings")]
+        [SerializeField] private string vfxType = "BasicAttack"; // 사용할 VFX 타입
+        [SerializeField] private GameObject spawnedVFX;
 
         // 공격 상태 열거형
         private enum AttackState
@@ -68,6 +74,15 @@ namespace AttackComponents
             attack.transform.SetParent(weaponGameObject.transform);
             attack.transform.localPosition = Vector3.zero;
             attack.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+            // 부채꼴 중심점 계산 (공격 방향으로 반지름의 절반만큼 이동)
+            Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
+            
+            // VFX 생성 및 배치
+            spawnedVFX = VFXManager.Instance.SpawnVFXByType(vfxType, vfxPosition, attackDirection);
+            
+            // Scale 2배
+            spawnedVFX.transform.localScale = new Vector3(2f, 2f);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
             if (attack.attackCollider == null)
@@ -248,6 +263,18 @@ namespace AttackComponents
             if (attack.attackCollider != null)
             {
                 attack.attackCollider.enabled = false;
+            }
+            
+            // VFX 정리
+            if (spawnedVFX != null)
+            {
+                // VFXManager를 통해 즉시 풀로 반환
+                if (VFXManager.Instance != null)
+                {
+                    VFXManager.Instance.ReturnVFXByType(spawnedVFX, vfxType, 0f);
+                }
+                
+                spawnedVFX = null;
             }
             
             ////Debug.Log("<color=cyan>[AC002] 부채꼴 공격 종료!</color>");

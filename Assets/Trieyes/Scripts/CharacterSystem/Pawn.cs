@@ -320,7 +320,7 @@ namespace CharacterSystem
                         Animator.SetTrigger("2_Attack");
                         break;
                     case "DAMAGED":
-                        Animator.SetBool("3_Damaged", true);
+                        Animator.SetTrigger("3_Damaged");
                         break;
                     case "DEATH":
                         Animator.SetBool("4_Death", true);
@@ -627,6 +627,7 @@ namespace CharacterSystem
             
             int previousHP = currentHp;
             ChangeHP(-result.totalDamage);
+            ChangeAnimationState("DAMAGED");
 
             Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {result.totalDamage} damage from {result.attacker.gameObject.name}</color>");
             // TODO : 넉백 확률 스탯 부분 추가 필요

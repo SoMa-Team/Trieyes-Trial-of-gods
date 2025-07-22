@@ -50,14 +50,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  moveSpeed: 2
+  rb: {fileID: 0}
+  Collider: {fileID: 0}
   statPresetSO: {fileID: 11400000, guid: f1d19ea4c070b4c4383b416bd94a26a7, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 0}
-  bIsLockAttack: 0
-  skillAttack001: {fileID: 0}
-  skillAttack002: {fileID: 0}
-  dropGold: 0
+  skill1Attack: {fileID: 0}
+  skillAttack1Cooldown: 0
+  lastSkillAttack1Time: -999
+  skill2Attack: {fileID: 0}
+  skillAttack2Cooldown: 0
+  lastSkillAttack2Time: -999
+  objectID: 0
   dropGold: 0
 --- !u!50 &7661104193838161178
 Rigidbody2D:
@@ -321,7 +325,7 @@ PrefabInstance:
     - target: {fileID: 2025806811731348541, guid: 4bb672e58a2b5ae498d4a03d46222643, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 28793f7f6c4c23a4389795731c0dcf27, type: 2}
+      objectReference: {fileID: 9100000, guid: a017292288bbdd04cb9807eecd67ef12, type: 2}
     - target: {fileID: 2071226990568158502, guid: 4bb672e58a2b5ae498d4a03d46222643, type: 3}
       propertyPath: m_Layer
       value: 7

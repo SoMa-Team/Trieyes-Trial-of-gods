@@ -43,9 +43,8 @@ public class DamageNumberViewFactory : MonoBehaviour
         view.SetDamage(result);
         view.SetPosition(result.target.transform.position);
         
-        view.Activate();
-        
         view.gameObject.SetActive(true);
+        view.Activate();
     }
 
     public void Deactivate(DamageNumberView view)

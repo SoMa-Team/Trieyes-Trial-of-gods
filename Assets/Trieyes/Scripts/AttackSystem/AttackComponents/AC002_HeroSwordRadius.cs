@@ -28,7 +28,7 @@ namespace AttackComponents
 
         // 생성된 VFX 인스턴스
         [Header("VFX Settings")]
-        [SerializeField] private readonly int VFX_ID = 0; // BASIC_ATTACK VFX ID
+        [SerializeField] private readonly int VFX_ID = 1; // BASIC_ATTACK VFX ID
         private GameObject spawnedVFX;
 
         // 공격 상태 열거형
@@ -172,7 +172,7 @@ namespace AttackComponents
             // Active 상태일 때 부채꼴 모양을 지속적으로 그리기
             if (attackState == AttackState.Active && attack.attackCollider != null)
             {
-                DrawFanShapeDebug();
+                //DrawFanShapeDebug();
             }
         }
 
@@ -329,8 +329,17 @@ namespace AttackComponents
             // 방향에 맞게 회전
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-            vfx.transform.localScale = new Vector3(2f, 2f);
+            vfx.transform.localScale = new Vector3(1.5f, 1.5f);
             
+            var colorOverLifetime = childVFX.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 0.4f), new GradientColorKey(Color.red, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.4f, 0f), new GradientAlphaKey(1f, 0f) }
+            );
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+
             return vfx;
         }
     }

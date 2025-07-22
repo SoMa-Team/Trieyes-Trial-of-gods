@@ -17,17 +17,12 @@ namespace CharacterSystem
         protected int dropGold; // 드랍할 골드 양
         
         // ===== [기능 2] 초기화 =====
-        protected override void Awake()
-        {
-            base.Awake();
-
-            // Collision Layer를 Enemy로 설정
-            gameObject.layer = LayerMask.NameToLayer("Enemy");
-        }
-
         protected override void Start()
         {
             base.Start();
+
+            // Collision Layer를 Enemy로 설정
+            gameObject.layer = LayerMask.NameToLayer("Enemy");
         }
 
         // ===== [커스텀 메서드] =====

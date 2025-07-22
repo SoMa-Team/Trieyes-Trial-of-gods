@@ -50,11 +50,19 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+            CapsuleCollider2D capsuleCollider = Collider as CapsuleCollider2D;
+            capsuleCollider.offset = new Vector2(0, 0.3f);
+            capsuleCollider.size = new Vector2(0.7f, 1.2f);
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
+        }
+
+        protected override void OnTriggerEnter2D(Collider2D other)
+        {
+            base.OnTriggerEnter2D(other);
         }
 
         // ===== [공격 처리 메서드] =====

@@ -221,6 +221,10 @@ namespace CharacterSystem
             Controller.Deactivate();
         }
 
+        protected virtual void OnTriggerEnter2D(Collider2D other)
+        {
+        }
+
         /// <summary>
         /// 기본 스탯을 초기화합니다.
         /// </summary>

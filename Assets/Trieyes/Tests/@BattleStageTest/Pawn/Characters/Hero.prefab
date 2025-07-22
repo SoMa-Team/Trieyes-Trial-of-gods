@@ -57,11 +57,11 @@ MonoBehaviour:
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
   skill1Attack: {fileID: 11400000, guid: 3a51829e5249d0340a4b3b55a6c1f803, type: 2}
-  skillAttack001Cooldown: 7
-  lastSkillAttack001Time: -999
+  skillAttack1Cooldown: 0
+  lastSkillAttack1Time: -999
   skill2Attack: {fileID: 11400000, guid: 8e5337464fe784d40b77508c84520cc3, type: 2}
-  skillAttack002Cooldown: 7
-  lastSkillAttack002Time: -999
+  skillAttack2Cooldown: 0
+  lastSkillAttack2Time: -999
   objectID: 0
   weaponElementState: 0
   activateLight: 0
@@ -97,8 +97,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   q: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
-  w: {fileID: 11400000, guid: a990c769f91a5c149a81621b27af53bd, type: 2}
-  e: {fileID: 11400000, guid: 9b2eb2de4301e0548abd884fe5e31ad0, type: 2}
+  w: {fileID: 0}
+  e: {fileID: 0}
 --- !u!50 &-7081958898591838822
 Rigidbody2D:
   serializedVersion: 5

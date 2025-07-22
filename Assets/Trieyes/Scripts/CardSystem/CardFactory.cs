@@ -93,9 +93,14 @@ namespace CardSystem
         {
             switch (id)
             {
-                case 0: return new PreparingMarch();
-                case 1: return new Crouch();
-                case 2: return new Shadow();
+                case 0: return new Card0001_PreparingMarch();
+                case 1: return new Card0002_Crouch();
+                case 2: return new Card0003_Haste();
+                case 3: return new Card0004_WeightReduction();
+                case 4: return new Card0201_ImmatureSparring();
+                case 5: return new Card0202_WeaponEnlargement();
+                case 6: return new Card0401_Shadow();
+                case 7: return new Card0601_AbsorbingBlade();
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {id}");
                     return null;

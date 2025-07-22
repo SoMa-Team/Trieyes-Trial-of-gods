@@ -1,6 +1,7 @@
 using UnityEngine;
 using BattleSystem;
 using CharacterSystem;
+using AttackSystem;
 
 public class AnimationController : MonoBehaviour
 {
@@ -20,5 +21,13 @@ public class AnimationController : MonoBehaviour
         {
             EnemyFactory.Instance.Deactivate(owner);
         }
+    }
+
+    public void AttackOnAnimationStart()
+    {
+    }
+
+    public void AttackOnAnimationEnd()
+    {
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Utils;
 using CharacterSystem;
+using DeckViews;
 using Stats;
 using UnityEngine;
 
@@ -42,6 +43,8 @@ namespace CardSystem
         private Dictionary<Utils.EventType, int> eventTypeCount = new();
         public IReadOnlyDictionary<Utils.EventType, int> EventTypeCount => eventTypeCount;
         
+        private DeckView deckView;
+        
         // ===== [기능 3] 카드 호출 순서 관리 =====
         /// <summary>
         /// 각 카드의 호출 횟수를 추적하는 리스트입니다.
@@ -76,7 +79,7 @@ namespace CardSystem
             eventTypeCount[Utils.EventType.OnCardPurchase] = 1;
             eventTypeCount[Utils.EventType.OnCardRemove] = 1;
 
-            Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
+            // Debug.Log($"<color=green>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) initialized with {cards.Count} cards (isPersistent: {isPersistent})</color>");
         }
 
         public void Clear()
@@ -111,6 +114,8 @@ namespace CardSystem
             switch (eventType)
             {
                 case Utils.EventType.OnBattleSceneChange:
+                    DestoryCardsBeforeBattleStart();
+                    deckView.RefreshDeckUI();
                     CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
@@ -344,6 +349,15 @@ namespace CardSystem
             }
         }
 
+        public void DestoryCardsBeforeBattleStart()
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                Debug.Log($"DestoryCards: {cards[i].cardName}");
+                cards[i]?.TriggerCardEvent(Utils.EventType.DestoryCardsBeforeBattleStart, this, i);
+            }
+        }
+
         // ===== [기능 5] 카드 호출 횟수 관리 =====
         /// <summary>
         /// 특정 카드의 호출 횟수를 반환합니다.
@@ -377,6 +391,16 @@ namespace CardSystem
         {
             if (cardIndex >= 0 && cardIndex < cardCallCounts.Count)
                 cardCallCounts[cardIndex] += increment;
+        }
+
+        public void setDeckView(DeckView deckView)
+        {
+            this.deckView = deckView;
+        }
+
+        public DeckView GetDeckView()
+        {
+            return deckView;
         }
 
         /// <summary>

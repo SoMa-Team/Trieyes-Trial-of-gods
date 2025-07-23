@@ -50,8 +50,8 @@ namespace CharacterSystem
         /// gameObject는 반드시 Pawn을 상속한 Unity Component가 부착되어 있습니다.
         /// </summary>
         /// <param name="id">생성할 적의 ID</param>
-        /// <returns>생성된 gameObject에 부착된 Pawn 객체</returns>
-        public Pawn Create(EnemyID id)
+        /// <returns>생성된 gameObject에 부착된 Enemy 객체</returns>
+        public Enemy Create(EnemyID id)
         {
             var enemy = popEnemy(id);
             if (enemy is null)
@@ -68,7 +68,7 @@ namespace CharacterSystem
         /// <summary>
         /// 적을 활성화합니다.</summary>
         /// <param name="enemy">활성화할 적 Pawn</param>
-        public void Activate(Pawn enemy)
+        public void Activate(Enemy enemy)
         {
             enemy.Activate();
             enemy.gameObject.SetActive(true);
@@ -77,7 +77,7 @@ namespace CharacterSystem
         /// <summary>
         /// 적을 비활성화합니다.</summary>
         /// <param name="enemy">비활성화할 적 Pawn</param>
-        public void Deactivate(Pawn enemy)
+        public void Deactivate(Enemy enemy)
         {
             enemy.Deactivate();
             enemy.gameObject.SetActive(false);
@@ -89,13 +89,13 @@ namespace CharacterSystem
         // ===== 내부 헬퍼 =====
         
         /// <summary>
-        /// ID에 해당하는 적 프리팹을 복제하여 Pawn 컴포넌트를 반환합니다.</summary>
+        /// ID에 해당하는 적 프리팹을 복제하여 Enemy 컴포넌트를 반환합니다.</summary>
         /// <param name="id">적 ID</param>
-        /// <returns>생성된 Pawn 컴포넌트</returns>
-        private Pawn ClonePrefab(EnemyID id)
+        /// <returns>생성된 Enemy 컴포넌트</returns>
+        private Enemy ClonePrefab(EnemyID id)
         {
             var enemyObject = Instantiate(GetPrefabById(id));
-            var enemy = enemyObject.GetComponent<Pawn>();
+            var enemy = enemyObject.GetComponent<Enemy>();
             enemy.objectID = getObjectID();
             return enemy;
         }
@@ -112,19 +112,19 @@ namespace CharacterSystem
         }
         
         // Object Pooling
-        private Dictionary<EnemyID, Queue<Pawn>> pool = new ();
+        private Dictionary<EnemyID, Queue<Enemy>> pool = new ();
 
-        private void pushEnemy(EnemyID id, Pawn enemy)
+        private void pushEnemy(EnemyID id, Enemy enemy)
         {
             if (!pool.ContainsKey(id))
             {
-                pool[id] = new Queue<Pawn>();
+                pool[id] = new Queue<Enemy>();
             }
             
             pool[id].Enqueue(enemy);
         }
 
-        private Pawn popEnemy(EnemyID id)
+        private Enemy popEnemy(EnemyID id)
         {
             if (!pool.ContainsKey(id))
                 return null;

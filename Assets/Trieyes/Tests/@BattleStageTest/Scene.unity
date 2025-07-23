@@ -1237,6 +1237,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hero
       objectReference: {fileID: 0}
+    - target: {fileID: 2543392400981761397, guid: ff85869717c876d40b475f6a1be81a20, type: 3}
+      propertyPath: w
+      value: 
+      objectReference: {fileID: 11400000, guid: 9695b9b1aa2306348a23667d80d53bd4, type: 2}
     - target: {fileID: 8762525943062589552, guid: ff85869717c876d40b475f6a1be81a20, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1640,6 +1644,34 @@ PrefabInstance:
     - target: {fileID: 1553043495906535806, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175719141285207572, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
+      propertyPath: fallDelay
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175719141285207572, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
+      propertyPath: fallDamage
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175719141285207572, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
+      propertyPath: fallDuration
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175719141285207572, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
+      propertyPath: fallXRandomOffsetMax
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175719141285207572, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
+      propertyPath: fallXRandomOffsetMin
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175719141285207572, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
+      propertyPath: fallYRandomOffsetMax
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175719141285207572, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
+      propertyPath: fallYRandomOffsetMin
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9211212146730400434, guid: fb82f34b44230634bab8fce53ca2a658, type: 3}
       propertyPath: m_Name
@@ -2338,6 +2370,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6724932695618808105, guid: 19ab747c9ee52624b8519907328739ae, type: 3}
+      propertyPath: 'vfxPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 7951352472900335790, guid: cb72b2ed8989c2542925ede4d0897f6b, type: 3}
+    - target: {fileID: 6724932695618808105, guid: 19ab747c9ee52624b8519907328739ae, type: 3}
+      propertyPath: 'vfxPrefabs.Array.data[4]'
+      value: 
+      objectReference: {fileID: 2332886395990022958, guid: 56265a8f66af7574da13a8e649bbfada, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

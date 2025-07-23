@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using BattleSystem;
 using CharacterSystem.Enemies;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -31,11 +32,24 @@ namespace AttackComponents
         [Header("VFX 설정")]
         public GameObject fallVFXPrefab;
         public float vfxDuration = 0.3f;
+        
+        // VFX 시스템 설정
+        [Header("VFX System Settings")]
+        [SerializeField] private readonly int FALLING_VFX_ID = 3; // 떨어지는 파이어볼 VFX ID
+        [SerializeField] private readonly int EXPLOSION_VFX_ID = 4; // 폭발 VFX ID
+        private GameObject fallingVFX;
+        private GameObject explosionVFX;
 
         // 낙하 공격 상태 관리
         private FallAttackState fallState = FallAttackState.None;
         private float fallTimer = 0f;
+        private bool explosionVFXCreated = false; // 폭발 VFX 생성 여부
         private List<Enemy> hitTargets = new List<Enemy>(); // 재사용 가능한 리스트
+        
+        // VFX 이동 관련
+        private Vector2 fallingVFXStartPosition; // 떨어지는 VFX 시작 위치
+        private Vector2 fallingVFXTargetPosition; // 떨어지는 VFX 목표 위치
+        private float fallingVFXMoveSpeed = 8f; // 떨어지는 VFX 이동 속도
 
         // 낙하 공격 상태 열거형
         private enum FallAttackState
@@ -54,6 +68,7 @@ namespace AttackComponents
             // 초기 상태 설정
             fallState = FallAttackState.Preparing;
             fallTimer = 0f;
+            explosionVFXCreated = false;
             hitTargets.Clear();
             
             // 타겟 위치 설정 (공격자의 앞쪽)
@@ -116,19 +131,52 @@ namespace AttackComponents
                     // 낙하 중
                     fallTimer += Time.deltaTime;
                     
-                    if (fallTimer >= fallDuration)
+                    // 떨어지는 VFX 이동
+                    if (fallingVFX != null)
                     {
-                        fallState = FallAttackState.Impact;
-                        fallTimer = 0f;
+                        Vector2 currentPosition = fallingVFX.transform.position;
+                        Vector2 newPosition = Vector2.MoveTowards(currentPosition, fallingVFXTargetPosition, fallingVFXMoveSpeed * Time.deltaTime);
+                        fallingVFX.transform.position = newPosition;
                         
-                        // 충격 효과 및 데미지 적용
-                        ApplyImpactDamage();
+                        Debug.Log($"<color=blue>[FALL] VFX 이동: {currentPosition} -> {newPosition}, 목표: {fallingVFXTargetPosition}</color>");
+                        
+                        // 목표 지점에 도달했는지 확인
+                        if (Vector2.Distance(newPosition, fallingVFXTargetPosition) < 0.1f)
+                        {
+                            Debug.Log("<color=green>[FALL] VFX가 목표 지점에 도달!</color>");
+                            fallState = FallAttackState.Impact;
+                            fallTimer = 0f;
+                            
+                            // 충격 효과 및 데미지 적용
+                            ApplyImpactDamage();
+                        }
+                    }
+                    else
+                    {
+                        // VFX가 없으면 타이머로 처리
+                        if (fallTimer >= fallDuration)
+                        {
+                            fallState = FallAttackState.Impact;
+                            fallTimer = 0f;
+                            
+                            // 충격 효과 및 데미지 적용
+                            ApplyImpactDamage();
+                        }
                     }
                     break;
 
                 case FallAttackState.Impact:
                     // 충격 효과 처리
                     fallTimer += Time.deltaTime;
+                    
+                    // 폭발 VFX 즉시 생성
+                    if (!explosionVFXCreated)
+                    {
+                        explosionVFX = CreateAndSetupExplosionVFX(targetPosition, Vector2.zero);
+                        PlayVFX(explosionVFX);
+                        explosionVFXCreated = true;
+                        Debug.Log("<color=green>[FALL] 폭발 VFX 생성!</color>");
+                    }
                     
                     if (fallTimer >= vfxDuration)
                     {
@@ -146,17 +194,20 @@ namespace AttackComponents
 
         private void StartFalling()
         {
-            // 낙하 VFX 생성
-            CreateFallVFX();
+            // 떨어지는 파이어볼 VFX 생성 (VFX ID 3)
+            fallingVFXStartPosition = targetPosition + Vector2.up * 2f;
+            fallingVFXTargetPosition = targetPosition;
+            fallingVFX = CreateAndSetupFallingVFX(fallingVFXStartPosition, Vector2.down);
+            PlayVFX(fallingVFX);
         
             // 착탄 지점에 Radius 반경의 원형 Draw 만들기
             // 원형 필드 디버그 (원의 둘레를 그리기)
-            int segments = 16;
-            Vector2 prevPoint = targetPosition + Vector2.right * fallRadius;
+            int segments = 24;
+            Vector2 prevPoint = targetPosition + Vector2.right * (fallRadius-1f);
             for (int i = 1; i <= segments; i++)
             {
                 float angle = (360f / segments) * i * Mathf.Deg2Rad;
-                Vector2 currentPoint = targetPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * fallRadius;
+                Vector2 currentPoint = targetPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * (fallRadius-1f);
                 Debug.DrawLine(prevPoint, currentPoint, Color.red, 1f);
                 prevPoint = currentPoint;
             }
@@ -164,9 +215,6 @@ namespace AttackComponents
 
         private void ApplyImpactDamage()
         {
-            // 충격 VFX 생성
-            CreateImpactVFX();
-
             // Impact 순간에 범위 내 적들을 다시 탐지
             DetectTargetsInRange();
             
@@ -275,10 +323,107 @@ namespace AttackComponents
         {
             base.Deactivate();
             
+            // VFX 정리
+            if (fallingVFX != null)
+            {
+                StopAndReturnVFX(fallingVFX, FALLING_VFX_ID);
+                fallingVFX = null;
+            }
+            
+            if (explosionVFX != null)
+            {
+                StopAndReturnVFX(explosionVFX, EXPLOSION_VFX_ID);
+                explosionVFX = null;
+            }
+            
             // 상태 초기화
             fallState = FallAttackState.None;
             fallTimer = 0f;
+            explosionVFXCreated = false;
             hitTargets.Clear();
+        }
+
+        /// <summary>
+        /// 떨어지는 파이어볼 VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        private GameObject CreateAndSetupFallingVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 떨어지는 파이어볼 VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(FALLING_VFX_ID, position, direction);
+            
+            // 여기서 VFX의 세부 조정을 할 수 있습니다
+            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
+
+            // Render Alignment 설정
+            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
+            {
+                renderer.alignment = ParticleSystemRenderSpace.Local;
+            }
+
+            vfx.transform.position = position;
+            
+            // radius에 연동된 scaling 계산 (1.5배가 기본 크기)
+            float baseScale = 1.5f;
+            float finalScale = baseScale * fallRadius * 1.5f;
+            vfx.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
+            
+            // 파이어볼 색상 설정 (빨간색 계열)
+            var colorOverLifetime = childVFX.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.red, 0f), new GradientColorKey(new Color(1f, 0.5f, 0f), 0.5f), new GradientColorKey(Color.yellow, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0.6f, 1f) }
+            );
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+
+            return vfx;
+        }
+
+        /// <summary>
+        /// 폭발 VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        private GameObject CreateAndSetupExplosionVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 폭발 VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(EXPLOSION_VFX_ID, position, direction);
+
+            // 여기서 VFX의 세부 조정을 할 수 있습니다
+            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
+            
+            // Render Alignment 설정
+            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
+            {
+                renderer.alignment = ParticleSystemRenderSpace.Local;
+                renderer.sortingOrder = 100;
+            }
+
+            vfx.transform.position = position;
+            
+            // radius에 연동된 scaling 계산 (1.5배가 기본 크기)
+            float baseScale = 1.5f;
+            float finalScale = baseScale * fallRadius * 1.5f;
+            vfx.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
+            
+            // 폭발 색상 설정 (오렌지-노란색 계열)
+            var colorOverLifetime = childVFX.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.yellow, 0f), new GradientColorKey(new Color(1f, 0.5f, 0f), 0.3f), new GradientColorKey(Color.red, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.9f, 0.3f), new GradientAlphaKey(0.3f, 1f) }
+            );
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+
+            return vfx;
         }
     }
 

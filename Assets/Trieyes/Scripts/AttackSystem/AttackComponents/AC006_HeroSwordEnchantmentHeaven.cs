@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading;
 using BattleSystem;
 using System.Collections.Generic;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -39,6 +40,11 @@ namespace AttackComponents
         public float dotInterval = 1f;
 
         public AttackData aoeAttackData;
+
+        // 생성된 VFX 인스턴스
+        [Header("VFX Settings")]
+        [SerializeField] private readonly int VFX_ID = 1; // BASIC_ATTACK VFX ID
+        private GameObject spawnedVFX;
 
         // 천상 공격 상태 열거형
         private enum HeavenAttackState
@@ -77,6 +83,15 @@ namespace AttackComponents
             // 부모 설정을 하지 않고 위치만 동기화 (성능 최적화)
             attack.transform.position = weaponGameObject.transform.position;
             attack.transform.rotation = weaponGameObject.transform.rotation;
+
+            // 부채꼴 중심점 계산 (공격 방향으로 반지름의 절반만큼 이동)
+            Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
+            
+            // VFX 생성 및 설정
+            spawnedVFX = CreateAndSetupVFX(vfxPosition, attackDirection);
+            
+            // VFX 재생
+            PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
             if (attack.attackCollider == null)
@@ -196,7 +211,7 @@ namespace AttackComponents
             #if UNITY_EDITOR
             if (attackState == HeavenAttackState.Active && attack.attackCollider != null)
             {
-                DrawFanShapeDebug();
+                //DrawFanShapeDebug();
             }
             #endif
         }
@@ -268,6 +283,13 @@ namespace AttackComponents
                 attack.attackCollider.enabled = false;
             }
             
+            // VFX 정리
+            if (spawnedVFX != null)
+            {
+                StopAndReturnVFX(spawnedVFX, VFX_ID);
+                spawnedVFX = null;
+            }
+            
             //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
         }
 
@@ -322,6 +344,47 @@ namespace AttackComponents
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }
+        }
+
+        /// <summary>
+        /// VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 기본 VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(VFX_ID, position, direction);
+            
+            // 여기서 VFX의 세부 조정을 할 수 있습니다
+            // 예: 특정 파티클 시스템의 속성 변경, 스케일 조정 등
+            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
+            
+            // Render Alignment 설정
+            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
+            {
+                renderer.alignment = ParticleSystemRenderSpace.Local; // 또는 View, Local
+            }
+
+            vfx.transform.position = position;
+
+            // 방향에 맞게 회전
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
+            vfx.transform.localScale = new Vector3(1.5f, 1.5f);
+            
+            var colorOverLifetime = childVFX.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(new Color(1f, 1f, 1f, 0.5f), 0.4f), new GradientColorKey(new Color(1f, 1f, 1f, 0.5f), 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.5f, 0.4f), new GradientAlphaKey(0.5f, 1f) }
+            );
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+
+            return vfx;
         }
     }
 }

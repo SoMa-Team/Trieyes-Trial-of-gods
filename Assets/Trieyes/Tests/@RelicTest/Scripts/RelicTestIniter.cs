@@ -22,7 +22,7 @@ public class RelicTestIniter: BattleSystemTest
             var characterID = 0;
             var stageRound = 12;
 
-            Pawn character = BattleStage.now.mainCharacter;
+            Pawn character = this.character;
         
             character.AddRelic(RelicFactory.Create(720001));
             character.AddRelic(RelicFactory.Create(720002));

@@ -62,7 +62,7 @@ namespace CharacterSystem
         public int level { get; protected set; }
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
         
-        public int gold { get; protected set; }
+        public int gold { get; set; }
 
         // ===== [기능별 필드] =====
         /// <summary>

@@ -4,6 +4,7 @@ using AttackSystem;
 using CharacterSystem;
 using UnityEngine;
 using Utils;
+using Object = System.Object;
 
 namespace BattleSystem
 {
@@ -96,6 +97,7 @@ namespace BattleSystem
         /// <param name="battleStage">비활성화할 BattleStage</param>
         public void Deactivate(BattleStage battleStage)
         {
+            Debug.Log("BattleStageFactory Deactivate Called");
             // 캐릭터 정리
             foreach (var character in battleStage.characters)
             {
@@ -115,10 +117,10 @@ namespace BattleSystem
             {
                 AttackFactory.Instance.Deactivate(attack);
             }
+
             AttackFactory.Instance.ClearPool();
-            battleStage.Deactivate();
-            // SpawnManager 비활성화
             battleStage.spawnManager.Deactivate();
+            battleStage.Deactivate();
         }
     }
 }

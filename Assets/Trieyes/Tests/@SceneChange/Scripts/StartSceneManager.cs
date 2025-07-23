@@ -28,6 +28,6 @@ public class StartSceneManager : MonoBehaviour
 
     void GameStart()
     {
-        TSceneChangeManager.Instance.StartBattleSceneTest();
+        SceneChangeManager.Instance.StartBattleSceneTest();
     }
 }

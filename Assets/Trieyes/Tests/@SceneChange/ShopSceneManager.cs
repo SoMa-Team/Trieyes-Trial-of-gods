@@ -44,6 +44,10 @@ public class ShopSceneManager : MonoBehaviour
     public TMP_Text defenseStatText;
     public TMP_Text healthStatText;
     public TMP_Text moveSpeedStatText;
+    public TMP_Text goldStatText;
+    
+    [Header("돈복사버그")]
+    public Button ShowMeTheMoneyButton;
     
     public static ShopSceneManager Instance;
 
@@ -83,6 +87,7 @@ public class ShopSceneManager : MonoBehaviour
         // 4. 각 버튼 리스너 설정
         if (rerollButton != null) rerollButton.onClick.AddListener(RefreshShopCards);
         if (battleButton != null) battleButton.onClick.AddListener(OnBattleButtonPressed);
+        if(ShowMeTheMoneyButton != null)  ShowMeTheMoneyButton.onClick.AddListener(OnShowMeTheMoneyButtonPressed);
 
         for (int i = 0; i < buyCardButtons.Count; i++)
         {
@@ -132,6 +137,12 @@ public class ShopSceneManager : MonoBehaviour
     // --- 상점 카드 리롤 ---
     private void RefreshShopCards()
     {
+        if (mainCharacter.gold < 10)
+        {
+            Debug.LogError("Not enough gold");
+            return;
+        }
+        mainCharacter.gold -= 10;
         shopCards.Clear();
         shopStickers.Clear();
         for (int i = 0; i < shopCardViews.Count; i++)
@@ -155,6 +166,7 @@ public class ShopSceneManager : MonoBehaviour
             buyCardButtons[i].interactable = true;
         for (int i = 0; i < buyStickerButtons.Count; i++)
             buyStickerButtons[i].interactable = true;
+        RefreshStatUI();
     }
 
     // --- 카드 구매 ---
@@ -162,6 +174,14 @@ public class ShopSceneManager : MonoBehaviour
     {
         if (index < 0 || index >= shopCards.Count)
             return;
+
+        if (mainCharacter.gold < 5)
+        {
+            Debug.LogError("Not enough gold");
+            return;
+        }
+        
+        mainCharacter.gold -= 5;
 
         var cardToBuy = shopCards[index];
         if (cardToBuy == null)
@@ -186,16 +206,31 @@ public class ShopSceneManager : MonoBehaviour
         // if (selectedStickerView != null)
         //     selectedStickerView.SetSelected(false);
 
+        if (mainCharacter.gold < 5)
+        {
+            Debug.LogError("Not enough gold");
+            return;
+        }
+        
+        mainCharacter.gold -= 5;
         // 2. 새로 선택
         Debug.Log("<color=yellow>Sticker Selected!</color>");
         selectedSticker = shopStickers[index];
         selectedStickerView = shopStickerViews[index];
+        
+        RefreshStatUI();
 
         // 3. 하이라이트 효과 (StickerView에서 구현 필요)
         //selectedStickerView.SetSelected(true);
 
         // 4. 카드뷰들에 "스티커 적용 모드" 안내 등 필요하다면 표시
         // (예시: CardView에 isStickerApplyMode 등)
+    }
+
+    private void OnShowMeTheMoneyButtonPressed()
+    {
+        mainCharacter.gold += 10000;
+        RefreshStatUI();
     }
     
     private IEnumerator BattleButtonRoutine()
@@ -206,7 +241,7 @@ public class ShopSceneManager : MonoBehaviour
         yield return new WaitForSeconds(0.8f); // 0.8초 정도, 원하는 시간으로 변경
 
         this.Deactivate();
-        TSceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
+        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
     }
 
     // --- 전투 진입 ---
@@ -228,5 +263,6 @@ public class ShopSceneManager : MonoBehaviour
         defenseStatText.text = mainCharacter.statSheet[StatType.Defense].Value.ToString();
         healthStatText.text = mainCharacter.statSheet[StatType.Health].Value.ToString();
         moveSpeedStatText.text = mainCharacter.statSheet[StatType.MoveSpeed].Value.ToString();
+        goldStatText.text = mainCharacter.gold.ToString();
     }
 }

@@ -31,19 +31,13 @@ namespace BattleSystem
         public float boundaryThreshold = 0.5f;
         
         // ===== 카메라 관련 =====
-        private Camera _battleCamera;
+        private CameraController _cameraController;
         private Pawn _mainCharacter;
         [Header("Camera Settings")]
-        public float cameraFollowSpeed = 5f;
         public Vector3 cameraOffset = new Vector3(0, 0, -7);
-        public float cameraSmoothTime = 0.1f;
-        private Vector3 _cameraVelocity = Vector3.zero;
-        
-        [Header("Dynamic Camera Settings")]
-        public float minCameraDistance = 5f;  // 최소 카메라 거리
-        public float maxCameraDistance = 15f; // 최대 카메라 거리
-        public float speedToDistanceMultiplier = 2f; // 속도에 따른 거리 배수
-        private Vector3 _dynamicCameraOffset;
+        public float cameraFollowDistance = 10f;
+        public Vector3 cameraDamping = new Vector3(1f, 1f, 1f);
+        public float cameraFieldOfView = 60f;
         
         /// <summary>
         /// BattleStage 데이터에 대한 접근자
@@ -127,26 +121,24 @@ namespace BattleSystem
         private void CreateBattleCamera()
         {
             // 기존 카메라가 있다면 제거
-            if (_battleCamera != null)
+            if (_cameraController != null)
             {
-                DestroyImmediate(_battleCamera.gameObject);
+                DestroyImmediate(_cameraController.gameObject);
             }
             
             // 새로운 카메라 게임오브젝트 생성
             GameObject cameraGO = new GameObject("BattleStageCamera");
             cameraGO.transform.SetParent(transform);
+            cameraGO.transform.position = new Vector3(0, 0, -5.5f);
             
-            // 카메라 컴포넌트 추가
-            _battleCamera = cameraGO.AddComponent<Camera>();
-            _battleCamera.orthographic = true;
-            _battleCamera.orthographicSize = 5f;
-            _battleCamera.backgroundColor = Color.black;
+            // CameraController 컴포넌트 추가
+            _cameraController = cameraGO.AddComponent<CameraController>();
+            _cameraController.Initialize();
             
-            // 카메라를 메인 카메라로 설정
-            _battleCamera.tag = "MainCamera";
-            
-            // 초기 위치 설정
-            _battleCamera.transform.position = cameraOffset;
+            // 카메라 설정
+            _cameraController.SetFollowOffset(cameraOffset);
+            _cameraController.fieldOfView = cameraFieldOfView;
+            _cameraController.UpdateLensSettings();
             
             ////Debug.Log("전투 카메라가 생성되었습니다.");
         }
@@ -156,42 +148,23 @@ namespace BattleSystem
         /// </summary>
         public void SetMainCharacter()
         {
-            if (_battleStage?.mainCharacter != null && _battleCamera != null)
+            if (_battleStage?.mainCharacter != null && _cameraController != null)
             {
                 _mainCharacter = _battleStage.mainCharacter;
                 
-                // 동적 카메라 오프셋 초기화
-                _dynamicCameraOffset = cameraOffset;
-                
-                // 카메라를 캐릭터 위치로 즉시 이동
-                Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
-                _battleCamera.transform.position = targetPosition;
+                // 카메라가 캐릭터를 따라다니도록 설정
+                _cameraController.SetTarget(_mainCharacter.transform);
+                _cameraController.SetPriority(10);
                 
                 ////Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
             }
         }
         
         /// <summary>
-        /// 카메라가 메인 캐릭터를 부드럽게 따라다니도록 업데이트합니다.
-        /// 캐릭터의 이동 속도에 따라 카메라 거리가 동적으로 조절됩니다.
-        /// 경계 기반 타일 관리도 함께 수행합니다.
+        /// 배틀 스테이지 업데이트
         /// </summary>
         private void Update()
         {
-            if (_mainCharacter != null && _battleCamera != null)
-            {                
-                // 목표 위치 계산 (동적 오프셋 사용)
-                Vector3 targetPosition = _mainCharacter.transform.position + _dynamicCameraOffset;
-                
-                // 부드러운 이동
-                _battleCamera.transform.position = Vector3.SmoothDamp(
-                    _battleCamera.transform.position, 
-                    targetPosition, 
-                    ref _cameraVelocity, 
-                    cameraSmoothTime
-                );
-            }
-            
             _battleStage.Update();
         }
            
@@ -216,7 +189,7 @@ namespace BattleSystem
             StartCoroutine(UpdateTilesBatch(newCenter));
         }
 
-                // 이동 시 호출
+        // 이동 시 호출
         private System.Collections.IEnumerator UpdateTilesBatch(Vector3Int newCenter)
         {
             tilePoolingSystem.FillTilesWithRandomPattern(newCenter, gridSize);

@@ -20,6 +20,9 @@ namespace AttackComponents
         protected Attack attack; // 부모 Attack
         protected Pawn attacker => attack?.attacker; // 소유자 (Attack의 attacker)
 
+        // VFX GameObject 구현하는 방향으로 변경
+        [SerializeField] protected List<GameObject> vfxList = new List<GameObject>();
+
         protected virtual void Start()
         {
         }

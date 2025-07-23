@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using AttackSystem;
 using Stats;
+using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -94,7 +95,11 @@ namespace CharacterSystem
                     //Debug.Log($"<color=yellow>{gameObject.name} (Character001) gained a level!</color>");
                     break;
                 case Utils.EventType.OnDeath:
-                    // 죽는 로직
+                    // 죽고 나서 할 것
+                    if(BattleStage.now.mainCharacter == this)
+                    {
+                        BattleStage.now.OnPlayerDeath();
+                    }
                     break;
             }
         }

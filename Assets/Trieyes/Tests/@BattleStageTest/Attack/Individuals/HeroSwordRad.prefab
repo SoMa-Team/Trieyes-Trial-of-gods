@@ -48,8 +48,6 @@ MonoBehaviour:
   attackDuration: 0.3
   attackRadius: 2
   segments: 12
-  vfxType: BasicAttack
-  spawnedVFX: {fileID: 0}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +148,7 @@ GameObject:
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
   m_Name: HeroSwordRad
-  m_TagString: Untagged
+  m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

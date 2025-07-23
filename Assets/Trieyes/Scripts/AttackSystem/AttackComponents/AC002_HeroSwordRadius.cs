@@ -20,6 +20,7 @@ namespace AttackComponents
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
+        
 
         // FSM 상태 관리
         private AttackState attackState = AttackState.None;

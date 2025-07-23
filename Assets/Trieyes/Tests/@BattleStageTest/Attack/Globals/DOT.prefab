@@ -48,6 +48,7 @@ MonoBehaviour:
   dotDamage: 20
   dotDuration: 5
   dotInterval: 1
+  dotTargets: []
   additionalBuffType: 0
   additionalBuffDuration: 5
   additionalBuffMultiplier: 1.5
@@ -154,7 +155,7 @@ GameObject:
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
   m_Name: DOT
-  m_TagString: Untagged
+  m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -190,11 +191,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: e517bf62054b1e145aec88cfff886cde, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 5801996999287398140}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

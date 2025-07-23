@@ -152,6 +152,19 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Activate()
         {
+            if (Collider != null)
+            {
+                Collider.enabled = true;
+            }
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+            if (Controller != null)
+            {
+                Controller.Activate(this);
+            }
+
             isDead = false;
             currentHp = maxHp;
             
@@ -195,6 +208,14 @@ namespace CharacterSystem
         }
 
         /// <summary>
+        /// 애니메이터를 초기 상태로 리셋합니다.
+        /// </summary>
+        protected virtual void ResetAnimator()
+        {
+            Animator.Rebind();
+        }
+
+        /// <summary>
         /// 오브젝트 풀링을 위한 비활성화 함수
         /// </summary>
         public virtual void Deactivate()
@@ -202,6 +223,9 @@ namespace CharacterSystem
             //gameObject.SetActive(false);
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
+            
+            // 애니메이터 초기화
+            ResetAnimator();
             
             // Relic에 따른 Attack 초기화
             if (relics.Count > 0)
@@ -270,10 +294,6 @@ namespace CharacterSystem
         /// <param name="direction">이동할 방향</param>
         public virtual void Move(Vector2 direction)
         {
-            if(isDead)
-            {
-                return;
-            }
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동
@@ -301,10 +321,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="newState">새로운 애니메이션 상태</param>
         private void ChangeAnimationState(string newState)
-        {
-            if (isDead && newState != "DEATH")
-                return;
-            
+        {          
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
                 // switch로 각 newStat에 대한 Parameter 값을 변경
@@ -323,7 +340,7 @@ namespace CharacterSystem
                         Animator.SetTrigger("3_Damaged");
                         break;
                     case "DEATH":
-                        Animator.SetBool("4_Death", true);
+                        Animator.SetBool("isDeath", true);
                         break;
                 }
             }
@@ -650,12 +667,10 @@ namespace CharacterSystem
         private void HandleDeath()
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
-            // TO-DO : 이부분 테스트 필요
+            // TO-DO : 이부분을 죽을 때 해야 하는가?
             Collider.enabled = false;
             rb.linearVelocity = Vector3.zero;
-            
-            if (isDead)
-                return;
+
             isDead = true;
             ChangeAnimationState("DEATH");
         }

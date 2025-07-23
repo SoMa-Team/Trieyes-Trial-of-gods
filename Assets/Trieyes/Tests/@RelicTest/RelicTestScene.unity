@@ -410,6 +410,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: 3f8d75889befb41cc969fc34e8da3a75, type: 2}
+  character: {fileID: 1710666580}
 --- !u!1 &951836249
 GameObject:
   m_ObjectHideFlags: 0
@@ -708,10 +709,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   owner: {fileID: 1710666580}
   lastMoveDir: {x: 0, y: 0}
-  character: {fileID: 0}
-  skillAction001: {fileID: 0}
-  skillAction002: {fileID: 0}
-  joystick: {fileID: 0}
+  character: {fileID: 1710666580}
+  skillAction001: {fileID: 2646095123555208786, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
+  skillAction002: {fileID: -5947426782392501359, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
+  joystick: {fileID: 2119393946}
 --- !u!70 &1710666586 stripped
 CapsuleCollider2D:
   m_CorrespondingSourceObject: {fileID: 7040964818278521817, guid: 158732bb507374a9598c34cd4c3dc3de, type: 3}
@@ -1056,6 +1057,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8135886326569738822, guid: 3e8f7f69c160248709e6cc9a0ef8c543, type: 3}
   m_PrefabInstance: {fileID: 2119393944}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2119393946 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8135886326569738823, guid: 3e8f7f69c160248709e6cc9a0ef8c543, type: 3}
+  m_PrefabInstance: {fileID: 2119393944}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba0d0e7a039f526499c356a3c5cd6d3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

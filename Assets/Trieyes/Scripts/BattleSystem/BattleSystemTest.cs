@@ -14,7 +14,7 @@ namespace BattleSystem
         public BattleStage battleStage;
         public AttackData attackData;
         
-        protected Pawn character;
+        public Pawn character;
         // public Difficulty difficulty;
 
         void Start()

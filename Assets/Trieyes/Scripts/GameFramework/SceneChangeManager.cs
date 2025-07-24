@@ -4,50 +4,115 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using CharacterSystem;
 using Utils;
+using RelicSystem;
 
 namespace GameFramework
 {
+    /// <summary>
+    /// 씬 전환 및 캐릭터 전달을 관리하는 싱글턴 매니저
+    /// </summary>
     public class SceneChangeManager : MonoBehaviour
     {
-        // ===== [기능 1] 싱글턴 및 데이터 전달 =====
-        public static SceneChangeManager Instance {private set; get;}
-        
-        private readonly string BATTLE_SCENE_NAME = "BattleSceneTest";
+        // ====== 싱글턴 ======
+        public static SceneChangeManager Instance { get; private set; }
 
-        // ===== 초기화 =====
-        /// <summary>
-        /// 싱글톤 패턴을 위한 초기화
-        /// 중복 인스턴스가 생성되지 않도록 합니다.
-        /// </summary>
+        // ====== 씬 이름 상수 ======
+        private const string BattleSceneName = "SampleBattleScene";
+        private const string ShopSceneName = "SampleShopScene";
+        private int stageRound = 12;
+
+        // ====== 초기화 ======
         private void Awake()
         {
-            if (Instance is not null)
+            if (Instance != null)
             {
                 Destroy(this);
                 return;
             }
-            
             DontDestroyOnLoad(gameObject);
             Instance = this;
         }
 
-        private void OnDestroy()
+        // ====== 씬 전환 기능 ======
+
+        /// <summary>
+        /// 전투 테스트 씬 시작 (캐릭터 자동 생성)
+        /// </summary>
+        public void StartBattleSceneTest()
         {
+            LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter);
         }
 
-        // ===== [기능 2] 씬 전환 =====
-        public void StartBattleSceneTest(Pawn mainCharacter)
+        /// <summary>
+        /// 전투 → 상점 씬 전환 (캐릭터 객체 전달)
+        /// </summary>
+        public void ChangeBattleToShop(Character mainCharacter)
         {
-            DontDestroyOnLoad(mainCharacter.gameObject);
-            
-            void OnStartBattleSceneTest(Scene scene, LoadSceneMode mode)
+            PrepareCharacterForSceneTransition(mainCharacter);
+            LoadSceneWithCallback(ShopSceneName, scene =>
             {
-                SceneManager.sceneLoaded -= OnStartBattleSceneTest;
-                BattleStageFactory.Instance.Create(mainCharacter, Difficulty.GetByStageRound(1));
+                ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
+            });
+        }
+
+        /// <summary>
+        /// 상점 → 전투 씬 전환 (캐릭터 객체 전달)
+        /// </summary>
+        public void ChangeShopToBattle(Character mainCharacter)
+        {
+            PrepareCharacterForSceneTransition(mainCharacter);
+            LoadSceneWithCallback(BattleSceneName, scene =>
+            {
+                BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+            });
+        }
+
+        // ====== 헬퍼 메서드 ======
+
+        /// <summary>
+        /// 공통: 씬 로드 후 콜백 처리
+        /// </summary>
+        private void LoadSceneWithCallback(string sceneName, Action<Scene> onLoaded)
+        {
+            void Handler(Scene scene, LoadSceneMode mode)
+            {
+                SceneManager.sceneLoaded -= Handler;
+                onLoaded?.Invoke(scene);
             }
-            
-            SceneManager.sceneLoaded += OnStartBattleSceneTest;
-            SceneManager.LoadScene(BATTLE_SCENE_NAME);
+            SceneManager.sceneLoaded += Handler;
+            SceneManager.LoadScene(sceneName);
+        }
+
+        /// <summary>
+        /// 공통: 캐릭터 DontDestroyOnLoad 및 부모 분리
+        /// </summary>
+        private void PrepareCharacterForSceneTransition(Character character)
+        {
+            if (character == null) return;
+            character.transform.SetParent(null);
+            DontDestroyOnLoad(character.gameObject);
+        }
+
+        /// <summary>
+        /// 현재 스테이지 난이도 반환
+        /// </summary>
+        private Difficulty GetCurrentDifficulty()
+        {
+            return Difficulty.GetByStageRound(stageRound);
+        }
+
+        /// <summary>
+        /// Battle Scene 전용: 새 캐릭터 생성 및 세팅 후 스테이지 생성
+        /// </summary>
+        private void OnBattleSceneLoadedWithNewCharacter(Scene scene)
+        {
+            var mainCharacter = CharacterFactory.Instance.Create(0);
+            mainCharacter.AddRelic(RelicFactory.Create(720001));
+            mainCharacter.AddRelic(RelicFactory.Create(720002));
+            mainCharacter.ApplyRelic();
+
+            CharacterFactory.Instance.Deactivate(mainCharacter);
+            BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
         }
     }
-} 
+}

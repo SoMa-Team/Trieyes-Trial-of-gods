@@ -59,6 +59,7 @@ namespace CharacterSystem
             switch (eventType)
             {
                 case Utils.EventType.OnDeath:
+                    Debug.Log("OnDeath Event Activated");
                     OnSelfDeath(param as AttackResult);
                     break;
                 // 기타 이벤트별 동작 추가
@@ -79,7 +80,8 @@ namespace CharacterSystem
             if (result.attacker != null)
             {
                 result.attacker.ChangeGold(dropGold);
-                //Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {attackData.attacker.gameObject.name}</color>");
+                Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");
+                Debug.Log($"Player Gold: {result.attacker.gold}");
             }
         }
     }

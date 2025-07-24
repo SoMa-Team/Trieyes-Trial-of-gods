@@ -39,14 +39,12 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+            transform.position = Vector3.zero;
             //Debug.Log("Character001 Activated.");
         }
 
         public override void Deactivate()
         {
-            // Character001 고유 정리 로직
-            gold = 0;
-            
             base.Deactivate();
             //Debug.Log("Character001 Deactivated.");
         }

@@ -62,7 +62,7 @@ namespace CharacterSystem
         public int level { get; protected set; }
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
         
-        public int gold { get; protected set; }
+        public int gold { get; set; }
 
         // ===== [기능별 필드] =====
         /// <summary>
@@ -120,6 +120,12 @@ namespace CharacterSystem
             
             pawnPrefab = transform.GetChild(0).gameObject;
             Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            
+            // 스탯 시트 초기화
+            statSheet = new StatSheet();
+            
+            deck.Activate(this, true);
+            initBaseStat();
 
             if (rb != null)
             {
@@ -164,9 +170,6 @@ namespace CharacterSystem
             }
             Controller.Activate(this);
             
-            // 스탯 시트 초기화
-            statSheet = new StatSheet();
-            
             // 기본 이벤트 등록
             // TODO: 폰에서는 이벤트 필터 안하기
             RegisterAcceptedEvents(
@@ -183,9 +186,6 @@ namespace CharacterSystem
 
             skillAttack1Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
             skillAttack2Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
-
-            deck.Activate(this, true);
-            initBaseStat();
             
             gameObject.SetActive(true);
             
@@ -201,6 +201,8 @@ namespace CharacterSystem
                 backupSkill2Attack = skill2Attack.Copy();
                 skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
             }
+            
+            Controller.Activate(this);
         }
 
         /// <summary>
@@ -219,15 +221,24 @@ namespace CharacterSystem
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
-            }
-            
-            // 리스트 초기화
-            if (relics != null)
-            {
-                relics.Clear();
-            }
+            }   
 
             Controller.Deactivate();
+        }
+
+        public void ApplyRelic()
+        {
+            if (relics.Count > 0)
+            {
+                backupBasicAttack = basicAttack.Copy();
+                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+                
+                backupSkill1Attack = skill1Attack.Copy();
+                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
+                
+                backupSkill2Attack = skill2Attack.Copy();
+                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+            }
         }
 
         /// <summary>

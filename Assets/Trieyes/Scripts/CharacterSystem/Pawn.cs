@@ -62,7 +62,7 @@ namespace CharacterSystem
         public int level { get; protected set; }
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
         
-        public int gold { get; protected set; }
+        public int gold { get; set; }
 
         // ===== [기능별 필드] =====
         /// <summary>
@@ -113,33 +113,36 @@ namespace CharacterSystem
         public int objectID;
 
         // ===== [Unity 생명주기] =====
-        protected virtual void Awake()
+        protected virtual void Start()
         {
             rb = GetComponent<Rigidbody2D>();
             Collider = GetComponent<Collider2D>();
-            Collider.enabled = true; // Instantiate에서 Awake가 호출되어 Collider가 설정되는데, 이것이 먼저 호출되는 문제
-
-            Controller = GetComponent<Controller>();
-            Controller.Activate(this);
             
             pawnPrefab = transform.GetChild(0).gameObject;
             Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            
+            // 스탯 시트 초기화
+            statSheet = new StatSheet();
+            
+            deck.Activate(this, true);
+            initBaseStat();
 
             if (rb != null)
             {
                 rb.freezeRotation = true;
             }
-
-            isDead = false;
-        }
-
-        protected virtual void Start()
-        {
         }
 
         protected virtual void OnDestroy()
         {
-            Deactivate();
+            if (isEnemy)
+            {
+                EnemyFactory.Instance.Deactivate(this);
+            }
+            else
+            {
+                CharacterFactory.Instance.Deactivate(this);
+            }
         }
 
         public virtual void Update() 
@@ -167,9 +170,18 @@ namespace CharacterSystem
 
             isDead = false;
             currentHp = maxHp;
+            Collider.enabled = true;
             
-            // 스탯 시트 초기화
-            statSheet = new StatSheet();
+            // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
+            if (Controller is null)
+            {
+                Controller = GetComponent<Controller>();
+                if (Controller == null)
+                {
+                    throw new Exception("PlayerController not found on " + gameObject.name);
+                }
+            }
+            Controller.Activate(this);
             
             // 기본 이벤트 등록
             // TODO: 폰에서는 이벤트 필터 안하기
@@ -187,9 +199,6 @@ namespace CharacterSystem
 
             skillAttack1Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
             skillAttack2Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
-
-            deck.Activate(this, true);
-            initBaseStat();
             
             gameObject.SetActive(true);
             
@@ -205,6 +214,8 @@ namespace CharacterSystem
                 backupSkill2Attack = skill2Attack.Copy();
                 skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
             }
+            
+            Controller.Activate(this);
         }
 
         /// <summary>
@@ -234,19 +245,28 @@ namespace CharacterSystem
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
-            }
-            
-            // 리스트 초기화
-            if (relics != null)
-            {
-                relics.Clear();
-            }
+            }   
 
             Controller.Deactivate();
         }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)
         {
+        }
+        
+        public void ApplyRelic()
+        {
+            if (relics.Count > 0)
+            {
+                backupBasicAttack = basicAttack.Copy();
+                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+                
+                backupSkill1Attack = skill1Attack.Copy();
+                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
+                
+                backupSkill2Attack = skill2Attack.Copy();
+                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+            }
         }
 
         /// <summary>

@@ -26,11 +26,6 @@ namespace CharacterSystem
         // Pawn의 추상 멤버 구현
         
         // ===== [Unity 생명주기] =====
-        protected override void Awake()
-        {
-            base.Awake();
-        }
-
         protected override void Start()
         {
             base.Start();

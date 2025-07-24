@@ -1,5 +1,6 @@
 using AttackSystem;
 using CharacterSystem;
+using UISystem;
 using UnityEngine;
 
 namespace BattleSystem
@@ -17,6 +18,11 @@ namespace BattleSystem
             Pawn attacker = attack.attacker;
             
             var result = AttackResult.Create(attack, targetPawn);
+
+            if (!attack.attacker.isEnemy)
+            {
+                DamageNumberViewFactory.Instance.Create(result);
+            }
             
             // OnAttackHit, OnDamagedHit
             triggerAttackHitEvent(result);

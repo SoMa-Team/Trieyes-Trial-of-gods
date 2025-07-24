@@ -2,6 +2,7 @@ using System;
 using CharacterSystem;
 using System.Collections.Generic;
 using AttackSystem;
+using GameFramework;
 using JetBrains.Annotations;
 using Stats;
 using UnityEngine;
@@ -59,6 +60,7 @@ namespace BattleSystem
         /// 전투 스테이지를 비활성화합니다.</summary>
         public void Deactivate()
         {
+            Debug.Log("Deactivating battle stage.");
             now = null;
             View.gameObject.SetActive(false);
         }
@@ -96,8 +98,8 @@ namespace BattleSystem
         // 전투 클리어 시 호출
         public void OnBattleClear()
         {
-            Debug.LogError("OnBattleClear");
             BattleStageFactory.Instance.Deactivate(this);
+            SceneChangeManager.Instance.ChangeBattleToShop((Character)this.mainCharacter);
             // Todo: SceneChangeManager 호출
         }
         

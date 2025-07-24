@@ -146,10 +146,17 @@ namespace AttackSystem
 
         public void Deactivate(Attack attack)
         {
+            if(attack == null) Debug.Log("attack is null");
+            if(BattleStage.now == null) Debug.Log("now is null");
             attack.Deactivate();
             attack.gameObject.SetActive(false);
             BattleStage.now.RemoveAttack(attack);
             pushAttack(attack);
+        }
+
+        public void ClearPool()
+        {
+            pool.Clear();
         }
 
         // ===== 오브젝트 풀링 =====

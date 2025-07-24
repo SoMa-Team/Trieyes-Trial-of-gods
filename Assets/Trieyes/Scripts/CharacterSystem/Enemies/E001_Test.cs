@@ -13,11 +13,6 @@ namespace CharacterSystem
     public class E001_Test : Enemy
     {        
         // ===== [기능 2] 초기화 =====
-        protected override void Awake()
-        {
-            base.Awake();
-        }
-
         protected override void Start()
         {
             base.Start();

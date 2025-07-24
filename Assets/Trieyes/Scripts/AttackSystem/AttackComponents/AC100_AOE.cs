@@ -206,9 +206,6 @@ namespace AttackComponents
                     enemy.ApplyDamage(attackResult);
                 }
             }
-            
-            // AOE VFX 생성
-            CreateAC100VFX(aoePosition);
 
             Debug.Log($"<color=yellow>[AC100] 좌표 기반 AOE 공격으로 {aoeTargets.Count}명에게 {aoeDamage} 데미지 적용</color>");
         }
@@ -241,11 +238,21 @@ namespace AttackComponents
 
         private void ActivateAC100Attack()
         {
+            // AOE VFX 생성 및 시작
+            CreateAC100VFX(aoePosition);
+            
             Debug.Log("<color=green>[AC100] 좌표 기반 AOE 공격 활성화!</color>");
         }
 
         private void FinishAC100Attack()
         {
+            // AOE VFX 정리
+            if (aoeVFX != null)
+            {
+                StopAndReturnVFX(aoeVFX, vfxID);
+                aoeVFX = null;
+            }
+            
             Debug.Log("<color=orange>[AC100] 좌표 기반 AOE 공격 종료!</color>");
         }
 
@@ -268,34 +275,9 @@ namespace AttackComponents
         {
             // VFXFactory를 통해 AOE VFX 생성
             GameObject vfx = VFXFactory.Instance.SpawnVFX(vfxID, position, direction);
-            
-            // 여기서 VFX의 세부 조정을 할 수 있습니다
-            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
-
-            // Render Alignment 설정
-            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
-            if (renderer != null)
-            {
-                renderer.alignment = ParticleSystemRenderSpace.Local;
-                renderer.sortingOrder = 70;
-            }
 
             vfx.transform.position = position;
-            
-            // 기본 스케일 설정 (AOE 크기에 맞춤)
-            float baseScale = 1.0f;
-            float finalScale = baseScale * aoeRadius * 1.5f;
-            vfx.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
-            
-            // AOE 색상 설정 (빨간색-주황색 계열)
-            var colorOverLifetime = childVFX.colorOverLifetime;
-            colorOverLifetime.enabled = true;
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.red, 0f), new GradientColorKey(new Color(1f, 0.5f, 0f), 0.5f), new GradientColorKey(Color.yellow, 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0.4f, 1f) }
-            );
-            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+            vfx.transform.localScale = new Vector3(aoeRadius, aoeRadius, aoeRadius);
 
             return vfx;
         }

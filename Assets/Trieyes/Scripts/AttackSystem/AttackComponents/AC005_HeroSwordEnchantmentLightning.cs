@@ -254,18 +254,9 @@ namespace AttackComponents
                     
                     if (attackTimer >= attackDuration)
                     {
-                        attackState = LightningAttackState.Finishing;
+                        attackState = LightningAttackState.Finished;
                         attackTimer = 0f;
                         FinishLightningAttack();
-                    }
-                    break;
-
-                case LightningAttackState.Finishing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 종료 시간
-                    {
-                        attackState = LightningAttackState.Finished;
                     }
                     break;
 

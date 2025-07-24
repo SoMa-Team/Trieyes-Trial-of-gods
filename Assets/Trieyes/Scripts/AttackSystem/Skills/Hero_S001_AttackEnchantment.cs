@@ -170,7 +170,7 @@ namespace AttackComponents
         {
             // 1-5 사이의 랜덤 숫자 생성
             // TO-DO : 유물 들어왔을 때 값이 최대를 4에서 5로 늘리는 로직 구현해야 함
-            int randomValue = Random.Range(1, 5);
+            int randomValue = 4;
 
             switch (randomValue)
             {

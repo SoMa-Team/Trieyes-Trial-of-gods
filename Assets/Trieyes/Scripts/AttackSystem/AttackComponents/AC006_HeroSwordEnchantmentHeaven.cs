@@ -342,16 +342,16 @@ namespace AttackComponents
                 case HeavenAttackState.Active:
                     attackTimer += Time.deltaTime;
                     
+                    // 위치 업데이트
+                    attack.transform.position = attack.attacker.transform.position;
+                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    
                     if (attackTimer >= attackDuration)
                     {
-                        attackState = HeavenAttackState.Finishing;
+                        attackState = HeavenAttackState.Finished;
                         attackTimer = 0f;
+                        FinishHeavenAttack();
                     }
-                    break;
-
-                case HeavenAttackState.Finishing:
-                    attackState = HeavenAttackState.Finished;
-                    FinishHeavenAttack();
                     break;
 
                 case HeavenAttackState.Finished:

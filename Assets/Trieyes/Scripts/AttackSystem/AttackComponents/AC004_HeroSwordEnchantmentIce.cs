@@ -243,18 +243,9 @@ namespace AttackComponents
                     
                     if (attackTimer >= attackDuration)
                     {
-                        attackState = IceAttackState.Finishing;
+                        attackState = IceAttackState.Finished;
                         attackTimer = 0f;
                         FinishIceAttack();
-                    }
-                    break;
-
-                case IceAttackState.Finishing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 종료 시간
-                    {
-                        attackState = IceAttackState.Finished;
                     }
                     break;
 

@@ -224,18 +224,9 @@ namespace AttackComponents
                     
                     if (attackTimer >= attackDuration)
                     {
-                        attackState = FireAttackState.Finishing;
+                        attackState = FireAttackState.Finished;
                         attackTimer = 0f;
                         FinishFireAttack();
-                    }
-                    break;
-
-                case FireAttackState.Finishing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 종료 시간
-                    {
-                        attackState = FireAttackState.Finished;
                     }
                     break;
 

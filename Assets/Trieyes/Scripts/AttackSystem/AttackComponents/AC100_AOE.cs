@@ -5,6 +5,7 @@ using CharacterSystem;
 using Stats;
 using BattleSystem;
 using System.Collections.Generic;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -57,6 +58,11 @@ namespace AttackComponents
         [Header("AOE VFX 설정")]
         public GameObject aoeVFXPrefab;
         public float aoeVFXDuration = 0.3f;
+
+        // VFX 시스템 설정
+        [Header("VFX System Settings")]
+        public int vfxID = 7; // AOE VFX ID
+        private GameObject aoeVFX;
 
         // FSM 상태 관리
         private AOEAttackState attackState = AOEAttackState.None;
@@ -245,16 +251,53 @@ namespace AttackComponents
 
         private void CreateAC100VFX(Vector2 position)
         {
-            if (aoeVFXPrefab != null)
+            // VFX 시스템을 통해 AOE VFX 생성
+            aoeVFX = CreateAndSetupVFX(position, Vector2.zero);
+            PlayVFX(aoeVFX);
+            
+            Debug.Log($"<color=blue>[AC100] AOE VFX 생성! VFX ID: {vfxID}</color>");
+        }
+
+        /// <summary>
+        /// AOE VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 AOE VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(vfxID, position, direction);
+            
+            // 여기서 VFX의 세부 조정을 할 수 있습니다
+            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
+
+            // Render Alignment 설정
+            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
             {
-                GameObject aoeVFX = Instantiate(aoeVFXPrefab);
-                aoeVFX.transform.position = position;
-                
-                // AOE VFX 지속시간 후 제거
-                Destroy(aoeVFX, aoeVFXDuration);
-                
-                Debug.Log("<color=blue>[AC100] AOE VFX 생성</color>");
+                renderer.alignment = ParticleSystemRenderSpace.Local;
+                renderer.sortingOrder = 70;
             }
+
+            vfx.transform.position = position;
+            
+            // 기본 스케일 설정 (AOE 크기에 맞춤)
+            float baseScale = 1.0f;
+            float finalScale = baseScale * aoeRadius * 1.5f;
+            vfx.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
+            
+            // AOE 색상 설정 (빨간색-주황색 계열)
+            var colorOverLifetime = childVFX.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.red, 0f), new GradientColorKey(new Color(1f, 0.5f, 0f), 0.5f), new GradientColorKey(Color.yellow, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0.4f, 1f) }
+            );
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+
+            return vfx;
         }
     }
 }

@@ -23,6 +23,10 @@ namespace AttackComponents
         [Header("VFX 설정")]
         public float vfxDuration = 0.4f;
 
+        // VFX 시스템 설정
+        [Header("VFX System Settings")]
+        [SerializeField] private readonly int LIGHTNING_FIELD_VFX_ID = 6; // 번개 장판 VFX ID
+
         // 버프 설정
         [Header("버프 설정")]
         public float moveSpeedBoostMultiplier; // 이동속도 증가 배율
@@ -149,22 +153,32 @@ namespace AttackComponents
 
         private void SummonAC104()
         {
-            Debug.Log("<color=yellow>[AC009] AC104 소환하여 따라다니는 자기장 생성!</color>");
+            Debug.Log("<color=yellow>[AC009] AC105 소환하여 따라다니는 자기장 생성!</color>");
             
-            // AC104 생성
+            // 기존 AC105가 있다면 정리
+            if (summonedAC104 != null)
+            {
+                AttackFactory.Instance.Deactivate(summonedAC104);
+                summonedAC104 = null;
+            }
+            
+            // AC105 생성
             summonedAC104 = AttackFactory.Instance.Create(followingFieldData, attack.attacker, null, Vector2.zero);
             
-            // AC104 설정 (하드코딩)
-            var ac104Component = summonedAC104.components[0] as AC105_FollowingField;
-            if (ac104Component != null)
+            // AC105 설정 (하드코딩)
+            var ac105Component = summonedAC104.components[0] as AC105_FollowingField;
+            if (ac105Component != null)
             {
-                ac104Component.fieldRadius = lightningFieldRadius;
-                ac104Component.fieldDamage = lightningFieldDamage;
-                ac104Component.fieldTickInterval = 0.5f;
-                ac104Component.fieldDuration = lightningFieldDuration;
-                ac104Component.followPlayer = true;
-                ac104Component.followDistance = 0f;
-                ac104Component.followOffset = Vector2.zero;
+                ac105Component.fieldRadius = lightningFieldRadius;
+                ac105Component.fieldDamage = lightningFieldDamage;
+                ac105Component.fieldTickInterval = 0.5f;
+                ac105Component.fieldDuration = lightningFieldDuration;
+                ac105Component.followPlayer = true;
+                ac105Component.followDistance = 0f;
+                ac105Component.followOffset = Vector2.zero;
+                
+                // VFX ID 전달
+                ac105Component.vfxID = LIGHTNING_FIELD_VFX_ID;
             }
             
             Debug.Log("<color=green>[AC009] AC104 따라다니는 자기장 활성화 완료!</color>");
@@ -186,7 +200,7 @@ namespace AttackComponents
         {
             base.Deactivate();
             
-            // AC104 정리
+            // AC105 정리
             if (summonedAC104 != null)
             {
                 AttackFactory.Instance.Deactivate(summonedAC104);

@@ -46,6 +46,10 @@ namespace AttackComponents
         [SerializeField] private readonly int VFX_ID = 1; // BASIC_ATTACK VFX ID
         private GameObject spawnedVFX;
 
+        // AC100 AOE VFX 설정
+        [Header("AC100 AOE VFX Settings")]
+        [SerializeField] private readonly int AOE_VFX_ID = 7; // AOE VFX ID
+
         // 천상 공격 상태 열거형
         private enum HeavenAttackState
         {
@@ -67,22 +71,28 @@ namespace AttackComponents
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
+            
+            // 공격 시작
+            StartHeavenAttack();
         }
 
         private void StartHeavenAttack()
         {
+            attackState = HeavenAttackState.Preparing;
+            attackTimer = 0f;
+            
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.PawnPrefab;
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                //Debug.LogError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
-            // 부모 설정을 하지 않고 위치만 동기화 (성능 최적화)
-            attack.transform.position = weaponGameObject.transform.position;
-            attack.transform.rotation = weaponGameObject.transform.rotation;
+            attack.transform.SetParent(weaponGameObject.transform);
+            attack.transform.localPosition = Vector3.zero;
+            attack.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
             // 부채꼴 중심점 계산 (공격 방향으로 반지름의 절반만큼 이동)
             Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
@@ -141,7 +151,10 @@ namespace AttackComponents
                 // AOE 위치 설정 (타겟 위치)
                 aoeComponent.SetAOEPosition((Vector2)targetPawn.transform.position);
                 
-                Debug.Log("<color=cyan>[AC006] Light 속성으로 AC100 AOE 공격 소환!</color>");
+                // VFX ID 전달
+                aoeComponent.vfxID = AOE_VFX_ID;
+                
+                Debug.Log("<color=cyan>[AC006] Light 속성으로 AC100 AOE 공격 소환! VFX ID: " + AOE_VFX_ID + "</color>");
             }
         }
 
@@ -293,6 +306,21 @@ namespace AttackComponents
             //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
         }
 
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            
+            // VFX 정리
+            if (spawnedVFX != null)
+            {
+                StopAndReturnVFX(spawnedVFX, VFX_ID);
+                spawnedVFX = null;
+            }
+            
+            attackState = HeavenAttackState.None;
+            attackTimer = 0f;
+        }
+
         private void ProcessHeavenAttackState()
         {
             switch (attackState)
@@ -302,8 +330,6 @@ namespace AttackComponents
 
                 case HeavenAttackState.Preparing:
                     attackTimer += Time.deltaTime;
-                    
-                    StartHeavenAttack();
                     
                     if (attackTimer >= 0.1f) // 준비 시간
                     {
@@ -316,12 +342,6 @@ namespace AttackComponents
                 case HeavenAttackState.Active:
                     attackTimer += Time.deltaTime;
                     
-                    // 위치 업데이트 (성능 최적화: 필요할 때만)
-                    if (attack.attacker != null)
-                    {
-                        attack.transform.position = attack.attacker.transform.position;
-                    }
-                    
                     if (attackTimer >= attackDuration)
                     {
                         attackState = HeavenAttackState.Finishing;
@@ -330,13 +350,8 @@ namespace AttackComponents
                     break;
 
                 case HeavenAttackState.Finishing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 종료 시간
-                    {
-                        attackState = HeavenAttackState.Finished;
-                        FinishHeavenAttack();
-                    }
+                    attackState = HeavenAttackState.Finished;
+                    FinishHeavenAttack();
                     break;
 
                 case HeavenAttackState.Finished:
@@ -380,7 +395,7 @@ namespace AttackComponents
             Gradient gradient = new Gradient();
             gradient.SetKeys(
                 new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(new Color(1f, 1f, 1f, 0.5f), 0.4f), new GradientColorKey(new Color(1f, 1f, 1f, 0.5f), 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.5f, 0.4f), new GradientAlphaKey(0.5f, 1f) }
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.4f), new GradientAlphaKey(1f, 1f) }
             );
             colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
 

@@ -51,8 +51,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  rb: {fileID: 0}
-  Collider: {fileID: 0}
+  rb: {fileID: -7081958898591838822}
+  Collider: {fileID: 9118692710769573021}
   statPresetSO: {fileID: 11400000, guid: 051c039bce603a64cad4d7ff05ade5f9, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   q: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
-  w: {fileID: 0}
+  w: {fileID: 11400000, guid: 9695b9b1aa2306348a23667d80d53bd4, type: 2}
   e: {fileID: 0}
 --- !u!50 &-7081958898591838822
 Rigidbody2D:

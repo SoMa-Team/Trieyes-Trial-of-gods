@@ -152,15 +152,15 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Activate()
         {
-            if (Collider != null)
+            if (Collider is not null)
             {
                 Collider.enabled = true;
             }
-            if (rb != null)
+            if (rb is not null)
             {
                 rb.linearVelocity = Vector2.zero;
             }
-            if (Controller != null)
+            if (Controller is not null)
             {
                 Controller.Activate(this);
             }
@@ -652,7 +652,6 @@ namespace CharacterSystem
             
             if (currentHp <= 0)
             {
-                OnEvent(Utils.EventType.OnDeath, result);
                 result.attack.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
 
@@ -661,6 +660,8 @@ namespace CharacterSystem
                     result.attack.OnEvent(Utils.EventType.OnKilledByCritical, result);
                     result.attacker.OnEvent(Utils.EventType.OnKilledByCritical, result);
                 }
+
+                OnEvent(Utils.EventType.OnDeath, result);
             }
         }
 

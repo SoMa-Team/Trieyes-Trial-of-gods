@@ -169,13 +169,19 @@ namespace AttackComponents
                     // 충격 효과 처리
                     fallTimer += Time.deltaTime;
                     
-                    // 폭발 VFX 즉시 생성
+                    // 폭발 VFX 즉시 생성 (착탄 지점의 남쪽 모서리에 생성)
                     if (!explosionVFXCreated)
                     {
-                        explosionVFX = CreateAndSetupExplosionVFX(targetPosition, Vector2.zero);
+                        Vector2 explosionPosition = targetPosition;
+                        
+                        // 착탄 지점의 남쪽 모서리 위치 계산
+                        // fallRadius는 공격 범위이므로, 그 반지름만큼 아래로 이동
+                        explosionPosition = targetPosition + Vector2.down * (fallRadius - 1.3f);
+                        
+                        explosionVFX = CreateAndSetupExplosionVFX(explosionPosition, Vector2.zero);
                         PlayVFX(explosionVFX);
                         explosionVFXCreated = true;
-                        Debug.Log("<color=green>[FALL] 폭발 VFX 생성!</color>");
+                        Debug.Log($"<color=green>[FALL] 폭발 VFX 생성! 위치: {explosionPosition} (착탄 지점의 남쪽 모서리)</color>");
                     }
                     
                     if (fallTimer >= vfxDuration)
@@ -377,7 +383,7 @@ namespace AttackComponents
             Gradient gradient = new Gradient();
             gradient.SetKeys(
                 new GradientColorKey[] { new GradientColorKey(Color.red, 0f), new GradientColorKey(new Color(1f, 0.5f, 0f), 0.5f), new GradientColorKey(Color.yellow, 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0.6f, 1f) }
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.65f, 0.5f), new GradientAlphaKey(0.3f, 1f) }
             );
             colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
 
@@ -410,7 +416,7 @@ namespace AttackComponents
             
             // radius에 연동된 scaling 계산 (1.5배가 기본 크기)
             float baseScale = 1.5f;
-            float finalScale = baseScale * fallRadius * 1.5f;
+            float finalScale = baseScale * fallRadius * 1.25f;
             vfx.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
             
             // 폭발 색상 설정 (오렌지-노란색 계열)
@@ -419,7 +425,7 @@ namespace AttackComponents
             Gradient gradient = new Gradient();
             gradient.SetKeys(
                 new GradientColorKey[] { new GradientColorKey(Color.yellow, 0f), new GradientColorKey(new Color(1f, 0.5f, 0f), 0.3f), new GradientColorKey(Color.red, 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.9f, 0.3f), new GradientAlphaKey(0.3f, 1f) }
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.65f, 0.5f), new GradientAlphaKey(0.3f, 1f) }
             );
             colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
 

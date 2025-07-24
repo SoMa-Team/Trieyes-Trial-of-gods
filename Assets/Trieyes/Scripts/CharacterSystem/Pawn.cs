@@ -137,11 +137,11 @@ namespace CharacterSystem
         {
             if (isEnemy)
             {
-                EnemyFactory.Instance.Deactivate(this);
+                EnemyFactory.Instance.Deactivate(this as Enemy);
             }
             else
             {
-                CharacterFactory.Instance.Deactivate(this);
+                CharacterFactory.Instance.Deactivate(this as Character);
             }
         }
 

@@ -193,7 +193,7 @@ namespace AttackComponents
 
             if (attackState == FireAttackState.Active && attack.attackCollider != null)
             {
-                DrawFanShapeDebug();
+                ////DrawFanShapeDebug();
             }
         }
 

@@ -198,7 +198,7 @@ namespace AttackComponents
 
             if (attackState == LightningAttackState.Active && attack.attackCollider != null)
             {
-                //DrawFanShapeDebug();
+                ////DrawFanShapeDebug();
             }
         }
 

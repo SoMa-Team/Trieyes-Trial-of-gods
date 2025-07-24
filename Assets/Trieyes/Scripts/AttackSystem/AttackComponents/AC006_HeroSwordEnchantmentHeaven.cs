@@ -224,7 +224,7 @@ namespace AttackComponents
             #if UNITY_EDITOR
             if (attackState == HeavenAttackState.Active && attack.attackCollider != null)
             {
-                //DrawFanShapeDebug();
+                ////DrawFanShapeDebug();
             }
             #endif
         }

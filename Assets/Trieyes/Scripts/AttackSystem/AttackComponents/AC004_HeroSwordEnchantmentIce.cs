@@ -188,7 +188,7 @@ namespace AttackComponents
 
             if (attackState == IceAttackState.Active && attack.attackCollider != null)
             {
-                //DrawFanShapeDebug();
+                ////DrawFanShapeDebug();
             }
         }
 

@@ -173,7 +173,7 @@ namespace AttackComponents
             // Active 상태일 때 부채꼴 모양을 지속적으로 그리기
             if (attackState == AttackState.Active && attack.attackCollider != null)
             {
-                //DrawFanShapeDebug();
+                ////DrawFanShapeDebug();
             }
         }
 

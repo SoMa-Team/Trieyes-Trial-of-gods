@@ -146,7 +146,6 @@ namespace AttackSystem
 
         public void Deactivate(Attack attack)
         {
-            Debug.Log("Attack Deactivate Called");
             if(attack == null) Debug.Log("attack is null");
             if(BattleStage.now == null) Debug.Log("now is null");
             attack.Deactivate();

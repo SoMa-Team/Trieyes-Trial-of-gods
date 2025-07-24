@@ -161,8 +161,6 @@ namespace CharacterSystem
             isDead = false;
             currentHp = maxHp;
             
-            transform.position = Vector3.zero;
-            
             // 기본 이벤트 등록
             // TODO: 폰에서는 이벤트 필터 안하기
             RegisterAcceptedEvents(

@@ -53,6 +53,7 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+            transform.position = Vector3.zero;
             //Debug.Log("Character001 Activated.");
         }
 

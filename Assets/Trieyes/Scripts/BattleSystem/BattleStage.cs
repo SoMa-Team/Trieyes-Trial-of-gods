@@ -20,6 +20,7 @@ namespace BattleSystem
         // ===== 전역 스테이지 관리 =====
         public static BattleStage now;
         public BattleStageView View { set; get; }
+        public float elapsedTime => Time.time - startTime;
 
         // ===== 전투 스테이지 데이터 =====
         public Difficulty difficulty;

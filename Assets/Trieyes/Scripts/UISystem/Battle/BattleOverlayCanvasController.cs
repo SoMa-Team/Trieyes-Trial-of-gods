@@ -2,6 +2,7 @@ using System;
 using AttackSystem;
 using BattleSystem;
 using CharacterSystem;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -23,6 +24,11 @@ namespace UISystem
             
             Instance = this;
         }
+        
+        [Header("========== StageInfos ==========")]
+        [SerializeField] private TextMeshProUGUI StageNumberText;
+        [SerializeField] private TextMeshProUGUI StageRemainTimeText;
+        [SerializeField] private Slider StageRemainTimeSlider;
 
         [Header("========== Skills ==========")]
         [SerializeField] private Image BasicAttackIconView;
@@ -32,6 +38,8 @@ namespace UISystem
         [SerializeField] private Image BasicAttackCoolDown;
         [SerializeField] private Image Skill1CoolDown;
         [SerializeField] private Image Skill2CoolDown;
+
+        [SerializeField] private Button AutoBasicAttackToggleView;
         
         public void Activate()
         {
@@ -58,6 +66,13 @@ namespace UISystem
                     throw new Exception($"Failed to load Skill2 Icon {skill2Address}");
                 SetSkill2AttackIcon(handle.Result);
             };
+
+            SetStageNumber();
+        }
+
+        private void SetStageNumber()
+        {
+            StageNumberText.text = $"{BattleStage.now.difficulty.stageNumber.ToString()}-3";
         }
 
         private string buildAttackIconAddress(string name)
@@ -74,6 +89,16 @@ namespace UISystem
             SetBasicAttackCoolDown(character.BasicAttackCoolDownRate);
             SetSkill1CoolDown(character.Skill1CoolDownRate);
             SetSkill2CoolDown(character.Skill2CoolDownRate);
+
+            float elapsedTime = BattleStage.now.elapsedTime;
+            float totalTime = BattleStage.now.difficulty.battleLength;
+            SetRemainTime(elapsedTime, totalTime);
+        }
+
+        private void SetRemainTime(float elapsedTime, float totalTime)
+        {
+            StageRemainTimeText.text = $"{Mathf.Floor(totalTime - elapsedTime)}s";
+            StageRemainTimeSlider.value = elapsedTime / totalTime;
         }
 
         private void SetBasicAttackIcon(Sprite sprite)

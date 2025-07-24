@@ -81,6 +81,10 @@ namespace CharacterSystem
         public float skillAttack2Cooldown = 0f;
         public float lastSkillAttack2Time = -999f;
         
+        public float BasicAttackCoolDownRate => Mathf.Max(1 - (Time.time - lastAttackTime) / attackCooldown, 0);
+        public float Skill1CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack1Time) / skillAttack1Cooldown, 0);
+        public float Skill2CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack2Time) / skillAttack2Cooldown, 0);
+        
         /// <summary>
         /// 장착 가능한 유물 리스트
         /// </summary>
@@ -181,8 +185,8 @@ namespace CharacterSystem
                 Utils.EventType.OnHPUpdated
             );
 
-            skillAttack1Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
-            skillAttack2Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
+            skillAttack1Cooldown = skill1Attack?.cooldown ?? 0f;
+            skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
 
             deck.Activate(this, true);
             initBaseStat();
@@ -733,7 +737,7 @@ namespace CharacterSystem
                 case PawnAttackType.Skill1:
                     if (CheckSkillCooldown(PawnAttackType.Skill1))
                     {
-                        lastSkillAttack1Time = 0f;
+                        lastSkillAttack1Time = Time.time;
                         ChangeAnimationState("ATTACK");
                         Attack temp = AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
                         Debug.Log($"<color=yellow>[SKILL1] {temp.gameObject.name} skill1Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
@@ -745,7 +749,7 @@ namespace CharacterSystem
                 case PawnAttackType.Skill2:
                     if (CheckSkillCooldown(PawnAttackType.Skill2))
                     {
-                        lastSkillAttack2Time = 0f;
+                        lastSkillAttack2Time = Time.time;
                         ChangeAnimationState("ATTACK");
                         Attack temp = AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
                         Debug.Log($"<color=yellow>[SKILL2] {temp.gameObject.name} skill2Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");

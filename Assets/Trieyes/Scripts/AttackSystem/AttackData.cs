@@ -18,6 +18,7 @@ namespace AttackSystem
         public float cooldown; // Type이 Basic일 경우, 값은 무시됨.
         public float damageMultiplier = 1;
         public string attackIcon;
+        // TODO : attackIcon을 string이 아닌 Sprite 타입으로 변경
 
         public AttackData Copy()
         {

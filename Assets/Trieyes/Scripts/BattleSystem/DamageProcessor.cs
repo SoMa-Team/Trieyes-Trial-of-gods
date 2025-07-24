@@ -49,14 +49,7 @@ namespace BattleSystem
 
         public static void ProcessHit(Enemy enemy, Character character)
         {
-            var result = new AttackResult();
-            result.attack = new Attack();
-            result.attacker = enemy;
-            result.target = character;
-            result.isEvaded = false;
-            result.isCritical = false;
-            result.totalDamage = enemy.statSheet[Stats.StatType.AttackPower];
-            result.attackerHealed = 0;
+            var result = AttackResult.Create(enemy, character);
             triggerAttackHitEvent(result);
 
             if (result.isEvaded)
@@ -76,6 +69,12 @@ namespace BattleSystem
             if (result.totalDamage <= 0)
             {
                 triggerDefendEvent(result);
+            }
+
+            // Attack 인스턴스 삭제
+            if (result.attack != null)
+            {
+                AttackFactory.Instance.Deactivate(result.attack);
             }
         }
 

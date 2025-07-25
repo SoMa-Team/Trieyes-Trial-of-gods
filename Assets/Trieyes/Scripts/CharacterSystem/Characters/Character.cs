@@ -43,7 +43,8 @@ namespace CharacterSystem
 
             var capsuleCollider = Collider as CapsuleCollider2D;
             capsuleCollider.isTrigger = true;
-            
+            this.transform.position = Vector3.zero;
+
             //Debug.Log("Character001 Activated.");
         }
 

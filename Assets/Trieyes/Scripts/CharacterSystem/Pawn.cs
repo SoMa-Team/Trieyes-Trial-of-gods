@@ -37,7 +37,7 @@ namespace CharacterSystem
         public Collider2D Collider;
 
         protected Controller Controller;
-        protected Animator Animator;
+        [SerializeField] protected Animator Animator;
         
         [Header("Stats")]
 
@@ -115,11 +115,11 @@ namespace CharacterSystem
         // ===== [Unity 생명주기] =====
         protected virtual void Start()
         {
-            rb = GetComponent<Rigidbody2D>();
-            Collider = GetComponent<Collider2D>();
+            if(rb is null) rb = GetComponent<Rigidbody2D>();
+            if (Collider is null) Collider = GetComponent<Collider2D>();
             
             pawnPrefab = transform.GetChild(0).gameObject;
-            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
@@ -135,6 +135,7 @@ namespace CharacterSystem
 
         protected virtual void OnDestroy()
         {
+            if (BattleStage.now is null) return;
             if (isEnemy)
             {
                 EnemyFactory.Instance.Deactivate(this as Enemy);

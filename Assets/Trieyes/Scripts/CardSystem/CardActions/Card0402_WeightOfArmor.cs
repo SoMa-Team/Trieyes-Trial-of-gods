@@ -72,7 +72,7 @@ namespace CardActions
                 int downValuePercent = Convert.ToInt32(GetEffectiveParam(downValueCoefIdx)); // ex: 2
 
                 owner.statSheet[upStat].AddBuff(new StatModifier(upValuePercent, BuffOperationType.Multiplicative));
-                owner.statSheet[downStat].AddBuff(new StatModifier(downValuePercent, BuffOperationType.Multiplicative));
+                owner.statSheet[downStat].AddBuff(new StatModifier(-1*downValuePercent, BuffOperationType.Multiplicative));
 
                 Debug.Log($"<color=cyan>[ArmorWeightParam] '{owner.gameObject.name}' - '갑옷' 카드 {armorCardCount}장: {upStat} ×{upValuePercent:F3}, {downStat} ×{downValuePercent:F3} 적용</color>");
             }

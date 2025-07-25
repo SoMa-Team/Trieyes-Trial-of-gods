@@ -67,9 +67,9 @@ namespace CardActions
                 }
 
                 var upStat = (StatType)GetEffectiveParam(upStatTypeIdx);
-                int upValuePercent = Convert.ToInt32(GetEffectiveParam(upValueCoefIdx)); // ex: 20
+                int upValuePercent = Convert.ToInt32(GetEffectiveParam(upValueCoefIdx))*armorCardCount;
                 var downStat = (StatType)GetEffectiveParam(downStatTypeIdx);
-                int downValuePercent = Convert.ToInt32(GetEffectiveParam(downValueCoefIdx)); // ex: 2
+                int downValuePercent = Convert.ToInt32(GetEffectiveParam(downValueCoefIdx))*armorCardCount;
 
                 owner.statSheet[upStat].AddBuff(new StatModifier(upValuePercent, BuffOperationType.Multiplicative));
                 owner.statSheet[downStat].AddBuff(new StatModifier(-1*downValuePercent, BuffOperationType.Multiplicative));

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AttackSystem;
 using CharacterSystem;
+using UISystem;
 using UnityEngine;
 using Utils;
 using System.Linq;
@@ -91,6 +92,9 @@ namespace BattleSystem
             battleStage.spawnManager.Activate(difficulty);
             
             battleStage.Activate();
+
+            BattleOverlayCanvasController.Instance.Activate();
+            BattleWorldCanvasController.Instance.Activate();
         }
 
         /// <summary>

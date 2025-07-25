@@ -27,7 +27,6 @@ namespace UISystem
     
         public DamageNumberView Create(AttackResult result)
         {
-            return null;
             var view = popDamageNumberView() ?? Instantiate(prefab);
             Activate(view, result);
             return view;
@@ -62,6 +61,11 @@ namespace UISystem
             if (pool.Count <= 0)
                 return null;
             return pool.Dequeue();
+        }
+
+        public void OnBattleEnded()
+        {
+            Instance = null;
         }
     }
 }

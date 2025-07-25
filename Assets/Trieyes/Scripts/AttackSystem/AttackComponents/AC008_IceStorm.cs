@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using BattleSystem;
 using CharacterSystem.Enemies;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -21,6 +22,10 @@ namespace AttackComponents
 
         [Header("VFX 설정")]
         public GameObject summonVFXPrefab; // 소환 VFX
+
+        // VFX 시스템 설정
+        [Header("VFX System Settings")]
+        [SerializeField] private readonly int ICE_STORM_VFX_ID = 5; // 얼음 폭풍 VFX ID
 
         public AttackData globalBlizzardData;
 
@@ -54,8 +59,7 @@ namespace AttackComponents
             summonState = SummonState.Preparing;
             summonTimer = 0f;
             
-            // 소환 VFX 생성
-            CreateSummonVFX();
+            // VFX는 AC104_GLOBAL에서 처리됨
             
             Debug.Log("<color=cyan>[ICE_STORM] 얼음 속성 무기 - 눈보라 소환 시작!</color>");
         }
@@ -106,7 +110,7 @@ namespace AttackComponents
         {
             Debug.Log("<color=cyan>[ICE_STORM] AC104_GLOBAL 소환!</color>");
             
-            // AttackComponentFactory를 통해 AC105_GLOBAL 컴포넌트 생성
+            // AttackComponentFactory를 통해 AC104_GLOBAL 컴포넌트 생성
             var globalBlizzardAttack = AttackFactory.Instance.Create(globalBlizzardData, attack.attacker, null, Vector2.zero);
 
             var globalBlizzardComponent = globalBlizzardAttack.components[0] as AC104_GLOBAL;
@@ -118,6 +122,8 @@ namespace AttackComponents
             globalBlizzardComponent.additionalDebuffDuration = 2f;
             globalBlizzardComponent.additionalDebuffChance = 0.3f;
             globalBlizzardComponent.additionalDebuffMultiplier = 0f;
+
+            // VFX는 AC104_GLOBAL에서 직접 처리됨
 
             globalBlizzardAttack.Activate(attack.attacker, Vector2.zero);
             
@@ -142,6 +148,8 @@ namespace AttackComponents
                 Destroy(summonVFX, summonDelay + 0.1f);
             }
         }
+
+
 
         private void CreateSummonCompleteVFX()
         {

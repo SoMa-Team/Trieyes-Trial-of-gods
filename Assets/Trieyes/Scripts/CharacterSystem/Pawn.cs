@@ -37,7 +37,7 @@ namespace CharacterSystem
         public Collider2D Collider;
 
         protected Controller Controller;
-        protected Animator Animator;
+        [SerializeField] protected Animator Animator;
         
         [Header("Stats")]
 
@@ -81,6 +81,11 @@ namespace CharacterSystem
         public float skillAttack2Cooldown = 0f;
         public float lastSkillAttack2Time = -999f;
         
+        public float BasicAttackCoolDownRate => Mathf.Max(1 - (Time.time - lastAttackTime) / attackCooldown, 0);
+        public float Skill1CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack1Time) / skillAttack1Cooldown, 0);
+        public float Skill2CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack2Time) / skillAttack2Cooldown, 0);
+        public float HpRate => (float)currentHp / maxHp;
+        
         /// <summary>
         /// 장착 가능한 유물 리스트
         /// </summary>
@@ -109,17 +114,27 @@ namespace CharacterSystem
         
         protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>();
         public bool isDead { get; protected set; }
-        
+        public bool isAutoAttack {
+            get
+            {
+                return Controller.isAutoAttack;
+            }
+            set
+            {
+                Controller.isAutoAttack = value;
+            }
+        }
+
         public int objectID;
 
         // ===== [Unity 생명주기] =====
         protected virtual void Start()
         {
-            rb = GetComponent<Rigidbody2D>();
-            Collider = GetComponent<Collider2D>();
+            if(rb is null) rb = GetComponent<Rigidbody2D>();
+            if (Collider is null) Collider = GetComponent<Collider2D>();
             
             pawnPrefab = transform.GetChild(0).gameObject;
-            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
@@ -135,13 +150,14 @@ namespace CharacterSystem
 
         protected virtual void OnDestroy()
         {
+            if (BattleStage.now is null) return;
             if (isEnemy)
             {
-                EnemyFactory.Instance.Deactivate(this);
+                EnemyFactory.Instance.Deactivate(this as Enemy);
             }
             else
             {
-                CharacterFactory.Instance.Deactivate(this);
+                CharacterFactory.Instance.Deactivate(this as Character);
             }
         }
 
@@ -155,6 +171,19 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Activate()
         {
+            if (Collider is not null)
+            {
+                Collider.enabled = true;
+            }
+            if (rb is not null)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+            if (Controller is not null)
+            {
+                Controller.Activate(this);
+            }
+
             isDead = false;
             currentHp = maxHp;
             Collider.enabled = true;
@@ -184,25 +213,26 @@ namespace CharacterSystem
                 Utils.EventType.OnHPUpdated
             );
 
-            skillAttack1Cooldown = backupSkill1Attack is not null ? skill1Attack.cooldown : 0f;
-            skillAttack2Cooldown = backupSkill2Attack is not null ? skill2Attack.cooldown : 0f;
+            skillAttack1Cooldown = skill1Attack?.cooldown ?? 0f;
+            skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
+
+            deck.Activate(this, true);
+            initBaseStat();
             
             gameObject.SetActive(true);
             
             // relic에 따른 Attack 적용
-            if (relics.Count > 0)
-            {
-                backupBasicAttack = basicAttack.Copy();
-                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
-                
-                backupSkill1Attack = skill1Attack.Copy();
-                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
-                
-                backupSkill2Attack = skill2Attack.Copy();
-                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
-            }
+            ApplyRelic();
             
             Controller.Activate(this);
+        }
+
+        /// <summary>
+        /// 애니메이터를 초기 상태로 리셋합니다.
+        /// </summary>
+        protected virtual void ResetAnimator()
+        {
+            Animator.Rebind();
         }
 
         /// <summary>
@@ -214,10 +244,15 @@ namespace CharacterSystem
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
             
+            // 애니메이터 초기화
+            ResetAnimator();
+            
             // Relic에 따른 Attack 초기화
             if (relics.Count > 0)
             {
                 AttackFactory.Instance.DeregisterAttack(basicAttack);
+                AttackFactory.Instance.DeregisterAttack(skill1Attack);
+                AttackFactory.Instance.DeregisterAttack(skill2Attack);
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
@@ -226,6 +261,10 @@ namespace CharacterSystem
             Controller.Deactivate();
         }
 
+        protected virtual void OnTriggerEnter2D(Collider2D other)
+        {
+        }
+        
         public void ApplyRelic()
         {
             if (relics.Count > 0)
@@ -286,10 +325,6 @@ namespace CharacterSystem
         /// <param name="direction">이동할 방향</param>
         public virtual void Move(Vector2 direction)
         {
-            if(isDead)
-            {
-                return;
-            }
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동
@@ -317,10 +352,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="newState">새로운 애니메이션 상태</param>
         private void ChangeAnimationState(string newState)
-        {
-            if (isDead && newState != "DEATH")
-                return;
-            
+        {          
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
                 // switch로 각 newStat에 대한 Parameter 값을 변경
@@ -336,10 +368,11 @@ namespace CharacterSystem
                         Animator.SetTrigger("2_Attack");
                         break;
                     case "DAMAGED":
-                        Animator.SetBool("3_Damaged", true);
+                        Animator.SetTrigger("3_Damaged");
                         break;
                     case "DEATH":
-                        Animator.SetBool("4_Death", true);
+                        Animator.SetBool("isDeath", true);
+                        Debug.Log($"<color=red>[ANIMATION] {gameObject.name} changed to DEATH</color>");
                         break;
                 }
             }
@@ -643,6 +676,7 @@ namespace CharacterSystem
             
             int previousHP = currentHp;
             ChangeHP(-result.totalDamage);
+            ChangeAnimationState("DAMAGED");
 
             Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {result.totalDamage} damage from {result.attacker.gameObject.name}</color>");
             // TODO : 넉백 확률 스탯 부분 추가 필요
@@ -650,27 +684,26 @@ namespace CharacterSystem
             
             if (currentHp <= 0)
             {
-                OnEvent(Utils.EventType.OnDeath, result);
-                result.attack.OnEvent(Utils.EventType.OnKilled, result);
+                result.attack?.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
 
                 if (result.isCritical)
                 {
-                    result.attack.OnEvent(Utils.EventType.OnKilledByCritical, result);
+                    result.attack?.OnEvent(Utils.EventType.OnKilledByCritical, result);
                     result.attacker.OnEvent(Utils.EventType.OnKilledByCritical, result);
                 }
+
+                OnEvent(Utils.EventType.OnDeath, result);
             }
         }
 
         private void HandleDeath()
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
-            // TO-DO : 이부분 테스트 필요
+            // TO-DO : 이부분을 죽을 때 해야 하는가?
             Collider.enabled = false;
             rb.linearVelocity = Vector3.zero;
-            
-            if (isDead)
-                return;
+
             isDead = true;
             ChangeAnimationState("DEATH");
         }
@@ -744,7 +777,7 @@ namespace CharacterSystem
                 case PawnAttackType.Skill1:
                     if (CheckSkillCooldown(PawnAttackType.Skill1))
                     {
-                        lastSkillAttack1Time = 0f;
+                        lastSkillAttack1Time = Time.time;
                         ChangeAnimationState("ATTACK");
                         Attack temp = AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
                         Debug.Log($"<color=yellow>[SKILL1] {temp.gameObject.name} skill1Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
@@ -756,7 +789,7 @@ namespace CharacterSystem
                 case PawnAttackType.Skill2:
                     if (CheckSkillCooldown(PawnAttackType.Skill2))
                     {
-                        lastSkillAttack2Time = 0f;
+                        lastSkillAttack2Time = Time.time;
                         ChangeAnimationState("ATTACK");
                         Attack temp = AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
                         Debug.Log($"<color=yellow>[SKILL2] {temp.gameObject.name} skill2Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");

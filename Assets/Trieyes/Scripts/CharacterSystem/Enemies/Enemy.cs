@@ -48,6 +48,17 @@ namespace CharacterSystem
             ////Debug.Log("Enemy001 Deactivated.");
         }
 
+        protected override void OnTriggerEnter2D(Collider2D other)
+        {
+            base.OnTriggerEnter2D(other);
+
+            if(other.gameObject.CompareTag("Player"))
+            {
+                var character = other.gameObject.GetComponent<Character>();
+                DamageProcessor.ProcessHit(this, character);
+            }
+        }
+
         /// <summary>
         /// 이벤트를 처리합니다.
         /// </summary>
@@ -77,6 +88,8 @@ namespace CharacterSystem
             
             // 골드 드랍 로직 (임시로 플레이어에게 직접 전달)
             // TODO: 실제로는 드롭 아이템 시스템을 통해 구현해야 함
+            Debug.Log("OnSelfDeath Called");
+            Debug.Log($"{result.attacker}");
             if (result.attacker != null)
             {
                 result.attacker.ChangeGold(dropGold);

@@ -21,12 +21,13 @@ namespace BattleSystem
         // ===== 전역 스테이지 관리 =====
         public static BattleStage now;
         public BattleStageView View { set; get; }
+        public float elapsedTime => Time.time - startTime;
 
         // ===== 전투 스테이지 데이터 =====
         public Difficulty difficulty;
         public Pawn mainCharacter;
         public List<Pawn> characters = new ();
-        public Dictionary<int, Pawn> enemies = new ();
+        public Dictionary<int, Enemy> enemies = new ();
         public Dictionary<int, Attack> attacks = new ();
         public SpawnManager spawnManager;
 
@@ -73,14 +74,14 @@ namespace BattleSystem
         /// </summary>
         /// <param name="enemy">연결할 적 Pawn</param>
         /// <param name="spawnPoint">스폰 포인트 Transform</param>
-        public void AttachEnemy(Pawn enemy, Transform spawnPoint)
+        public void AttachEnemy(Enemy enemy, Transform spawnPoint)
         {
             enemy.transform.SetParent(View.transform);
             enemy.transform.position = spawnPoint.position;
             enemies.Add(enemy.objectID, enemy);
         }
         
-        public void RemoveEnemy(Pawn enemy)
+        public void RemoveEnemy(Enemy enemy)
         {
             enemies.Remove(enemy.objectID);
         }

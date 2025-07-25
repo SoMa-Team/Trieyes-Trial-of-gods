@@ -92,6 +92,7 @@ namespace BattleSystem
             battleStage.Activate();
 
             BattleOverlayCanvasController.Instance.Activate();
+            BattleWorldCanvasController.Instance.Activate();
         }
 
         /// <summary>

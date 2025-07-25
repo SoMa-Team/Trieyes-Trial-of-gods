@@ -84,6 +84,7 @@ namespace CharacterSystem
         public float BasicAttackCoolDownRate => Mathf.Max(1 - (Time.time - lastAttackTime) / attackCooldown, 0);
         public float Skill1CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack1Time) / skillAttack1Cooldown, 0);
         public float Skill2CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack2Time) / skillAttack2Cooldown, 0);
+        public float HpRate => (float)currentHp / maxHp;
         
         /// <summary>
         /// 장착 가능한 유물 리스트
@@ -123,7 +124,7 @@ namespace CharacterSystem
                 Controller.isAutoAttack = value;
             }
         }
-        
+
         public int objectID;
 
         // ===== [Unity 생명주기] =====

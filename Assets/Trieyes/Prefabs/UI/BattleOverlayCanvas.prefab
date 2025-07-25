@@ -730,6 +730,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3077992988435218389}
+  - component: {fileID: 4892582438430764942}
   m_Layer: 5
   m_Name: Skills
   m_TagString: Untagged
@@ -761,6 +762,14 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0}
+--- !u!222 &4892582438430764942
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2377576624867867761}
+  m_CullTransparentMesh: 1
 --- !u!1 &2481486647442240303
 GameObject:
   m_ObjectHideFlags: 0
@@ -1372,7 +1381,10 @@ MonoBehaviour:
   BasicAttackCoolDown: {fileID: 799345366667779093}
   Skill1CoolDown: {fileID: 7653959233521400948}
   Skill2CoolDown: {fileID: 5663363354824294110}
-  AutoBasicAttackToggleView: {fileID: 532527622058249555}
+  AutoBasicAttackOnViews:
+  - {fileID: 1376644652687065718}
+  AutoBasicAttackOffViews:
+  - {fileID: 3027190119755920428}
 --- !u!1 &3925025541410231776
 GameObject:
   m_ObjectHideFlags: 0
@@ -2396,7 +2408,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2825173752874819193}
+        m_TargetAssemblyTypeName: UISystem.BattleOverlayCanvasController, Assembly-CSharp
+        m_MethodName: OnClickAutoAttack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8728910892731690272
 GameObject:
   m_ObjectHideFlags: 0
@@ -2606,10 +2630,32 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2825173752874819193}
+        m_TargetAssemblyTypeName: UISystem.BattleOverlayCanvasController, Assembly-CSharp
+        m_MethodName: OnClickAutoAttack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!1 &1376644652687065718 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1929414691879508143, guid: 90c2275bfef184f5c9692beba41562d5, type: 3}
+  m_PrefabInstance: {fileID: 710578579443768025}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &2956327732029637576 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2367353111552203025, guid: 90c2275bfef184f5c9692beba41562d5, type: 3}
+  m_PrefabInstance: {fileID: 710578579443768025}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3027190119755920428 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2584721025612705525, guid: 90c2275bfef184f5c9692beba41562d5, type: 3}
   m_PrefabInstance: {fileID: 710578579443768025}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1817657922166930999
@@ -2623,6 +2669,18 @@ PrefabInstance:
     - target: {fileID: 1511502785206308679, guid: a9f8877182b654892936b44ce72fd551, type: 3}
       propertyPath: m_Name
       value: Skill1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3787394633978651404, guid: a9f8877182b654892936b44ce72fd551, type: 3}
       propertyPath: m_Pivot.x
@@ -2708,6 +2766,30 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -680087486501830028, guid: c777abbe5d8b24a3dae7dca3331c8ba2, type: 3}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8295592758701775141, guid: a9f8877182b654892936b44ce72fd551, type: 3}
       propertyPath: m_TargetGraphic
       value: 
@@ -2799,6 +2881,18 @@ PrefabInstance:
     - target: {fileID: 1511502785206308679, guid: a9f8877182b654892936b44ce72fd551, type: 3}
       propertyPath: m_Name
       value: Skill2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3787394633978651404, guid: a9f8877182b654892936b44ce72fd551, type: 3}
       propertyPath: m_Pivot.x
@@ -2900,6 +2994,30 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -6812346833254227690, guid: 962a84527e6954bfeb9c5ff15bb3090b, type: 3}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8295592758701775141, guid: a9f8877182b654892936b44ce72fd551, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -2978,7 +3096,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8135886326569738822, guid: 3e8f7f69c160248709e6cc9a0ef8c543, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 8135886326569738822, guid: 3e8f7f69c160248709e6cc9a0ef8c543, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3114,6 +3232,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: BasicAttack
       objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2789086346014044605, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3787394633978651404, guid: a9f8877182b654892936b44ce72fd551, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3214,6 +3344,30 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 5c0f356e8fdb749c292f0a699fde4480, type: 3}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5861768104778816206, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287130606416036419, guid: a9f8877182b654892936b44ce72fd551, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8295592758701775141, guid: a9f8877182b654892936b44ce72fd551, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1

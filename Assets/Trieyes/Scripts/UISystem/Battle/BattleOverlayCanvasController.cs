@@ -70,7 +70,6 @@ namespace UISystem
             };
 
             SetStageNumber();
-
             InitAutoAttackToggle();
         }
 
@@ -141,6 +140,12 @@ namespace UISystem
 
         private void SetBasicAttackCoolDown(float rate)
         {
+            if (BattleStage.now.mainCharacter.isAutoAttack)
+            {
+                BasicAttackCoolDown.fillAmount = 1;
+                return;
+            }
+            
             BasicAttackCoolDown.fillAmount = rate;
         }
 

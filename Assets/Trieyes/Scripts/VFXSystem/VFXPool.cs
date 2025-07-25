@@ -48,6 +48,12 @@ namespace VFXSystem
             return Object.Instantiate(prefab);
         }
 
+        public void PoolClear()
+        {
+            pools.Clear();
+            activeObjects.Clear();
+        }
+
         /// <summary>
         /// VFX를 풀로 반환합니다.
         /// </summary>

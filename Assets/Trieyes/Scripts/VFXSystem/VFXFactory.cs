@@ -97,6 +97,14 @@ namespace VFXSystem
             return vfxPools[vfxId].Get(vfxPrefabs[vfxId]);
         }
 
+        public void ClearVFXPool()
+        {
+            foreach (KeyValuePair<int, VFXPool> vfxPool in vfxPools)
+            {
+                vfxPool.Value.PoolClear();
+            }
+        }
+
         /// <summary>
         /// VFX의 모든 Particle System을 재생합니다.
         /// </summary>

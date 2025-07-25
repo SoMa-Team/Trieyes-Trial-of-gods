@@ -1,4 +1,5 @@
 using System;
+using UISystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
 // using UnityEngine.InputSystem; // 더 이상 필요 없음
@@ -34,12 +35,7 @@ namespace CharacterSystem
             
             if (joystick == null)
             {
-                var canvas = GameObject.Find("Canvas");
-                if (canvas != null)
-                {
-                    var found = canvas.GetComponentInChildren<Joystick>(true);
-                    joystick = found as Joystick;
-                }
+                joystick = BattleOverlayCanvasController.Instance.joystick;
             }
         }
 

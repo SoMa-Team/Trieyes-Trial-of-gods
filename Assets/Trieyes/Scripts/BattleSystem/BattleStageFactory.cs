@@ -130,6 +130,9 @@ namespace BattleSystem
             battleStage.Deactivate();
             
             VFXFactory.Instance.Clear();
+
+            BattleOverlayCanvasController.Instance.Deactivate();
+            BattleWorldCanvasController.Instance.Deactivate();
         }
     }
 }

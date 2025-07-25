@@ -20,7 +20,6 @@ namespace UISystem
             }
         
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
     
         // ===== DamageView 생성 =====

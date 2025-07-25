@@ -43,4 +43,9 @@ public class BattleWorldCanvasController : MonoBehaviour
         var targetPosition = character.transform.localPosition + offset;
         hpBarSliderView.transform.localPosition = targetPosition;
     }
+
+    public void Deactivate()
+    {
+        Instance = null;
+    }
 }

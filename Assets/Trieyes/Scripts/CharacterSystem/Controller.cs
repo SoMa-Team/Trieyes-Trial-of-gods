@@ -26,11 +26,13 @@ namespace CharacterSystem
             get => _moveDir;
         }
         public Vector2 lastMoveDir;
+        public bool isAutoAttack;
 
         // ===== [Unity 생명주기] =====
         public virtual void Activate(Pawn pawn)
         {
             enabled = true;
+            isAutoAttack = true;
             owner = pawn;
         }
 

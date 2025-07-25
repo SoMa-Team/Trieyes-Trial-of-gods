@@ -113,6 +113,16 @@ namespace CharacterSystem
         
         protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>();
         public bool isDead { get; protected set; }
+        public bool isAutoAttack {
+            get
+            {
+                return Controller.isAutoAttack;
+            }
+            set
+            {
+                Controller.isAutoAttack = value;
+            }
+        }
         
         public int objectID;
 

@@ -39,7 +39,9 @@ namespace UISystem
         [SerializeField] private Image Skill1CoolDown;
         [SerializeField] private Image Skill2CoolDown;
 
-        [SerializeField] private Button AutoBasicAttackToggleView;
+        [Header("========== Auto Attack ==========")]
+        [SerializeField] private GameObject[] AutoBasicAttackOnViews;
+        [SerializeField] private GameObject[] AutoBasicAttackOffViews;
         
         public void Activate()
         {
@@ -68,6 +70,27 @@ namespace UISystem
             };
 
             SetStageNumber();
+
+            InitAutoAttackToggle();
+        }
+
+        private void InitAutoAttackToggle()
+        {
+            var isAuto = BattleStage.now.mainCharacter.isAutoAttack;
+            SetAutoAttack(isAuto);
+        }
+
+        private void SetAutoAttack(bool isAuto)
+        {
+            foreach (var view in AutoBasicAttackOnViews)
+            {
+                view.SetActive(isAuto);
+            }
+            
+            foreach (var view in AutoBasicAttackOffViews)
+            {
+                view.SetActive(!isAuto);
+            }
         }
 
         private void SetStageNumber()
@@ -144,6 +167,13 @@ namespace UISystem
         public void OnClickSkill2()
         {
             BattleStage.now.mainCharacter.ExecuteAttack(PawnAttackType.Skill2);
+        }
+
+        public void OnClickAutoAttack()
+        {
+            var character = BattleStage.now.mainCharacter;
+            character.isAutoAttack = !character.isAutoAttack;
+            SetAutoAttack(character.isAutoAttack);
         }
     }
 }

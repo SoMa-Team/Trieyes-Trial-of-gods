@@ -133,6 +133,7 @@ namespace BattleSystem
 
             BattleOverlayCanvasController.Instance.Deactivate();
             BattleWorldCanvasController.Instance.Deactivate();
+            DamageNumberViewFactory.Instance.OnBattleEnded();
         }
     }
 }

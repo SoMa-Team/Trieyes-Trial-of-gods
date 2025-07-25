@@ -15,7 +15,6 @@ namespace UISystem
         {
             text.outlineColor = Color.black;
             text.outlineWidth = 0.2f;
-            text.outlineWidth = 0.2f;
             // TODO : PrimeTwin으로 점점 FadeOut 적용
         }
 

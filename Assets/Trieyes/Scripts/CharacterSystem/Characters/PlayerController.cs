@@ -68,7 +68,7 @@ namespace CharacterSystem
 
         private void Update()
         {
-            if (character is not null)
+            if (character is not null && isAutoAttack)
             {
                 character.PerformAutoAttack();
             }

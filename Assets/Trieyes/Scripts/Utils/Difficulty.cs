@@ -10,6 +10,7 @@ namespace Utils
         public float battleLength => 10; // 초단위
         public int EnemyID = 0;
         public int shopLevel = 1;
+        public int stageNumber => 12;
 
         public float SpawnInterval => 1f / spawnFrequency;
 

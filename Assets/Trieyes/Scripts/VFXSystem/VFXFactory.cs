@@ -89,6 +89,14 @@ namespace VFXSystem
             return vfxPools[vfxId].Get(vfxPrefabs[vfxId]);
         }
 
+        public void ClearVFXPool()
+        {
+            foreach (KeyValuePair<int, VFXPool> vfxPool in vfxPools)
+            {
+                vfxPool.Value.PoolClear();
+            }
+        }
+
         /// <summary>
         /// VFX ID로 VFX를 생성합니다. (회전 직접 지정)
         /// </summary>

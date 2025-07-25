@@ -52,22 +52,28 @@ namespace VFXSystem
             }
 
             GameObject obj;
-            Queue<GameObject> pool = pools[prefab];
+            //Queue<GameObject> pool = pools[prefab];
             
-            if (pool.Count > 0)
-            {
-                // 풀에서 가져오기
-                obj = pool.Dequeue();
-            }
-            else
-            {
-                // 풀이 비어있으면 새로 생성
-                obj = Object.Instantiate(prefab);
-            }
-
+            // if (pool.Count > 0)
+            // {
+            //     // 풀에서 가져오기
+            //     obj = pool.Dequeue();
+            // }
+            // else
+            // {
+            //     // 풀이 비어있으면 새로 생성
+            //     obj = Object.Instantiate(prefab);
+            // }
+            obj = Object.Instantiate(prefab);
             obj.SetActive(true);
             activeObjects[prefab].Add(obj);
             return obj;
+        }
+
+        public void PoolClear()
+        {
+            pools.Clear();
+            activeObjects.Clear();
         }
 
         /// <summary>

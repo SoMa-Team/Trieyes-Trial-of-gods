@@ -5,6 +5,7 @@ using CharacterSystem;
 using UnityEngine;
 using Utils;
 using System.Linq;
+using VFXSystem;
 using Object = System.Object;
 
 namespace BattleSystem
@@ -111,8 +112,6 @@ namespace BattleSystem
                 EnemyFactory.Instance.Deactivate(enemy);
             }
             
-            EnemyFactory.Instance.ClearPool();
-            
             // 공격 정리
             foreach (var attack in battleStage.attacks.Values.ToList())
             {
@@ -120,6 +119,9 @@ namespace BattleSystem
             }
 
             AttackFactory.Instance.ClearPool();
+            EnemyFactory.Instance.ClearPool();
+            VFXFactory.Instance.ClearVFXPool();
+            
             battleStage.spawnManager.Deactivate();
             battleStage.Deactivate();
         }

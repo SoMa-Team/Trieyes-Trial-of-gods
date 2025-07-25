@@ -28,6 +28,7 @@ namespace UISystem
     
         public DamageNumberView Create(AttackResult result)
         {
+            return null;
             var view = popDamageNumberView() ?? Instantiate(prefab);
             Activate(view, result);
             return view;

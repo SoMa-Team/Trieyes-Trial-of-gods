@@ -5,6 +5,7 @@ using CharacterSystem;
 using UnityEngine;
 using Utils;
 using System.Linq;
+using VFXSystem;
 using Object = System.Object;
 
 namespace BattleSystem
@@ -122,6 +123,8 @@ namespace BattleSystem
             AttackFactory.Instance.ClearPool();
             battleStage.spawnManager.Deactivate();
             battleStage.Deactivate();
+            
+            VFXFactory.Instance.Clear();
         }
     }
 }

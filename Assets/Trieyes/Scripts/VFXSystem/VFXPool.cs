@@ -18,6 +18,12 @@ namespace VFXSystem
         private Dictionary<GameObject, Queue<GameObject>> pools = new Dictionary<GameObject, Queue<GameObject>>();
         private Dictionary<GameObject, List<GameObject>> activeObjects = new Dictionary<GameObject, List<GameObject>>();
 
+        public void Clear()
+        {
+            pools.Clear();
+            activeObjects.Clear();
+        }
+
         /// <summary>
         /// VFX 프리팹을 풀에 추가합니다.
         /// </summary>
@@ -39,35 +45,7 @@ namespace VFXSystem
         /// <returns>VFX 게임오브젝트</returns>
         public GameObject Get(GameObject prefab)
         {
-            if (prefab == null)
-            {
-                Debug.LogWarning("[VFXPool] 프리팹이 null입니다!");
-                return null;
-            }
-
-            // 프리팹이 등록되지 않았으면 등록
-            if (!pools.ContainsKey(prefab))
-            {
-                AddPrefab(prefab);
-            }
-
-            GameObject obj;
-            Queue<GameObject> pool = pools[prefab];
-            
-            if (pool.Count > 0)
-            {
-                // 풀에서 가져오기
-                obj = pool.Dequeue();
-            }
-            else
-            {
-                // 풀이 비어있으면 새로 생성
-                obj = Object.Instantiate(prefab);
-            }
-
-            obj.SetActive(true);
-            activeObjects[prefab].Add(obj);
-            return obj;
+            return Object.Instantiate(prefab);
         }
 
         /// <summary>

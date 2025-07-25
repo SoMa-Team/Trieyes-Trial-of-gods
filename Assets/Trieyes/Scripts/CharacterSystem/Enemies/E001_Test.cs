@@ -39,7 +39,7 @@ namespace CharacterSystem
         public override void Deactivate()
         {
             // Enemy001 고유 정리 로직
-            dropGold = 0; // 기본값으로 초기화
+            dropGold = 10; // 기본값으로 초기화
             
             base.Deactivate();
             ////Debug.Log("Enemy001 Deactivated.");
@@ -67,6 +67,7 @@ namespace CharacterSystem
         /// <param name="param">이벤트 파라미터</param>
         protected override void OnSelfDeath(AttackResult result)
         {
+            base.OnSelfDeath(result);
         }
     }
 } 

@@ -379,6 +379,7 @@ namespace CharacterSystem
                         break;
                     case "DEATH":
                         Animator.SetBool("isDeath", true);
+                        Debug.Log($"<color=red>[ANIMATION] {gameObject.name} changed to DEATH</color>");
                         break;
                 }
             }
@@ -690,12 +691,12 @@ namespace CharacterSystem
             
             if (currentHp <= 0)
             {
-                result.attack.OnEvent(Utils.EventType.OnKilled, result);
+                result.attack?.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
 
                 if (result.isCritical)
                 {
-                    result.attack.OnEvent(Utils.EventType.OnKilledByCritical, result);
+                    result.attack?.OnEvent(Utils.EventType.OnKilledByCritical, result);
                     result.attacker.OnEvent(Utils.EventType.OnKilledByCritical, result);
                 }
 

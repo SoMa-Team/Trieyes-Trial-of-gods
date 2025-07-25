@@ -52,19 +52,8 @@ namespace AttackSystem
         public static AttackResult Create(Enemy enemy, Character character)
         {
             var attackResult = new AttackResult();
-            
-            // Enemy의 기본 공격 데이터를 사용하여 Attack 인스턴스 생성
-            if (enemy.basicAttack != null)
-            {
-                // AttackFactory를 통해 실제 Attack 인스턴스 생성
-                var attack = AttackFactory.Instance.Create(enemy.basicAttack, enemy, null, Vector2.right);
-                attackResult.attack = attack;
-            }
-            else
-            {
-                // 기본 공격 데이터가 없는 경우 null로 설정
-                attackResult.attack = null;
-            }
+
+            attackResult.attack = null;
             
             attackResult.attacker = enemy;
             attackResult.target = character;

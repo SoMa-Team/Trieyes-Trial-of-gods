@@ -302,7 +302,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 618733244208464801}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -324,11 +324,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 0
-  moveSpeed: 5
-  statPresetSO: {fileID: 11400000, guid: 174e138bcc1157a4b9b72c292f87a14f, type: 2}
+  rb: {fileID: 16111979999986116}
+  Collider: {fileID: 7040964818278521817}
+  statPresetSO: {fileID: 11400000, guid: ddde8513fdc8c4deda353354ee9333cd, type: 2}
   lastestDirection: {x: 0, y: 0}
-  basicAttack: {fileID: 11400000, guid: 0a469357fde99402aafafd4ab3ceac75, type: 2}
-  experience: 0
+  basicAttack: {fileID: 11400000, guid: e5845703c936646a99cbb36b5e53d7b3, type: 2}
+  skill1Attack: {fileID: 11400000, guid: f607696d8213441a9b70f5be567219b9, type: 2}
+  skillAttack1Cooldown: 0
+  lastSkillAttack1Time: -999
+  skill2Attack: {fileID: 11400000, guid: f607696d8213441a9b70f5be567219b9, type: 2}
+  skillAttack2Cooldown: 0
+  lastSkillAttack2Time: -999
+  objectID: 0
 --- !u!50 &16111979999986116
 Rigidbody2D:
   serializedVersion: 5
@@ -407,6 +414,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   owner: {fileID: 3421697805657425411}
   lastMoveDir: {x: 0, y: 0}
+  isAutoAttack: 0
+  character: {fileID: 0}
+  skillAction001: {fileID: 2646095123555208786, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
+  skillAction002: {fileID: -5947426782392501359, guid: 872c25db7e513a2429ac311ad8025704, type: 3}
   joystick: {fileID: 0}
 --- !u!1 &623379532422517817
 GameObject:
@@ -7188,6 +7199,7 @@ GameObject:
   - component: {fileID: 3389957211453136024}
   - component: {fileID: 5182516867318658898}
   - component: {fileID: 425509791007501854}
+  - component: {fileID: 3266653663258859956}
   m_Layer: 0
   m_Name: UnitRoot
   m_TagString: Untagged
@@ -7234,7 +7246,7 @@ Animator:
   m_GameObject: {fileID: 6963953811325889915}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e9358c226bb09e24da9c5f7064768810, type: 2}
+  m_Controller: {fileID: 9100000, guid: a017292288bbdd04cb9807eecd67ef12, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -7246,6 +7258,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3266653663258859956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6963953811325889915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dce8152f18af78645b6a1f1f8b118bd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7085910020498368093
 GameObject:
   m_ObjectHideFlags: 0

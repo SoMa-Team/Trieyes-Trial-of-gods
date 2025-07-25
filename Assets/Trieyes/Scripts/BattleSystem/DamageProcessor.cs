@@ -89,7 +89,7 @@ namespace BattleSystem
             //Debug.Log($"<color=red>[EVENT] {gameObject.name} -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name}) OnDamageHit <- Attacker {attacker.gameObject.name} ({attacker.GetType().Name})</color>");
             
             // 1. 공격자의 OnAttackHit 이벤트 (유물, 카드 순회)
-            result.attack.OnEvent(Utils.EventType.OnAttackHit, result);
+            result.attack?.OnEvent(Utils.EventType.OnAttackHit, result);
             result.attacker.OnEvent(Utils.EventType.OnAttackHit, result);
 
             // 2. 피격자의 OnDamageHit 이벤트 (회피 판정)
@@ -102,7 +102,7 @@ namespace BattleSystem
             //Debug.Log($"<color=cyan>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttackMiss -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             // 회피 성공: OnEvaded (피격자) + OnAttackMiss (공격자)
                     
-            result.attack.OnEvent(Utils.EventType.OnAttackMiss, result);
+            result.attack?.OnEvent(Utils.EventType.OnAttackMiss, result);
             result.attacker.OnEvent(Utils.EventType.OnAttackMiss, result);
             result.target.OnEvent(Utils.EventType.OnEvaded, result);
         }
@@ -111,14 +111,14 @@ namespace BattleSystem
         {
             //Debug.Log($"<color=green>[EVENT] {gameObject.name} -> Attacker {attacker.gameObject.name} ({attacker.GetType().Name}) OnAttack -> Target {targetPawn.gameObject.name} ({targetPawn.GetType().Name})</color>");
             // 회피 실패: OnAttack (공격자) - 데미지 계산 및 OnDamaged 호출
-            result.attack.OnEvent(Utils.EventType.OnAttack, result);
+            result.attack?.OnEvent(Utils.EventType.OnAttack, result);
             result.attacker.OnEvent(Utils.EventType.OnAttack, result);
             result.target.OnEvent(Utils.EventType.OnDamaged, result);
         }
         
         private static void triggerCriticalAttackEvent(AttackResult result)
         {
-            result.attack.OnEvent(Utils.EventType.OnCriticalAttack, result);
+            result.attack?.OnEvent(Utils.EventType.OnCriticalAttack, result);
             result.attacker.OnEvent(Utils.EventType.OnCriticalAttack, result);
         }
     }

@@ -155,7 +155,7 @@ GameObject:
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
   m_Name: FALL
-  m_TagString: Untagged
+  m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -191,11 +191,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: b6e8b4c67ad321b46a4bd5b946f02700, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 7175719141285207572}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

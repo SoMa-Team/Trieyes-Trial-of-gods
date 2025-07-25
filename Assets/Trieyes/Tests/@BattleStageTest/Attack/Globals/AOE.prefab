@@ -44,17 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c14e1f52728dc25429f50c81ecaa5475, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dotType: 0
-  dotCollisionType: 0
-  dotDamage: 10
-  dotDuration: 10
-  currentDotDuration: 0
-  dotInterval: 1
-  dotWidth: 1
-  dotHeight: 1
-  dotRadius: 1
-  dotAngle: 180
-  dotSegments: 8
+  aoeTargetType: 0
+  aoeShapeType: 1
+  aoeWidth: 1
+  aoeHeight: 1
+  aoeRadius: 1
+  aoeDamage: 20
+  aoeDuration: 5
+  aoeInterval: 1
+  aoeTargets: []
+  aoeVFXPrefab: {fileID: 0}
+  aoeVFXDuration: 0.3
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,7 +155,7 @@ GameObject:
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
   m_Name: AOE
-  m_TagString: Untagged
+  m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -195,6 +195,9 @@ MonoBehaviour:
   children: []
   components:
   - {fileID: 7535615950411682077}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

@@ -15,6 +15,10 @@ namespace AttackComponents
     {
         public AttackData fallAttackData;
 
+        // 메테오 설정
+        [Header("Meteor Settings")]
+        public float meteorRadius = 2f; // 메테오 반지름
+
         // FSM 상태 관리
         private FireMeteorState attackState = FireMeteorState.None;
         private float attackTimer = 0f;
@@ -114,6 +118,10 @@ namespace AttackComponents
                 fallComponent.fallXRandomOffsetMax = 2;
                 fallComponent.fallYRandomOffsetMin = -2;
                 fallComponent.fallYRandomOffsetMax = 2;
+                fallComponent.fallRadius = meteorRadius;
+                fallComponent.fallDuration = 0.5f;
+                fallComponent.fallDelay = 0.1f;
+                fallComponent.fallDamage = 50;
             }
             
             Debug.Log("<color=red>[AC007] AC103_FALL 파이어 메테오 소환 완료!</color>");
@@ -126,5 +134,7 @@ namespace AttackComponents
             attackState = FireMeteorState.None;
             attackTimer = 0f;
         }
+
+
     }
 }

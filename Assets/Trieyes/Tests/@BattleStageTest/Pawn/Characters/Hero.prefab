@@ -51,17 +51,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 100
   currentHp: 100
-  rb: {fileID: 0}
-  Collider: {fileID: 0}
+  rb: {fileID: -7081958898591838822}
+  Collider: {fileID: 9118692710769573021}
   statPresetSO: {fileID: 11400000, guid: 051c039bce603a64cad4d7ff05ade5f9, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
   skill1Attack: {fileID: 11400000, guid: 3a51829e5249d0340a4b3b55a6c1f803, type: 2}
-  skillAttack001Cooldown: 7
-  lastSkillAttack001Time: -999
+  skillAttack1Cooldown: 0
+  lastSkillAttack1Time: -999
   skill2Attack: {fileID: 11400000, guid: 8e5337464fe784d40b77508c84520cc3, type: 2}
-  skillAttack002Cooldown: 7
-  lastSkillAttack002Time: -999
+  skillAttack2Cooldown: 0
+  lastSkillAttack2Time: -999
   objectID: 0
   weaponElementState: 0
   activateLight: 0
@@ -97,8 +97,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   q: {fileID: 11400000, guid: 9a1dd3fb887fc2249803da8d2354564b, type: 2}
-  w: {fileID: 11400000, guid: a990c769f91a5c149a81621b27af53bd, type: 2}
-  e: {fileID: 11400000, guid: 9b2eb2de4301e0548abd884fe5e31ad0, type: 2}
+  w: {fileID: 11400000, guid: 9695b9b1aa2306348a23667d80d53bd4, type: 2}
+  e: {fileID: 0}
 --- !u!50 &-7081958898591838822
 Rigidbody2D:
   serializedVersion: 5
@@ -258,7 +258,7 @@ PrefabInstance:
     - target: {fileID: 6227493368991647909, guid: 206a26a8b944fc0438efe4d86b0e12b3, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 28793f7f6c4c23a4389795731c0dcf27, type: 2}
+      objectReference: {fileID: 9100000, guid: a017292288bbdd04cb9807eecd67ef12, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

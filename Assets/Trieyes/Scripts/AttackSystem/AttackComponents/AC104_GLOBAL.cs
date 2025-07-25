@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using BattleSystem;
 using CharacterSystem.Enemies;
 using System;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -28,6 +29,11 @@ namespace AttackComponents
         [Header("VFX 설정")]
         public GameObject globalVFXPrefab;
         public float globalVFXDuration = 0.3f;
+
+        // VFX 시스템 설정
+        [Header("VFX System Settings")]
+        [SerializeField] private readonly int GLOBAL_VFX_ID = 5; // 얼음 폭풍 VFX ID
+        private GameObject globalVFX;
 
         // 공격 효과 상태 관리
         private GlobalDamageState globalDamageState = GlobalDamageState.None;
@@ -233,22 +239,11 @@ namespace AttackComponents
 
         private void CreateGlobalDamageVFX()
         {
-            if (globalVFXPrefab != null)
-            {
-                GameObject globalVFX = Instantiate(globalVFXPrefab);
-                globalVFX.transform.position = Vector3.zero; // 맵 중앙
-
-                GlobalDamageVFX globalVFXComponent = globalVFX.GetComponent<GlobalDamageVFX>();
-                
-                // GlobalVFX 컴포넌트 찾아서 공격 효과 시작
-                if (globalVFXComponent != null)
-                {
-                    globalVFXComponent.Initialize(globalVFXDuration);
-                }
-                
-                // 지속 시간 후 VFX 제거
-                Destroy(globalVFX, globalVFXDuration + 1f);
-            }
+            // VFX 시스템을 통해 얼음 폭풍 VFX 생성
+            globalVFX = CreateAndSetupVFX(Vector2.zero, Vector2.zero);
+            PlayVFX(globalVFX);
+            
+            Debug.Log("<color=cyan>[GLOBAL_BLIZZARD] 얼음 폭풍 VFX 생성!</color>");
         }
 
         private void CreateEndGlobalDamageVFX()
@@ -269,9 +264,58 @@ namespace AttackComponents
             }
         }
 
+        /// <summary>
+        /// 얼음 폭풍 VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 얼음 폭풍 VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(GLOBAL_VFX_ID, position, direction);
+            
+            // 여기서 VFX의 세부 조정을 할 수 있습니다
+            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
+
+            // Render Alignment 설정
+            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
+            {
+                renderer.alignment = ParticleSystemRenderSpace.Local;
+                renderer.sortingOrder = 50;
+            }
+
+            vfx.transform.position = position;
+            
+            // 기본 스케일 설정 (맵 전체 효과이므로 크게)
+            float baseScale = 1.0f;
+            float finalScale = baseScale * 3.0f; // 맵 전체 효과
+            vfx.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
+            
+            // 얼음 색상 설정 (청색 계열)
+            var colorOverLifetime = childVFX.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.cyan, 0f), new GradientColorKey(Color.blue, 0.5f), new GradientColorKey(Color.white, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0.4f, 1f) }
+            );
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+
+            return vfx;
+        }
+
         public override void Deactivate()
         {
             base.Deactivate();
+            
+            // VFX 정리
+            if (globalVFX != null)
+            {
+                StopAndReturnVFX(globalVFX, GLOBAL_VFX_ID);
+                globalVFX = null;
+            }
             
             globalDamageState = GlobalDamageState.None;
             globalDamageTimer = 0f;

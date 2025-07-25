@@ -19,7 +19,7 @@ public class AnimationController : MonoBehaviour
         }
         else
         {
-            EnemyFactory.Instance.Deactivate(owner);
+            EnemyFactory.Instance.Deactivate(owner as Enemy);
         }
     }
 

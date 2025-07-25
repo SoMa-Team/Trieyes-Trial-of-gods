@@ -156,7 +156,7 @@ GameObject:
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
   m_Name: FOLLOWINGFIELD
-  m_TagString: Untagged
+  m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -192,11 +192,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: 9c040a02d2d66f74fa9d13e8c1ba8bbe, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 4018152355819753735}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

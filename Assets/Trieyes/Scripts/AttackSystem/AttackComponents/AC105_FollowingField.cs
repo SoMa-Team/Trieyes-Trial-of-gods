@@ -5,6 +5,7 @@ using Stats;
 using UnityEngine;
 using System.Collections.Generic;
 using BattleSystem;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -37,6 +38,11 @@ namespace AttackComponents
         [Header("VFX 설정")]
         public GameObject fieldVFXPrefab;
         public float fieldVFXDuration = 0.3f;
+
+        // VFX 시스템 설정
+        [Header("VFX System Settings")]
+        public int vfxID = 6; // 번개 장판 VFX ID
+        private GameObject fieldVFX;
         
         // 자기장 상태 관리
         private FollowingFieldState fieldState = FollowingFieldState.None;
@@ -176,40 +182,12 @@ namespace AttackComponents
             transform.position = fieldPosition;
             
             // VFX 위치도 업데이트
-            if (activeFieldVFX != null)
+            if (fieldVFX != null)
             {
-                activeFieldVFX.transform.position = fieldPosition;
+                fieldVFX.transform.position = fieldPosition + Vector2.up * 0.4f;
             }
 
             // 디버그 용으로 필드를 Draw
-            // if (fieldShape == FieldShape.Circle)
-            // {
-            //     // 원형 필드 디버그 (원의 둘레를 그리기)
-            //     int segments = 16;
-            //     Vector2 prevPoint = fieldPosition + Vector2.right * fieldRadius;
-            //     for (int i = 1; i <= segments; i++)
-            //     {
-            //         float angle = (360f / segments) * i * Mathf.Deg2Rad;
-            //         Vector2 currentPoint = fieldPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * fieldRadius;
-            //         Debug.DrawLine(prevPoint, currentPoint, Color.red, 1f);
-            //         prevPoint = currentPoint;
-            //     }
-            // }
-            // else if (fieldShape == FieldShape.Rect)
-            // {
-            //     // 사각형 필드 디버그 (네 개의 모서리를 연결)
-            //     Vector2 halfSize = new Vector2(fieldWidth, fieldHeight) * 0.5f;
-            //     Vector2 topLeft = fieldPosition - halfSize;
-            //     Vector2 topRight = fieldPosition + new Vector2(halfSize.x, -halfSize.y);
-            //     Vector2 bottomLeft = fieldPosition + new Vector2(-halfSize.x, halfSize.y);
-            //     Vector2 bottomRight = fieldPosition + halfSize;
-                
-            //     // 사각형의 네 변을 그리기
-            //     Debug.DrawLine(topLeft, topRight, Color.red, 1f);     // 위쪽 변
-            //     Debug.DrawLine(topRight, bottomRight, Color.red, 1f); // 오른쪽 변
-            //     Debug.DrawLine(bottomRight, bottomLeft, Color.red, 1f); // 아래쪽 변
-            //     Debug.DrawLine(bottomLeft, topLeft, Color.red, 1f);   // 왼쪽 변
-            // }
         }
         
         private void ActivateField()
@@ -284,39 +262,48 @@ namespace AttackComponents
         
         private void CreateFieldVFX()
         {
-            if (fieldVFXPrefab != null)
-            {
-                activeFieldVFX = Instantiate(fieldVFXPrefab);
-                activeFieldVFX.transform.position = transform.position;
-                
-                // 자기장 VFX 지속시간 후 제거
-                Destroy(activeFieldVFX, fieldVFXDuration);
-                
-                Debug.Log("<color=blue>[AC104] 자기장 VFX 생성</color>");
-            }
+            // VFX 시스템을 통해 번개 장판 VFX 생성
+            fieldVFX = CreateAndSetupVFX((Vector2)transform.position, Vector2.zero);
+            PlayVFX(fieldVFX);
+            
+            Debug.Log($"<color=blue>[AC105] 번개 장판 VFX 생성! VFX ID: {vfxID}</color>");
         }
         
         private void DeactivateField()
         {
             // VFX 정리
-            if (activeFieldVFX != null)
+            if (fieldVFX != null)
             {
-                Destroy(activeFieldVFX);
-                activeFieldVFX = null;
+                StopAndReturnVFX(fieldVFX, vfxID);
+                fieldVFX = null;
             }
             
-            Debug.Log("<color=cyan>[AC104] 따라다니는 자기장 종료!</color>");
+            Debug.Log("<color=cyan>[AC105] 따라다니는 자기장 종료!</color>");
         }
         
+        /// <summary>
+        /// 번개 장판 VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 번개 장판 VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(vfxID, position, direction);
+
+            return vfx;
+        }
+
         public override void Deactivate()
         {
             base.Deactivate();
             
             // VFX 정리
-            if (activeFieldVFX != null)
+            if (fieldVFX != null)
             {
-                Destroy(activeFieldVFX);
-                activeFieldVFX = null;
+                StopAndReturnVFX(fieldVFX, vfxID);
+                fieldVFX = null;
             }
             
             fieldState = FollowingFieldState.None;

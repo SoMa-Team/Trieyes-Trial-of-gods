@@ -23,7 +23,6 @@ namespace CharacterSystem.Enemies
                 return;
             }
 
-
             Vector2 toPlayer = (playerTarget.position - transform.position);
             float dist = toPlayer.magnitude;
             if (dist > minFollowDistance)

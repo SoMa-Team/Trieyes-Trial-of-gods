@@ -5,6 +5,7 @@ using CharacterSystem;
 using Stats;
 using BattleSystem;
 using System.Collections.Generic;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -57,6 +58,11 @@ namespace AttackComponents
         [Header("AOE VFX 설정")]
         public GameObject aoeVFXPrefab;
         public float aoeVFXDuration = 0.3f;
+
+        // VFX 시스템 설정
+        [Header("VFX System Settings")]
+        public int vfxID = 7; // AOE VFX ID
+        private GameObject aoeVFX;
 
         // FSM 상태 관리
         private AOEAttackState attackState = AOEAttackState.None;
@@ -200,9 +206,6 @@ namespace AttackComponents
                     enemy.ApplyDamage(attackResult);
                 }
             }
-            
-            // AOE VFX 생성
-            CreateAC100VFX(aoePosition);
 
             Debug.Log($"<color=yellow>[AC100] 좌표 기반 AOE 공격으로 {aoeTargets.Count}명에게 {aoeDamage} 데미지 적용</color>");
         }
@@ -235,26 +238,48 @@ namespace AttackComponents
 
         private void ActivateAC100Attack()
         {
+            // AOE VFX 생성 및 시작
+            CreateAC100VFX(aoePosition);
+            
             Debug.Log("<color=green>[AC100] 좌표 기반 AOE 공격 활성화!</color>");
         }
 
         private void FinishAC100Attack()
         {
+            // AOE VFX 정리
+            if (aoeVFX != null)
+            {
+                StopAndReturnVFX(aoeVFX, vfxID);
+                aoeVFX = null;
+            }
+            
             Debug.Log("<color=orange>[AC100] 좌표 기반 AOE 공격 종료!</color>");
         }
 
         private void CreateAC100VFX(Vector2 position)
         {
-            if (aoeVFXPrefab != null)
-            {
-                GameObject aoeVFX = Instantiate(aoeVFXPrefab);
-                aoeVFX.transform.position = position;
-                
-                // AOE VFX 지속시간 후 제거
-                Destroy(aoeVFX, aoeVFXDuration);
-                
-                Debug.Log("<color=blue>[AC100] AOE VFX 생성</color>");
-            }
+            // VFX 시스템을 통해 AOE VFX 생성
+            aoeVFX = CreateAndSetupVFX(position, Vector2.zero);
+            PlayVFX(aoeVFX);
+            
+            Debug.Log($"<color=blue>[AC100] AOE VFX 생성! VFX ID: {vfxID}</color>");
+        }
+
+        /// <summary>
+        /// AOE VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 AOE VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(vfxID, position, direction);
+
+            vfx.transform.position = position;
+            vfx.transform.localScale = new Vector3(aoeRadius, aoeRadius, aoeRadius);
+
+            return vfx;
         }
     }
 }

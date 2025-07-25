@@ -50,6 +50,7 @@ MonoBehaviour:
   chainDelay: 0.4
   lightningVFXPrefab: {fileID: 0}
   lightningDuration: 0.2
+  targetEnemies: []
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,7 +151,7 @@ GameObject:
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
   m_Name: CHAIN
-  m_TagString: Untagged
+  m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -186,11 +187,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 11400000, guid: b4e7131ec11fe44418096fdcd556313d, type: 2}
   attacker: {fileID: 0}
-  target: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
   - {fileID: 618353836253685963}
+  rb: {fileID: 0}
+  attackCollider: {fileID: 0}
+  objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
   serializedVersion: 5

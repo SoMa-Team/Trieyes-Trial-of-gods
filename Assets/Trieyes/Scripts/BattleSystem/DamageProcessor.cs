@@ -47,6 +47,37 @@ namespace BattleSystem
             }
         }
 
+        public static void ProcessHit(Enemy enemy, Character character)
+        {
+            var result = AttackResult.Create(enemy, character);
+            triggerAttackHitEvent(result);
+
+            if (result.isEvaded)
+            {
+                // OnEvaded, OnAttackMissed
+                triggerEvadeEvent(result);
+                return;
+            }
+            
+            // OnAttack, OnDamaged
+            triggerAttackEvent(result);
+            if (result.isCritical)
+            {
+                triggerCriticalAttackEvent(result);
+            }
+
+            if (result.totalDamage <= 0)
+            {
+                triggerDefendEvent(result);
+            }
+
+            // Attack 인스턴스 삭제
+            if (result.attack != null)
+            {
+                AttackFactory.Instance.Deactivate(result.attack);
+            }
+        }
+
         private static void triggerDefendEvent(AttackResult result)
         {
             result.target.OnEvent(Utils.EventType.OnDefend, result);

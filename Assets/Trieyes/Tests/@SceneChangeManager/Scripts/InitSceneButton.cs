@@ -8,6 +8,6 @@ public class InitSceneButton : MonoBehaviour
     {
         var mainCharacter = CharacterFactory.Instance.Create(0);
         CharacterFactory.Instance.Deactivate(mainCharacter);
-        SceneChangeManager.Instance.StartBattleSceneTest(mainCharacter);
+        SceneChangeManager.Instance.StartBattleSceneTest();
     }
 }

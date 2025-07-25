@@ -99,7 +99,7 @@ namespace BattleSystem
         /// <summary>
         /// 난이도에 따라 적을 생성합니다.</summary>
         /// <returns>생성된 적 Pawn</returns>
-        private Pawn SpawnEnemy()
+        private Enemy SpawnEnemy()
         {
             var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
             return enemy;

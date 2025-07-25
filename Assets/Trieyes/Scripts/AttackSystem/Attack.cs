@@ -70,8 +70,8 @@ namespace AttackSystem
         }
 
         protected virtual void OnDestroy()
-        {
-            AttackFactory.Instance.Deactivate(this);
+        { 
+            if(BattleStage.now != null) AttackFactory.Instance.Deactivate(this);
         }
 
         // ===== [기능 6] 충돌 처리 (투사체일 때만 사용) =====

@@ -48,6 +48,17 @@ namespace CharacterSystem
             ////Debug.Log("Enemy001 Deactivated.");
         }
 
+        protected override void OnTriggerEnter2D(Collider2D other)
+        {
+            base.OnTriggerEnter2D(other);
+
+            if(other.gameObject.CompareTag("Player"))
+            {
+                var character = other.gameObject.GetComponent<Character>();
+                DamageProcessor.ProcessHit(this, character);
+            }
+        }
+
         /// <summary>
         /// 이벤트를 처리합니다.
         /// </summary>
@@ -59,6 +70,7 @@ namespace CharacterSystem
             switch (eventType)
             {
                 case Utils.EventType.OnDeath:
+                    Debug.Log("OnDeath Event Activated");
                     OnSelfDeath(param as AttackResult);
                     break;
                 // 기타 이벤트별 동작 추가
@@ -79,7 +91,8 @@ namespace CharacterSystem
             if (result.attacker != null)
             {
                 result.attacker.ChangeGold(dropGold);
-                //Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {attackData.attacker.gameObject.name}</color>");
+                Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");
+                Debug.Log($"Player Gold: {result.attacker.gold}");
             }
         }
     }

@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading;
 using BattleSystem;
 using System;
+using VFXSystem;
 
 namespace AttackComponents
 {
@@ -36,6 +37,11 @@ namespace AttackComponents
         private Vector2 attackDirection;
 
         public AttackData chainAttackData;
+
+        // 생성된 VFX 인스턴스
+        [Header("VFX Settings")]
+        [SerializeField] private readonly int VFX_ID = 1; // BASIC_ATTACK VFX ID
+        private GameObject spawnedVFX;
 
         // 번개 공격 상태 열거형
         private enum LightningAttackState
@@ -80,6 +86,15 @@ namespace AttackComponents
             attack.transform.SetParent(weaponGameObject.transform);
             attack.transform.localPosition = Vector3.zero;
             attack.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+            // 부채꼴 중심점 계산 (공격 방향으로 반지름의 절반만큼 이동)
+            Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
+            
+            // VFX 생성 및 설정
+            spawnedVFX = CreateAndSetupVFX(vfxPosition, attackDirection);
+            
+            // VFX 재생
+            PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
             if (attack.attackCollider == null)
@@ -183,7 +198,7 @@ namespace AttackComponents
 
             if (attackState == LightningAttackState.Active && attack.attackCollider != null)
             {
-                DrawFanShapeDebug();
+                ////DrawFanShapeDebug();
             }
         }
 
@@ -239,18 +254,9 @@ namespace AttackComponents
                     
                     if (attackTimer >= attackDuration)
                     {
-                        attackState = LightningAttackState.Finishing;
+                        attackState = LightningAttackState.Finished;
                         attackTimer = 0f;
                         FinishLightningAttack();
-                    }
-                    break;
-
-                case LightningAttackState.Finishing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 종료 시간
-                    {
-                        attackState = LightningAttackState.Finished;
                     }
                     break;
 
@@ -301,7 +307,55 @@ namespace AttackComponents
                 attack.attackCollider.enabled = false;
             }
             
+            // VFX 정리
+            if (spawnedVFX != null)
+            {
+                StopAndReturnVFX(spawnedVFX, VFX_ID);
+                spawnedVFX = null;
+            }
+            
             //debug.log("<color=yellow>[AC005] 번개 강화 공격 종료!</color>");
+        }
+
+        /// <summary>
+        /// VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        {
+            // VFXFactory를 통해 기본 VFX 생성
+            GameObject vfx = VFXFactory.Instance.SpawnVFX(VFX_ID, position, direction);
+            
+            // 여기서 VFX의 세부 조정을 할 수 있습니다
+            // 예: 특정 파티클 시스템의 속성 변경, 스케일 조정 등
+            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
+            
+            // Render Alignment 설정
+            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
+            if (renderer != null)
+            {
+                renderer.alignment = ParticleSystemRenderSpace.Local; // 또는 View, Local
+            }
+
+            vfx.transform.position = position;
+
+            // 방향에 맞게 회전
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
+            vfx.transform.localScale = new Vector3(1.5f, 1.5f);
+            
+            var colorOverLifetime = childVFX.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            Gradient gradient = new Gradient();
+            gradient.SetKeys(
+                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.yellow, 0.4f), new GradientColorKey(Color.yellow, 1f) },
+                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.4f, 0f), new GradientAlphaKey(1f, 0f) }
+            );
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+
+            return vfx;
         }
     }
 }

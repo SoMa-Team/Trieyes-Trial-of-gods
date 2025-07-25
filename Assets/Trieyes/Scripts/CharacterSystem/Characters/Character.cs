@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using AttackSystem;
 using Stats;
+using BattleSystem;
 
 namespace CharacterSystem
 {
@@ -39,14 +40,15 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+
+            var capsuleCollider = Collider as CapsuleCollider2D;
+            capsuleCollider.isTrigger = true;
+            
             //Debug.Log("Character001 Activated.");
         }
 
         public override void Deactivate()
         {
-            // Character001 고유 정리 로직
-            gold = 0;
-            
             base.Deactivate();
             //Debug.Log("Character001 Deactivated.");
         }
@@ -78,9 +80,11 @@ namespace CharacterSystem
                     //Debug.Log($"<color=yellow>{gameObject.name} (Character001) gained a level!</color>");
                     break;
                 case Utils.EventType.OnDeath:
-                    // Character001의 사망 이벤트는 base.OnEvent에서 이미 처리됨
-                    // 여기서는 고유한 추가 로직만 수행
-                    //Debug.Log($"<color=yellow>{gameObject.name} (Character001) is performing its unique death action: Game Over!</color>");
+                    // 죽고 나서 할 것
+                    if(BattleStage.now.mainCharacter == this)
+                    {
+                        BattleStage.now.OnPlayerDeath();
+                    }
                     break;
             }
         }

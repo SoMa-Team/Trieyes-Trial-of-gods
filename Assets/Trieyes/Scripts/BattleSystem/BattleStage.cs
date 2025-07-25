@@ -2,6 +2,7 @@ using System;
 using CharacterSystem;
 using System.Collections.Generic;
 using AttackSystem;
+using GameFramework;
 using JetBrains.Annotations;
 using Stats;
 using UnityEngine;
@@ -26,7 +27,7 @@ namespace BattleSystem
         public Difficulty difficulty;
         public Pawn mainCharacter;
         public List<Pawn> characters = new ();
-        public Dictionary<int, Pawn> enemies = new ();
+        public Dictionary<int, Enemy> enemies = new ();
         public Dictionary<int, Attack> attacks = new ();
         public SpawnManager spawnManager;
 
@@ -60,6 +61,7 @@ namespace BattleSystem
         /// 전투 스테이지를 비활성화합니다.</summary>
         public void Deactivate()
         {
+            Debug.Log("Deactivating battle stage.");
             now = null;
             View.gameObject.SetActive(false);
         }
@@ -72,14 +74,14 @@ namespace BattleSystem
         /// </summary>
         /// <param name="enemy">연결할 적 Pawn</param>
         /// <param name="spawnPoint">스폰 포인트 Transform</param>
-        public void AttachEnemy(Pawn enemy, Transform spawnPoint)
+        public void AttachEnemy(Enemy enemy, Transform spawnPoint)
         {
             enemy.transform.SetParent(View.transform);
             enemy.transform.position = spawnPoint.position;
             enemies.Add(enemy.objectID, enemy);
         }
         
-        public void RemoveEnemy(Pawn enemy)
+        public void RemoveEnemy(Enemy enemy)
         {
             enemies.Remove(enemy.objectID);
         }
@@ -97,8 +99,8 @@ namespace BattleSystem
         // 전투 클리어 시 호출
         public void OnBattleClear()
         {
-            Debug.LogError("OnBattleClear");
             BattleStageFactory.Instance.Deactivate(this);
+            SceneChangeManager.Instance.ChangeBattleToShop((Character)this.mainCharacter);
             // Todo: SceneChangeManager 호출
         }
         

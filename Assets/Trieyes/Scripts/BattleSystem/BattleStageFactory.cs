@@ -5,6 +5,8 @@ using CharacterSystem;
 using UISystem;
 using UnityEngine;
 using Utils;
+using System.Linq;
+using Object = System.Object;
 
 namespace BattleSystem
 {
@@ -100,8 +102,7 @@ namespace BattleSystem
         /// <param name="battleStage">비활성화할 BattleStage</param>
         public void Deactivate(BattleStage battleStage)
         {
-            battleStage.Deactivate();
-
+            Debug.Log("BattleStageFactory Deactivate Called");
             // 캐릭터 정리
             foreach (var character in battleStage.characters)
             {
@@ -109,19 +110,22 @@ namespace BattleSystem
             }
 
             // 적 정리
-            foreach (var enemy in battleStage.enemies.Values)
+            foreach (var enemy in battleStage.enemies.Values.ToList())
             {
                 EnemyFactory.Instance.Deactivate(enemy);
             }
             
+            EnemyFactory.Instance.ClearPool();
+            
             // 공격 정리
-            foreach (var attack in battleStage.attacks.Values)
+            foreach (var attack in battleStage.attacks.Values.ToList())
             {
                 AttackFactory.Instance.Deactivate(attack);
             }
-            
-            // SpawnManager 비활성화
+
+            AttackFactory.Instance.ClearPool();
             battleStage.spawnManager.Deactivate();
+            battleStage.Deactivate();
         }
     }
 }

@@ -45,6 +45,11 @@ namespace CharacterSystem
             ////Debug.Log("Enemy001 Deactivated.");
         }
 
+        protected override void OnTriggerEnter2D(Collider2D other)
+        {
+            base.OnTriggerEnter2D(other);
+        }
+
         /// <summary>
         /// 이벤트를 처리합니다.
         /// </summary>

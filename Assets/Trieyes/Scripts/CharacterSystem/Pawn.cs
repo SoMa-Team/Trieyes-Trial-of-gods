@@ -62,7 +62,7 @@ namespace CharacterSystem
         public int level { get; protected set; }
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
         
-        public int gold { get; protected set; }
+        public int gold { get; set; }
 
         // ===== [기능별 필드] =====
         /// <summary>
@@ -135,6 +135,12 @@ namespace CharacterSystem
             
             pawnPrefab = transform.GetChild(0).gameObject;
             Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            
+            // 스탯 시트 초기화
+            statSheet = new StatSheet();
+            
+            deck.Activate(this, true);
+            initBaseStat();
 
             if (rb != null)
             {
@@ -146,11 +152,11 @@ namespace CharacterSystem
         {
             if (isEnemy)
             {
-                EnemyFactory.Instance.Deactivate(this);
+                EnemyFactory.Instance.Deactivate(this as Enemy);
             }
             else
             {
-                CharacterFactory.Instance.Deactivate(this);
+                CharacterFactory.Instance.Deactivate(this as Character);
             }
         }
 
@@ -164,6 +170,19 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Activate()
         {
+            if (Collider is not null)
+            {
+                Collider.enabled = true;
+            }
+            if (rb is not null)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+            if (Controller is not null)
+            {
+                Controller.Activate(this);
+            }
+
             isDead = false;
             currentHp = maxHp;
             Collider.enabled = true;
@@ -178,9 +197,6 @@ namespace CharacterSystem
                 }
             }
             Controller.Activate(this);
-            
-            // 스탯 시트 초기화
-            statSheet = new StatSheet();
             
             // 기본 이벤트 등록
             // TODO: 폰에서는 이벤트 필터 안하기
@@ -216,6 +232,16 @@ namespace CharacterSystem
                 backupSkill2Attack = skill2Attack.Copy();
                 skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
             }
+            
+            Controller.Activate(this);
+        }
+
+        /// <summary>
+        /// 애니메이터를 초기 상태로 리셋합니다.
+        /// </summary>
+        protected virtual void ResetAnimator()
+        {
+            Animator.Rebind();
         }
 
         /// <summary>
@@ -227,6 +253,9 @@ namespace CharacterSystem
             // 이벤트 핸들러 정리
             eventHandlers.Clear();
             
+            // 애니메이터 초기화
+            ResetAnimator();
+            
             // Relic에 따른 Attack 초기화
             if (relics.Count > 0)
             {
@@ -234,15 +263,28 @@ namespace CharacterSystem
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
-            }
-            
-            // 리스트 초기화
-            if (relics != null)
-            {
-                relics.Clear();
-            }
+            }   
 
             Controller.Deactivate();
+        }
+
+        protected virtual void OnTriggerEnter2D(Collider2D other)
+        {
+        }
+        
+        public void ApplyRelic()
+        {
+            if (relics.Count > 0)
+            {
+                backupBasicAttack = basicAttack.Copy();
+                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+                
+                backupSkill1Attack = skill1Attack.Copy();
+                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
+                
+                backupSkill2Attack = skill2Attack.Copy();
+                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+            }
         }
 
         /// <summary>
@@ -290,10 +332,6 @@ namespace CharacterSystem
         /// <param name="direction">이동할 방향</param>
         public virtual void Move(Vector2 direction)
         {
-            if(isDead)
-            {
-                return;
-            }
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동
@@ -321,10 +359,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="newState">새로운 애니메이션 상태</param>
         private void ChangeAnimationState(string newState)
-        {
-            if (isDead && newState != "DEATH")
-                return;
-            
+        {          
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
                 // switch로 각 newStat에 대한 Parameter 값을 변경
@@ -340,10 +375,10 @@ namespace CharacterSystem
                         Animator.SetTrigger("2_Attack");
                         break;
                     case "DAMAGED":
-                        Animator.SetBool("3_Damaged", true);
+                        Animator.SetTrigger("3_Damaged");
                         break;
                     case "DEATH":
-                        Animator.SetBool("4_Death", true);
+                        Animator.SetBool("isDeath", true);
                         break;
                 }
             }
@@ -647,6 +682,7 @@ namespace CharacterSystem
             
             int previousHP = currentHp;
             ChangeHP(-result.totalDamage);
+            ChangeAnimationState("DAMAGED");
 
             Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {result.totalDamage} damage from {result.attacker.gameObject.name}</color>");
             // TODO : 넉백 확률 스탯 부분 추가 필요
@@ -654,7 +690,6 @@ namespace CharacterSystem
             
             if (currentHp <= 0)
             {
-                OnEvent(Utils.EventType.OnDeath, result);
                 result.attack.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
 
@@ -663,18 +698,18 @@ namespace CharacterSystem
                     result.attack.OnEvent(Utils.EventType.OnKilledByCritical, result);
                     result.attacker.OnEvent(Utils.EventType.OnKilledByCritical, result);
                 }
+
+                OnEvent(Utils.EventType.OnDeath, result);
             }
         }
 
         private void HandleDeath()
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
-            // TO-DO : 이부분 테스트 필요
+            // TO-DO : 이부분을 죽을 때 해야 하는가?
             Collider.enabled = false;
             rb.linearVelocity = Vector3.zero;
-            
-            if (isDead)
-                return;
+
             isDead = true;
             ChangeAnimationState("DEATH");
         }

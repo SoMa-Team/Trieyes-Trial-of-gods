@@ -17,9 +17,9 @@ namespace GameFramework
         public static SceneChangeManager Instance { get; private set; }
 
         // ====== 씬 이름 상수 ======
-        private const string BattleSceneName = "SampleBattleScene";
-        private const string ShopSceneName = "SampleShopScene";
-        private int stageRound = 12;
+        private const string BattleSceneName = "BattleScene";
+        private const string ShopSceneName = "ShopScene";
+        private int stageRound = 1;
 
         // ====== 초기화 ======
         private void Awake()

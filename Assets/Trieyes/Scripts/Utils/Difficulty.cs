@@ -7,7 +7,7 @@ namespace Utils
         // ===== [기능 1] 난이도 정보 =====
         public int spawnFrequency => 1;
         public float enemyStatMultiplier = 1.0f;
-        public float battleLength => 120; // 초단위
+        public float battleLength => 10; // 초단위
         public int EnemyID = 0;
         public int shopLevel = 1;
         public int stageNumber => 12;

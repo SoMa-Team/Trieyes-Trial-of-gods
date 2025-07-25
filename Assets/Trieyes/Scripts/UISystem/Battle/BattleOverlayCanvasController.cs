@@ -25,6 +25,9 @@ namespace UISystem
             Instance = this;
         }
         
+        [Header("========== Joysticks ==========")]
+        [SerializeField] public Joystick joystick;
+        
         [Header("========== StageInfos ==========")]
         [SerializeField] private TextMeshProUGUI StageNumberText;
         [SerializeField] private TextMeshProUGUI StageRemainTimeText;
@@ -179,6 +182,11 @@ namespace UISystem
             var character = BattleStage.now.mainCharacter;
             character.isAutoAttack = !character.isAutoAttack;
             SetAutoAttack(character.isAutoAttack);
+        }
+
+        public void Deactivate()
+        {
+            Instance = null;
         }
     }
 }

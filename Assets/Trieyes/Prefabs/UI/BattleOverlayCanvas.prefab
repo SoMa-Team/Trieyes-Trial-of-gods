@@ -1372,6 +1372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adf61fdead2b14e2aadbd3c269a3b3ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  joystick: {fileID: 1880644604380318839}
   StageNumberText: {fileID: 4809192832195132386}
   StageRemainTimeText: {fileID: 3949200914972460085}
   StageRemainTimeSlider: {fileID: 5768300891202934922}
@@ -3204,6 +3205,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8135886326569738822, guid: 3e8f7f69c160248709e6cc9a0ef8c543, type: 3}
   m_PrefabInstance: {fileID: 7705973215071153712}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1880644604380318839 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8135886326569738823, guid: 3e8f7f69c160248709e6cc9a0ef8c543, type: 3}
+  m_PrefabInstance: {fileID: 7705973215071153712}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba0d0e7a039f526499c356a3c5cd6d3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8653126828541894230
 PrefabInstance:
   m_ObjectHideFlags: 0

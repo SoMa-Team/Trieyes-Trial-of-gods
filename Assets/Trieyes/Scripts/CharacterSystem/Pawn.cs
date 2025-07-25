@@ -37,7 +37,7 @@ namespace CharacterSystem
         public Collider2D Collider;
 
         protected Controller Controller;
-        protected Animator Animator;
+        [SerializeField] protected Animator Animator;
         
         [Header("Stats")]
 
@@ -130,11 +130,11 @@ namespace CharacterSystem
         // ===== [Unity 생명주기] =====
         protected virtual void Start()
         {
-            rb = GetComponent<Rigidbody2D>();
-            Collider = GetComponent<Collider2D>();
+            if(rb is null) rb = GetComponent<Rigidbody2D>();
+            if (Collider is null) Collider = GetComponent<Collider2D>();
             
             pawnPrefab = transform.GetChild(0).gameObject;
-            Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
@@ -150,6 +150,7 @@ namespace CharacterSystem
 
         protected virtual void OnDestroy()
         {
+            if (BattleStage.now is null) return;
             if (isEnemy)
             {
                 EnemyFactory.Instance.Deactivate(this as Enemy);
@@ -221,17 +222,7 @@ namespace CharacterSystem
             gameObject.SetActive(true);
             
             // relic에 따른 Attack 적용
-            if (relics.Count > 0)
-            {
-                backupBasicAttack = basicAttack.Copy();
-                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
-                
-                backupSkill1Attack = skill1Attack.Copy();
-                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
-                
-                backupSkill2Attack = skill2Attack.Copy();
-                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
-            }
+            ApplyRelic();
             
             Controller.Activate(this);
         }
@@ -260,6 +251,8 @@ namespace CharacterSystem
             if (relics.Count > 0)
             {
                 AttackFactory.Instance.DeregisterAttack(basicAttack);
+                AttackFactory.Instance.DeregisterAttack(skill1Attack);
+                AttackFactory.Instance.DeregisterAttack(skill2Attack);
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;

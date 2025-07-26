@@ -201,9 +201,8 @@ namespace AttackComponents
                 Pawn enemy = aoeTargets[i];
                 if (enemy != null && enemy.gameObject.activeInHierarchy)
                 {
-                    var attackResult = AttackResult.Create(attack, enemy);
-                    attackResult.totalDamage = aoeDamage;
-                    enemy.ApplyDamage(attackResult);
+                    attack.statSheet[StatType.AttackPower] = new IntegerStatValue(aoeDamage);
+                    DamageProcessor.ProcessHit(attack, enemy);
                 }
             }
 

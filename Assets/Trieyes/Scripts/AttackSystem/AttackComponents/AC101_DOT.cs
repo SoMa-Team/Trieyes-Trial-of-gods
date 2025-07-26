@@ -2,6 +2,8 @@ using AttackSystem;
 using UnityEngine;
 using CharacterSystem;
 using System.Collections.Generic;
+using BattleSystem;
+using Stats;
 
 namespace AttackComponents
 {
@@ -201,9 +203,8 @@ namespace AttackComponents
             if (dotTargets.Count == 0) return;
 
             // 단일 대상에게 데미지 적용
-            var attackResult = AttackResult.Create(attack, dotTargets[0]);
-            attackResult.totalDamage = dotDamage;
-            dotTargets[0].ApplyDamage(attackResult);
+            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(dotDamage);
+            DamageProcessor.ProcessHit(attack, dotTargets[0]);
 
             // 버프 적용
             ApplyAdditionalBuffEffect(dotTargets[0]);
@@ -222,9 +223,8 @@ namespace AttackComponents
                 Pawn enemy = dotTargets[i];
                 if (enemy != null && enemy.gameObject.activeInHierarchy)
                 {
-                    var attackResult = AttackResult.Create(attack, enemy);
-                    attackResult.totalDamage = dotDamage;
-                    enemy.ApplyDamage(attackResult);
+                    attack.statSheet[StatType.AttackPower] = new IntegerStatValue(dotDamage);
+                    DamageProcessor.ProcessHit(attack, enemy);
 
                     // 버프 적용
                     ApplyAdditionalBuffEffect(enemy);

@@ -15,15 +15,25 @@ namespace BattleSystem
         /// <param name="targetPawn">피격당한 Pawn</param>
         public static void ProcessHit(Attack attack, Pawn targetPawn)
         {
-            Pawn attacker = attack.attacker;
-            
             var result = AttackResult.Create(attack, targetPawn);
-
+            
             if (!attack.attacker.isEnemy)
             {
                 DamageNumberViewFactory.Instance.Create(result);
             }
+
+            triggerEvents(result);
+        }
+
+        public static void ProcessHit(Pawn attacker, Pawn target)
+        {
+            var result = AttackResult.Create(attacker, target);
             
+            triggerEvents(result);
+        }
+
+        private static void triggerEvents(AttackResult result)
+        {
             // OnAttackHit, OnDamagedHit
             triggerAttackHitEvent(result);
 
@@ -45,37 +55,11 @@ namespace BattleSystem
             {
                 triggerDefendEvent(result);
             }
-        }
 
-        public static void ProcessHit(Enemy enemy, Character character)
-        {
-            var result = AttackResult.Create(enemy, character);
-            triggerAttackHitEvent(result);
-
-            if (result.isEvaded)
-            {
-                // OnEvaded, OnAttackMissed
-                triggerEvadeEvent(result);
-                return;
-            }
-            
-            // OnAttack, OnDamaged
-            triggerAttackEvent(result);
-            if (result.isCritical)
-            {
-                triggerCriticalAttackEvent(result);
-            }
-
-            if (result.totalDamage <= 0)
-            {
-                triggerDefendEvent(result);
-            }
-
-            // Attack 인스턴스 삭제
-            if (result.attack != null)
-            {
-                AttackFactory.Instance.Deactivate(result.attack);
-            }
+            if (result.attackerHealed > 0)
+                result.attacker.ApplyStealHealth(result);
+            if (result.attackerDamage > 0)
+                result.attacker.ApplyReflectDamage(result);
         }
 
         private static void triggerDefendEvent(AttackResult result)

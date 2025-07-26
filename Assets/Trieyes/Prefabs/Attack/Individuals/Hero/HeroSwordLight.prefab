@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8783834321740468731}
   - component: {fileID: 2517999292956121073}
   m_Layer: 0
-  m_Name: AC006
+  m_Name: AC005
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,8 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vfxList: []
   attackAngle: 90
-  attackDuration: 1
-  attackRadius: 1
+  attackDuration: 0.5
+  attackRadius: 1.5
   direction: {x: 0, y: 0}
   segments: 8
   dotCollisionType: 0
@@ -59,6 +59,8 @@ MonoBehaviour:
   dotDuration: 1
   dotInterval: 1
   aoeAttackData: {fileID: 11400000, guid: ab99c9f503ae744a6893a923c9d737e4, type: 2}
+  vfxPrefab: {fileID: 4748681987041982144, guid: dab1b758273039841a1bcf5d0c3b28f6, type: 3}
+  aoeVFXPrefab: {fileID: 4748681987041982144, guid: 0d139316fd88d4787b6d44d8c3a6bb95, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,7 +160,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: HeroSwordHeaven
+  m_Name: HeroSwordLight
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -3,47 +3,36 @@ using CharacterSystem;
 using Stats;
 using UnityEngine;
 using System.Threading;
-using BattleSystem;
-using System.Collections.Generic;
-using VFXSystem;
 
 namespace AttackComponents
 {
     /// <summary>
-    /// 캐릭터 소드 능력 부여 강화
+    /// 캐릭터 소드 공격
     /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
-    /// 7초 동안 검에 무작위 속성을 부여하고, 기본 공격(AC002)에 다음의 추가효과가 적용되고, 추가 피해를 입힙니다.
-    /// - 불꽃 : 공격에 맞은 대상에게 지속적으로 화상데미지(도트)를 입힙니다.
+    /// 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
+    /// 2. 애니메이션이 종료될 때 까지 Collider를 만들어줍니다. 이 Collider는 각도, 반지름을 가지고 있습니다. 이 값은 여기에 존재합니다.
+    /// 3. 애니메이션이 종료되면 콜라이더를 삭제합니다. 이것은 애니메이션 이벤트에서 처리합니다.
     /// </summary>
-    public class AC003_HeroSwordEnchantmentFire : AttackComponent
+    public class AC001_HeroSwordRadius : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
-
-        public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
+        
 
         // FSM 상태 관리
-        private FireAttackState attackState = FireAttackState.None;
+        private AttackState attackState = AttackState.None;
         private float attackTimer = 0f;
         private Vector2 attackDirection;
 
-        // 불꽃 도트 데미지 필드
-        public DOTTargetType dotTargetType = DOTTargetType.SingleTarget;
-        public int dotDamage = 20;
-        public float dotDuration = 2f;
-        public float dotInterval = 0.2f;
-
-        public AttackData dotAttackData;
-
-        // 생성된 VFX 인스턴스
+        // VFX 설정
         [Header("VFX Settings")]
-        [SerializeField] private readonly int VFX_ID = 1; // BASIC_ATTACK VFX ID
+        [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
         private GameObject spawnedVFX;
 
-        // 불꽃 공격 상태 열거형
-        private enum FireAttackState
+        // 공격 상태 열거형
+        private enum AttackState
         {
             None,
             Preparing,
@@ -57,20 +46,20 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = FireAttackState.Preparing;
+            attackState = AttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
-            // 불꽃 공격 시작
-            StartFireAttack();
+            // 공격 시작
+            StartAttack();
         }
 
-        private void StartFireAttack()
+        private void StartAttack()
         {
-            attackState = FireAttackState.Preparing;
+            attackState = AttackState.Preparing;
             attackTimer = 0f;
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
@@ -78,7 +67,7 @@ namespace AttackComponents
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                //Debug.LogError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -90,7 +79,7 @@ namespace AttackComponents
             Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
             
             // VFX 생성 및 설정
-            spawnedVFX = CreateAndSetupVFX(vfxPosition, attackDirection);
+            spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
             
             // VFX 재생
             PlayVFX(spawnedVFX);
@@ -104,29 +93,14 @@ namespace AttackComponents
             var collider = attack.attackCollider as PolygonCollider2D;
 
             // 부채꼴 모양의 콜라이더 포인트 생성
+            //Debug.Log($"<color=green>[AC002] attackRadius: {attackRadius}, attackAngle: {attackAngle}</color>");
             Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
             
-            //debug.log("<color=orange>[AC003] 불꽃 강화 공격 시작!</color>");
-        }
-
-        public override void ProcessComponentCollision(Pawn targetPawn)
-        {
-            // 단일 대상에게 도트 데미지를 주는 DOT 소환
-            var dotAttack = AttackFactory.Instance.Create(dotAttackData, attack.attacker, null, Vector2.zero);
-
-            var dotComponent = dotAttack.components[0] as AC101_DOT;
-            if (dotComponent != null)
-            {
-                dotComponent.dotTargetType = dotTargetType;
-                dotComponent.dotDamage = dotDamage;
-                dotComponent.dotDuration = dotDuration;
-                dotComponent.dotInterval = dotInterval;
-                dotComponent.dotTargets.Add(targetPawn as Enemy);
-            }
+            ////Debug.Log("<color=cyan>[AC002] 부채꼴 공격 시작!</color>");
         }
 
         /// <summary>
@@ -151,7 +125,7 @@ namespace AttackComponents
             Vector2 clockwiseDirection = RotateVector2D(direction, -halfAngle);
             Vector2 counterClockwiseDirection = RotateVector2D(direction, halfAngle);
 
-            ////debug.log($"clockwiseDirection: {clockwiseDirection}, counterClockwiseDirection: {counterClockwiseDirection}");
+            //Debug.Log($"<color=cyan>[AC002] radius: {radius}, halfAngle: {halfAngle}</color>");
             
             // 부채꼴 호를 따라 점들 생성
             for (int i = 0; i <= segments; i++)
@@ -161,8 +135,12 @@ namespace AttackComponents
                 // 시계 방향에서 시계 반대 방향으로 보간
                 Vector2 currentDirection = Vector2.Lerp(clockwiseDirection, counterClockwiseDirection, t).normalized;
                 points[i + 1] = currentDirection * radius;
+                
+                if (i == 0 || i == segments)
+                {
+                    //Debug.Log($"<color=yellow>[AC002] Point {i + 1}: {points[i + 1]}, radius: {radius}</color>");
+                }
             }
-            
             return points;
         }
 
@@ -188,34 +166,35 @@ namespace AttackComponents
         {
             base.Update();
             
-            // 불꽃 공격 상태 처리
-            ProcessFireAttackState();
-
-            if (attackState == FireAttackState.Active && attack.attackCollider != null)
+            // 공격 상태 처리
+            ProcessAttackState();
+            
+            // Active 상태일 때 부채꼴 모양을 지속적으로 그리기
+            if (attackState == AttackState.Active && attack.attackCollider != null)
             {
                 ////DrawFanShapeDebug();
             }
         }
 
-        private void ProcessFireAttackState()
+        private void ProcessAttackState()
         {
             switch (attackState)
             {
-                case FireAttackState.None:
+                case AttackState.None:
                     break;
 
-                case FireAttackState.Preparing:
+                case AttackState.Preparing:
                     attackTimer += Time.deltaTime;
                     
                     if (attackTimer >= 0.1f) // 준비 시간
                     {
-                        attackState = FireAttackState.Active;
+                        attackState = AttackState.Active;
                         attackTimer = 0f;
-                        ActivateFireAttack();
+                        ActivateAttack();
                     }
                     break;
 
-                case FireAttackState.Active:
+                case AttackState.Active:
                     attackTimer += Time.deltaTime;
                     
                     // 위치 업데이트
@@ -224,20 +203,29 @@ namespace AttackComponents
                     
                     if (attackTimer >= attackDuration)
                     {
-                        attackState = FireAttackState.Finished;
+                        attackState = AttackState.Finishing;
                         attackTimer = 0f;
-                        FinishFireAttack();
+                        FinishAttack();
                     }
                     break;
 
-                case FireAttackState.Finished:
-                    attackState = FireAttackState.None;
+                case AttackState.Finishing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 종료 시간
+                    {
+                        attackState = AttackState.Finished;
+                    }
+                    break;
+
+                case AttackState.Finished:
+                    attackState = AttackState.None;
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }
         }
 
-        private void ActivateFireAttack()
+        private void ActivateAttack()
         {
             // 콜라이더 활성화 및 방향 업데이트
             if (attack.attackCollider != null)
@@ -266,10 +254,10 @@ namespace AttackComponents
                 }
             }
             
-            //debug.log("<color=green>[AC003] 불꽃 강화 공격 활성화!</color>");
+            ////Debug.Log("<color=green>[AC002] 부채꼴 공격 활성화!</color>");
         }
 
-        private void FinishFireAttack()
+        private void FinishAttack()
         {
             // 콜라이더 비활성화 (삭제하지 않고)
             if (attack.attackCollider != null)
@@ -280,13 +268,15 @@ namespace AttackComponents
             // VFX 정리
             if (spawnedVFX != null)
             {
-                StopAndReturnVFX(spawnedVFX, VFX_ID);
-                spawnedVFX = null;
+                StopAndDestroyVFX(spawnedVFX);
             }
             
-            //debug.log("<color=orange>[AC003] 불꽃 강화 공격 종료!</color>");
+            ////Debug.Log("<color=cyan>[AC002] 부채꼴 공격 종료!</color>");
         }
 
+        /// <summary>
+        /// 부채꼴 모양을 Scene 뷰에 디버그 라인으로 그립니다.
+        /// </summary>
         private void DrawFanShapeDebug()
         {
             if (attack.attackCollider is PolygonCollider2D collider)
@@ -314,42 +304,32 @@ namespace AttackComponents
         /// <summary>
         /// VFX를 생성하고 설정합니다.
         /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
         /// <param name="position">VFX 생성 위치</param>
         /// <param name="direction">VFX 방향</param>
         /// <returns>생성된 VFX 게임오브젝트</returns>
-        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
-            // VFXFactory를 통해 기본 VFX 생성
-            GameObject vfx = VFXFactory.Instance.SpawnVFX(VFX_ID, position, direction);
-            
-            // 여기서 VFX의 세부 조정을 할 수 있습니다
-            // 예: 특정 파티클 시스템의 속성 변경, 스케일 조정 등
-            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
-            
-            // Render Alignment 설정
-            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
-            if (renderer != null)
+            // 기본 VFX 생성 (base 호출)
+            if (spawnedVFX is null)
             {
-                renderer.alignment = ParticleSystemRenderSpace.Local; // 또는 View, Local
+                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             }
-
-            vfx.transform.position = position;
-
-            // 방향에 맞게 회전
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-            vfx.transform.localScale = new Vector3(1.5f, 1.5f);
             
-            var colorOverLifetime = childVFX.colorOverLifetime;
-            colorOverLifetime.enabled = true;
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.red, 0.4f), new GradientColorKey(Color.black, 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.4f, 0f), new GradientAlphaKey(1f, 0f) }
-            );
-            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+            spawnedVFX.transform.position = position;
+            
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
+            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+            
+            spawnedVFX.SetActive(true);
+            return spawnedVFX;
+        }
 
-            return vfx;
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            StopAndDestroyVFX(spawnedVFX);
         }
     }
 }

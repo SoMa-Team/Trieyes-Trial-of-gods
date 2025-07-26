@@ -14,18 +14,19 @@ namespace AttackComponents
     /// 얼음 속성이 부여된 무기에서 발동되는 맵 전체 눈보라 효과를 소환합니다.
     /// AC103_GLOBAL을 생성하여 맵 전체에 눈보라 효과를 적용합니다.
     /// </summary>
-    public class AC008_IceStorm : AttackComponent
+    public class AC007_IceStorm : AttackComponent
     {
         [Header("눈보라 소환 설정")]
         public float summonDelay = 0.5f; // 소환 지연 시간
         public float vfxDuration = 0.3f; // VFX 지속 시간
 
-        [Header("VFX 설정")]
-        public GameObject summonVFXPrefab; // 소환 VFX
+        // AC104 GLOBAL VFX 설정
+        [Header("AC104 GLOBAL VFX Settings")]
+        [SerializeField] private GameObject globalVFXPrefab; // GLOBAL VFX 프리팹 (AC104에 전달용)
 
         // VFX 시스템 설정
         [Header("VFX System Settings")]
-        [SerializeField] private readonly int ICE_STORM_VFX_ID = 5; // 얼음 폭풍 VFX ID
+        // [SerializeField] private readonly int ICE_STORM_VFX_ID = 5; // 얼음 폭풍 VFX ID - 제거됨
 
         public AttackData globalBlizzardData;
 
@@ -123,51 +124,13 @@ namespace AttackComponents
             globalBlizzardComponent.additionalDebuffChance = 0.3f;
             globalBlizzardComponent.additionalDebuffMultiplier = 0f;
 
-            // VFX는 AC104_GLOBAL에서 직접 처리됨
+            // VFX 프리팹 전달
+            globalBlizzardComponent.globalVFXPrefab = globalVFXPrefab;
 
             globalBlizzardAttack.Activate(attack.attacker, Vector2.zero);
-            
-            // 소환 완료 VFX 생성
-            CreateSummonCompleteVFX();
-        }
-
-        private void CreateSummonVFX()
-        {
-            if (summonVFXPrefab != null)
-            {
-                GameObject summonVFX = Instantiate(summonVFXPrefab);
-                summonVFX.transform.position = attacker.transform.position;
-                
-                // 소환 VFX 설정
-                SummonVFX summonComponent = summonVFX.GetComponent<SummonVFX>();
-                if (summonComponent != null)
-                {
-                    summonComponent.Initialize(summonDelay);
-                }
-                
-                Destroy(summonVFX, summonDelay + 0.1f);
-            }
         }
 
 
-
-        private void CreateSummonCompleteVFX()
-        {
-            if (summonVFXPrefab != null)
-            {
-                GameObject completeVFX = Instantiate(summonVFXPrefab);
-                completeVFX.transform.position = Vector3.zero; // 맵 중앙
-                
-                // 완료 VFX 설정
-                SummonCompleteVFX completeComponent = completeVFX.GetComponent<SummonCompleteVFX>();
-                if (completeComponent != null)
-                {
-                    completeComponent.Initialize(vfxDuration);
-                }
-                
-                Destroy(completeVFX, vfxDuration + 0.1f);
-            }
-        }
 
         public override void Deactivate()
         {

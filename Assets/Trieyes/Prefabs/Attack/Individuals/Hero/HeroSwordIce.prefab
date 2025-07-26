@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8783834321740468731}
   - component: {fileID: 3710738166778104982}
   m_Layer: 0
-  m_Name: AC004
+  m_Name: AC003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,10 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vfxList: []
   attackAngle: 90
-  attackDuration: 1
-  attackRadius: 1
+  attackDuration: 0.3
+  attackRadius: 1.5
   direction: {x: 0, y: 0}
   segments: 8
+  vfxPrefab: {fileID: 4748681987041982144, guid: 7c86f5a75b9824f4ca5d4b297527d3a4, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,7 +155,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1553043495906535806
 Transform:
   m_ObjectHideFlags: 0

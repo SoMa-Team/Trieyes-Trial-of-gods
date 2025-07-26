@@ -4,7 +4,7 @@ using Stats;
 using UnityEngine;
 using System.Threading;
 using BattleSystem;
-using System.Collections.Generic;
+using System;
 using VFXSystem;
 
 namespace AttackComponents
@@ -13,45 +13,39 @@ namespace AttackComponents
     /// 캐릭터 소드 능력 부여 강화
     /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
     /// 7초 동안 검에 무작위 속성을 부여하고, 기본 공격(AC002)에 다음의 추가효과가 적용되고, 추가 피해를 입힙니다.
-    /// 천상 : 이동속도와 사거리가 증가합니다. 방어력이 감소합니다. AC1001_BUFF 버프를 줍니다.
+    /// - 번개 : 공격에 맞은 대상 주변 적들이 연쇄적인 번개(쓰리쿠션 데미지-관통 개수에 비례) 피해를 입습니다
     /// </summary>
-    public class AC006_HeroSwordEnchantmentHeaven : AttackComponent
+    public class AC004_HeroSwordEnchantmentLightning : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
 
-        // FSM 상태 관리
-        private HeavenAttackState attackState = HeavenAttackState.None;
-        private float attackTimer = 0f;
-        private Vector2 attackDirection;
-
         public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
-        // Skill 002에 대하여 AOE 공격 발동 시 AOE의 기본 정보들
-        public AOETargetType dotCollisionType = AOETargetType.AreaAtPosition;
-        public AOEShapeType dotShapeType = AOEShapeType.Circle;
-        public float dotRadius = 3f;
-        public float dotWidth = 1f;
-        public float dotHeight = 1f;
-        public int dotDamage = 100;
-        public float dotDuration = 1f;
-        public float dotInterval = 1f;
+        // 번개 연쇄 설정
+        public int chainDamage; // Attack.StatSheet.stats 에서 가져와야 함
+        public float chainRadius;
+        public int chainCount;
 
-        public AttackData aoeAttackData;
+        public float chainDelay;
 
-        // 생성된 VFX 인스턴스
+        // FSM 상태 관리
+        private LightningAttackState attackState = LightningAttackState.None;
+        private float attackTimer = 0f;
+        private Vector2 attackDirection;
+
+        public AttackData chainAttackData;
+
+        // VFX 설정
         [Header("VFX Settings")]
-        [SerializeField] private readonly int VFX_ID = 1; // BASIC_ATTACK VFX ID
+        [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
+        [SerializeField] private GameObject chainVFXPrefab; // 번개 연쇄 VFX 프리팹 (AC102_CHAIN에 전달용)
         private GameObject spawnedVFX;
 
-        // AC100 AOE VFX 설정
-        [Header("AC100 AOE VFX Settings")]
-        [SerializeField] private readonly int AOE_VFX_ID = 7; // AOE VFX ID
-
-        // 천상 공격 상태 열거형
-        private enum HeavenAttackState
+        // 번개 공격 상태 열거형
+        private enum LightningAttackState
         {
             None,
             Preparing,
@@ -65,20 +59,20 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = HeavenAttackState.Preparing;
+            attackState = LightningAttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
-
+            
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
-            // 공격 시작
-            StartHeavenAttack();
+            // 번개 공격 시작
+            StartLightningAttack();
         }
 
-        private void StartHeavenAttack()
+        private void StartLightningAttack()
         {
-            attackState = HeavenAttackState.Preparing;
+            attackState = LightningAttackState.Preparing;
             attackTimer = 0f;
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
@@ -86,7 +80,7 @@ namespace AttackComponents
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                //Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                Debug.LogError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -98,7 +92,7 @@ namespace AttackComponents
             Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
             
             // VFX 생성 및 설정
-            spawnedVFX = CreateAndSetupVFX(vfxPosition, attackDirection);
+            spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
             
             // VFX 재생
             PlayVFX(spawnedVFX);
@@ -118,43 +112,30 @@ namespace AttackComponents
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
             
-            //debug.log("<color=white>[AC006] 천상 강화 공격 시작!</color>");
+            //debug.log("<color=yellow>[AC005] 번개 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // 빛 속성일 때 AOE 공격
-            var hero = attack.attacker as Character001_Hero;
-            if (hero != null && hero.weaponElementState == HeroWeaponElementState.Light && hero.activateLight)
+            // AC102_CHAIN Attack 생성
+            Attack lightningChainAttack = AttackFactory.Instance.Create(chainAttackData, attack.attacker, null, Vector2.zero);
+            
+            // AC102_CHAIN 컴포넌트 설정
+            var lightningChainComponent = lightningChainAttack.components[0] as AC102_CHAIN;
+            if (lightningChainComponent != null)
             {
-                SpawnAC100Attack(targetPawn);
-            }
-        }
-        
-        /// <summary>
-        /// Light 속성일 때 AC100 AOE 공격을 소환합니다
-        /// </summary>
-        /// <param name="targetPawn">타겟 적</param>
-        private void SpawnAC100Attack(Pawn targetPawn)
-        {
-            var aoeAttack = AttackFactory.Instance.Create(aoeAttackData, attack.attacker, null, Vector2.zero);
-            if (aoeAttack != null)
-            {
-                var aoeComponent = aoeAttack.components[0] as AC100_AOE;
-                aoeComponent.aoeTargetType = dotCollisionType;
-                aoeComponent.aoeShapeType = dotShapeType;
-                aoeComponent.aoeRadius = dotRadius;
-                aoeComponent.aoeDamage = dotDamage;
-                aoeComponent.aoeDuration = dotDuration;
-                aoeComponent.aoeInterval = dotInterval;
-
-                // AOE 위치 설정 (타겟 위치)
-                aoeComponent.SetAOEPosition((Vector2)targetPawn.transform.position);
+                // 기본 설정
+                lightningChainComponent.chainDamage = chainDamage;
+                lightningChainComponent.chainRadius = chainRadius;
+                lightningChainComponent.chainCount = chainCount;
+                lightningChainComponent.chainDelay = chainDelay;
+                lightningChainComponent.chainRadius = chainRadius;
                 
-                // VFX ID 전달
-                aoeComponent.vfxID = AOE_VFX_ID;
+                // VFX 프리팹 전달
+                lightningChainComponent.chainVFXPrefab = chainVFXPrefab;
                 
-                Debug.Log("<color=cyan>[AC006] Light 속성으로 AC100 AOE 공격 소환! VFX ID: " + AOE_VFX_ID + "</color>");
+                // 번개 연쇄 시작
+                lightningChainComponent.StartLightningChain(targetPawn.transform.position);
             }
         }
 
@@ -217,21 +198,15 @@ namespace AttackComponents
         {
             base.Update();
             
-            // 천상 공격 상태 처리
-            ProcessHeavenAttackState();
+            // 번개 공격 상태 처리
+            ProcessLightningAttackState();
 
-            // 디버그 그리기는 개발 모드에서만 (성능 최적화)
-            #if UNITY_EDITOR
-            if (attackState == HeavenAttackState.Active && attack.attackCollider != null)
+            if (attackState == LightningAttackState.Active && attack.attackCollider != null)
             {
                 ////DrawFanShapeDebug();
             }
-            #endif
         }
 
-        /// <summary>
-        /// 부채꼴 모양을 Scene 뷰에 디버그 라인으로 그립니다.
-        /// </summary>
         private void DrawFanShapeDebug()
         {
             if (attack.attackCollider is PolygonCollider2D collider)
@@ -256,7 +231,48 @@ namespace AttackComponents
             }
         }
 
-        private void ActivateHeavenAttack()
+
+        private void ProcessLightningAttackState()
+        {
+            switch (attackState)
+            {
+                case LightningAttackState.None:
+                    break;
+
+                case LightningAttackState.Preparing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = LightningAttackState.Active;
+                        attackTimer = 0f;
+                        ActivateLightningAttack();
+                    }
+                    break;
+
+                case LightningAttackState.Active:
+                    attackTimer += Time.deltaTime;
+                    
+                    // 위치 업데이트
+                    attack.transform.position = attack.attacker.transform.position;
+                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    
+                    if (attackTimer >= attackDuration)
+                    {
+                        attackState = LightningAttackState.Finished;
+                        attackTimer = 0f;
+                        FinishLightningAttack();
+                    }
+                    break;
+
+                case LightningAttackState.Finished:
+                    attackState = LightningAttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
+            }
+        }
+
+        private void ActivateLightningAttack()
         {
             // 콜라이더 활성화 및 방향 업데이트
             if (attack.attackCollider != null)
@@ -285,10 +301,10 @@ namespace AttackComponents
                 }
             }
             
-            //debug.log("<color=green>[AC006] 천상 강화 공격 활성화!</color>");
+            //debug.log("<color=green>[AC005] 번개 강화 공격 활성화!</color>");
         }
 
-        private void FinishHeavenAttack()
+        private void FinishLightningAttack()
         {
             // 콜라이더 비활성화 (삭제하지 않고)
             if (attack.attackCollider != null)
@@ -299,107 +315,41 @@ namespace AttackComponents
             // VFX 정리
             if (spawnedVFX != null)
             {
-                StopAndReturnVFX(spawnedVFX, VFX_ID);
-                spawnedVFX = null;
+                StopAndDestroyVFX(spawnedVFX);
             }
             
-            //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
-        }
-
-        public override void Deactivate()
-        {
-            base.Deactivate();
-            
-            // VFX 정리
-            if (spawnedVFX != null)
-            {
-                StopAndReturnVFX(spawnedVFX, VFX_ID);
-                spawnedVFX = null;
-            }
-            
-            attackState = HeavenAttackState.None;
-            attackTimer = 0f;
-        }
-
-        private void ProcessHeavenAttackState()
-        {
-            switch (attackState)
-            {
-                case HeavenAttackState.None:
-                    break;
-
-                case HeavenAttackState.Preparing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 준비 시간
-                    {
-                        attackState = HeavenAttackState.Active;
-                        attackTimer = 0f;
-                        ActivateHeavenAttack();
-                    }
-                    break;
-
-                case HeavenAttackState.Active:
-                    attackTimer += Time.deltaTime;
-                    
-                    // 위치 업데이트
-                    attack.transform.position = attack.attacker.transform.position;
-                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
-                    
-                    if (attackTimer >= attackDuration)
-                    {
-                        attackState = HeavenAttackState.Finished;
-                        attackTimer = 0f;
-                        FinishHeavenAttack();
-                    }
-                    break;
-
-                case HeavenAttackState.Finished:
-                    attackState = HeavenAttackState.None;
-                    AttackFactory.Instance.Deactivate(attack);
-                    break;
-            }
+            //debug.log("<color=yellow>[AC005] 번개 강화 공격 종료!</color>");
         }
 
         /// <summary>
         /// VFX를 생성하고 설정합니다.
         /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
         /// <param name="position">VFX 생성 위치</param>
         /// <param name="direction">VFX 방향</param>
         /// <returns>생성된 VFX 게임오브젝트</returns>
-        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
-            // VFXFactory를 통해 기본 VFX 생성
-            GameObject vfx = VFXFactory.Instance.SpawnVFX(VFX_ID, position, direction);
-            
-            // 여기서 VFX의 세부 조정을 할 수 있습니다
-            // 예: 특정 파티클 시스템의 속성 변경, 스케일 조정 등
-            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
-            
-            // Render Alignment 설정
-            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
-            if (renderer != null)
+            // 기본 VFX 생성 (base 호출)
+            if (spawnedVFX is null)
             {
-                renderer.alignment = ParticleSystemRenderSpace.Local; // 또는 View, Local
+                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             }
-
-            vfx.transform.position = position;
-
-            // 방향에 맞게 회전
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-            vfx.transform.localScale = new Vector3(1.5f, 1.5f);
             
-            var colorOverLifetime = childVFX.colorOverLifetime;
-            colorOverLifetime.enabled = true;
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(new Color(1f, 1f, 1f, 0.5f), 0.4f), new GradientColorKey(new Color(1f, 1f, 1f, 0.5f), 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.4f), new GradientAlphaKey(1f, 1f) }
-            );
-            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+            spawnedVFX.transform.position = position;
+            
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
+            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+            
+            spawnedVFX.SetActive(true);
+            return spawnedVFX;
+        }
 
-            return vfx;
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            StopAndDestroyVFX(spawnedVFX);
         }
     }
 }

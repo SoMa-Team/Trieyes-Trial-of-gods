@@ -4,6 +4,7 @@ using Stats;
 using UnityEngine;
 using System.Threading;
 using BattleSystem;
+using System.Collections.Generic;
 using System;
 using VFXSystem;
 
@@ -13,9 +14,9 @@ namespace AttackComponents
     /// 캐릭터 소드 능력 부여 강화
     /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
     /// 7초 동안 검에 무작위 속성을 부여하고, 기본 공격(AC002)에 다음의 추가효과가 적용되고, 추가 피해를 입힙니다.
-    /// - 번개 : 공격에 맞은 대상 주변 적들이 연쇄적인 번개(쓰리쿠션 데미지-관통 개수에 비례) 피해를 입습니다
+    /// - 얼음 : 공격에 맞은 적들을 둔화 시킵니다.
     /// </summary>
-    public class AC005_HeroSwordEnchantmentLightning : AttackComponent
+    public class AC003_HeroSwordEnchantmentIce : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
@@ -24,27 +25,18 @@ namespace AttackComponents
         public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
-        // 번개 연쇄 설정
-        public int chainDamage; // Attack.StatSheet.stats 에서 가져와야 함
-        public float chainRadius;
-        public int chainCount;
-
-        public float chainDelay;
-
         // FSM 상태 관리
-        private LightningAttackState attackState = LightningAttackState.None;
+        private IceAttackState attackState = IceAttackState.None;
         private float attackTimer = 0f;
         private Vector2 attackDirection;
 
-        public AttackData chainAttackData;
-
-        // 생성된 VFX 인스턴스
+        // VFX 설정
         [Header("VFX Settings")]
-        [SerializeField] private readonly int VFX_ID = 1; // BASIC_ATTACK VFX ID
+        [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
         private GameObject spawnedVFX;
 
-        // 번개 공격 상태 열거형
-        private enum LightningAttackState
+        // 얼음 공격 상태 열거형
+        private enum IceAttackState
         {
             None,
             Preparing,
@@ -58,20 +50,20 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = LightningAttackState.Preparing;
+            attackState = IceAttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
-            
+
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
-            // 번개 공격 시작
-            StartLightningAttack();
+            // 얼음 공격 시작
+            StartIceAttack();
         }
 
-        private void StartLightningAttack()
+        private void StartIceAttack()
         {
-            attackState = LightningAttackState.Preparing;
+            attackState = IceAttackState.Preparing;
             attackTimer = 0f;
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
@@ -91,7 +83,7 @@ namespace AttackComponents
             Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
             
             // VFX 생성 및 설정
-            spawnedVFX = CreateAndSetupVFX(vfxPosition, attackDirection);
+            spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
             
             // VFX 재생
             PlayVFX(spawnedVFX);
@@ -111,27 +103,25 @@ namespace AttackComponents
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
             
-            //debug.log("<color=yellow>[AC005] 번개 강화 공격 시작!</color>");
+            //debug.log("<color=cyan>[AC004] 얼음 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // AC102_CHAIN Attack 생성
-            Attack lightningChainAttack = AttackFactory.Instance.Create(chainAttackData, attack.attacker, null, Vector2.zero);
-            
-            // AC102_CHAIN 컴포넌트 설정
-            var lightningChainComponent = lightningChainAttack.components[0] as AC102_CHAIN;
-            if (lightningChainComponent != null)
+            // 새로운 DEBUFF 클래스 사용
+            var debuffInfo = new DebuffInfo
             {
-                lightningChainComponent.chainDamage = chainDamage;
-                lightningChainComponent.chainRadius = chainRadius;
-                lightningChainComponent.chainCount = chainCount;
-                lightningChainComponent.chainDelay = chainDelay;
-                lightningChainComponent.chainRadius = chainRadius;
-                
-                // 번개 연쇄 시작
-                lightningChainComponent.StartLightningChain(targetPawn.transform.position);
-            }
+                debuffType = DEBUFFType.Slow,
+                attack = attack,
+                target = targetPawn,
+                debuffValue = 10,
+                debuffMultiplier = 15f,
+                debuffDuration = 5f,
+                debuffInterval = 1f,
+            };
+
+            var debuff = new DEBUFF();
+            debuff.Activate(debuffInfo);
         }
 
         /// <summary>
@@ -193,10 +183,10 @@ namespace AttackComponents
         {
             base.Update();
             
-            // 번개 공격 상태 처리
-            ProcessLightningAttackState();
+            // 얼음 공격 상태 처리
+            ProcessIceAttackState();
 
-            if (attackState == LightningAttackState.Active && attack.attackCollider != null)
+            if (attackState == IceAttackState.Active && attack.attackCollider != null)
             {
                 ////DrawFanShapeDebug();
             }
@@ -226,26 +216,25 @@ namespace AttackComponents
             }
         }
 
-
-        private void ProcessLightningAttackState()
+        private void ProcessIceAttackState()
         {
             switch (attackState)
             {
-                case LightningAttackState.None:
+                case IceAttackState.None:
                     break;
 
-                case LightningAttackState.Preparing:
+                case IceAttackState.Preparing:
                     attackTimer += Time.deltaTime;
                     
                     if (attackTimer >= 0.1f) // 준비 시간
                     {
-                        attackState = LightningAttackState.Active;
+                        attackState = IceAttackState.Active;
                         attackTimer = 0f;
-                        ActivateLightningAttack();
+                        ActivateIceAttack();
                     }
                     break;
 
-                case LightningAttackState.Active:
+                case IceAttackState.Active:
                     attackTimer += Time.deltaTime;
                     
                     // 위치 업데이트
@@ -254,20 +243,20 @@ namespace AttackComponents
                     
                     if (attackTimer >= attackDuration)
                     {
-                        attackState = LightningAttackState.Finished;
+                        attackState = IceAttackState.Finished;
                         attackTimer = 0f;
-                        FinishLightningAttack();
+                        FinishIceAttack();
                     }
                     break;
 
-                case LightningAttackState.Finished:
-                    attackState = LightningAttackState.None;
+                case IceAttackState.Finished:
+                    attackState = IceAttackState.None;
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }
         }
 
-        private void ActivateLightningAttack()
+        private void ActivateIceAttack()
         {
             // 콜라이더 활성화 및 방향 업데이트
             if (attack.attackCollider != null)
@@ -296,10 +285,10 @@ namespace AttackComponents
                 }
             }
             
-            //debug.log("<color=green>[AC005] 번개 강화 공격 활성화!</color>");
+            //debug.log("<color=green>[AC004] 얼음 강화 공격 활성화!</color>");
         }
 
-        private void FinishLightningAttack()
+        private void FinishIceAttack()
         {
             // 콜라이더 비활성화 (삭제하지 않고)
             if (attack.attackCollider != null)
@@ -310,52 +299,41 @@ namespace AttackComponents
             // VFX 정리
             if (spawnedVFX != null)
             {
-                StopAndReturnVFX(spawnedVFX, VFX_ID);
-                spawnedVFX = null;
+                StopAndDestroyVFX(spawnedVFX);
             }
             
-            //debug.log("<color=yellow>[AC005] 번개 강화 공격 종료!</color>");
+            //debug.log("<color=cyan>[AC004] 얼음 강화 공격 종료!</color>");
         }
 
         /// <summary>
         /// VFX를 생성하고 설정합니다.
         /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
         /// <param name="position">VFX 생성 위치</param>
         /// <param name="direction">VFX 방향</param>
         /// <returns>생성된 VFX 게임오브젝트</returns>
-        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
-            // VFXFactory를 통해 기본 VFX 생성
-            GameObject vfx = VFXFactory.Instance.SpawnVFX(VFX_ID, position, direction);
-            
-            // 여기서 VFX의 세부 조정을 할 수 있습니다
-            // 예: 특정 파티클 시스템의 속성 변경, 스케일 조정 등
-            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
-            
-            // Render Alignment 설정
-            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
-            if (renderer != null)
+            // 기본 VFX 생성 (base 호출)
+            if (spawnedVFX is null)
             {
-                renderer.alignment = ParticleSystemRenderSpace.Local; // 또는 View, Local
+                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             }
-
-            vfx.transform.position = position;
-
-            // 방향에 맞게 회전
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-            vfx.transform.localScale = new Vector3(1.5f, 1.5f);
             
-            var colorOverLifetime = childVFX.colorOverLifetime;
-            colorOverLifetime.enabled = true;
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.yellow, 0.4f), new GradientColorKey(Color.yellow, 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.4f, 0f), new GradientAlphaKey(1f, 0f) }
-            );
-            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+            spawnedVFX.transform.position = position;
+            
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
+            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+            
+            spawnedVFX.SetActive(true);
+            return spawnedVFX;
+        }
 
-            return vfx;
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            StopAndDestroyVFX(spawnedVFX);
         }
     }
 }

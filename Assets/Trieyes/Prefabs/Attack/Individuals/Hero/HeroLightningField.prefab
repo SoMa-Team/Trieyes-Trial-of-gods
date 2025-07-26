@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8783834321740468731}
   - component: {fileID: 7070757861086913797}
   m_Layer: 0
-  m_Name: AC009
+  m_Name: AC008
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +49,9 @@ MonoBehaviour:
   lightningFieldRadius: 2.5
   lightningFieldDuration: 3
   lightningFieldDelay: 0.1
+  lightningFieldVFXPrefab: {fileID: 0}
   vfxDuration: 0.4
+  fieldVFXPrefab: {fileID: 4748681987041982144, guid: 8b708da639fe5461683acb945aa7489d, type: 3}
   moveSpeedBoostMultiplier: 10
   moveSpeedBoostDuration: 5
   followingFieldData: {fileID: 11400000, guid: 673fb3a76a69f45f5a93532ae6431a5a, type: 2}

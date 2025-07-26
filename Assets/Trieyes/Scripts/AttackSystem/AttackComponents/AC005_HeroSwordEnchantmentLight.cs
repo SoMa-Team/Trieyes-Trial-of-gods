@@ -5,7 +5,6 @@ using UnityEngine;
 using System.Threading;
 using BattleSystem;
 using System.Collections.Generic;
-using System;
 using VFXSystem;
 
 namespace AttackComponents
@@ -14,29 +13,45 @@ namespace AttackComponents
     /// 캐릭터 소드 능력 부여 강화
     /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
     /// 7초 동안 검에 무작위 속성을 부여하고, 기본 공격(AC002)에 다음의 추가효과가 적용되고, 추가 피해를 입힙니다.
-    /// - 얼음 : 공격에 맞은 적들을 둔화 시킵니다.
+    /// 천상 : 이동속도와 사거리가 증가합니다. 방어력이 감소합니다. AC1001_BUFF 버프를 줍니다.
     /// </summary>
-    public class AC004_HeroSwordEnchantmentIce : AttackComponent
+    public class AC005_HeroSwordEnchantmentLight : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
 
-        public Vector2 direction;
-        public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
-
         // FSM 상태 관리
-        private IceAttackState attackState = IceAttackState.None;
+        private HeavenAttackState attackState = HeavenAttackState.None;
         private float attackTimer = 0f;
         private Vector2 attackDirection;
 
+        public Vector2 direction;
+        public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
+
+        // Skill 002에 대하여 AOE 공격 발동 시 AOE의 기본 정보들
+        public AOETargetType dotCollisionType = AOETargetType.AreaAtPosition;
+        public AOEShapeType dotShapeType = AOEShapeType.Circle;
+        public float dotRadius = 3f;
+        public float dotWidth = 1f;
+        public float dotHeight = 1f;
+        public int dotDamage = 100;
+        public float dotDuration = 1f;
+        public float dotInterval = 1f;
+
+        public AttackData aoeAttackData;
+
         // 생성된 VFX 인스턴스
         [Header("VFX Settings")]
-        [SerializeField] private readonly int VFX_ID = 1; // BASIC_ATTACK VFX ID
+        [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
         private GameObject spawnedVFX;
 
-        // 얼음 공격 상태 열거형
-        private enum IceAttackState
+        // AC100 AOE VFX 설정
+        [Header("AC100 AOE VFX Settings")]
+        [SerializeField] private GameObject aoeVFXPrefab; // AOE VFX 프리팹 (AC100에 전달용)
+
+        // 천상 공격 상태 열거형
+        private enum HeavenAttackState
         {
             None,
             Preparing,
@@ -50,20 +65,20 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = IceAttackState.Preparing;
+            attackState = HeavenAttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
-            // 얼음 공격 시작
-            StartIceAttack();
+            // 공격 시작
+            StartHeavenAttack();
         }
 
-        private void StartIceAttack()
+        private void StartHeavenAttack()
         {
-            attackState = IceAttackState.Preparing;
+            attackState = HeavenAttackState.Preparing;
             attackTimer = 0f;
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
@@ -71,7 +86,7 @@ namespace AttackComponents
             var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
             if (weaponGameObject == null)
             {
-                Debug.LogError("R_Weapon을 찾지 못했습니다!");
+                //Debug.LogError("R_Weapon을 찾지 못했습니다!");
                 return;
             }
 
@@ -83,7 +98,7 @@ namespace AttackComponents
             Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
             
             // VFX 생성 및 설정
-            spawnedVFX = CreateAndSetupVFX(vfxPosition, attackDirection);
+            spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
             
             // VFX 재생
             PlayVFX(spawnedVFX);
@@ -103,25 +118,44 @@ namespace AttackComponents
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
             
-            //debug.log("<color=cyan>[AC004] 얼음 강화 공격 시작!</color>");
+            //debug.log("<color=white>[AC006] 천상 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // 새로운 DEBUFF 클래스 사용
-            var debuffInfo = new DebuffInfo
+            // 빛 속성일 때 AOE 공격
+            var hero = attack.attacker as Character001_Hero;
+            if (hero != null && hero.weaponElementState == HeroWeaponElementState.Light && hero.activateLight)
             {
-                debuffType = DEBUFFType.Slow,
-                attack = attack,
-                target = targetPawn,
-                debuffValue = 10,
-                debuffMultiplier = 15f,
-                debuffDuration = 5f,
-                debuffInterval = 1f,
-            };
+                SpawnAC100Attack(targetPawn);
+            }
+        }
+        
+        /// <summary>
+        /// Light 속성일 때 AC100 AOE 공격을 소환합니다
+        /// </summary>
+        /// <param name="targetPawn">타겟 적</param>
+        private void SpawnAC100Attack(Pawn targetPawn)
+        {
+            var aoeAttack = AttackFactory.Instance.Create(aoeAttackData, attack.attacker, null, Vector2.zero);
+            if (aoeAttack != null)
+            {
+                var aoeComponent = aoeAttack.components[0] as AC100_AOE;
+                aoeComponent.aoeTargetType = dotCollisionType;
+                aoeComponent.aoeShapeType = dotShapeType;
+                aoeComponent.aoeRadius = dotRadius;
+                aoeComponent.aoeDamage = dotDamage;
+                aoeComponent.aoeDuration = dotDuration;
+                aoeComponent.aoeInterval = dotInterval;
 
-            var debuff = new DEBUFF();
-            debuff.Activate(debuffInfo);
+                // AOE 위치 설정 (타겟 위치)
+                aoeComponent.SetAOEPosition((Vector2)targetPawn.transform.position);
+                
+                // AOE VFX 프리팹 전달
+                aoeComponent.aoeVFXPrefab = aoeVFXPrefab;
+                
+                Debug.Log("<color=cyan>[AC006] Light 속성으로 AC100 AOE 공격 소환! AOE VFX 프리팹 전달</color>");
+            }
         }
 
         /// <summary>
@@ -183,15 +217,21 @@ namespace AttackComponents
         {
             base.Update();
             
-            // 얼음 공격 상태 처리
-            ProcessIceAttackState();
+            // 천상 공격 상태 처리
+            ProcessHeavenAttackState();
 
-            if (attackState == IceAttackState.Active && attack.attackCollider != null)
+            // 디버그 그리기는 개발 모드에서만 (성능 최적화)
+            #if UNITY_EDITOR
+            if (attackState == HeavenAttackState.Active && attack.attackCollider != null)
             {
                 ////DrawFanShapeDebug();
             }
+            #endif
         }
 
+        /// <summary>
+        /// 부채꼴 모양을 Scene 뷰에 디버그 라인으로 그립니다.
+        /// </summary>
         private void DrawFanShapeDebug()
         {
             if (attack.attackCollider is PolygonCollider2D collider)
@@ -216,47 +256,7 @@ namespace AttackComponents
             }
         }
 
-        private void ProcessIceAttackState()
-        {
-            switch (attackState)
-            {
-                case IceAttackState.None:
-                    break;
-
-                case IceAttackState.Preparing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 준비 시간
-                    {
-                        attackState = IceAttackState.Active;
-                        attackTimer = 0f;
-                        ActivateIceAttack();
-                    }
-                    break;
-
-                case IceAttackState.Active:
-                    attackTimer += Time.deltaTime;
-                    
-                    // 위치 업데이트
-                    attack.transform.position = attack.attacker.transform.position;
-                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
-                    
-                    if (attackTimer >= attackDuration)
-                    {
-                        attackState = IceAttackState.Finished;
-                        attackTimer = 0f;
-                        FinishIceAttack();
-                    }
-                    break;
-
-                case IceAttackState.Finished:
-                    attackState = IceAttackState.None;
-                    AttackFactory.Instance.Deactivate(attack);
-                    break;
-            }
-        }
-
-        private void ActivateIceAttack()
+        private void ActivateHeavenAttack()
         {
             // 콜라이더 활성화 및 방향 업데이트
             if (attack.attackCollider != null)
@@ -285,10 +285,10 @@ namespace AttackComponents
                 }
             }
             
-            //debug.log("<color=green>[AC004] 얼음 강화 공격 활성화!</color>");
+            //debug.log("<color=green>[AC006] 천상 강화 공격 활성화!</color>");
         }
 
-        private void FinishIceAttack()
+        private void FinishHeavenAttack()
         {
             // 콜라이더 비활성화 (삭제하지 않고)
             if (attack.attackCollider != null)
@@ -299,52 +299,97 @@ namespace AttackComponents
             // VFX 정리
             if (spawnedVFX != null)
             {
-                StopAndReturnVFX(spawnedVFX, VFX_ID);
+                StopAndDestroyVFX(spawnedVFX);
                 spawnedVFX = null;
             }
             
-            //debug.log("<color=cyan>[AC004] 얼음 강화 공격 종료!</color>");
+            //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
+        }
+
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            
+            // VFX 정리
+            if (spawnedVFX != null)
+            {
+                StopAndDestroyVFX(spawnedVFX);
+                spawnedVFX = null;
+            }
+            
+            attackState = HeavenAttackState.None;
+            attackTimer = 0f;
+        }
+
+        private void ProcessHeavenAttackState()
+        {
+            switch (attackState)
+            {
+                case HeavenAttackState.None:
+                    break;
+
+                case HeavenAttackState.Preparing:
+                    attackTimer += Time.deltaTime;
+                    
+                    if (attackTimer >= 0.1f) // 준비 시간
+                    {
+                        attackState = HeavenAttackState.Active;
+                        attackTimer = 0f;
+                        ActivateHeavenAttack();
+                    }
+                    break;
+
+                case HeavenAttackState.Active:
+                    attackTimer += Time.deltaTime;
+                    
+                    // 위치 업데이트
+                    attack.transform.position = attack.attacker.transform.position;
+                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    
+                    if (attackTimer >= attackDuration)
+                    {
+                        attackState = HeavenAttackState.Finished;
+                        attackTimer = 0f;
+                        FinishHeavenAttack();
+                    }
+                    break;
+
+                case HeavenAttackState.Finished:
+                    attackState = HeavenAttackState.None;
+                    AttackFactory.Instance.Deactivate(attack);
+                    break;
+            }
         }
 
         /// <summary>
         /// VFX를 생성하고 설정합니다.
         /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
         /// <param name="position">VFX 생성 위치</param>
         /// <param name="direction">VFX 방향</param>
         /// <returns>생성된 VFX 게임오브젝트</returns>
-        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
-            // VFXFactory를 통해 기본 VFX 생성
-            GameObject vfx = VFXFactory.Instance.SpawnVFX(VFX_ID, position, direction);
-            
-            // 여기서 VFX의 세부 조정을 할 수 있습니다
-            // 예: 특정 파티클 시스템의 속성 변경, 스케일 조정 등
-            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
-            
-            // Render Alignment 설정
-            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
-            if (renderer != null)
+            // 프리팹이 없으면 VFX 없이 진행
+            if (vfxPrefab == null)
             {
-                renderer.alignment = ParticleSystemRenderSpace.Local; // 또는 View, Local
+                return null;
             }
 
-            vfx.transform.position = position;
-
-            // 방향에 맞게 회전
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-            vfx.transform.localScale = new Vector3(1.5f, 1.5f);
+            // 기본 VFX 생성 (base 호출)
+            if (spawnedVFX is null)
+            {
+                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            }
             
-            var colorOverLifetime = childVFX.colorOverLifetime;
-            colorOverLifetime.enabled = true;
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.cyan, 0.4f), new GradientColorKey(Color.blue, 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.4f, 0f), new GradientAlphaKey(1f, 0f) }
-            );
-            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
-
-            return vfx;
+            spawnedVFX.transform.position = position;
+            
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
+            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+            
+            spawnedVFX.SetActive(true);
+            return spawnedVFX;
         }
     }
 }

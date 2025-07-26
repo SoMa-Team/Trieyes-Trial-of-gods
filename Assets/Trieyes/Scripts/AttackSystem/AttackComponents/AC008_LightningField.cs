@@ -12,21 +12,18 @@ namespace AttackComponents
     /// 플레이어 주변에 자기장을 형성하여 닿는 적에게 피해를 주고, 이동속도가 증가합니다.
     /// AC104를 소환하여 따라다니는 자기장과 버프 기능을 구현합니다.
     /// </summary>
-    public class AC009_LightningField : AttackComponent
+    public class AC008_LightningField : AttackComponent
     {
         [Header("번개 장판 설정")]
         public float lightningFieldDamage = 30f;
         public float lightningFieldRadius = 2.5f;
         public float lightningFieldDuration = 3f;
-        public float lightningFieldDelay = 0.1f;
+        public float lightningFieldDelay = 0.1f;  
 
-        [Header("VFX 설정")]
-        public float vfxDuration = 0.4f;
-
-        // VFX 시스템 설정
-        [Header("VFX System Settings")]
-        [SerializeField] private readonly int LIGHTNING_FIELD_VFX_ID = 6; // 번개 장판 VFX ID
-
+        // AC105 FollowingField VFX 설정
+        [Header("AC105 FollowingField VFX Settings")]
+        [SerializeField] private GameObject fieldVFXPrefab; // 필드 VFX 프리팹 (AC105에 전달용)
+        
         // 버프 설정
         [Header("버프 설정")]
         public float moveSpeedBoostMultiplier; // 이동속도 증가 배율
@@ -109,12 +106,7 @@ namespace AttackComponents
                     break;
 
                 case LightningFieldState.Deactivating:
-                    fieldTimer += Time.deltaTime;
-                    
-                    if (fieldTimer >= vfxDuration)
-                    {
-                        fieldState = LightningFieldState.Finished;
-                    }
+                    fieldState = LightningFieldState.Finished;
                     break;
 
                 case LightningFieldState.Finished:
@@ -177,8 +169,8 @@ namespace AttackComponents
                 ac105Component.followDistance = 0f;
                 ac105Component.followOffset = Vector2.zero;
                 
-                // VFX ID 전달
-                ac105Component.vfxID = LIGHTNING_FIELD_VFX_ID;
+                // 필드 VFX 프리팹 전달
+                ac105Component.fieldVFXPrefab = fieldVFXPrefab;
             }
             
             Debug.Log("<color=green>[AC009] AC104 따라다니는 자기장 활성화 완료!</color>");

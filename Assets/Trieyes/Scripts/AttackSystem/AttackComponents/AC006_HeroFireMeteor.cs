@@ -11,13 +11,18 @@ namespace AttackComponents
     /// 파이어 메테오 공격
     /// AC103_FALL을 소환하고 바로 종료하는 FSM 패턴 구현
     /// </summary>
-    public class AC007_HeroFireMeteor : AttackComponent
+    public class AC006_HeroFireMeteor : AttackComponent
     {
         public AttackData fallAttackData;
 
         // 메테오 설정
         [Header("Meteor Settings")]
         public float meteorRadius = 2f; // 메테오 반지름
+
+        // AC103 FALL VFX 설정
+        [Header("AC103 FALL VFX Settings")]
+        [SerializeField] private GameObject fallingVFXPrefab; // 떨어지는 VFX 프리팹 (AC103에 전달용)
+        [SerializeField] private GameObject explosionVFXPrefab; // 폭발 VFX 프리팹 (AC103에 전달용)
 
         // FSM 상태 관리
         private FireMeteorState attackState = FireMeteorState.None;
@@ -122,6 +127,10 @@ namespace AttackComponents
                 fallComponent.fallDuration = 0.5f;
                 fallComponent.fallDelay = 0.1f;
                 fallComponent.fallDamage = 50;
+                
+                // VFX 프리팹 전달
+                fallComponent.fallingVFXPrefab = fallingVFXPrefab;
+                fallComponent.explosionVFXPrefab = explosionVFXPrefab;
             }
             
             Debug.Log("<color=red>[AC007] AC103_FALL 파이어 메테오 소환 완료!</color>");

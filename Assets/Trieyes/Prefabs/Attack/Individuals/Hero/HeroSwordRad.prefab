@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 4797988704424728696}
+  - component: {fileID: 2451361506874016655}
   m_Layer: 0
-  m_Name: AC002
+  m_Name: AC001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4797988704424728696
+--- !u!114 &2451361506874016655
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,14 +41,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7cbaa1cbe3715245897170940f82b89, type: 3}
+  m_Script: {fileID: 11500000, guid: 2dac088fe4d7e3545b71d33b32509b7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  attackAngle: 120
+  attackAngle: 90
   attackDuration: 0.3
-  attackRadius: 2
-  segments: 12
+  attackRadius: 1.5
+  segments: 8
+  vfxPrefab: {fileID: 4748681987041982144, guid: 5d980b4774a8ec943a952cd7a59c97b6, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,7 +189,7 @@ MonoBehaviour:
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 4797988704424728696}
+  - {fileID: 2451361506874016655}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

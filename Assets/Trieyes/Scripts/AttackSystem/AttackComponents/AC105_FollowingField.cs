@@ -36,14 +36,10 @@ namespace AttackComponents
         [Header("버프 설정")]
         
         [Header("VFX 설정")]
-        public GameObject fieldVFXPrefab;
+        [SerializeField] public GameObject fieldVFXPrefab; // 필드 VFX 프리팹 (외부에서 설정 가능)
         public float fieldVFXDuration = 0.3f;
+        private GameObject spawnedVFX;
 
-        // VFX 시스템 설정
-        [Header("VFX System Settings")]
-        public int vfxID = 6; // 번개 장판 VFX ID
-        private GameObject fieldVFX;
-        
         // 자기장 상태 관리
         private FollowingFieldState fieldState = FollowingFieldState.None;
         private float fieldTimer = 0f;
@@ -82,12 +78,6 @@ namespace AttackComponents
             fieldState = FollowingFieldState.Starting;
             fieldTimer = 0f;
             damageTimer = 0f;
-            
-            // 초기 위치 설정
-            UpdateFieldPosition();
-            
-            // VFX 생성
-            CreateFieldVFX();
             
             Debug.Log("<color=cyan>[AC104] 따라다니는 자기장 시작!</color>");
         }
@@ -178,20 +168,14 @@ namespace AttackComponents
                 Vector2 direction = attack.attacker.transform.position - transform.position;
                 fieldPosition += direction * followDistance;
             }
-            
-            transform.position = fieldPosition;
-            
-            // VFX 위치도 업데이트
-            if (fieldVFX != null)
-            {
-                fieldVFX.transform.position = fieldPosition + Vector2.up * 0.4f;
-            }
-
-            // 디버그 용으로 필드를 Draw
+            spawnedVFX.transform.position = fieldPosition + Vector2.up * 0.4f;
         }
         
         private void ActivateField()
         {
+            // VFX 생성 (Active 상태에서 생성)
+            CreateFieldVFX();
+            
             Debug.Log("<color=green>[AC104] 자기장 활성화!</color>");
         }
         
@@ -263,19 +247,19 @@ namespace AttackComponents
         private void CreateFieldVFX()
         {
             // VFX 시스템을 통해 번개 장판 VFX 생성
-            fieldVFX = CreateAndSetupVFX((Vector2)transform.position, Vector2.zero);
-            PlayVFX(fieldVFX);
+            spawnedVFX = CreateAndSetupVFX(fieldVFXPrefab, (Vector2)transform.position, Vector2.zero);
+            PlayVFX(spawnedVFX);
             
-            Debug.Log($"<color=blue>[AC105] 번개 장판 VFX 생성! VFX ID: {vfxID}</color>");
+            Debug.Log($"<color=blue>[AC105] 번개 장판 VFX 생성!</color>");
         }
         
         private void DeactivateField()
         {
             // VFX 정리
-            if (fieldVFX != null)
+            if (spawnedVFX != null)
             {
-                StopAndReturnVFX(fieldVFX, vfxID);
-                fieldVFX = null;
+                StopAndDestroyVFX(spawnedVFX);
+                spawnedVFX = null;
             }
             
             Debug.Log("<color=cyan>[AC105] 따라다니는 자기장 종료!</color>");
@@ -284,14 +268,28 @@ namespace AttackComponents
         /// <summary>
         /// 번개 장판 VFX를 생성하고 설정합니다.
         /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
         /// <param name="position">VFX 생성 위치</param>
         /// <param name="direction">VFX 방향</param>
         /// <returns>생성된 VFX 게임오브젝트</returns>
-        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
-            // VFXFactory를 통해 번개 장판 VFX 생성
-            GameObject vfx = VFXFactory.Instance.SpawnVFX(vfxID, position, direction);
+            // 프리팹이 없으면 VFX 없이 진행
+            if (vfxPrefab == null)
+            {
+                return null;
+            }
 
+            // 기본 VFX 생성 (base 호출)
+            GameObject vfx = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            
+            vfx.transform.position = position;
+            
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
+            vfx.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
+            
+            vfx.SetActive(true);
             return vfx;
         }
 
@@ -300,10 +298,10 @@ namespace AttackComponents
             base.Deactivate();
             
             // VFX 정리
-            if (fieldVFX != null)
+            if (spawnedVFX != null)
             {
-                StopAndReturnVFX(fieldVFX, vfxID);
-                fieldVFX = null;
+                StopAndDestroyVFX(spawnedVFX);
+                spawnedVFX = null;
             }
             
             fieldState = FollowingFieldState.None;

@@ -56,13 +56,9 @@ namespace AttackComponents
 
         // AOE VFX 설정
         [Header("AOE VFX 설정")]
-        public GameObject aoeVFXPrefab;
+        [SerializeField] public GameObject aoeVFXPrefab; // AOE VFX 프리팹 (외부에서 설정 가능)
         public float aoeVFXDuration = 0.3f;
-
-        // VFX 시스템 설정
-        [Header("VFX System Settings")]
-        public int vfxID = 7; // AOE VFX ID
-        private GameObject aoeVFX;
+        private GameObject spawnedVFX;
 
         // FSM 상태 관리
         private AOEAttackState attackState = AOEAttackState.None;
@@ -239,7 +235,8 @@ namespace AttackComponents
         private void ActivateAC100Attack()
         {
             // AOE VFX 생성 및 시작
-            CreateAC100VFX(aoePosition);
+            spawnedVFX = CreateAndSetupVFX(aoeVFXPrefab, aoePosition, Vector2.zero);
+            PlayVFX(spawnedVFX);
             
             Debug.Log("<color=green>[AC100] 좌표 기반 AOE 공격 활성화!</color>");
         }
@@ -247,39 +244,47 @@ namespace AttackComponents
         private void FinishAC100Attack()
         {
             // AOE VFX 정리
-            if (aoeVFX != null)
+            if (spawnedVFX != null)
             {
-                StopAndReturnVFX(aoeVFX, vfxID);
-                aoeVFX = null;
+                StopAndDestroyVFX(spawnedVFX);
+                spawnedVFX = null;
             }
             
             Debug.Log("<color=orange>[AC100] 좌표 기반 AOE 공격 종료!</color>");
         }
 
-        private void CreateAC100VFX(Vector2 position)
-        {
-            // VFX 시스템을 통해 AOE VFX 생성
-            aoeVFX = CreateAndSetupVFX(position, Vector2.zero);
-            PlayVFX(aoeVFX);
-            
-            Debug.Log($"<color=blue>[AC100] AOE VFX 생성! VFX ID: {vfxID}</color>");
-        }
-
         /// <summary>
         /// AOE VFX를 생성하고 설정합니다.
         /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
         /// <param name="position">VFX 생성 위치</param>
         /// <param name="direction">VFX 방향</param>
         /// <returns>생성된 VFX 게임오브젝트</returns>
-        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
-            // VFXFactory를 통해 AOE VFX 생성
-            GameObject vfx = VFXFactory.Instance.SpawnVFX(vfxID, position, direction);
+            // 프리팹이 없으면 VFX 없이 진행
+            if (vfxPrefab == null)
+            {
+                return null;
+            }
 
-            vfx.transform.position = position;
-            vfx.transform.localScale = new Vector3(aoeRadius, aoeRadius, aoeRadius);
+            // 기본 VFX 생성 (base 호출)
+            if (spawnedVFX is null)
+            {
+                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            }
+            
+            spawnedVFX.transform.position = position;
+            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+            spawnedVFX.SetActive(true);
+            
+            return spawnedVFX;
+        }
 
-            return vfx;
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            StopAndDestroyVFX(spawnedVFX);
         }
     }
 }

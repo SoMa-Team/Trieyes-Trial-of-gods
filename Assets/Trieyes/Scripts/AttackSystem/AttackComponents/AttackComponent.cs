@@ -111,6 +111,34 @@ namespace AttackComponents
             // 기본 구현: 하위 클래스에서 오버라이드
             return null;
         }
+        
+        // ===== [기능 5] VFX 처리 =====
+        /// <summary>
+        /// VFX를 생성하고 설정합니다. (하위 클래스에서 오버라이드)
+        /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected virtual GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
+        {
+            if (vfxPrefab == null)
+            {
+                Debug.LogWarning("VFX 프리팹이 설정되지 않았습니다!");
+                return null;
+            }
+            GameObject _vfxPrefab = Instantiate(vfxPrefab);
+
+            // VFX 프리팹을 직접 활성화
+            _vfxPrefab.SetActive(true);
+            _vfxPrefab.transform.position = position;
+            
+            // 방향에 맞게 회전
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            _vfxPrefab.transform.rotation = Quaternion.Euler(0, 0, angle);
+            
+            return _vfxPrefab;
+        }
 
         /// <summary>
         /// VFX를 재생합니다.
@@ -136,6 +164,25 @@ namespace AttackComponents
                 VFXFactory.Instance.StopVFX(vfx);
                 VFXFactory.Instance.ReturnVFX(vfx, vfxId);
             }
+        }
+        
+        /// <summary>
+        /// VFX를 정지하고 비활성화합니다.
+        /// </summary>
+        /// <param name="vfx">정지할 VFX 게임오브젝트</param>
+        protected virtual void StopAndDestroyVFX(GameObject vfx)
+        {
+            if (vfx == null) return;
+            
+            // 모든 ParticleSystem 컴포넌트 정지
+            ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
+            foreach (var ps in particleSystems)
+            {
+                ps.Stop();
+            }
+            
+            // VFX 비활성화 (Destroy 대신 SetActive(false) 사용)
+            vfx.SetActive(false);
         }
 
         // ===== [기능 4] 이벤트 처리 =====

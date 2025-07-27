@@ -275,7 +275,7 @@ namespace AttackComponents
             }
             
             spawnedVFX.transform.position = position;
-            spawnedVFX.transform.localScale = new Vector3(aoeRadius, aoeRadius, aoeRadius);
+            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             spawnedVFX.SetActive(true);
             
             return spawnedVFX;

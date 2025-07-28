@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace BattleSystem
 {
-    public class GoldDropFactory: MonoBehaviour
+    public class DropFactory: MonoBehaviour
     {
-        public static GoldDropFactory Instance { get; private set; }
+        public static DropFactory Instance { get; private set; }
         private void Awake()
         {
             if (Instance is not null)
@@ -21,7 +21,7 @@ namespace BattleSystem
         
         [SerializeField] private GoldDrop goldPrefab;
 
-        public GoldDrop Create(Vector3 position, int goldAmount)
+        public GoldDrop CreateGoldDrop(Vector3 position, int goldAmount)
         {
             var goldDrop = popGoldDrop() ?? Instantiate(goldPrefab);
             goldDrop.transform.position = position;

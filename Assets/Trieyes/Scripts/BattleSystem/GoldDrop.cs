@@ -23,7 +23,7 @@ public class GoldDrop : MonoBehaviour
         if (distance < GetGoldCollisionDistance(BattleStage.now.mainCharacter))
         {
             character.ChangeGold(goldAmount);
-            GoldDropFactory.Instance.Deactivate(this);
+            DropFactory.Instance.Deactivate(this);
         }
     }
 

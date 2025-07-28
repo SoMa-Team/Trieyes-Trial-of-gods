@@ -387,7 +387,7 @@ namespace CharacterSystem
         /// <returns>스탯 값</returns>
         public int GetStatValue(StatType statType)
         {
-            return statSheet[statType];
+            return statSheet[statType].Value;
         }
         
         /// <summary>
@@ -804,7 +804,7 @@ namespace CharacterSystem
             }
         }
 
-        private void ClearStatModifier()
+        public void ClearStatModifier()
         {
             statSheet.ClearBuffs();
         }

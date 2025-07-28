@@ -55,11 +55,6 @@ namespace CardActions
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
-                if (owner == null || deck == null)
-                {
-                    Debug.LogWarning("[GenericStatBuffOnBattleStartAction] owner 또는 deck이 정의되지 않았습니다.");
-                    return;
-                }
                 for (int i = 0; i < pairCount; i++)
                 {
                     // StatType과 Value를 각각 치환 적용

@@ -103,6 +103,8 @@ namespace CardSystem
                 case 7: return new Card0402_WeightOfArmor();
                 case 8: return new Card403_AttackIsTheBestDefense();
                 case 9: return new Card0601_AbsorbingBlade();
+                case 10: return new Card0801_FTL();
+                case 11: return new Card0802_RageOfBlade();
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {id}");
                     return null;

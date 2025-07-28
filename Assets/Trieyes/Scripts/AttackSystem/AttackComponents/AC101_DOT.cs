@@ -60,7 +60,9 @@ namespace AttackComponents
 
         // DOT VFX 설정
         [Header("DOT VFX 설정")]
-        public GameObject dotVFXPrefab;
+        [SerializeField] public GameObject dotVFXPrefab; // DOT VFX 프리팹 (외부에서 설정 가능)
+        private GameObject spawnedVFX;
+
         public float dotVFXDuration = 0.3f;
 
         // FSM 상태 관리
@@ -210,7 +212,8 @@ namespace AttackComponents
             ApplyAdditionalBuffEffect(dotTargets[0]);
 
             // DOT VFX 생성
-            CreateAC101VFX(dotTargets[0].transform.position);
+            spawnedVFX = CreateAndSetupVFX(dotVFXPrefab, (Vector2)dotTargets[0].transform.position, Vector2.zero);
+            PlayVFX(spawnedVFX);
 
             Debug.Log($"<color=yellow>[AC101] 단일 대상 {dotTargets[0].pawnName}에게 {dotDamage} 데미지 적용</color>");
         }
@@ -230,7 +233,8 @@ namespace AttackComponents
                     ApplyAdditionalBuffEffect(enemy);
 
                     // DOT VFX 생성
-                    CreateAC101VFX(enemy.transform.position);
+                    spawnedVFX = CreateAndSetupVFX(dotVFXPrefab, (Vector2)enemy.transform.position, Vector2.zero);
+                    PlayVFX(spawnedVFX);
                 }
             }
 
@@ -253,18 +257,41 @@ namespace AttackComponents
             Debug.Log("<color=orange>[AC101] 대상 기반 DOT 공격 종료!</color>");
         }
 
-        private void CreateAC101VFX(Vector3 position)
+        /// <summary>
+        /// VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
-            if (dotVFXPrefab != null)
+            // 프리팹이 없으면 VFX 없이 진행
+            if (vfxPrefab == null)
             {
-                GameObject dotVFX = Instantiate(dotVFXPrefab);
-                dotVFX.transform.position = position;
-                
-                // DOT VFX 지속시간 후 제거
-                Destroy(dotVFX, dotVFXDuration);
-                
-                Debug.Log("<color=blue>[AC101] DOT VFX 생성</color>");
+                return null;
             }
+
+            // 기본 VFX 생성 (base 호출)
+            if (spawnedVFX is null)
+            {
+                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            }
+            
+            spawnedVFX.transform.position = position;
+            
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
+            spawnedVFX.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
+            
+            spawnedVFX.SetActive(true);
+            return spawnedVFX;
+        }
+
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            StopAndDestroyVFX(spawnedVFX);
         }
 
         private void ApplyAdditionalBuffEffect(Pawn target)

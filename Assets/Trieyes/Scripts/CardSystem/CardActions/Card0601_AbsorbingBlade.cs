@@ -13,7 +13,7 @@ namespace CardActions
     /// 전투 시작 시 두 스탯을 각각 %만큼 곱연산 버프!
     /// baseParams: [스탯1, %1, 스탯2, %2] (치환/스티커 지원)
     /// </summary>
-    public class Card0601_AbsorbingBlade : Card1001_GenericStatBuffOnBattleStartAction
+    public class Card0601_AbsorbingBlade : Card1001_GenericPositiveOnlyOnBattleStart
     {
         private int levelUpValue = 5;
         public Card0601_AbsorbingBlade()

@@ -96,7 +96,7 @@ namespace BattleSystem
 
             BattleOverlayCanvasController.Instance.Activate();
             BattleWorldCanvasController.Instance.Activate();
-        }
+        }   
 
         /// <summary>
         /// 전투 스테이지를 비활성화하고 리소스를 정리합니다.</summary>

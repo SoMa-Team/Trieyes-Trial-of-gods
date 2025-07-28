@@ -1,8 +1,8 @@
 namespace CardActions
 {
-    public class Card0202_WeaponEnlargement : Card1001_GenericStatBuffOnBattleStartAction
+    public class Card0202_WeaponEnlargement : Card1002_StatBuffPositiveAndNegative
     {
-        public Card0202_WeaponEnlargement() : base(2, false)
+        public Card0202_WeaponEnlargement() : base(false)
         {
             
         }

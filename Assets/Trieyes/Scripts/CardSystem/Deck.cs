@@ -45,6 +45,8 @@ namespace CardSystem
         
         private DeckView deckView;
         
+        private int maxCardCount = 5;
+        
         // ===== [기능 3] 카드 호출 순서 관리 =====
         /// <summary>
         /// 각 카드의 호출 횟수를 추적하는 리스트입니다.
@@ -158,6 +160,11 @@ namespace CardSystem
         /// <param name="card">추가할 카드</param>
         public void AddCard(Card card)
         {
+            if (cards.Count == maxCardCount)
+            {
+                Debug.Log("Card count exceed max number of cards");
+                return;
+            }
             if (card != null)
             {
                 cards.Add(card);

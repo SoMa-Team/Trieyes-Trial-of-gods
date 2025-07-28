@@ -45,12 +45,10 @@ namespace UISystem
         public virtual void Activate()
         {
             text.alpha = 1;
-            Tween.Alpha(text, 0f, 2f).OnComplete(this, view =>
+            Tween.Alpha(text, 0f, 2f).OnComplete(() =>
             {
-                if (!view.isActiveAndEnabled)
-                    return;
                 DamageNumberViewFactory.Instance.Deactivate(this);
-            });
+            }, warnIfTargetDestroyed: false);
         }
 
         public virtual void Deactivate()

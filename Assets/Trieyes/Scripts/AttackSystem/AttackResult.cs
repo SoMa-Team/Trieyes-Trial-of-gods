@@ -23,7 +23,7 @@ namespace AttackSystem
         public bool isCritical;
         public int totalDamage;
         public int attackerHealed;
-        public int attackerDamage;
+        public int attackerReflectDamage;
         
         public static AttackResult Create(Attack attack, Pawn target)
         {
@@ -77,7 +77,7 @@ namespace AttackSystem
             
             attackResult.totalDamage = attackResult.isCritical ? baseDamage * (100 + attackStat[StatType.CriticalDamage]) / 100 : baseDamage;
             attackResult.attackerHealed = attackResult.totalDamage * attackStat[StatType.LifeSteal] / 100;
-            attackResult.attackerDamage = attackResult.totalDamage * targetStat[StatType.Reflect] / 100;
+            attackResult.attackerReflectDamage = attackResult.totalDamage * targetStat[StatType.Reflect] / 100;
             return attackResult;
         }
     }

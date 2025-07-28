@@ -58,7 +58,7 @@ namespace BattleSystem
 
             if (result.attackerHealed > 0)
                 result.attacker.ApplyStealHealth(result);
-            if (result.attackerDamage > 0)
+            if (result.attackerReflectDamage > 0)
                 result.attacker.ApplyReflectDamage(result);
         }
 

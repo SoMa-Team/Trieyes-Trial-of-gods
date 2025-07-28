@@ -705,8 +705,8 @@ namespace CharacterSystem
 
         public void ApplyReflectDamage(AttackResult result)
         {
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took reflect damage {result.attackerDamage} from {result.target.gameObject.name}</color>");
-            ChangeHP(-result.attackerDamage);
+            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took reflect damage {result.attackerReflectDamage} from {result.target.gameObject.name}</color>");
+            ChangeHP(-result.attackerReflectDamage);
         }
 
         private void HandleDeath()

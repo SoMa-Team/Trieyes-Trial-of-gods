@@ -30,6 +30,9 @@ namespace AttackComponents
         private LightningChainState chainState = LightningChainState.None;
         private float chainTimer = 0f;
 
+        public PawnStatusType statusType;
+        public float statusDuration;
+
         public List<Enemy> targetEnemies = new List<Enemy>();
         private List<Vector2> chainPositions = new List<Vector2>();
         private int currentChainCount = 0;
@@ -132,6 +135,13 @@ namespace AttackComponents
 
             // 다음 타겟 처리
             ApplyLightningDamage();
+            ApplyStatus();
+        }
+
+        private void ApplyStatus()
+        {
+            targetQueue.Peek().AddStatus(statusType, 
+            new PawnStatus { duration = statusDuration, lastTime = Time.time });
         }
 
         private void InitializeTargetQueue(Vector2 startPosition)

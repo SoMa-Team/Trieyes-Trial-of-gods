@@ -70,6 +70,19 @@ namespace AttackComponents
             StartLightningAttack();
         }
 
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
+                {
+                    _attacker.killedDuringSkill001++;
+                }
+            }
+        }
+
         private void StartLightningAttack()
         {
             attackState = LightningAttackState.Preparing;
@@ -133,6 +146,9 @@ namespace AttackComponents
                 
                 // VFX 프리팹 전달
                 lightningChainComponent.chainVFXPrefab = chainVFXPrefab;
+
+                lightningChainComponent.statusType = PawnStatusType.ElectricShock;
+                lightningChainComponent.statusDuration = 3f;
                 
                 // 번개 연쇄 시작
                 lightningChainComponent.StartLightningChain(targetPawn.transform.position);
@@ -252,6 +268,9 @@ namespace AttackComponents
 
                 case LightningAttackState.Active:
                     attackTimer += Time.deltaTime;
+
+                    // TO-DO : 유물 존재 시 이 버프 주는 것 발동
+                    // GetAttackSpeedBoost();
                     
                     // 위치 업데이트
                     attack.transform.position = attack.attacker.transform.position;
@@ -269,6 +288,25 @@ namespace AttackComponents
                     attackState = LightningAttackState.None;
                     AttackFactory.Instance.Deactivate(attack);
                     break;
+            }
+        }
+
+        private void GetAttackSpeedBoost()
+        {
+            var _attacker = attack.attacker as Character001_Hero;
+            if (_attacker != null)
+            {
+                var buffInfo = new BuffInfo
+                {
+                    buffType = BUFFType.IncreaseAttackSpeed,
+                    attack = attack,
+                    target = attack.attacker,
+                    buffMultiplier = 200f,
+                    buffDuration = attackDuration,
+                };
+
+                var buff = new BUFF();
+                buff.Activate(buffInfo);
             }
         }
 

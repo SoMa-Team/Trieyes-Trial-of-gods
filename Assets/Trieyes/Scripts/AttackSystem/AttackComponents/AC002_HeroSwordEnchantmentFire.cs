@@ -69,6 +69,19 @@ namespace AttackComponents
             StartFireAttack();
         }
 
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
+                {
+                    _attacker.killedDuringSkill001++;
+                }
+            }
+        }
+
         private void StartFireAttack()
         {
             attackState = FireAttackState.Preparing;
@@ -116,6 +129,18 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
+            // TO-DO : 유물 구현시 이것 발동 해야 함
+            // if (targetPawn.bIsStatusValid(PawnStatusType.Burn))
+            // {
+            //     //남은 화상 피해량의 20퍼센트를 즉시 입으며, 화상이 없어진다.
+            //     targetPawn.RemoveStatus(PawnStatusType.Burn);
+            //     var _attackResult = AttackResult.Create(attack, targetPawn);
+            //     _attackResult.totalDamage = (int)(_attackResult.totalDamage * 0.2f);
+            //     DamageProcessor.ProcessHit(attack, targetPawn);
+
+            //     return;
+            // }
+
             // 단일 대상에게 도트 데미지를 주는 DOT 소환
             var dotAttack = AttackFactory.Instance.Create(dotAttackData, attack.attacker, null, Vector2.zero);
 
@@ -128,6 +153,7 @@ namespace AttackComponents
                 dotComponent.dotDuration = dotDuration;
                 dotComponent.dotInterval = dotInterval;
                 dotComponent.dotTargets.Add(targetPawn as Enemy);
+                dotComponent.dotStatusType = PawnStatusType.Burn;
                 
                 // VFX 프리팹 전달
                 dotComponent.dotVFXPrefab = dotVFXPrefab;

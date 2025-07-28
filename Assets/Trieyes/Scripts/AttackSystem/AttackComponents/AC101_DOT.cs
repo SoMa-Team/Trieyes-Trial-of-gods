@@ -46,6 +46,8 @@ namespace AttackComponents
         public float dotDuration = 5f;     // 지속시간
         public float dotInterval = 1f;     // 간격
 
+        public PawnStatusType dotStatusType;
+
         // DOT 상태 관리
         private float dotTimer = 0f;
         private float dotDurationTimer = 0f;
@@ -169,6 +171,12 @@ namespace AttackComponents
             }
         }
 
+        private void ProcessAC101TargetStatus(Pawn target)
+        {
+            target.AddStatus(dotStatusType, 
+            new PawnStatus { duration = dotDuration, lastTime = Time.time });
+        }
+
         private void ProcessAC101Attack()
         {
             // N회 발동
@@ -210,6 +218,9 @@ namespace AttackComponents
 
             // 버프 적용
             ApplyAdditionalBuffEffect(dotTargets[0]);
+
+            // 대상 상태 적용
+            ProcessAC101TargetStatus(dotTargets[0]);
 
             // DOT VFX 생성
             spawnedVFX = CreateAndSetupVFX(dotVFXPrefab, (Vector2)dotTargets[0].transform.position, Vector2.zero);

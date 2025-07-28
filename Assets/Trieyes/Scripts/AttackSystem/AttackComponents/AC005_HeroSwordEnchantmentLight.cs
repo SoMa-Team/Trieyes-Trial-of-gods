@@ -76,6 +76,19 @@ namespace AttackComponents
             StartHeavenAttack();
         }
 
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
+                {
+                    _attacker.killedDuringSkill001++;
+                }
+            }
+        }
+
         private void StartHeavenAttack()
         {
             attackState = HeavenAttackState.Preparing;

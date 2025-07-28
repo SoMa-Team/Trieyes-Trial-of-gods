@@ -61,6 +61,19 @@ namespace AttackComponents
             StartIceAttack();
         }
 
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
+                {
+                    _attacker.killedDuringSkill001++;
+                }
+            }
+        }
+
         private void StartIceAttack()
         {
             attackState = IceAttackState.Preparing;
@@ -114,14 +127,43 @@ namespace AttackComponents
                 debuffType = DEBUFFType.Slow,
                 attack = attack,
                 target = targetPawn,
-                debuffValue = 10,
-                debuffMultiplier = 15f,
-                debuffDuration = 5f,
-                debuffInterval = 1f,
+                debuffMultiplier = 10f,
+                debuffDuration = attackDuration,
             };
 
             var debuff = new DEBUFF();
             debuff.Activate(debuffInfo);
+
+            targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus
+            {
+                duration = attackDuration,
+                lastTime = Time.time,
+            });
+
+            // TO-DO : 유물 구현시 이것 발동 해야 함
+            // if (targetPawn.bIsStatusValid(PawnStatusType.Freeze))
+            // {
+            //     //둔화가 걸린 적이 다시 둔화에 걸리는 경우 해당 적의 방어력이 대폭 감소합니다.
+            //     var _target = targetPawn as Enemy;
+            //     if (_target != null)
+            //     {
+            //         debuffInfo = new DebuffInfo
+            //         {
+            //             debuffType = DEBUFFType.DecreaseDefense,
+            //             attack = attack,
+            //             target = targetPawn,
+            //             debuffMultiplier = 50f,
+            //             debuffDuration = attackDuration,
+            //         };
+
+            //         debuff = new DEBUFF();
+            //         debuff.Activate(debuffInfo);
+            //     }
+
+            //     targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus 
+            //     { duration = attackDuration, lastTime = Time.time });
+            //     return;
+            // }
         }
 
         /// <summary>

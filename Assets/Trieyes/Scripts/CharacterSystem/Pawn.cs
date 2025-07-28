@@ -18,6 +18,23 @@ namespace CharacterSystem
         Skill1, 
         Skill2,
     }
+
+    public enum PawnStatusType
+    {
+        Normal,
+        Stun,
+        Sleep,
+        Freeze,
+        Poison,
+        Burn,
+        Bleed,
+    }
+
+    public struct PawnStatus
+    {
+        public float duration;
+        public float lastTime;
+    }
     
     /// <summary>
     /// 게임 내 모든 캐릭터의 기본이 되는 클래스입니다.
@@ -61,6 +78,8 @@ namespace CharacterSystem
         
         public int level { get; protected set; }
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
+
+        public Dictionary<PawnStatusType, PawnStatus> statuses = new();
         
         public int gold { get; set; }
 
@@ -259,6 +278,7 @@ namespace CharacterSystem
             }   
 
             Controller.Deactivate();
+            statuses.Clear();
         }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)
@@ -617,6 +637,30 @@ namespace CharacterSystem
 
                 //Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
             }
+        }
+
+        // ===== [기능 10] 상태 관리 =====
+        public void AddStatus(PawnStatusType statusType, PawnStatus status)
+        {
+            statuses[statusType] = status;
+        }
+
+        public void RemoveStatus(PawnStatusType statusType)
+        {
+            statuses.Remove(statusType);
+        }
+
+        public bool bIsStatusValid(PawnStatusType appliedStatusType)
+        {
+            if (statuses.ContainsKey(appliedStatusType))
+            {
+                var _status = statuses[appliedStatusType];
+                if (_status.lastTime + _status.duration > Time.time)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         // ===== [기능 3] 이벤트 처리 =====

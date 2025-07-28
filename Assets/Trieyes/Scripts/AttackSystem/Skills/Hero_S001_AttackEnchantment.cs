@@ -42,6 +42,8 @@ namespace AttackComponents
         private const int LIGHT_ENCHANTMENT_ID = 4;   // AC006_HeroSwordEnchantmentLight
 
         [SerializeField] public List<AttackData> attackDatas;
+
+        private int currentKilledCount = 0;
         
         public override void Activate(Attack attack, Vector2 direction)
         {
@@ -101,6 +103,7 @@ namespace AttackComponents
 
                 case EnchantmentState.Active:
                     enchantmentTimer += Time.deltaTime;
+                    //UpdateEnchantmentDuration(); Relic001 활성화 시 이것 발동
                     
                     // 1초에 1번 강화 효과 생성
                     if (Time.time - lastEnchantmentTime >= generationInterval)
@@ -156,6 +159,8 @@ namespace AttackComponents
             enchantmentState = EnchantmentState.None;
             enchantmentTimer = 0f;
             lastEnchantmentTime = 0f;
+            character.killedDuringSkill001 = 0;
+            character.killedDuringSkill002 = 0;
         }
 
         private void TriggerRandomEnchantment()
@@ -166,11 +171,18 @@ namespace AttackComponents
             Debug.Log($"<color=yellow>[S001] {attack.gameObject.name} attackDatas: {attackDatas[randomEnchantmentID].attackId}, attacker: {character.gameObject.name}</color>");
         }
 
+        private void UpdateEnchantmentDuration()
+        {
+            var killCountDiff = character.killedDuringSkill001 - currentKilledCount;
+            currentKilledCount = character.killedDuringSkill001;
+            enchantmentDuration += killCountDiff * 0.1f;
+        }
+
         private int GetRandomEnchantmentID()
         {
             // 1-5 사이의 랜덤 숫자 생성
             // TO-DO : 유물 들어왔을 때 값이 최대를 4에서 5로 늘리는 로직 구현해야 함
-            int randomValue = Random.Range(1, 5);
+            int randomValue = Random.Range(character.minRandomEnchantmentID, character.maxRandomEnchantmentID);
 
             switch (randomValue)
             {

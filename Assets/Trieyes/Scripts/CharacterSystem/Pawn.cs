@@ -697,6 +697,18 @@ namespace CharacterSystem
             }
         }
 
+        public void ApplyStealHealth(AttackResult result)
+        {
+            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} steal {result.attackerHealed} HP from {result.target.gameObject.name}</color>");
+            ChangeHP(result.attackerHealed);
+        }
+
+        public void ApplyReflectDamage(AttackResult result)
+        {
+            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took reflect damage {result.attackerReflectDamage} from {result.target.gameObject.name}</color>");
+            ChangeHP(-result.attackerReflectDamage);
+        }
+
         private void HandleDeath()
         {
             ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");

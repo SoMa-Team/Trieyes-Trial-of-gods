@@ -197,18 +197,8 @@ namespace AttackComponents
 
         private void ApplyDamageToEnemy(Enemy enemy)
         {
-            // AttackResult 생성 및 데미지 처리
-            var attackResult = AttackResult.Create(attack, enemy);
-            
-            // 기본 데미지 설정
-            attackResult.attacker = attack.attacker;
-            attackResult.target = enemy;
-            attackResult.isCritical = false;
-            attackResult.isEvaded = false;
-            attackResult.totalDamage = globalDamage;
-
-            // 데미지 적용
-            enemy.ApplyDamage(attackResult);
+            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(globalDamage);
+            DamageProcessor.ProcessHit(attack, enemy);
             
             // 슬로우 효과 적용
             var debuffInfo = new DebuffInfo();
@@ -222,7 +212,7 @@ namespace AttackComponents
             var debuff = new DEBUFF();
             debuff.Activate(debuffInfo);
 
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 {attackResult.totalDamage} 데미지 적용</color>");
+            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 데미지 적용</color>");
         }
 
         private void EndGlobalDamage()

@@ -255,19 +255,10 @@ namespace AttackComponents
 
         private void ApplyDamageToTarget(Enemy target)
         {
-            // AttackResult 생성 및 데미지 처리
-            var attackResult = AttackResult.Create(attack, target);
-            
-            // 기본 데미지 설정
-            attackResult.attacker = attack.attacker;
-            attackResult.target = target;
-            attackResult.isCritical = false;
-            attackResult.isEvaded = false;
-            attackResult.totalDamage = fallDamage;
+            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(fallDamage);
+            DamageProcessor.ProcessHit(attack, target);
 
-            target.ApplyDamage(attackResult);
-
-            Debug.Log($"<color=red>[FALL_ATTACK] {target.pawnName}에게 {attackResult.totalDamage} 데미지 적용</color>");
+            Debug.Log($"<color=red>[FALL_ATTACK] {target.pawnName}에게 데미지 적용</color>");
         }
 
 

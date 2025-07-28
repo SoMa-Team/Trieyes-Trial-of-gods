@@ -237,11 +237,10 @@ namespace AttackComponents
         
         private void ApplyDamageToEnemy(Pawn enemy)
         {
-            var attackResult = AttackResult.Create(attack, enemy);
-            attackResult.totalDamage = (int)fieldDamage;
-            enemy.ApplyDamage(attackResult);
+            attack.statSheet[StatType.AttackPower] = new IntegerStatValue((int)fieldDamage);
+            DamageProcessor.ProcessHit(attack, enemy);
             
-            Debug.Log($"<color=yellow>[AC104] 자기장으로 {enemy.pawnName}에게 {attackResult.totalDamage} 데미지 적용</color>");
+            Debug.Log($"<color=yellow>[AC104] 자기장으로 {enemy.pawnName}에게 데미지 적용</color>");
         }
         
         private void CreateFieldVFX()

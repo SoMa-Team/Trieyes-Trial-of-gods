@@ -40,9 +40,12 @@ namespace Stats
         // --- 인덱서 ---
 
         /// StatType으로 해당 스탯 값을 조회합니다.
-        public IntegerStatValue this[StatType type] => stats[type];
-        
-        
+        public IntegerStatValue this[StatType type] { 
+            get => stats[type];
+            set => stats[type] = value;
+        }
+
+
         // DeepCopy Method
         public StatSheet DeepCopy()
         {

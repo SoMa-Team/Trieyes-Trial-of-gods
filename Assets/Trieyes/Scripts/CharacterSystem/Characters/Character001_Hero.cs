@@ -22,6 +22,12 @@ namespace CharacterSystem
         public bool activateLight = false;
 
         public bool lockBasicAttack = false;
+
+        public int minRandomEnchantmentID = 1;
+        public int maxRandomEnchantmentID = 5;
+
+        public int killedDuringSkill001 = 0;
+        public int killedDuringSkill002 = 0;
         
         // Pawn의 추상 멤버 구현
         
@@ -100,6 +106,16 @@ namespace CharacterSystem
         public override void OnEvent(Utils.EventType eventType, object param)
         {
             base.OnEvent(eventType, param);
+        }
+
+        public void SetRandomEnchantmentMinID(int min)
+        {
+            minRandomEnchantmentID = min;
+        }
+
+        public void SetRandomEnchantmentMaxID(int max)
+        {
+            maxRandomEnchantmentID = max;
         }
     }
 }

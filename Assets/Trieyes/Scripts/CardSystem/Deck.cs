@@ -140,6 +140,12 @@ namespace CardSystem
             }
         }
 
+        public bool IsDeckFull()
+        {
+            if (cards.Count >= maxCardCount) return true;
+            else return false;
+        }
+
         public void EventProcessor(Utils.EventType eventType, object param)
         {
             foreach (var card in cards)
@@ -328,7 +334,7 @@ namespace CardSystem
                 iterationCount++;
             }
 
-            //Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
+            Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
         }
 
         /// <summary>

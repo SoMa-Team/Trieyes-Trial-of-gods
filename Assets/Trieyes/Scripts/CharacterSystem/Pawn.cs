@@ -259,6 +259,7 @@ namespace CharacterSystem
             }   
 
             Controller.Deactivate();
+            ClearStatModifier();
         }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)
@@ -801,6 +802,11 @@ namespace CharacterSystem
                 default:
                     return false;
             }
+        }
+
+        private void ClearStatModifier()
+        {
+            statSheet.ClearBuffs();
         }
 
         // ===== [내부 클래스] =====

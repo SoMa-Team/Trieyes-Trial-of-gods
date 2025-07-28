@@ -1,9 +1,9 @@
 using System;
 using BattleSystem;
 using CharacterSystem;
+using PrimeTween;
 using Stats;
 using UnityEngine;
-using UnityEngine.WSA;
 
 public class GoldDrop : MonoBehaviour
 {
@@ -22,8 +22,17 @@ public class GoldDrop : MonoBehaviour
 
         if (distance < GetGoldCollisionDistance(BattleStage.now.mainCharacter))
         {
-            character.ChangeGold(goldAmount);
-            DropFactory.Instance.Deactivate(this);
+            isActive = false;
+            // TODO: 추후에 Shop이 같은 Scene이 된다면, 오류 출력하도록 조정 필요.
+            Tween.Custom(0, 1, 1.0f, t =>
+            {
+                var character = BattleStage.now.mainCharacter;
+                transform.position = Vector3.Lerp(position, character.transform.position, t * t);  
+            }).OnComplete(() =>
+            {
+                character.ChangeGold(goldAmount);
+                DropFactory.Instance.Deactivate(this);
+            }, warnIfTargetDestroyed: false);
         }
     }
 
@@ -42,7 +51,6 @@ public class GoldDrop : MonoBehaviour
 
     public void Deactivate()
     {
-        isActive = false;
         goldAmount = 0;
     }
 }

@@ -18,7 +18,12 @@ namespace BattleSystem
             
             Instance = this;
         }
-        
+
+        private void OnDestroy()
+        {
+            Instance = null;
+        }
+
         [SerializeField] private GoldDrop goldPrefab;
 
         public GoldDrop CreateGoldDrop(Vector3 position, int goldAmount)

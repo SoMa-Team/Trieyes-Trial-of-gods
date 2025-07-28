@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8783834321740468731}
   - component: {fileID: 8009249486039389314}
   m_Layer: 0
-  m_Name: AC007
+  m_Name: AC006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,8 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  fallAttackData: {fileID: 11400000, guid: b6e8b4c67ad321b46a4bd5b946f02700, type: 2}
+  fallAttackData: {fileID: 11400000, guid: 3d6dadc67627c4686bb471dda2745806, type: 2}
   meteorRadius: 2
+  fallingVFXPrefab: {fileID: 7951352472900335790, guid: cb72b2ed8989c2542925ede4d0897f6b, type: 3}
+  explosionVFXPrefab: {fileID: 2332886395990022958, guid: bbdceefe23bfb487b9ce50906b378735, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0

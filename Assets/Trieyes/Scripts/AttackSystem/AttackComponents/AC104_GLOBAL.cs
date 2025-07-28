@@ -27,13 +27,9 @@ namespace AttackComponents
         public float additionalDebuffMultiplier = 2f; // 추가 디버프 배율
 
         [Header("VFX 설정")]
-        public GameObject globalVFXPrefab;
+        [SerializeField] public GameObject globalVFXPrefab; // GLOBAL VFX 프리팹 (외부에서 설정 가능)
         public float globalVFXDuration = 0.3f;
-
-        // VFX 시스템 설정
-        [Header("VFX System Settings")]
-        [SerializeField] private readonly int GLOBAL_VFX_ID = 5; // 얼음 폭풍 VFX ID
-        private GameObject globalVFX;
+        private GameObject spawnedVFX;
 
         // 공격 효과 상태 관리
         private GlobalDamageState globalDamageState = GlobalDamageState.None;
@@ -201,18 +197,8 @@ namespace AttackComponents
 
         private void ApplyDamageToEnemy(Enemy enemy)
         {
-            // AttackResult 생성 및 데미지 처리
-            var attackResult = AttackResult.Create(attack, enemy);
-            
-            // 기본 데미지 설정
-            attackResult.attacker = attack.attacker;
-            attackResult.target = enemy;
-            attackResult.isCritical = false;
-            attackResult.isEvaded = false;
-            attackResult.totalDamage = globalDamage;
-
-            // 데미지 적용
-            enemy.ApplyDamage(attackResult);
+            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(globalDamage);
+            DamageProcessor.ProcessHit(attack, enemy);
             
             // 슬로우 효과 적용
             var debuffInfo = new DebuffInfo();
@@ -226,7 +212,7 @@ namespace AttackComponents
             var debuff = new DEBUFF();
             debuff.Activate(debuffInfo);
 
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 {attackResult.totalDamage} 데미지 적용</color>");
+            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 데미지 적용</color>");
         }
 
         private void EndGlobalDamage()
@@ -240,8 +226,8 @@ namespace AttackComponents
         private void CreateGlobalDamageVFX()
         {
             // VFX 시스템을 통해 얼음 폭풍 VFX 생성
-            globalVFX = CreateAndSetupVFX(Vector2.zero, Vector2.zero);
-            PlayVFX(globalVFX);
+            spawnedVFX = CreateAndSetupVFX(globalVFXPrefab, Vector2.zero, Vector2.zero);
+            PlayVFX(spawnedVFX);
             
             Debug.Log("<color=cyan>[GLOBAL_BLIZZARD] 얼음 폭풍 VFX 생성!</color>");
         }
@@ -267,42 +253,32 @@ namespace AttackComponents
         /// <summary>
         /// 얼음 폭풍 VFX를 생성하고 설정합니다.
         /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
         /// <param name="position">VFX 생성 위치</param>
         /// <param name="direction">VFX 방향</param>
         /// <returns>생성된 VFX 게임오브젝트</returns>
-        protected override GameObject CreateAndSetupVFX(Vector2 position, Vector2 direction)
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
-            // VFXFactory를 통해 얼음 폭풍 VFX 생성
-            GameObject vfx = VFXFactory.Instance.SpawnVFX(GLOBAL_VFX_ID, position, direction);
-            
-            // 여기서 VFX의 세부 조정을 할 수 있습니다
-            ParticleSystem childVFX = vfx.transform.GetChild(0).GetComponent<ParticleSystem>();
-
-            // Render Alignment 설정
-            ParticleSystemRenderer renderer = childVFX.GetComponent<ParticleSystemRenderer>();
-            if (renderer != null)
+            // 프리팹이 없으면 VFX 없이 진행
+            if (vfxPrefab == null)
             {
-                renderer.alignment = ParticleSystemRenderSpace.Local;
-                renderer.sortingOrder = 50;
+                return null;
             }
 
+            // 기본 VFX 생성 (base 호출)
+            GameObject vfx = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            
             vfx.transform.position = position;
+            
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
             
             // 기본 스케일 설정 (맵 전체 효과이므로 크게)
             float baseScale = 1.0f;
             float finalScale = baseScale * 3.0f; // 맵 전체 효과
             vfx.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
             
-            // 얼음 색상 설정 (청색 계열)
-            var colorOverLifetime = childVFX.colorOverLifetime;
-            colorOverLifetime.enabled = true;
-            Gradient gradient = new Gradient();
-            gradient.SetKeys(
-                new GradientColorKey[] { new GradientColorKey(Color.cyan, 0f), new GradientColorKey(Color.blue, 0.5f), new GradientColorKey(Color.white, 1f) },
-                new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(0.8f, 0.5f), new GradientAlphaKey(0.4f, 1f) }
-            );
-            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
-
+            vfx.SetActive(true);
             return vfx;
         }
 
@@ -311,10 +287,10 @@ namespace AttackComponents
             base.Deactivate();
             
             // VFX 정리
-            if (globalVFX != null)
+            if (spawnedVFX != null)
             {
-                StopAndReturnVFX(globalVFX, GLOBAL_VFX_ID);
-                globalVFX = null;
+                StopAndDestroyVFX(spawnedVFX);
+                spawnedVFX = null;
             }
             
             globalDamageState = GlobalDamageState.None;

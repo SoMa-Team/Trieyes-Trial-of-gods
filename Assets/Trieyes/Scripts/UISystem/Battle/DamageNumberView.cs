@@ -48,7 +48,7 @@ namespace UISystem
             Tween.Alpha(text, 0f, 2f).OnComplete(() =>
             {
                 DamageNumberViewFactory.Instance.Deactivate(this);
-            });
+            }, warnIfTargetDestroyed: false);
         }
 
         public virtual void Deactivate()

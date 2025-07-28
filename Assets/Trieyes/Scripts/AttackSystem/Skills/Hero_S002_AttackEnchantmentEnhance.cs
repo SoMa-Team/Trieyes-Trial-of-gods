@@ -240,14 +240,6 @@ namespace AttackComponents
         private void ActivateLightningField()
         {
             Attack lightningField = AttackFactory.Instance.Create(attackDatas[LIGHTNING_FIELD_ID], character, null, Vector2.zero);
-            if (lightningField != null)
-            {
-                var lightningFieldComponent = lightningField.components[0] as AC009_LightningField;
-                lightningFieldComponent.lightningFieldRadius = 2.5f;
-                lightningFieldComponent.lightningFieldDuration = 3f;
-                lightningFieldComponent.lightningFieldDelay = 0.5f;
-                Debug.Log("<color=yellow>[S002] Lightning Field 발동!</color>");
-            }
         }
 
         public override void Deactivate()

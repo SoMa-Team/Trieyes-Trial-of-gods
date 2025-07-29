@@ -10,5 +10,6 @@ Card402_WeightOfArmor,402,갑옷의 무게,Rare,Steel,WeightOfArmor,"전투가 �
 Card403_AttackIsTheBestDefense,403,최선의 방어는 공격,Rare,Steel,AttackIsTheBestDefense,"전투가 시작될 때, 해당 전투 동안 ‘강철’ 속성 카드 한 장 당 {0}이 {1} % 증가합니다.",OnBattleSceneChange,공격력|5
 Card404_KillingSpree,404,학살,Rare,Dark,KillingSpree,"적을 처치할 때마다, 3초 동안 {0} 가 {1} %만큼 증가하고, {2} 가 {3} %만큼 증가합니다. 이 효과는 중첩되지 않습니다.",OnBattleSceneChange|OnKilled,이동속도|20|공격속도|20
 Card0601_AbsorbingBlade,601,흡수하는 칼날,Epic,Dark,AbsorbingBlade,"전투가 시작하기 전, 내 오른쪽에 있는 카드를 파괴하고 해당 카드의 경험치 일부를 얻습니다. 전투가 시작할 때, 해당 전투 동안 {0} 을/를 {1} %만큼 증가시킵니다.",DestoryCardsBeforeBattleStart|OnBattleSceneChange,흡혈 계수|10
-Card801_FTL,801,빛보다 빠르게,Legendary,Light,FTL,"전투가 시작될 때, 해당 전투 동안 {0} 을/를 {1} 감소시키고, {2} 을/를 {3} 증가시킵니다.",OnBattleSceneChange,공격력|999999|공격속도|999
-Card802_RageOfBlade,802,칼의 분노,Legendary,Dark,RageOfBlade,"전투가 시작될 때, 해당 전투 동안 {0} 을/를 {1} %만큼 감소시킵니다. 기본 공격을 할 때마다 해당 전투 동안 {2} 을/를 {3}%만큼 증가시킵니다.",OnBattleSceneChange|OnAttack,공격속도|100|공격속도|1
+Card0602_Berserker,602,광전사의 분노,Epic,Fire,Berserker,"피해를 입을 때마다, 해당 전투 동안 {0} 이/가 {1} 상승합니다.",OnBattleSceneChange|OnDamaged,공격력|1
+Card801_FTL,801,빛보다 빠르게,Legendary,Light,FTL,"전투가 시작될 때, 해당 전투 동안 {0} 을/를 {1} %만큼 감소시키고, {2} 을/를 {3} %만큼 증가시킵니다.",OnBattleSceneChange,공격력|100|공격속도|1000
+Card802_RageOfBlade,802,칼의 분노,Legendary,Dark,RageOfBlade,"전투가 시작될 때, 해당 전투 동안 {0} 을/를 {1} %만큼 감소시킵니다. 기본 공격이 명중할 때마다 해당 전투 동안 {2} 을/를 {3}%만큼 증가시킵니다.",OnBattleSceneChange|OnAttack,공격속도|100|공격속도|1

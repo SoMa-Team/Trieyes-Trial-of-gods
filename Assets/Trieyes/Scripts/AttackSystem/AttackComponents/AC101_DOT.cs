@@ -212,15 +212,15 @@ namespace AttackComponents
         {
             if (dotTargets.Count == 0) return;
 
+            // 대상 상태 적용
+            ProcessAC101TargetStatus(dotTargets[0]);
+
             // 단일 대상에게 데미지 적용
             attack.statSheet[StatType.AttackPower] = new IntegerStatValue(dotDamage);
             DamageProcessor.ProcessHit(attack, dotTargets[0]);
 
             // 버프 적용
             ApplyAdditionalBuffEffect(dotTargets[0]);
-
-            // 대상 상태 적용
-            ProcessAC101TargetStatus(dotTargets[0]);
 
             // DOT VFX 생성
             spawnedVFX = CreateAndSetupVFX(dotVFXPrefab, (Vector2)dotTargets[0].transform.position, Vector2.zero);

@@ -144,12 +144,28 @@ namespace AttackSystem
         /// <param name="pawn"></param>
         public virtual void Activate(Pawn attacker, Vector2 direction)
         {
+            // 1. Lock 상태 설정 (맨 처음에 수행)
+            SetLock(true);
+            
             children = new List<Attack>();
-            PerformLockedSetup();
+            
+            // 2. 모든 AttackComponent Activate (Lock true 상태로)
             foreach (var attackComponent in components)
             {
                 AttackComponentFactory.Instance.Activate(attackComponent, this, direction);
             }
+            
+            // 3. 재귀적으로 자식 Attack들도 Activate
+            foreach (var child in children)
+            {
+                child.Activate(attacker, direction);
+            }
+            
+            // 4. Lock 상태에서 초기 설정 수행 (부모 → 자식 순서)
+            PerformLockedSetup();
+            
+            // 5. Lock 해제 (부모 → 손자 순서로 재귀적 해제)
+            SetLock(false);
         }
 
         public void ApplyStatSheet(StatSheet attackerStatSheet)

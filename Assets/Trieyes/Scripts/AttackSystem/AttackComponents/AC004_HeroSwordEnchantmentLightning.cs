@@ -214,6 +214,9 @@ namespace AttackComponents
         {
             base.Update();
             
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
+            
             // 번개 공격 상태 처리
             ProcessLightningAttackState();
 

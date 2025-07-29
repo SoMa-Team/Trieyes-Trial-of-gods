@@ -51,6 +51,9 @@ namespace AttackComponents
         /// </summary>
         public virtual void Activate(Attack attack, Vector2 direction)
         {
+            // Lock 상태 설정 (맨 처음에 수행)
+            SetLock(true);
+            
             this.attack = attack;
         }
 

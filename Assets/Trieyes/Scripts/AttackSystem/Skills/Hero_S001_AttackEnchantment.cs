@@ -96,6 +96,9 @@ namespace AttackComponents
         {
             base.Update();
             
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
+            
             // 강화 효과 상태 처리
             ProcessEnchantmentState();
         }
@@ -114,7 +117,6 @@ namespace AttackComponents
                     {
                         enchantmentState = EnchantmentState.Active;
                         enchantmentTimer = 0f;
-                        ActivateEnchantment();
                     }
                     break;
 
@@ -151,14 +153,6 @@ namespace AttackComponents
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }
-        }
-
-        private void ActivateEnchantment()
-        {
-            // Lock 해제
-            attack.SetLock(false);
-            
-            Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 활성화!</color>");
         }
 
         private void FinishEnchantment()
@@ -202,7 +196,7 @@ namespace AttackComponents
         {
             // 1-5 사이의 랜덤 숫자 생성
             // TO-DO : 유물 들어왔을 때 값이 최대를 4에서 5로 늘리는 로직 구현해야 함
-            int randomValue = Random.Range(character.minRandomEnchantmentID, character.maxRandomEnchantmentID);
+            int randomValue = 1;
 
             switch (randomValue)
             {

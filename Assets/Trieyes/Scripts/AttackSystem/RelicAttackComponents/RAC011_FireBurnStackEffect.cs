@@ -37,7 +37,8 @@ namespace AttackComponents
             if (hero != null)
             {
                 // 불 속성만 나오도록 설정 (1번만)
-                
+                hero.SetRandomEnchantmentMinID(1);
+                hero.SetRandomEnchantmentMaxID(1);
                 
                 Debug.Log("[RAC011] Lock 상태에서 불 속성만 나오도록 설정됨!");
             }

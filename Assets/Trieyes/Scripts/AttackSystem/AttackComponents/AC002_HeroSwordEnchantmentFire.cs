@@ -130,7 +130,7 @@ namespace AttackComponents
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
             var hero = attack.attacker as Character001_Hero;
-            if (hero != null && hero.RAC011Trigger)
+            if (hero != null && hero.RAC011Trigger && targetPawn.bIsStatusValid(PawnStatusType.Burn))
             {
                 // 화상 중첩 효과 처리
                 ProcessBurnStackEffect(targetPawn);
@@ -162,11 +162,20 @@ namespace AttackComponents
         /// <param name="targetPawn">대상</param>
         private void ProcessBurnStackEffect(Pawn targetPawn)
         {
+            // 남은 화상 피해량 계산
+            float dotStartTime = targetPawn.statuses[PawnStatusType.Burn].lastTime;
+            float currentTime = Time.time;
+            float remainingTime = dotStartTime + dotDuration - currentTime;
+            int remainingDamage = (int)(dotDamage * (remainingTime / dotInterval));
+
             // 남은 화상 피해량의 20퍼센트를 즉시 입으며, 화상이 없어진다.
-            targetPawn.RemoveStatus(PawnStatusType.Burn);
             var _attackResult = AttackResult.Create(attack, targetPawn);
-            _attackResult.totalDamage = (int)(_attackResult.totalDamage * 0.2f);
+            _attackResult.totalDamage = (int)(remainingDamage * 0.2f);
+
+            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(remainingDamage);
             DamageProcessor.ProcessHit(attack, targetPawn);
+
+            targetPawn.RemoveStatus(PawnStatusType.Burn);
         }
 
         /// <summary>
@@ -227,6 +236,9 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
+            
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
             
             // 불꽃 공격 상태 처리
             ProcessFireAttackState();

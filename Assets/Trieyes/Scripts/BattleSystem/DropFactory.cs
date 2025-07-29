@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using BattleSystem;
 using UnityEngine;
 
 namespace BattleSystem
@@ -24,38 +25,38 @@ namespace BattleSystem
             Instance = null;
         }
 
-        [SerializeField] private GoldDrop goldPrefab;
+        [SerializeField] private Gold goldPrefab;
 
-        public GoldDrop CreateGoldDrop(Vector3 position, int goldAmount)
+        public Gold CreateGold(Vector3 position, int goldAmount)
         {
-            var goldDrop = popGoldDrop() ?? Instantiate(goldPrefab);
+            var goldDrop = popGold() ?? Instantiate(goldPrefab);
             goldDrop.transform.position = position;
             goldDrop.transform.SetParent(BattleStage.now.View.transform);
             Activate(goldDrop, goldAmount);
             return goldDrop;
         }
 
-        private void Activate(GoldDrop goldDrop, int goldAmount)
+        private void Activate(Gold gold, int goldAmount)
         {
-            goldDrop.Activate(goldAmount);
-            goldDrop.gameObject.SetActive(true);
+            gold.Activate(goldAmount);
+            gold.gameObject.SetActive(true);
         }
 
-        public void Deactivate(GoldDrop goldDrop)
+        public void Deactivate(Gold gold)
         {
-            goldDrop.gameObject.SetActive(false);
-            goldDrop.Deactivate();
-            pushGoldDrop(goldDrop);
+            gold.gameObject.SetActive(false);
+            gold.Deactivate();
+            pushGold(gold);
         }
 
-        private Queue<GoldDrop> pool = new ();
-        private void pushGoldDrop(GoldDrop goldDrop)
+        private Queue<Gold> pool = new ();
+        private void pushGold(Gold gold)
         {
-            pool.Enqueue(goldDrop);
+            pool.Enqueue(gold);
         }
 
         [CanBeNull]
-        private GoldDrop popGoldDrop()
+        private Gold popGold()
         {
             if (pool.Count <= 0)
                 return null;

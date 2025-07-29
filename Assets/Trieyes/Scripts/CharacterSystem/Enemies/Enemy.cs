@@ -92,7 +92,7 @@ namespace CharacterSystem
             Debug.Log($"{result.attacker}");
             if (result.attacker != null)
             {
-                DropFactory.Instance.CreateGoldDrop(transform.position, dropGold);
+                DropFactory.Instance.CreateGold(transform.position, dropGold);
                 // result.attacker.ChangeGold(dropGold);
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");
                 Debug.Log($"Player Gold: {result.attacker.gold}");

@@ -29,6 +29,12 @@ namespace CharacterSystem
         public int killedDuringSkill001 = 0;
         public int killedDuringSkill002 = 0;
         
+        // RAC 관련 트리거 변수들
+        public bool RAC008Trigger = false; // 지속시간 증가용
+        public bool RAC010Trigger = false; // 번개 속성 공격속도 증가용
+        public bool RAC011Trigger = false; // 화상 중첩 효과용
+        public bool RAC012Trigger = false; // 둔화 중첩 효과용
+        
         // Pawn의 추상 멤버 구현
         
         // ===== [Unity 생명주기] =====

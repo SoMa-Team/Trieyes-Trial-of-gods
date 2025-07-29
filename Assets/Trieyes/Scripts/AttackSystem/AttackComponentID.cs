@@ -32,5 +32,15 @@ namespace AttackSystem
         AC103_FALL = 103,
         AC104_GLOBAL = 104,
         AC105_FollowingField = 105,
+        AC106_Projectile = 106,
+        AC107_OrbitingElement = 107,
+        
+        // Relic Attack Components
+        RAC006_ProjectileGenerator = 2006,
+        RAC008_DurationExtender = 2008,
+        RAC009_OrbitingStarGenerator = 2009,
+        RAC010_LightningAttackSpeedBoost = 2010,
+        RAC011_FireBurnStackEffect = 2011,
+        RAC012_IceSlowStackEffect = 2012,
     }
 } 

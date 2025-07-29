@@ -25,6 +25,7 @@ namespace CharacterSystem
         Stun,
         Sleep,
         Freeze,
+        ElectricShock,
         Poison,
         Burn,
         Bleed,

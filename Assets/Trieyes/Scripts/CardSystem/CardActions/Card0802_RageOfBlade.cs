@@ -14,30 +14,26 @@ namespace CardActions
         private const int downValueCoefIdx = 1;
         private const int upStatTypeIdx = 2;
         private const int upValueCoefIdx = 3;
-        
-        private StatModifier attackSpeedModifier = new StatModifier(0, BuffOperationType.Multiplicative, false);
+
+        private StatModifier stat1Modifier;
 
         public Card0802_RageOfBlade()
         {
             actionParams = new List<ActionParam>
             {
-                // [0] 공격속도 스탯 타입
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                     StatTypeTransformer.KoreanToStatType(card.baseParams[upStatTypeIdx])),
-                // [1] 내려가는 수치 계수
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
                     string raw = card.baseParams[downValueCoefIdx];
                     int.TryParse(raw, out int baseValue);
                     return baseValue;
                 }),
-                // [2] 공격속도 스탯 타입
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                     StatTypeTransformer.KoreanToStatType(card.baseParams[upStatTypeIdx])),
-                // [3] 올라가는 수치 계수
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[downValueCoefIdx];
+                    string raw = card.baseParams[upValueCoefIdx];
                     int.TryParse(raw, out int baseValue);
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
@@ -53,6 +49,8 @@ namespace CardActions
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
+                stat1Modifier = new StatModifier(0, BuffOperationType.Multiplicative, false);
+                
                 var statType = (StatType)GetEffectiveParam(downStatTypeIdx);
                 var value = Convert.ToInt32(GetEffectiveParam(downValueCoefIdx)) * -1;
                 
@@ -62,11 +60,10 @@ namespace CardActions
             if (eventType == Utils.EventType.OnAttack)
             {
                 var statType = (StatType)GetEffectiveParam(upStatTypeIdx);
-                var value = Convert.ToInt32(GetEffectiveParam(upValueCoefIdx));
-
-                attackSpeedModifier.value++;
                 
-                owner.statSheet[statType].AddBuff(attackSpeedModifier);
+                stat1Modifier.value+=(int)GetEffectiveParam(upValueCoefIdx);
+                
+                owner.statSheet[statType].AddBuff(stat1Modifier);
             }
         }
     }

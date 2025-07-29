@@ -36,6 +36,9 @@ namespace AttackSystem
         public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
         public int objectID; // 공격 조회를 위한 ID
 
+        // ===== [Lock 메커니즘] =====
+        protected bool isLocked = false; // Lock 상태 관리
+
         public int getRelicStat(RelicStatType relicStatType)
         {
             if (!AttackTagManager.isValidRelicStat(relicStatType))
@@ -142,6 +145,7 @@ namespace AttackSystem
         public virtual void Activate(Pawn attacker, Vector2 direction)
         {
             children = new List<Attack>();
+            PerformLockedSetup();
             foreach (var attackComponent in components)
             {
                 AttackComponentFactory.Instance.Activate(attackComponent, this, direction);
@@ -185,6 +189,46 @@ namespace AttackSystem
             parent = null;
         }
         
+        // ===== [Lock 메커니즘] =====
+        /// <summary>
+        /// Lock 상태를 설정합니다.
+        /// </summary>
+        /// <param name="locked">Lock 여부</param>
+        public virtual void SetLock(bool locked)
+        {
+            isLocked = locked;
+            
+            // 모든 자식 컴포넌트들에게도 Lock 상태 전파
+            foreach (var component in components)
+            {
+                component.SetLock(locked);
+            }
+            
+            // 모든 자식 Attack들에게도 Lock 상태 전파
+            foreach (var child in children)
+            {
+                child.SetLock(locked);
+            }
+        }
+
+        /// <summary>
+        /// Lock 상태에서 실행해야 하는 초기 설정을 수행합니다.
+        /// </summary>
+        public virtual void PerformLockedSetup()
+        {
+            // 모든 자식 컴포넌트들의 Lock 상태 초기 설정 수행
+            foreach (var component in components)
+            {
+                component.PerformLockedSetup();
+            }
+            
+            // 모든 자식 Attack들의 Lock 상태 초기 설정 수행
+            foreach (var child in children)
+            {
+                child.PerformLockedSetup();
+            }
+        }
+
         // ===== [기능 9] 이벤트 처리 =====
         public void OnEvent(Utils.EventType eventType, object param)
         {

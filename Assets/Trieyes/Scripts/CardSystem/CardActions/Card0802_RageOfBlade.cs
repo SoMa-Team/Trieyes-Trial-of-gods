@@ -29,7 +29,7 @@ namespace CardActions
                 {
                     string raw = card.baseParams[downValueCoefIdx];
                     int.TryParse(raw, out int baseValue);
-                    return baseValue * card.cardEnhancement.level.Value;
+                    return baseValue;
                 }),
                 // [2] 공격속도 스탯 타입
                 ActionParamFactory.Create(ParamKind.StatType, card =>

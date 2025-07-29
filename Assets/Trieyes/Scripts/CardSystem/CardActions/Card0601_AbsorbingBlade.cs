@@ -19,8 +19,6 @@ namespace CardActions
         public Card0601_AbsorbingBlade()
             : base(1, true) // 2쌍, Multiplicative
         {
-            // 두 Value 파라미터만 30+5*레벨로 오버라이드
-            // actionParams = [Stat0, Value0, Stat1, Value1]
             actionParams[1] = ActionParamFactory.Create(ParamKind.Number, card =>
             {
                 string raw = card.baseParams[1];

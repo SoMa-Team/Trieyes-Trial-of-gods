@@ -5,6 +5,7 @@ using Stats;
 using CardSystem;
 using CharacterSystem;
 using System;
+using BattleSystem;
 
 namespace CardActions
 {
@@ -14,6 +15,8 @@ namespace CardActions
         private const int upValue1Index = 1;
         private const int upStat2Index = 2;
         private const int upValue2Index = 3;
+        
+        private const int duration = 3;
         
         private StatModifier stat1Modifier;
         private StatModifier stat2Modifier;
@@ -28,7 +31,7 @@ namespace CardActions
                 {
                     string raw = card.baseParams[upValue1Index];
                     int.TryParse(raw, out int baseValue);
-                    return baseValue;
+                    return baseValue * card.cardEnhancement.level.Value;
                 }),
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                     StatTypeTransformer.KoreanToStatType(card.baseParams[upStat2Index])),
@@ -51,14 +54,17 @@ namespace CardActions
 
             if (eventType == Utils.EventType.OnBattleSceneChange)   
             {
-                stat1Modifier = new StatModifier((int)GetEffectiveParam(upValue1Index), BuffOperationType.Multiplicative, false, 3f);
-                stat2Modifier = new StatModifier((int)GetEffectiveParam(upValue2Index), BuffOperationType.Multiplicative, false, 3f);
+                stat1Modifier = new StatModifier((int)GetEffectiveParam(upValue1Index), BuffOperationType.Multiplicative, false, duration);
+                stat2Modifier = new StatModifier((int)GetEffectiveParam(upValue2Index), BuffOperationType.Multiplicative, false, duration);
             }
 
             if (eventType == Utils.EventType.OnKilled)
             {
                 var statType1 = (StatType)GetEffectiveParam(upStat1Index);
                 var statType2 = (StatType)GetEffectiveParam(upStat2Index);
+                
+                stat1Modifier.endTime = BattleStage.now.GetTime() + duration;
+                stat2Modifier.endTime = BattleStage.now.GetTime() + duration;
                 
                 owner.statSheet[statType1].AddBuff(stat1Modifier);
                 owner.statSheet[statType2].AddBuff(stat2Modifier);

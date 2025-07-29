@@ -107,8 +107,8 @@ namespace GameFramework
         private void OnBattleSceneLoadedWithNewCharacter(Scene scene)
         {
             var mainCharacter = CharacterFactory.Instance.Create(0);
-            mainCharacter.AddRelic(RelicFactory.Create(720001));
-            mainCharacter.AddRelic(RelicFactory.Create(720002));
+            mainCharacter.AddRelic(RelicFactory.Create(720013));
+            //mainCharacter.AddRelic(RelicFactory.Create(720002));
             mainCharacter.ApplyRelic();
 
             CharacterFactory.Instance.Deactivate(mainCharacter);

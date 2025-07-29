@@ -23,9 +23,9 @@ namespace CharacterSystem
     {
         Normal,
         Stun,
+        ElectricShock,
         Sleep,
         Freeze,
-        ElectricShock,
         Poison,
         Burn,
         Bleed,

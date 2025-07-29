@@ -129,17 +129,13 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            // TO-DO : 유물 구현시 이것 발동 해야 함
-            // if (targetPawn.bIsStatusValid(PawnStatusType.Burn))
-            // {
-            //     //남은 화상 피해량의 20퍼센트를 즉시 입으며, 화상이 없어진다.
-            //     targetPawn.RemoveStatus(PawnStatusType.Burn);
-            //     var _attackResult = AttackResult.Create(attack, targetPawn);
-            //     _attackResult.totalDamage = (int)(_attackResult.totalDamage * 0.2f);
-            //     DamageProcessor.ProcessHit(attack, targetPawn);
-
-            //     return;
-            // }
+            var hero = attack.attacker as Character001_Hero;
+            if (hero != null && hero.RAC011Trigger)
+            {
+                // 화상 중첩 효과 처리
+                ProcessBurnStackEffect(targetPawn);
+                return;
+            }
 
             // 단일 대상에게 도트 데미지를 주는 DOT 소환
             var dotAttack = AttackFactory.Instance.Create(dotAttackData, attack.attacker, null, Vector2.zero);
@@ -158,6 +154,19 @@ namespace AttackComponents
                 // VFX 프리팹 전달
                 dotComponent.dotVFXPrefab = dotVFXPrefab;
             }
+        }
+
+        /// <summary>
+        /// 화상 중첩 효과를 처리합니다.
+        /// </summary>
+        /// <param name="targetPawn">대상</param>
+        private void ProcessBurnStackEffect(Pawn targetPawn)
+        {
+            // 남은 화상 피해량의 20퍼센트를 즉시 입으며, 화상이 없어진다.
+            targetPawn.RemoveStatus(PawnStatusType.Burn);
+            var _attackResult = AttackResult.Create(attack, targetPawn);
+            _attackResult.totalDamage = (int)(_attackResult.totalDamage * 0.2f);
+            DamageProcessor.ProcessHit(attack, targetPawn);
         }
 
         /// <summary>

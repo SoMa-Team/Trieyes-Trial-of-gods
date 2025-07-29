@@ -121,6 +121,53 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
+            var hero = attack.attacker as Character001_Hero;
+            if (hero != null && hero.RAC012Trigger)
+            {
+                // 둔화 중첩 효과 처리
+                ProcessSlowStackEffect(targetPawn);
+                return;
+            }
+
+            // 기본 둔화 효과 적용
+            ApplyBasicSlowEffect(targetPawn);
+        }
+
+        /// <summary>
+        /// 둔화 중첩 효과를 처리합니다.
+        /// </summary>
+        /// <param name="targetPawn">대상</param>
+        private void ProcessSlowStackEffect(Pawn targetPawn)
+        {
+            //둔화가 걸린 적이 다시 둔화에 걸리는 경우 해당 적의 방어력이 대폭 감소합니다.
+            var _target = targetPawn as Enemy;
+            if (_target != null)
+            {
+                var debuffInfo = new DebuffInfo
+                {
+                    debuffType = DEBUFFType.DecreaseDefense,
+                    attack = attack,
+                    target = targetPawn,
+                    debuffMultiplier = 50f,
+                    debuffDuration = attackDuration,
+                };
+
+                var debuff = new DEBUFF();
+                debuff.Activate(debuffInfo);
+            }
+
+            targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus 
+            { duration = attackDuration, lastTime = Time.time });
+
+            // ApplyBasicSlowEffect(targetPawn);
+        }
+
+        /// <summary>
+        /// 기본 둔화 효과를 적용합니다.
+        /// </summary>
+        /// <param name="targetPawn">대상</param>
+        private void ApplyBasicSlowEffect(Pawn targetPawn)
+        {
             // 새로운 DEBUFF 클래스 사용
             var debuffInfo = new DebuffInfo
             {
@@ -139,31 +186,6 @@ namespace AttackComponents
                 duration = attackDuration,
                 lastTime = Time.time,
             });
-
-            // TO-DO : 유물 구현시 이것 발동 해야 함
-            // if (targetPawn.bIsStatusValid(PawnStatusType.Freeze))
-            // {
-            //     //둔화가 걸린 적이 다시 둔화에 걸리는 경우 해당 적의 방어력이 대폭 감소합니다.
-            //     var _target = targetPawn as Enemy;
-            //     if (_target != null)
-            //     {
-            //         debuffInfo = new DebuffInfo
-            //         {
-            //             debuffType = DEBUFFType.DecreaseDefense,
-            //             attack = attack,
-            //             target = targetPawn,
-            //             debuffMultiplier = 50f,
-            //             debuffDuration = attackDuration,
-            //         };
-
-            //         debuff = new DEBUFF();
-            //         debuff.Activate(debuffInfo);
-            //     }
-
-            //     targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus 
-            //     { duration = attackDuration, lastTime = Time.time });
-            //     return;
-            // }
         }
 
         /// <summary>

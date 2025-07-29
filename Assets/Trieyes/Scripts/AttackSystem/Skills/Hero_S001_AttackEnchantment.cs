@@ -56,8 +56,29 @@ namespace AttackComponents
             enchantmentTimer = 0f;
             lastEnchantmentTime = 0f;
             
+            // Lock 상태 설정
+            attack.SetLock(true);
+            
             // 강화 효과 시작
             StartEnchantmentEffect();
+        }
+
+        public override void PerformLockedSetup()
+        {
+            base.PerformLockedSetup();
+            
+            // Lock 상태에서 실행해야 하는 초기 설정
+            // 속성 결정 및 Hero에 부여
+            DetermineAndSetEnchantment();
+        }
+
+        private void DetermineAndSetEnchantment()
+        {
+            // 랜덤 강화 효과 선택
+            randomEnchantmentID = GetRandomEnchantmentID();
+            SetHeroWeaponElementState(randomEnchantmentID);
+            
+            Debug.Log($"[S001] Lock 상태에서 {randomEnchantmentID}번 속성 결정됨!");
         }
 
         private void StartEnchantmentEffect()
@@ -65,10 +86,6 @@ namespace AttackComponents
             enchantmentState = EnchantmentState.Preparing;
             enchantmentTimer = 0f;
             lastEnchantmentTime = 0f;
-            
-            // 랜덤 강화 효과 선택
-            randomEnchantmentID = GetRandomEnchantmentID();
-            SetHeroWeaponElementState(randomEnchantmentID);
             
             character.lockBasicAttack = true;
             
@@ -138,6 +155,9 @@ namespace AttackComponents
 
         private void ActivateEnchantment()
         {
+            // Lock 해제
+            attack.SetLock(false);
+            
             Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 활성화!</color>");
         }
 

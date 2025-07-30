@@ -59,6 +59,9 @@ namespace AttackComponents
         [SerializeField] public GameObject orbitVFXPrefab; // 공전 VFX 프리팹
         private List<GameObject> spawnedVFXs = new List<GameObject>(); // 각 콜라이더별 VFX
 
+        // 거리 제한 무시 플래그
+        private bool ignoreDistanceLimit = true;
+
         // FSM 상태 관리
         private OrbitState orbitState = OrbitState.None;
 
@@ -80,9 +83,6 @@ namespace AttackComponents
             orbitState = OrbitState.Preparing;
             currentAngle = orbitOffset;
             hitTargets.Clear();
-            
-            // 공전 시작
-            StartOrbiting();
         }
 
         /// <summary>
@@ -135,9 +135,6 @@ namespace AttackComponents
             {
                 orbitCenter = attack.transform.position;
             }
-            
-            // 콜라이더 생성 (VFX도 함께 생성)
-            CreateOrbitingColliders();
             
             Debug.Log("<color=purple>[AC107] 공전 요소 시작!</color>");
         }
@@ -199,6 +196,7 @@ namespace AttackComponents
             GameObject colliderObj = new GameObject($"OrbitingCollider_{orbitingColliders.Count}");
             colliderObj.transform.position = position;
             colliderObj.transform.rotation = Quaternion.Euler(0, 0, angle);
+            colliderObj.transform.SetParent(attack.transform);
             
             // BoxCollider2D 추가
             BoxCollider2D boxCollider = colliderObj.AddComponent<BoxCollider2D>();
@@ -212,14 +210,15 @@ namespace AttackComponents
             
             // 충돌 감지 컴포넌트 추가
             var collisionDetector = colliderObj.AddComponent<OrbitingCollisionDetector>();
-            collisionDetector.Initialize(this, orbitingColliders.Count - 1);
+            collisionDetector.Initialize(this, orbitingColliders.Count);
             
             return colliderObj;
         }
 
         protected override void Update()
         {
-            base.Update();
+            // AC107은 거리 제한을 무시하고 공전 상태만 처리
+            // base.Update() 호출하지 않음 (거리 체크 방지)
             
             // 공전 상태 처리
             ProcessOrbitState();
@@ -230,9 +229,13 @@ namespace AttackComponents
             switch (orbitState)
             {
                 case OrbitState.None:
+                    // 공전 시작
+                    StartOrbiting();
                     break;
 
                 case OrbitState.Preparing:
+                    // 콜라이더 생성 (VFX도 함께 생성)
+                    CreateOrbitingColliders();
                     orbitState = OrbitState.Active;
                     break;
 

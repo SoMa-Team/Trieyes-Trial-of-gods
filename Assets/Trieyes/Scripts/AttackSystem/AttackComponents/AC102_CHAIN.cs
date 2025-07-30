@@ -135,12 +135,11 @@ namespace AttackComponents
 
             // 다음 타겟 처리
             ApplyLightningDamage();
-            ApplyStatus();
         }
 
-        private void ApplyStatus()
+        private void ApplyStatus(Pawn targetEnemy)
         {
-            targetQueue.Peek().AddStatus(statusType, 
+            targetEnemy.AddStatus(statusType, 
             new PawnStatus { duration = statusDuration, lastTime = Time.time });
         }
 
@@ -231,6 +230,7 @@ namespace AttackComponents
             result.attack = attack;
             result.attacker = attack.attacker;
             result.totalDamage = chainDamage;
+            ApplyStatus(targetEnemy);
             targetEnemy.ApplyDamage(result);
 
             // 번개 VFX 생성

@@ -24,6 +24,11 @@ namespace AttackComponents
         // FSM 상태 관리
         private EnchantmentState enchantmentState = EnchantmentState.None;
         private float enchantmentTimer = 0f;
+        
+        // RAC 컴포넌트 캐싱
+        private RAC006_ProjectileGenerator rac006Component;
+        private RAC009_OrbitingStarGenerator rac009Component;
+        private bool rac009StarCreated = false; // RAC009 1회 제한 관리
 
         // 강화 효과 상태 열거형
         private enum EnchantmentState
@@ -56,20 +61,39 @@ namespace AttackComponents
             enchantmentTimer = 0f;
             lastEnchantmentTime = 0f;
             
-            // Lock 상태 설정
-            attack.SetLock(true);
-            
-            // 강화 효과 시작
-            StartEnchantmentEffect();
+            character.lockBasicAttack = true;
         }
 
-        public override void PerformLockedSetup()
+        public override void OnLockActivate()
         {
-            base.PerformLockedSetup();
+            base.OnLockActivate();
             
-            // Lock 상태에서 실행해야 하는 초기 설정
-            // 속성 결정 및 Hero에 부여
-            DetermineAndSetEnchantment();
+            // Lock 상태에서 RAC 컴포넌트들을 미리 찾아서 캐싱
+            CacheRAComponents();
+        }
+        
+        /// <summary>
+        /// RAC 컴포넌트들을 미리 찾아서 캐싱합니다.
+        /// </summary>
+        private void CacheRAComponents()
+        {
+            rac006Component = null;
+            rac009Component = null;
+            rac009StarCreated = false;
+            
+            foreach (var component in attack.components)
+            {
+                if (component is RAC006_ProjectileGenerator rac006)
+                {
+                    rac006Component = rac006;
+                }
+                else if (component is RAC009_OrbitingStarGenerator rac009)
+                {
+                    rac009Component = rac009;
+                }
+            }
+            
+            Debug.Log($"[S001] RAC 컴포넌트 캐싱 완료 - RAC006: {(rac006Component != null ? "찾음" : "없음")}, RAC009: {(rac009Component != null ? "찾음" : "없음")}");
         }
 
         private void DetermineAndSetEnchantment()
@@ -78,18 +102,7 @@ namespace AttackComponents
             randomEnchantmentID = GetRandomEnchantmentID();
             SetHeroWeaponElementState(randomEnchantmentID);
             
-            Debug.Log($"[S001] Lock 상태에서 {randomEnchantmentID}번 속성 결정됨!");
-        }
-
-        private void StartEnchantmentEffect()
-        {
-            enchantmentState = EnchantmentState.Preparing;
-            enchantmentTimer = 0f;
-            lastEnchantmentTime = 0f;
-            
-            character.lockBasicAttack = true;
-            
-            Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 시작!</color>");
+            Debug.Log($"[S001] {randomEnchantmentID}번 속성 결정됨!");
         }
 
         protected override void Update()
@@ -115,6 +128,7 @@ namespace AttackComponents
                     
                     if (enchantmentTimer >= 0.1f) // 준비 시간
                     {
+                        DetermineAndSetEnchantment();
                         enchantmentState = EnchantmentState.Active;
                         enchantmentTimer = 0f;
                     }
@@ -122,11 +136,14 @@ namespace AttackComponents
 
                 case EnchantmentState.Active:
                     enchantmentTimer += Time.deltaTime;
-                    //UpdateEnchantmentDuration(); Relic001 활성화 시 이것 발동
                     
                     // 1초에 1번 강화 효과 생성
                     if (Time.time - lastEnchantmentTime >= generationInterval)
                     {
+                        if (character.RAC008Trigger)
+                        {
+                            UpdateEnchantmentDuration();
+                        }
                         TriggerRandomEnchantment();
                         lastEnchantmentTime = Time.time;
                     }
@@ -175,6 +192,9 @@ namespace AttackComponents
             lastEnchantmentTime = 0f;
             character.killedDuringSkill001 = 0;
             character.killedDuringSkill002 = 0;
+            
+            // RAC 관련 초기화
+            rac009StarCreated = false;
         }
 
         private void TriggerRandomEnchantment()
@@ -183,6 +203,34 @@ namespace AttackComponents
             AttackFactory.Instance.Create(attackDatas[randomEnchantmentID], character, null, character.LastMoveDirection);
             Debug.Log($"<color=yellow>[S001] Random enchantment generated: ID {randomEnchantmentID}</color>");
             Debug.Log($"<color=yellow>[S001] {attack.gameObject.name} attackDatas: {attackDatas[randomEnchantmentID].attackId}, attacker: {character.gameObject.name}</color>");
+            
+            // RAC006 트리거 확인 및 AC106 생성
+            if (rac006Component != null && character.RAC006Trigger)
+            {
+                CreateRAC006Projectile();
+            }
+            if (!rac009StarCreated && character.RAC009Trigger && rac009Component != null)
+            {
+                CreateRAC009OrbitingStar();
+            }
+        }
+        
+        /// <summary>
+        /// RAC006 트리거 활성 시 AC106 Projectile 생성
+        /// </summary>
+        private void CreateRAC006Projectile()
+        {
+            rac006Component.CreateProjectile(character.LastMoveDirection);
+        }
+        
+        /// <summary>
+        /// RAC009 트리거 활성 시 AC107 Orbiting Star 생성 (1회만)
+        /// </summary>
+        private void CreateRAC009OrbitingStar()
+        {
+            rac009Component.CreateOrbitingStar();
+            rac009StarCreated = true; // 1회 생성 완료 플래그 설정
+            Debug.Log("[S001] RAC009 공전 별 1회 생성 완료!");
         }
 
         private void UpdateEnchantmentDuration()
@@ -196,7 +244,7 @@ namespace AttackComponents
         {
             // 1-5 사이의 랜덤 숫자 생성
             // TO-DO : 유물 들어왔을 때 값이 최대를 4에서 5로 늘리는 로직 구현해야 함
-            int randomValue = 1;
+            int randomValue = Random.Range(character.minRandomEnchantmentID, character.maxRandomEnchantmentID);
 
             switch (randomValue)
             {

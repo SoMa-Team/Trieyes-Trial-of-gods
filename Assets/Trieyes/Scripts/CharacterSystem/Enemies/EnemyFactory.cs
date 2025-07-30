@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using BattleSystem;
+using Utils;
 
 namespace CharacterSystem
 {
@@ -51,7 +52,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="id">생성할 적의 ID</param>
         /// <returns>생성된 gameObject에 부착된 Enemy 객체</returns>
-        public Enemy Create(EnemyID id)
+        public Enemy Create(Difficulty difficulty)
         {
             var enemy = popEnemy(id);
             if (enemy is null)

@@ -101,7 +101,7 @@ namespace BattleSystem
         /// <returns>생성된 적 Pawn</returns>
         private Enemy SpawnEnemy()
         {
-            var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
+            var enemy = EnemyFactory.Instance.Create(_difficulty);
             return enemy;
         }
     }

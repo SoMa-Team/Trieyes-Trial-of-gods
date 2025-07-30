@@ -4,6 +4,7 @@ using CharacterSystem;
 using DeckViews;
 using Stats;
 using UnityEngine;
+using System.Linq;
 
 namespace CardSystem
 {
@@ -301,6 +302,30 @@ namespace CardSystem
                     }
                 }
             }
+        }
+
+        public int PropertyCount(Property p)
+        {
+            int count = 0;
+            foreach (var card in Cards)
+            {
+                if (card == null || string.IsNullOrEmpty(card.cardName)) continue;
+                if (card.properties.Contains(p))
+                    count++;
+            }
+            return count;
+        }
+
+        public int SubstringCount(string str)
+        {
+            int count = 0;
+            foreach (var card in Cards)
+            {
+                if (card == null || string.IsNullOrEmpty(card.cardName)) continue;
+                if (card.cardName.Contains(str))
+                    count++;
+            }
+            return count;
         }
 
         /// <summary>

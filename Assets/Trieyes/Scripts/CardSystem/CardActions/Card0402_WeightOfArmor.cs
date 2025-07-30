@@ -10,6 +10,9 @@ namespace CardActions
 {
     public class Card0402_WeightOfArmor : CardAction
     {
+        /// <summary>
+        /// 전투가 시작될 때,이름에 '갑옷'이라는 단어가 들어간 카드 한 장 당 방어력이 10% 증가하고, 이동속도가 1% 감소합니다. 
+        /// </summary>
         private const int upStatTypeIdx = 0;
         private const int upValueCoefIdx = 1;
         private const int downStatTypeIdx = 2;
@@ -19,24 +22,18 @@ namespace CardActions
         {
             actionParams = new List<ActionParam>
             {
-                // [0] 방어력 스탯 타입
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                     StatTypeTransformer.KoreanToStatType(card.baseParams[upStatTypeIdx])),
-                // [1] 올라가는 수치 계수 (예: 10)
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[upValueCoefIdx];
-                    int.TryParse(raw, out int baseValue);
+                    int baseValue = Parser.ParseStrToInt(card.baseParams[upValueCoefIdx]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
-                // [2] 이동속도 스탯 타입
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                     StatTypeTransformer.KoreanToStatType(card.baseParams[downStatTypeIdx])),
-                // [3] 내려가는 수치 계수 (예: 1)
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[downValueCoefIdx];
-                    int.TryParse(raw, out int baseValue);
+                    int baseValue = Parser.ParseStrToInt(card.baseParams[downValueCoefIdx]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
             };
@@ -52,13 +49,7 @@ namespace CardActions
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
                 // "갑옷"이 이름에 포함된 카드 개수
-                int armorCardCount = 0;
-                foreach (var card in deck.Cards)
-                {
-                    if (card == null || string.IsNullOrEmpty(card.cardName)) continue;
-                    if (card.cardName.Contains("갑옷"))
-                        armorCardCount++;
-                }
+                int armorCardCount = deck.SubstringCount("갑옷");
 
                 if (armorCardCount == 0)
                 {

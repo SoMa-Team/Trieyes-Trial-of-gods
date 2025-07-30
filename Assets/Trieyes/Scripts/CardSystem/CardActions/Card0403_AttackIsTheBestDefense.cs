@@ -11,6 +11,9 @@ namespace CardActions
 {
     public class Card0403_AttackIsTheBestDefense : CardAction
     {
+        /// <summary>
+        /// desc: 전투가 시작될 때, ‘강철’ 속성 카드 한 장 당 공격력이  5% 증가합니다.
+        /// </summary>
         private const int statIndex = 0;
         private const int valueIndex = 1;
 
@@ -18,14 +21,11 @@ namespace CardActions
         {
             actionParams = new List<ActionParam>
             {
-                // [0] 공격력 스탯 타입
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                     StatTypeTransformer.KoreanToStatType(card.baseParams[statIndex])),
-                // [1] 올라가는 수치 계수 (예: 10)
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[valueIndex];
-                    int.TryParse(raw, out int baseValue);
+                    int baseValue = Parser.ParseStrToInt(card.baseParams[valueIndex]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
             };
@@ -42,13 +42,7 @@ namespace CardActions
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
                 // "강철"이 이름에 포함된 카드 개수
-                int steelCardCount = 0;
-                foreach (var card in deck.Cards)
-                {
-                    if (card == null || string.IsNullOrEmpty(card.cardName)) continue;
-                    if (card.properties.Contains(Property.Steel))
-                        steelCardCount++;
-                }
+                int steelCardCount = deck.PropertyCount(Property.Steel);
 
                 if (steelCardCount == 0)
                 {

@@ -37,9 +37,7 @@ namespace CardActions
                 // [1] 수치(레벨 곱 적용)
                 actionParams.Add(ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[valueIdx];
-                    if (!int.TryParse(raw, out int baseValue))
-                        throw new InvalidOperationException($"[GenericStatBuff] baseParams[{valueIdx}] 변환 실패: {raw}");
+                    int baseValue = Parser.ParseStrToInt(card.baseParams[valueIdx]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }));
             }

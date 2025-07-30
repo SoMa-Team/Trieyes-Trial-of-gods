@@ -10,6 +10,9 @@ namespace CardActions
 {
     public class Card0602_Berserker : CardAction
     {
+        /// <summary>
+        /// desc: 피해를 입을 때마다, 해당 전투 동안 공격력이/가 1 상승합니다.
+        /// </summary>
         private const int upStatTypeIdx = 0;
         private const int upValueCoefIdx = 1;
 
@@ -23,8 +26,7 @@ namespace CardActions
                     StatTypeTransformer.KoreanToStatType(card.baseParams[upStatTypeIdx])),
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[upValueCoefIdx];
-                    int.TryParse(raw, out int baseValue);
+                    int baseValue = Parser.ParseStrToInt(card.baseParams[upValueCoefIdx]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
             };

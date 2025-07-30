@@ -9,6 +9,9 @@ using BattleSystem;
 
 namespace CardActions
 {
+    /// <summary>
+    /// desc: 적을 처치할 때마다, 3초 동안 이동속도 가 20%만큼 증가하고, 공격속도 가 20%만큼 증가합니다. 이 효과는 중첩되지 않습니다.
+    /// </summary>
     public class Card0404_KillingSpree : CardAction
     {
         private const int upStat1Index = 0;
@@ -29,16 +32,14 @@ namespace CardActions
                     StatTypeTransformer.KoreanToStatType(card.baseParams[upStat1Index])),
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[upValue1Index];
-                    int.TryParse(raw, out int baseValue);
+                    int baseValue = Parser.ParseStrToInt(card.baseParams[upValue1Index]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                     StatTypeTransformer.KoreanToStatType(card.baseParams[upStat2Index])),
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[upValue2Index];
-                    int.TryParse(raw, out int baseValue);
+                    int baseValue = Parser.ParseStrToInt(card.baseParams[upValue2Index]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
             };

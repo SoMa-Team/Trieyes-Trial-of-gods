@@ -21,6 +21,8 @@ namespace AttackComponents
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
+        
+        public float debuffDuration = 3f; // 둔화 지속 시간
 
         public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
@@ -122,7 +124,7 @@ namespace AttackComponents
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
             var hero = attack.attacker as Character001_Hero;
-            if (hero != null && hero.RAC012Trigger)
+            if (hero != null && hero.RAC012Trigger && targetPawn.bIsStatusValid(PawnStatusType.Freeze))
             {
                 // 둔화 중첩 효과 처리
                 ProcessSlowStackEffect(targetPawn);
@@ -149,7 +151,7 @@ namespace AttackComponents
                     attack = attack,
                     target = targetPawn,
                     debuffMultiplier = 50f,
-                    debuffDuration = attackDuration,
+                    debuffDuration = debuffDuration,
                 };
 
                 var debuff = new DEBUFF();
@@ -157,7 +159,7 @@ namespace AttackComponents
             }
 
             targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus 
-            { duration = attackDuration, lastTime = Time.time });
+            { duration = debuffDuration, lastTime = Time.time });
 
             // ApplyBasicSlowEffect(targetPawn);
         }
@@ -175,7 +177,7 @@ namespace AttackComponents
                 attack = attack,
                 target = targetPawn,
                 debuffMultiplier = 10f,
-                debuffDuration = attackDuration,
+                debuffDuration = debuffDuration,
             };
 
             var debuff = new DEBUFF();
@@ -183,7 +185,7 @@ namespace AttackComponents
 
             targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus
             {
-                duration = attackDuration,
+                duration = debuffDuration,
                 lastTime = Time.time,
             });
         }

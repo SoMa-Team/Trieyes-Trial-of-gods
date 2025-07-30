@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading;
 using BattleSystem;
 using System;
+using System.Collections.Generic;
 using VFXSystem;
 
 namespace AttackComponents

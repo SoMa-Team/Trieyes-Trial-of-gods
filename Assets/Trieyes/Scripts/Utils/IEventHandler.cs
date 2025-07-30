@@ -43,7 +43,7 @@ namespace Utils
         
         // ===== 스탯 갱신 관련 =====
         OnHPUpdated,          // HP값이 갱신될 경우 호출 (preHP는 갱신 이전 HP값)
-        OnGoldUpdated,        // 골드 소지량이 변할경우 호출 (preGold는 이전 골드량)
+        OnGoldUpdated,        // 골드 소지량이 변할경우 호출 (preGold는 이전 골드량)  
         
         // ===== 기존 이벤트들 (하위 호환성) =====
         OnClear,              // 전투 클리어시 호출

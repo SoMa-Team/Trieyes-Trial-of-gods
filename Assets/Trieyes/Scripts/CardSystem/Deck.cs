@@ -4,6 +4,7 @@ using CharacterSystem;
 using DeckViews;
 using Stats;
 using UnityEngine;
+using System.Linq;
 
 namespace CardSystem
 {
@@ -44,6 +45,8 @@ namespace CardSystem
         public IReadOnlyDictionary<Utils.EventType, int> EventTypeCount => eventTypeCount;
         
         private DeckView deckView;
+        
+        private int maxCardCount = 5;
         
         // ===== [기능 3] 카드 호출 순서 관리 =====
         /// <summary>
@@ -138,6 +141,12 @@ namespace CardSystem
             }
         }
 
+        public bool IsDeckFull()
+        {
+            if (cards.Count >= maxCardCount) return true;
+            else return false;
+        }
+
         public void EventProcessor(Utils.EventType eventType, object param)
         {
             foreach (var card in cards)
@@ -158,6 +167,11 @@ namespace CardSystem
         /// <param name="card">추가할 카드</param>
         public void AddCard(Card card)
         {
+            if (cards.Count == maxCardCount)
+            {
+                Debug.Log("Card count exceed max number of cards");
+                return;
+            }
             if (card != null)
             {
                 cards.Add(card);
@@ -290,6 +304,30 @@ namespace CardSystem
             }
         }
 
+        public int PropertyCount(Property p)
+        {
+            int count = 0;
+            foreach (var card in Cards)
+            {
+                if (card == null || string.IsNullOrEmpty(card.cardName)) continue;
+                if (card.properties.Contains(p))
+                    count++;
+            }
+            return count;
+        }
+
+        public int SubstringCount(string str)
+        {
+            int count = 0;
+            foreach (var card in Cards)
+            {
+                if (card == null || string.IsNullOrEmpty(card.cardName)) continue;
+                if (card.cardName.Contains(str))
+                    count++;
+            }
+            return count;
+        }
+
         /// <summary>
         /// 카드 호출 순서를 계산합니다.
         /// 각 카드의 CardActionSO에 CalcActionInitOrder 이벤트를 전파하여 순서를 결정합니다.
@@ -321,7 +359,7 @@ namespace CardSystem
                 iterationCount++;
             }
 
-            //Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
+            Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
         }
 
         /// <summary>

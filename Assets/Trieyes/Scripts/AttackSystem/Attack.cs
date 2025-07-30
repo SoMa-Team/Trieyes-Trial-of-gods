@@ -52,7 +52,7 @@ namespace AttackSystem
         {
             // TODO : 공격의 거리 제한에 대한 임시 코드
             float distance = Vector2.Distance(transform.position, attacker.transform.position);
-            var maxDistance = 30f;
+            var maxDistance = 100f;
             if (distance > maxDistance)
             {
                 AttackFactory.Instance.Deactivate(this);
@@ -162,7 +162,7 @@ namespace AttackSystem
             }
             
             // 4. Lock 상태에서 초기 설정 수행 (부모 → 자식 순서)
-            PerformLockedSetup();
+            OnLockActivate();
             
             // 5. Lock 해제 (부모 → 손자 순서로 재귀적 해제)
             SetLock(false);
@@ -230,18 +230,18 @@ namespace AttackSystem
         /// <summary>
         /// Lock 상태에서 실행해야 하는 초기 설정을 수행합니다.
         /// </summary>
-        public virtual void PerformLockedSetup()
+        public virtual void OnLockActivate()
         {
             // 모든 자식 컴포넌트들의 Lock 상태 초기 설정 수행
             foreach (var component in components)
             {
-                component.PerformLockedSetup();
+                component.OnLockActivate();
             }
             
             // 모든 자식 Attack들의 Lock 상태 초기 설정 수행
             foreach (var child in children)
             {
-                child.PerformLockedSetup();
+                child.OnLockActivate();
             }
         }
 
@@ -255,20 +255,18 @@ namespace AttackSystem
             switch (eventType)
             {
                 case Utils.EventType.OnAttackHit:
-                    // 공격 시작 이벤트 처리
-                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnAttackHit</color>");
                     break;
-                
                 case Utils.EventType.OnAttack:
-                    // 공격 종료 이벤트 처리
-                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnAttack</color>");
                     break;
                 
                 case Utils.EventType.OnDamageHit:
-                    // 타격 이벤트 처리
-                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnDamageHit</color>");
                     break;
                 
+                case Utils.EventType.OnKilled:
+                    break;
+                
+                case Utils.EventType.OnKilledByCritical:
+                    break; 
                 default:
                     // 기본 이벤트 처리
                     //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing {eventType}</color>");

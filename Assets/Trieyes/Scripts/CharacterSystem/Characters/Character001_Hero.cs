@@ -24,16 +24,21 @@ namespace CharacterSystem
         public bool lockBasicAttack = false;
 
         public int minRandomEnchantmentID = 1;
-        public int maxRandomEnchantmentID = 5;
+        public int maxRandomEnchantmentID = 4;
 
         public int killedDuringSkill001 = 0;
         public int killedDuringSkill002 = 0;
         
         // RAC 관련 트리거 변수들
+        public bool RAC006Trigger = false; // 속성 검기 발사용
         public bool RAC008Trigger = false; // 지속시간 증가용
+        public bool RAC009Trigger = false; // 공전 별 생성용 (1회만)
         public bool RAC010Trigger = false; // 번개 속성 공격속도 증가용
         public bool RAC011Trigger = false; // 화상 중첩 효과용
         public bool RAC012Trigger = false; // 둔화 중첩 효과용
+
+        // 
+        public float RAC011DoTDamageRation = 0.2f;
         
         // Pawn의 추상 멤버 구현
         
@@ -112,6 +117,14 @@ namespace CharacterSystem
         public override void OnEvent(Utils.EventType eventType, object param)
         {
             base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                if (weaponElementState != HeroWeaponElementState.None)
+                {
+                    killedDuringSkill001++;
+                    killedDuringSkill002++;
+                }
+            }
         }
 
         public void SetRandomEnchantmentMinID(int min)

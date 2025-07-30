@@ -21,14 +21,9 @@ namespace CharacterSystem
 
     public enum PawnStatusType
     {
-        Normal,
-        Stun,
-        ElectricShock,
-        Sleep,
-        Freeze,
-        Poison,
-        Burn,
-        Bleed,
+        ElectricShock, // 감전
+        Freeze, // 빙결
+        Burn, // 화상
     }
 
     public struct PawnStatus

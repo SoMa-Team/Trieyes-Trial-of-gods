@@ -124,12 +124,9 @@ namespace BattleSystem
 
             AttackFactory.Instance.ClearPool();
             EnemyFactory.Instance.ClearPool();
-            VFXFactory.Instance.ClearVFXPool();
             
             battleStage.spawnManager.Deactivate();
             battleStage.Deactivate();
-            
-            VFXFactory.Instance.Clear();
 
             BattleOverlayCanvasController.Instance.Deactivate();
             BattleWorldCanvasController.Instance.Deactivate();

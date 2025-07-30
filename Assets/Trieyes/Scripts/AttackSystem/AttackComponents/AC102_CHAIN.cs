@@ -22,8 +22,9 @@ namespace AttackComponents
         public float chainDelay; // 연쇄 간격
 
         [Header("VFX 설정")]
-        public GameObject lightningVFXPrefab;
+        [SerializeField] public GameObject chainVFXPrefab; // 번개 연쇄 VFX 프리팹 (외부에서 설정 가능)
         public float lightningDuration = 0.2f;
+        private GameObject spawnedVFX;
 
         // 번개 연쇄 상태 관리
         private LightningChainState chainState = LightningChainState.None;
@@ -101,7 +102,6 @@ namespace AttackComponents
                     break;
 
                 case LightningChainState.Chaining:
-                    // 연쇄 처리
                     chainTimer += Time.deltaTime;
 
                     if (chainTimer >= chainDelay)
@@ -112,7 +112,6 @@ namespace AttackComponents
                     break;
 
                 case LightningChainState.Finished:
-                    // 연쇄 완료
                     chainState = LightningChainState.None;
                     AttackFactory.Instance.Deactivate(attack);
                     break;
@@ -121,85 +120,79 @@ namespace AttackComponents
 
         private void ProcessNextChain()
         {
+            // 현재 체인 카운트 증가
+            currentChainCount++;
+
+            // 체인 카운트가 최대치에 도달했거나 큐가 비어있으면 종료
             if (currentChainCount >= chainCount || targetQueue.Count == 0)
             {
-                // 최대 전염 횟수 도달 또는 더 이상 타겟이 없으면 종료
                 chainState = LightningChainState.Finished;
                 return;
             }
 
-            // 큐에서 다음 타겟을 가져옴
-            Enemy nextTarget = targetQueue.Dequeue() as Enemy;
-            
-            // 파괴된 객체 체크
-            if (nextTarget == null || nextTarget.transform == null)
-            {
-                Debug.LogWarning("다음 타겟 Enemy가 파괴되었습니다. 건너뜁니다.");
-                ProcessNextChain(); // 재귀적으로 다음 타겟 처리
-                return;
-            }
-            
-            Vector2 nextPos = nextTarget.transform.position;
-
-            // 번개 VFX 생성
-            CreateLightningVFX(currentChainPosition, nextPos);
-
-            // 데미지 적용
+            // 다음 타겟 처리
             ApplyLightningDamage();
-
-            // 다음 연쇄 준비
-            currentChainPosition = nextPos;
-            chainPositions.Add(nextPos);
-            currentChainCount++;
         }
 
         private void InitializeTargetQueue(Vector2 startPosition)
         {
-            // 큐 초기화
+            // 기존 큐 클리어
             targetQueue.Clear();
 
-            // 초기 범위에서 모든 적을 찾기
+            // 범위 내 모든 적 찾기
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(startPosition, chainRadius);
             reusableColliders.Clear();
-            targetEnemies = BattleStage.now.GetEnemiesInCircleRangeOrderByDistance(startPosition, chainRadius, chainCount);
+            reusableColliders.AddRange(colliders);
 
-            foreach (var enemy in targetEnemies)
+            // 적들만 필터링하고 거리 순으로 정렬
+            List<Pawn> enemiesInRange = new List<Pawn>();
+
+            foreach (Collider2D collider in reusableColliders)
             {
-                // 파괴된 객체 체크
-                if (enemy is null || enemy.transform == null)
+                Pawn pawn = collider.GetComponent<Pawn>();
+                if (pawn is Enemy enemy && enemy != attack.attacker)
                 {
-                    continue;
+                    float distance = Vector2.Distance(startPosition, enemy.transform.position);
+                    enemiesInRange.Add(enemy);
                 }
-                targetQueue.Enqueue(enemy);
             }
 
-            Debug.Log($"targetQueue.Count: {targetQueue.Count}");
-            foreach (var target in targetQueue)
+            // 거리 순으로 정렬
+            enemiesInRange.Sort((a, b) =>
             {
-                if (target != null && target.transform != null)
-                {
-                    Debug.Log($"targetQueue: {target.pawnName}, Position: {target.transform.position}");
-                }
+                float distanceA = Vector2.Distance(startPosition, a.transform.position);
+                float distanceB = Vector2.Distance(startPosition, b.transform.position);
+                return distanceA.CompareTo(distanceB);
+            });
+
+            // 큐에 추가
+            foreach (Pawn enemy in enemiesInRange)
+            {
+                targetQueue.Enqueue(enemy);
+                Debug.Log($"targetQueue: {enemy.pawnName}, Position: {enemy.transform.position}");
             }
         }
 
         private void CreateLightningVFX(Vector2 start, Vector2 end)
         {
-            // VFX 오브젝트 생성 (실제 구현에서는 오브젝트 풀링 사용 권장)
-            if (lightningVFXPrefab != null)
+            // VFX 프리팹이 없으면 VFX 없이 진행
+            if (chainVFXPrefab == null)
             {
-                GameObject vfxObject = Instantiate(lightningVFXPrefab); // TO-DO : 계층상 자식으로 VFX를 두고 Activate, Deactivate로 처리하기
-                vfxObject.transform.position = (start + end) * 0.5f; // 중간 위치
-
-                // LightningVFX 컴포넌트 찾아서 번개 효과 시작
-                LightningVFX lightningVFX = vfxObject.GetComponent<LightningVFX>();
-                if (lightningVFX != null)
-                {
-                    lightningVFX.CreateLightningChain(start, end);
-                }
-
-                // 일정 시간 후 VFX 오브젝트 제거
-                Destroy(vfxObject, lightningDuration + 0.1f);
+                return;
             }
+
+            // AC001 방식으로 VFX 생성
+            Vector2 vfxPosition = (start + end) * 0.5f; // 중간 위치
+            spawnedVFX = CreateAndSetupVFX(chainVFXPrefab, vfxPosition, Vector2.zero);
+            
+            // LightningVFX 컴포넌트 찾아서 번개 효과 시작
+            LightningVFX lightningVFX = spawnedVFX.GetComponent<LightningVFX>();
+            if (lightningVFX != null)
+            {
+                lightningVFX.CreateLightningChain(start, end);
+            }
+            
+            PlayVFX(spawnedVFX);
         }
 
         private void ApplyLightningDamage()
@@ -229,6 +222,53 @@ namespace AttackComponents
             result.attacker = attack.attacker;
             result.totalDamage = chainDamage;
             targetEnemy.ApplyDamage(result);
+
+            // 번개 VFX 생성
+            CreateLightningVFX(currentChainPosition, targetEnemy.transform.position);
+            
+            // 현재 위치 업데이트
+            currentChainPosition = targetEnemy.transform.position;
+            chainPositions.Add(currentChainPosition);
+            
+            // 큐에서 제거
+            targetQueue.Dequeue();
+        }
+
+        /// <summary>
+        /// VFX를 생성하고 설정합니다.
+        /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
+        {
+            // 프리팹이 없으면 VFX 없이 진행
+            if (vfxPrefab == null)
+            {
+                return null;
+            }
+
+            // 기본 VFX 생성 (base 호출)
+            if (spawnedVFX is null)
+            {
+                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            }
+            
+            spawnedVFX.transform.position = position;
+            
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
+            spawnedVFX.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
+            
+            spawnedVFX.SetActive(true);
+            return spawnedVFX;
+        }
+
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            StopAndDestroyVFX(spawnedVFX);
         }
     }
 

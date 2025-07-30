@@ -2,6 +2,7 @@ using AttackSystem;
 using CharacterSystem;
 using Stats;
 using UnityEngine;
+using Utils;
 
 namespace AttackComponents
 {
@@ -19,9 +20,9 @@ namespace AttackComponents
             hero = attack.attacker as Character001_Hero;
         }
 
-        public override void PerformLockedSetup()
+        public override void OnLockActivate()
         {
-            base.PerformLockedSetup();
+            base.OnLockActivate();
             
             // Lock 상태에서 enchantment min, max 값 조절 + 트리거 설정
             SetupFireEnchantment();

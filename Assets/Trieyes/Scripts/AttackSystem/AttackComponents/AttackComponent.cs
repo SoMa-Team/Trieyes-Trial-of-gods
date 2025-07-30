@@ -77,7 +77,7 @@ namespace AttackComponents
         /// <summary>
         /// Lock 상태에서 실행해야 하는 초기 설정을 수행합니다.
         /// </summary>
-        public virtual void PerformLockedSetup()
+        public virtual void OnLockActivate()
         {
             // 하위 클래스에서 오버라이드하여 구현
         }

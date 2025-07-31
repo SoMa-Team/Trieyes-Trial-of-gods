@@ -275,6 +275,7 @@ namespace CharacterSystem
 
             Controller.Deactivate();
             statuses.Clear();
+            ClearStatModifier();
         }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)
@@ -402,7 +403,7 @@ namespace CharacterSystem
         /// <returns>스탯 값</returns>
         public int GetStatValue(StatType statType)
         {
-            return statSheet[statType];
+            return statSheet[statType].Value;
         }
         
         /// <summary>
@@ -853,6 +854,11 @@ namespace CharacterSystem
                 default:
                     return false;
             }
+        }
+
+        public void ClearStatModifier()
+        {
+            statSheet.ClearBuffs();
         }
 
         // ===== [내부 클래스] =====

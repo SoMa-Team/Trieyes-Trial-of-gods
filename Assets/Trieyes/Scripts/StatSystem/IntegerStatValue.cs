@@ -115,6 +115,9 @@ namespace Stats
                 currentTime = 0;
             }
             else currentTime = BattleStage.now.GetTime();
+            
+            // if(!modifierHeap.IsEmpty)Debug.Log($"currentTime: {currentTime}, {modifierHeap.Peek()}");
+            // else Debug.Log($"currentTime: {currentTime}, modifierHeap.IsEmpty");
 
             // 만료된 버프를 모두 제거
             while (!modifierHeap.IsEmpty && modifierHeap.Peek() < currentTime)

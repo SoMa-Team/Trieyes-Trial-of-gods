@@ -46,13 +46,15 @@ namespace Stats
             this.canStack = canStack;
             if(BattleStage.now == null)
             {
-                this.isPermanent = true;
+                this.isPermanent = false;
                 this.endTime = float.MaxValue;
             }
             else
             {
                 this.isPermanent = duration < 0f;
+                Debug.Log($"this.isPermanent: {this.isPermanent}");
                 this.endTime = this.isPermanent ? float.MaxValue : BattleStage.now.GetTime() + duration;
+                //Debug.Log($"Endtime: {this.endTime}");
             }
         }
 

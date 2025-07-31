@@ -103,6 +103,7 @@ namespace DeckViews
             selectedCard1 = null;
             removeButton.interactable = false;
             RefreshDeckUI();
+            ShopSceneManager.Instance.SyncPurchaseButtons();
         }
     }
 }

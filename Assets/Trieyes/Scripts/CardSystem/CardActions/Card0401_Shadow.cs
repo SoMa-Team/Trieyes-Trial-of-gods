@@ -3,12 +3,12 @@ using CharacterSystem;
 using CardSystem;
 using System.Collections.Generic;
 using System;
+using Utils;
 
 namespace CardActions
 {
     /// <summary>
-    /// 그림자(Shadow) 카드 액션:
-    /// CalcActionInitOrder 이벤트 발생 시 자기 자신을 제외한 덱 내 모든 카드 효과를 지정 횟수만큼 추가 발동시킴.
+    /// desc: 전투가 시작할 때 ,나 이외의 카드를 한 번 더 발동시킵니다.
     /// </summary>
     public class Card0401_Shadow : CardAction
     {
@@ -20,9 +20,7 @@ namespace CardActions
                 // [0] 반복 횟수 (CSV 예: 1)
                 ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[0];
-                    if (!int.TryParse(raw, out int baseCount))
-                        throw new InvalidOperationException($"[Shadow] baseParams[0] 변환 실패: {raw}");
+                    int baseCount = Parser.ParseStrToInt(card.baseParams[repeatCountIndex]);
                     return baseCount * card.cardEnhancement.level.Value;
                 })
             };

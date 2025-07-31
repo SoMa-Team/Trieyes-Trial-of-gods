@@ -162,11 +162,6 @@ public class ShopSceneManager : MonoBehaviour
             shopStickers.Add(newSticker);
             shopStickerViews[i].SetSticker(newSticker);
         }
-        // 구매 버튼 활성화 초기화
-        for (int i = 0; i < buyCardButtons.Count; i++)
-            buyCardButtons[i].interactable = true;
-        for (int i = 0; i < buyStickerButtons.Count; i++)
-            buyStickerButtons[i].interactable = true;
         RefreshStatUI();
     }
 
@@ -192,10 +187,18 @@ public class ShopSceneManager : MonoBehaviour
         mainCharacter.deck.AddCard(cardToBuy.DeepCopy());
         // UI 갱신
         deckView.RefreshDeckUI();
-        buyCardButtons[index].interactable = false; // 중복구매 방지
+        
+        SyncPurchaseButtons();
 
         // 필요하다면 카드 구매 시마다 스탯도 갱신
         RefreshStatUI();
+    }
+    
+    public void SyncPurchaseButtons()
+    {
+        bool deckFull = mainCharacter.deck.IsDeckFull();
+        foreach (var btn in buyCardButtons)
+            btn.interactable = !deckFull;
     }
 
     private void OnStickerBuyButtonPressed(int index)

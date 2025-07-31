@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using BattleSystem;
 using System;
+using UnityEngine;
 
 namespace Stats
 {
@@ -47,12 +48,14 @@ namespace Stats
             }
             // 만료된 버프 제거
             else currentTime = BattleStage.now.GetTime();
+            //Debug.Log($"currentTime: {currentTime}");
             modifiers.RemoveAll(buff => !buff.isPermanent && buff.endTime <= currentTime);
 
             int finalValue = basicValue;
 
             foreach (var buff in modifiers)
             {
+                if(BattleStage.now is not null) Debug.Log($"currentTime: {BattleStage.now.GetTime()} | buff.endTime: {buff.endTime}");
                 if (buff.operationType == BuffOperationType.Additive)
                 {
                     finalValue += buff.value;

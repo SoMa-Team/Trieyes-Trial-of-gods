@@ -13,14 +13,14 @@ namespace CardActions
     /// baseParams 예시: [스탯1, 값1, 타입1, 스탯2, 값2, 타입2, ...]
     /// 타입: "Additive", "Multiplicative" (대소문자 구분 X)
     /// </summary>
-    public class Card1001_GenericStatBuffOnBattleStartAction : CardAction
+    public class Card1001_GenericPositiveOnlyOnBattleStart : CardAction
     {
         private readonly bool isMultiplicative;
         private readonly int pairCount;
 
         /// <param name="numPairs">몇 쌍의 (스탯, 값) 세트인지 (ex. 1, 2, 3, ...)</param>
         /// <param name="isMultiplicative">곱연산 여부(기본 true, false면 합연산)</param>
-        public Card1001_GenericStatBuffOnBattleStartAction(int numPairs, bool isMultiplicative = true)
+        public Card1001_GenericPositiveOnlyOnBattleStart(int numPairs, bool isMultiplicative = true)
         {
             this.isMultiplicative = isMultiplicative;
             this.pairCount = numPairs;
@@ -37,9 +37,7 @@ namespace CardActions
                 // [1] 수치(레벨 곱 적용)
                 actionParams.Add(ActionParamFactory.Create(ParamKind.Number, card =>
                 {
-                    string raw = card.baseParams[valueIdx];
-                    if (!int.TryParse(raw, out int baseValue))
-                        throw new InvalidOperationException($"[GenericStatBuff] baseParams[{valueIdx}] 변환 실패: {raw}");
+                    int baseValue = Parser.ParseStrToInt(card.baseParams[valueIdx]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }));
             }

@@ -168,10 +168,6 @@ namespace AttackComponents
             float remainingTime = dotStartTime + dotDuration - currentTime;
             int remainingDamage = (int)(dotDamage * (remainingTime / dotInterval));
 
-            // 남은 화상 피해량의 20퍼센트를 즉시 입으며, 화상이 없어진다.
-            var _attackResult = AttackResult.Create(attack, targetPawn);
-            _attackResult.totalDamage = (int)(remainingDamage);
-
             attack.statSheet[StatType.AttackPower] = new IntegerStatValue(remainingDamage);
             DamageProcessor.ProcessHit(attack, targetPawn);
 

@@ -219,12 +219,6 @@ namespace AttackSystem
             {
                 component.SetLock(locked);
             }
-            
-            // 모든 자식 Attack들에게도 Lock 상태 전파
-            foreach (var child in children)
-            {
-                child.SetLock(locked);
-            }
         }
 
         /// <summary>
@@ -236,12 +230,6 @@ namespace AttackSystem
             foreach (var component in components)
             {
                 component.OnLockActivate();
-            }
-            
-            // 모든 자식 Attack들의 Lock 상태 초기 설정 수행
-            foreach (var child in children)
-            {
-                child.OnLockActivate();
             }
         }
 

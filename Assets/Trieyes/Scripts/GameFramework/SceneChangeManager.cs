@@ -60,6 +60,7 @@ namespace GameFramework
         /// </summary>
         public void ChangeShopToBattle(Character mainCharacter)
         {
+            stageRound++;
             PrepareCharacterForSceneTransition(mainCharacter);
             LoadSceneWithCallback(BattleSceneName, scene =>
             {

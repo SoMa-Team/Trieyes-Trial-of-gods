@@ -4,19 +4,28 @@ namespace Utils
 {
     public class Difficulty
     {
-        // ===== [기능 1] 난이도 정보 =====
-        public int spawnFrequency => 1;
-        public float enemyStatMultiplier = 1.0f;
         public float battleLength => 30; // 초단위
+
         public int EnemyID = 0;
         public int shopLevel = 1;
-        public int stageNumber => 12;
+
+        public int stageNumber;
+        public int spawnFrequency;
+        public int enemyHpMultiplier;
+        public int enemyAttackMultiplier;
+
+        private int baseHp = 5;
 
         public float SpawnInterval => 1f / spawnFrequency;
+
         public static Difficulty GetByStageRound(int stageRound)
         {
-            // TODO : 난이도 설정 로직 추가 필요
-            return new Difficulty();
+            var difficulty = new Difficulty();
+            difficulty.stageNumber = stageRound;
+            difficulty.spawnFrequency = stageRound;
+            difficulty.enemyHpMultiplier = (int)Mathf.Pow(5f, stageRound - 1);
+            difficulty.enemyAttackMultiplier = stageRound;
+            return difficulty;
         }
     }
 }

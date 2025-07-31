@@ -9,23 +9,17 @@ using System;
 namespace CardActions
 {
     /// <summary>
-    /// 전투 시작 전 오른쪽 카드를 파괴 & 경험치 일부 흡수,
-    /// 전투 시작 시 두 스탯을 각각 %만큼 곱연산 버프!
-    /// baseParams: [스탯1, %1, 스탯2, %2] (치환/스티커 지원)
+    /// desc: 전투가 시작하기 전, 내 오른쪽에 있는 카드를 파괴하고 해당 카드의 경험치 일부를 얻습니다. 전투가 시작할 때, 해당 전투 동안 흡혈을/를 10%만큼 증가시킵니다.
     /// </summary>
-    public class Card0601_AbsorbingBlade : Card1001_GenericStatBuffOnBattleStartAction
+    public class Card0601_AbsorbingBlade : Card1001_GenericPositiveOnlyOnBattleStart
     {
         private int levelUpValue = 5;
         public Card0601_AbsorbingBlade()
             : base(1, true) // 2쌍, Multiplicative
         {
-            // 두 Value 파라미터만 30+5*레벨로 오버라이드
-            // actionParams = [Stat0, Value0, Stat1, Value1]
             actionParams[1] = ActionParamFactory.Create(ParamKind.Number, card =>
             {
-                string raw = card.baseParams[1];
-                if (!int.TryParse(raw, out int baseValue))
-                    throw new InvalidOperationException($"[GenericStatBuff] baseParams[{1}] 변환 실패: {raw}");
+                int baseValue = Parser.ParseStrToInt(card.baseParams[1]);
                 return baseValue + levelUpValue * card.cardEnhancement.level.Value;
             });
         }

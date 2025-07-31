@@ -13,13 +13,6 @@ namespace Utils
         public int stageNumber => 12;
 
         public float SpawnInterval => 1f / spawnFrequency;
-
-        // ===== [기능 2] 난이도 효과 적용 =====
-        public virtual void ApplyDifficultyEffects()
-        {
-            Debug.Log("Applying base difficulty effects.");
-        }
-
         public static Difficulty GetByStageRound(int stageRound)
         {
             // TODO : 난이도 설정 로직 추가 필요

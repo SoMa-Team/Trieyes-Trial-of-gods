@@ -2,6 +2,7 @@ using UnityEngine;
 using Utils;
 using CharacterSystem;
 using Stats;
+using System.Collections.Generic;
 
 namespace BattleSystem
 {
@@ -20,7 +21,12 @@ namespace BattleSystem
         // ===== 내부 상태 =====
         private bool _isActivate = false;
         private Difficulty _difficulty;
+        private List<float> validAngles = new();
         [SerializeField] private float _elapsedTime;
+        [SerializeField] private float minDistance;
+        [SerializeField] private float maxDistance;
+        [SerializeField] private Vector2 mapMin;
+        [SerializeField] private Vector2 mapMax;
 
         // ===== 초기화 =====
         
@@ -80,9 +86,8 @@ namespace BattleSystem
 
                 for (int i = 0; i < spawnCount; i++)
                 {
-                    var spawnPoint = GetRandomSpawnPoint();
                     var enemy = SpawnEnemy();
-                    BattleStage.now.AttachEnemy(enemy, spawnPoint.transform);
+                    BattleStage.now.AttachEnemy(enemy, GetRandomSpawnPoint());
                 }
             }
         }
@@ -92,9 +97,35 @@ namespace BattleSystem
         /// <summary>
         /// 랜덤한 스폰 포인트를 반환합니다.</summary>
         /// <returns>선택된 스폰 포인트 GameObject</returns>
-        private GameObject GetRandomSpawnPoint()
+        private Vector3 GetRandomSpawnPoint()
         {
-            return spawnPoints[Random.Range(0, spawnPoints.Length)];
+            return GetRandomPointAround(BattleStage.now.mainCharacter, minDistance, maxDistance);
+        }
+        
+        private Vector3 GetRandomPointAround(Pawn pawn, float minDistance, float maxDistance)
+        {
+            Vector2 center = pawn.transform.position;
+            ComputeValidAngles(center, maxDistance);
+            
+            float angle = validAngles[Random.Range(0, validAngles.Count)];
+            float rad = angle * Mathf.Deg2Rad;
+            float distance = Random.Range(minDistance, maxDistance);
+            Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+            Vector2 spawnPos = center + dir * distance;
+            return spawnPos;
+        }
+        
+        private void ComputeValidAngles(Vector2 center, float maxDistance, float angleStep = 1f)
+        {
+            validAngles.Clear();
+            for (float angle = 0f; angle < 360f; angle += angleStep)
+            {
+                float rad = angle * Mathf.Deg2Rad;
+                Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+                Vector2 point = center + dir * maxDistance;
+                if (point.x >= mapMin.x && point.x <= mapMax.x && point.y >= mapMin.y && point.y <= mapMax.y)
+                    validAngles.Add(angle);
+            }
         }
 
         /// <summary>

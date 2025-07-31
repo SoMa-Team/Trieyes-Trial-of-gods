@@ -107,7 +107,8 @@ namespace BattleSystem
         // 플레이어 사망 시 호출
         public void OnPlayerDeath()
         {
-            // TODO : Character 클래스 분리 후 구현
+            BattleStageFactory.Instance.Deactivate(this);
+            SceneChangeManager.Instance.ChangeBattleToGameOver();
         }
         
         // ===== 시간 관리 관련 =====

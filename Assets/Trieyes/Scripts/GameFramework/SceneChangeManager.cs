@@ -17,8 +17,10 @@ namespace GameFramework
         public static SceneChangeManager Instance { get; private set; }
 
         // ====== 씬 이름 상수 ======
+        private const string GameStartSceneName = "GameStart";
         private const string BattleSceneName = "BattleScene";
         private const string ShopSceneName = "ShopScene";
+        private const string GameOverSceneName = "GameOverScene";
         private int stageRound = 1;
 
         // ====== 초기화 ======
@@ -64,6 +66,22 @@ namespace GameFramework
             LoadSceneWithCallback(BattleSceneName, scene =>
             {
                 BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+            });
+        }
+
+        public void ChangeBattleToGameOver()
+        {
+            LoadSceneWithCallback(GameOverSceneName, scene =>
+            {
+                
+            });
+        }
+
+        public void ChangeGameOverToGameStart()
+        {
+            LoadSceneWithCallback(GameStartSceneName, scene =>
+            {
+            
             });
         }
 

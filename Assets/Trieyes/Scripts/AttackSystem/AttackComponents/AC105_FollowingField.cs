@@ -45,7 +45,6 @@ namespace AttackComponents
         private float fieldTimer = 0f;
         private float damageTimer = 0f;
         private List<Pawn> fieldTargets = new List<Pawn>(10); // 재사용 가능한 리스트
-        private bool buffApplied = false;
         private GameObject activeFieldVFX;
         
         // 자기장 상태 열거형
@@ -67,7 +66,6 @@ namespace AttackComponents
             fieldTimer = 0f;
             damageTimer = 0f;
             fieldTargets.Clear();
-            buffApplied = false;
             
             // 자기장 시작
             StartFollowingField();
@@ -307,7 +305,6 @@ namespace AttackComponents
             fieldTimer = 0f;
             damageTimer = 0f;
             fieldTargets.Clear();
-            buffApplied = false;
         }
     }
 } 

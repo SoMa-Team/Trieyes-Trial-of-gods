@@ -75,7 +75,7 @@ namespace CharacterSystem
         public int level { get; protected set; }
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
 
-        public Dictionary<PawnStatusType, PawnStatus> statuses = new();
+        public Dictionary<PawnStatusType, object> statuses = new();
         
         public int gold { get; set; }
 
@@ -637,7 +637,7 @@ namespace CharacterSystem
         }
 
         // ===== [기능 10] 상태 관리 =====
-        public void AddStatus(PawnStatusType statusType, PawnStatus status)
+        public void AddStatus(PawnStatusType statusType, object status)
         {
             statuses[statusType] = status;
         }
@@ -652,7 +652,7 @@ namespace CharacterSystem
             if (statuses.ContainsKey(appliedStatusType))
             {
                 var _status = statuses[appliedStatusType];
-                if (_status.lastTime + _status.duration > Time.time)
+                if (_status is PawnStatus status && status.lastTime + status.duration > Time.time)
                 {
                     return true;
                 }
@@ -663,18 +663,7 @@ namespace CharacterSystem
         // ===== [기능 3] 이벤트 처리 =====
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
-            // 이벤트 필터링: 이 Pawn이 받지 않는 이벤트는 무시
-            // if (!IsEventAccepted(eventType))
-            // {
-            //     Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} ignoring event: {eventType} (not in accepted events: {string.Join(", ", acceptedEvents)})</color>");
-            //     return;
-            // }
-            // 버그 발생하여 테스트를 위해 일단 무시
-
-            //Debug.Log($"<color=blue>[EVENT] {gameObject.name} ({GetType().Name}) received {eventType} event</color>");
-            
             // Pawn 자체의 이벤트 처리
-            
             if (eventType == Utils.EventType.OnDamaged)
             {
                 if (param is AttackResult result) 
@@ -685,19 +674,16 @@ namespace CharacterSystem
             
             if (eventType == Utils.EventType.OnDeath)
             {
-                //Debug.Log($"<color=red>[EVENT] {gameObject.name} ({GetType().Name}) processing OnDeath</color>");
                 HandleDeath();
             }
 
             // 유물들의 이벤트 처리 (필터링 적용)
             if (relics != null && IsRelicEventAccepted(eventType))
             {
-                //Debug.Log($"<color=purple>[EVENT_FILTER] {gameObject.name} processing {eventType} for {relics.Count} relics (relic events: {string.Join(", ", relicAcceptedEvents)})</color>");
                 foreach (var relic in relics)
                 {
                     if (relic != null)
                     {
-                        //Debug.Log($"<color=purple>[EVENT] {gameObject.name} ({GetType().Name}) -> Relic {relic.GetInfo().name} processing {eventType}</color>");
                         relic.OnEvent(eventType, param);
                     }
                 }
@@ -766,7 +752,6 @@ namespace CharacterSystem
         /// 공격속도 스탯을 기반으로 공격 쿨다운을 계산합니다.
         /// 공격속도 10 = 60fps 기준 1초에 1개 발사
         /// </summary>
-
         protected virtual void CalculateAttackCooldown()
         {
             int attackSpeed = GetStatValue(StatType.AttackSpeed);
@@ -775,15 +760,6 @@ namespace CharacterSystem
             attackCooldown = 1f / (attackSpeed / 10f);
             
             //Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
-        }
-        
-        /// <summary>
-        /// 자동공격을 수행합니다.
-        /// </summary>
-        
-        public bool CheckTimeInterval()
-        {
-            return Time.time - lastAttackTime >= attackCooldown ? true : false;
         }
 
         /// <summary>
@@ -818,7 +794,7 @@ namespace CharacterSystem
             switch (attackType)
             {
                 case PawnAttackType.BasicAttack:
-                    if (CheckTimeInterval())
+                    if (Time.time - lastAttackTime >= attackCooldown)
                     {
                         CalculateAttackCooldown();
                         lastAttackTime = Time.time;

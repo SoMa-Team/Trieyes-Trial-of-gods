@@ -163,7 +163,8 @@ namespace AttackComponents
         private void ProcessBurnStackEffect(Pawn targetPawn)
         {
             // 남은 화상 피해량 계산
-            float dotStartTime = targetPawn.statuses[PawnStatusType.Burn].lastTime;
+            var _status = (PawnStatus)targetPawn.statuses[PawnStatusType.Burn];
+            float dotStartTime = _status.lastTime;
             float currentTime = Time.time;
             float remainingTime = dotStartTime + dotDuration - currentTime;
             int remainingDamage = (int)(dotDamage * (remainingTime / dotInterval));

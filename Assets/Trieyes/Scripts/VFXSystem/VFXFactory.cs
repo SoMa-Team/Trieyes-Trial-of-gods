@@ -12,18 +12,15 @@ namespace VFXSystem
         [Header("VFX Prefabs")]
         [SerializeField] private List<GameObject> vfxPrefabs = new List<GameObject>();
         
-        [Header("Pool Settings")]
-        [SerializeField] private int defaultPoolSize = 5;
-        
         private static VFXFactory instance;
         public static VFXFactory Instance
         {
             get
             {
-                if (instance == null)
+                if (instance is null)
                 {
                     instance = FindFirstObjectByType<VFXFactory>();
-                    if (instance == null)
+                    if (instance is null)
                     {
                         GameObject go = new GameObject("VFXFactory");
                         instance = go.AddComponent<VFXFactory>();
@@ -36,7 +33,7 @@ namespace VFXSystem
 
         private void Awake()
         {
-            if (instance == null)
+            if (instance is null)
             {
                 instance = this;
                 DontDestroyOnLoad(gameObject);
@@ -53,7 +50,7 @@ namespace VFXSystem
         /// <param name="vfx">재생할 VFX</param>
         public void PlayVFX(GameObject vfx)
         {
-            if (vfx == null) return;
+            if (vfx is null) return;
 
             ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
             foreach (var ps in particleSystems)
@@ -68,7 +65,7 @@ namespace VFXSystem
         /// <param name="vfx">정지할 VFX</param>
         public void StopVFX(GameObject vfx)
         {
-            if (vfx == null) return;
+            if (vfx is null) return;
 
             ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
             foreach (var ps in particleSystems)

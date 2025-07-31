@@ -59,9 +59,6 @@ namespace AttackComponents
         [SerializeField] public GameObject orbitVFXPrefab; // 공전 VFX 프리팹
         private List<GameObject> spawnedVFXs = new List<GameObject>(); // 각 콜라이더별 VFX
 
-        // 거리 제한 무시 플래그
-        private bool ignoreDistanceLimit = true;
-
         // FSM 상태 관리
         private OrbitState orbitState = OrbitState.None;
 
@@ -205,7 +202,7 @@ namespace AttackComponents
             
             // Rigidbody2D 추가 (충돌 감지용)
             Rigidbody2D rb = colliderObj.AddComponent<Rigidbody2D>();
-            rb.isKinematic = true;
+            rb.bodyType = RigidbodyType2D.Kinematic;
             rb.simulated = true;
             
             // 충돌 감지 컴포넌트 추가

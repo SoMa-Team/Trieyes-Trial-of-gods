@@ -2645,8 +2645,32 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
+      propertyPath: mapMax.x
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
+      propertyPath: mapMax.y
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
+      propertyPath: mapMin.x
+      value: -45
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
+      propertyPath: mapMin.y
+      value: -45
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
+      propertyPath: maxDistance
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
+      propertyPath: minDistance
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
       propertyPath: spawnPoints.Array.size

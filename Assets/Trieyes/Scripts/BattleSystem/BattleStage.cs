@@ -74,10 +74,10 @@ namespace BattleSystem
         /// </summary>
         /// <param name="enemy">연결할 적 Pawn</param>
         /// <param name="spawnPoint">스폰 포인트 Transform</param>
-        public void AttachEnemy(Enemy enemy, Transform spawnPoint)
+        public void AttachEnemy(Enemy enemy, Vector3 spawnPosition)
         {
             enemy.transform.SetParent(View.transform);
-            enemy.transform.position = spawnPoint.position;
+            enemy.transform.position = spawnPosition;
             enemies.Add(enemy.objectID, enemy);
         }
         

@@ -17,10 +17,9 @@ MonoBehaviour:
   rarity: 4
   cardName: "\uCE7C\uC758 \uBD84\uB178"
   illustration: {fileID: 1760460437308132000, guid: 726d25fde02c046ca83f3ac7360d1fc5, type: 3}
-  cardDescription: "\uC804\uD22C\uAC00 \uC2DC\uC791\uB420 \uB54C, \uD574\uB2F9 \uC804\uD22C
-    \uB3D9\uC548 {0} \uC744/\uB97C {1} %\uB9CC\uD07C \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4.
-    \uAE30\uBCF8 \uACF5\uACA9\uC774 \uBA85\uC911\uD560 \uB54C\uB9C8\uB2E4 \uD574\uB2F9
-    \uC804\uD22C \uB3D9\uC548 {2} \uC744/\uB97C {3}%\uB9CC\uD07C \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
+  cardDescription: "<size=35><b>\uC804\uD22C \uC2DC\uC791 \uC2DC</b></size>\n{0}
+    {1} \uAC10\uC18C\n<size=35><b>\uACF5\uACA9 \uBA85\uC911 \uC2DC</b></size>\n{2}
+    {3} % \uC99D\uAC00"
   eventTypes: 0300000007000000
   baseParams:
   - "\uACF5\uACA9\uC18D\uB3C4"
@@ -28,11 +27,11 @@ MonoBehaviour:
   - "\uACF5\uACA9\uC18D\uB3C4"
   - 1
   paramWordRanges:
-  - start: 6
-    end: 6
+  - start: 3
+    end: 3
+  - start: 4
+    end: 4
   - start: 9
     end: 9
-  - start: 19
-    end: 19
-  - start: 22
-    end: 22
+  - start: 10
+    end: 10

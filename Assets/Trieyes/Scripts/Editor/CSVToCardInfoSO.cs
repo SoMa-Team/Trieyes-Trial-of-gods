@@ -8,9 +8,11 @@ using CardSystem;
 using Utils;
 using TMPro;
 using System;
+using System.Text.RegularExpressions;
 
 public static class CSVToCardInfoSOImporter
 {
+    private static readonly Regex ParamTokenRegex = new Regex(@"^\d+$");
     private const string TMP_FONT_ASSET_PATH = "Assets/Trieyes/Font/SDF/DNFForgedBlade-Bold SDF.asset";
     [MenuItem("Tools/CSVToCardInfoSO")]
     public static void ImportFromCSV()
@@ -80,7 +82,7 @@ public static class CSVToCardInfoSOImporter
             if (card.illustration == null)
                 Debug.LogWarning($"{cardName}: CardIllustration/{values[idx_illustration]} Sprite를 Resources에서 못 찾음!");
 
-            card.cardDescription = values[idx_cardDescription];
+            card.cardDescription = values[idx_cardDescription].Replace("\\n", "\n");
             Debug.Log(card.cardDescription);
 
             // eventTypes
@@ -130,72 +132,35 @@ public static class CSVToCardInfoSOImporter
         Debug.Log($"[TMP] text: {tmp.text} / wordCount: {tmp.textInfo.wordCount}");
 
         // Step 1. 파라미터 등장 순서대로 (ex. {0}, {1}, ...)
-        var paramMatches = new List<(int paramIdx, int origWordIdx)>();
+        var paramRanges = new List<ParamWordRange>();
+
         for (int i = 0; i < tmp.textInfo.wordCount; i++)
         {
-            string word = tmp.textInfo.wordInfo[i].GetWord();
-            Debug.Log($"[TMP] word: {word}");
-            var match = System.Text.RegularExpressions.Regex.Match(word, @"^\d+$");
-            if (match.Success)
+            var wi   = tmp.textInfo.wordInfo[i];
+            string word = wi.GetWord();
+            
+            // 파라미터라면 (word가 숫자 하나)
+            if (Regex.IsMatch(word, @"^\d+$"))
             {
-                int paramIdx = int.Parse(match.Groups[0].Value); // Groups[0], 그룹 캡처 없음
-                paramMatches.Add((paramIdx, i));
-            }
-        }
+                int paramIdx = int.Parse(word);
 
-        foreach (var paramIdx in paramMatches)
-        {
-            Debug.Log($"[TMP] paramIdx: {paramIdx}");
-        }
-
-        // Step 2. 치환 단어 수 계산 (baseParams: "이동 속도|10" 등)
-        var paramWordCounts = new List<int>();
-        foreach (var (paramIdx, _) in paramMatches)
-        {
-            // baseParams의 paramIdx 번째 값을 단어(공백 기준)로 나눔
-            if (baseParams != null && paramIdx < baseParams.Count)
-            {
-                string val = baseParams[paramIdx];
-                Debug.Log($"[TMP] paramIdx: {paramIdx}, value: {val}");
-                try
+                // baseParams에서 이 파라미터가 치환되면 몇 단어를 차지하는지 계산
+                int count = 1;
+                if (baseParams != null && paramIdx < baseParams.Count)
                 {
-                    int count = string.IsNullOrWhiteSpace(val) ? 1 : val.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
-                    Debug.Log($"[TMP] count: {count}");
-                    paramWordCounts.Add(count);
-                    Debug.Log($"Try 진입");
+                    string paramValue = baseParams[paramIdx];
+                    count = string.IsNullOrWhiteSpace(paramValue) ? 1 :
+                        paramValue.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
                 }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"[TMP] paramIdx: {paramIdx} 예외 발생: {ex}");
-                }
-            }
-            else
-            {
-                Debug.LogError($"[TMP] 파싱에서 문제가 발생했습니다.");
-            }
-        }
 
-        foreach (var paramWordCount in paramWordCounts)
-        {
-            Debug.Log($"[TMP] paramWordCount: {paramWordCount}");
-        }
-
-        // Step 3. 실제 인덱스 범위 계산
-        var ranges = new List<ParamWordRange>();
-        int offset = 0;
-        for (int i = 0; i < paramMatches.Count; i++)
-        {
-            int origIdx = paramMatches[i].origWordIdx;
-            int count = paramWordCounts[i];
-            int start = origIdx + offset;
-            int end = start + count - 1;
-            Debug.Log($"[TMP] start: {start}, end: {end}");
-            ranges.Add(new ParamWordRange { start = start, end = end });
-            offset += count - 1; // 현재 파라미터가 1보다 크면 뒤 인덱스가 밀림
+                int start = i;
+                int end = i + count - 1;
+                paramRanges.Add(new ParamWordRange { start = start, end = end });
+            }
         }
 
         GameObject.DestroyImmediate(canvasGo);
-        return ranges;
+        return paramRanges;
     }
 }
 #endif

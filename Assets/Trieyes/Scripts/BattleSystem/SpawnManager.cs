@@ -1,6 +1,7 @@
 using UnityEngine;
 using Utils;
 using CharacterSystem;
+using Stats;
 using System.Collections.Generic;
 
 namespace BattleSystem
@@ -133,6 +134,10 @@ namespace BattleSystem
         private Enemy SpawnEnemy()
         {
             var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
+            enemy.statSheet[StatType.AttackPower].MultiplyToBasicValue(_difficulty.enemyAttackMultiplier);
+            enemy.statSheet[StatType.Health].MultiplyToBasicValue(_difficulty.enemyHpMultiplier);
+            enemy.SyncHP();
+            Debug.Log($"Enemy HP: {enemy.statSheet[StatType.Health].Value}, Enemy Attack: {enemy.statSheet[StatType.AttackPower].Value}");
             return enemy;
         }
     }

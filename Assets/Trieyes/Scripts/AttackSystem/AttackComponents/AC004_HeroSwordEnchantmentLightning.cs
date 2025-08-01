@@ -19,7 +19,7 @@ namespace AttackComponents
     public class AC004_HeroSwordEnchantmentLightning : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
-        public float attackDuration = 1f;
+        public float attackDuration = 1f; // 기본값 (hero 공격속도로 덮어씌워짐)
         public float attackRadius = 1f; // 회전 반지름
 
         public Vector2 direction;
@@ -29,15 +29,14 @@ namespace AttackComponents
         public int chainDamage; // Attack.StatSheet.stats 에서 가져와야 함
         public float chainRadius;
         public int chainCount;
-
         public float chainDelay;
+
+        public AttackData chainAttackData;
 
         // FSM 상태 관리
         private LightningAttackState attackState = LightningAttackState.None;
         private float attackTimer = 0f;
         private Vector2 attackDirection;
-
-        public AttackData chainAttackData;
 
         // VFX 설정
         [Header("VFX Settings")]
@@ -63,9 +62,11 @@ namespace AttackComponents
             attackState = LightningAttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
-            
+
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
+            
+            attackDuration = Mathf.Max(0.1f, 1f / (attack.attacker.statSheet[StatType.AttackSpeed] / 10f));
             
             // 번개 공격 시작
             StartLightningAttack();

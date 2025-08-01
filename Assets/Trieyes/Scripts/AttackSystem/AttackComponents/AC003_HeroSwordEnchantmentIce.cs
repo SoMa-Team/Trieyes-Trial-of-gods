@@ -58,6 +58,7 @@ namespace AttackComponents
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
+            attackDuration = Mathf.Max(0.1f, 1f / (attack.attacker.statSheet[StatType.AttackSpeed] / 10f));
             
             // 얼음 공격 시작
             StartIceAttack();

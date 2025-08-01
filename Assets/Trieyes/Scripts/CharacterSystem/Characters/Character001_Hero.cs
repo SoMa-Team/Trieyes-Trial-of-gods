@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using AttackSystem;
 using Stats;
+using AttackComponents;
 
 namespace CharacterSystem
 {
@@ -36,6 +37,9 @@ namespace CharacterSystem
         public bool RAC010Trigger = false; // 번개 속성 공격속도 증가용
         public bool RAC011Trigger = false; // 화상 중첩 효과용
         public bool RAC012Trigger = false; // 둔화 중첩 효과용
+        
+        // RAC009 컴포넌트 (hero가 직접 소유)
+        public RAC009_OrbitingStarGenerator rac009Component;
         
         // Pawn의 추상 멤버 구현
         

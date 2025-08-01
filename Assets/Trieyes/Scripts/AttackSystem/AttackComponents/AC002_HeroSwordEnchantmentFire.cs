@@ -18,7 +18,7 @@ namespace AttackComponents
     public class AC002_HeroSwordEnchantmentFire : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
-        public float attackDuration = 1f;
+        public float attackDuration = 1f; // 기본값 (hero 공격속도로 덮어씌워짐)
         public float attackRadius = 1f; // 회전 반지름
 
         public Vector2 direction;
@@ -64,6 +64,8 @@ namespace AttackComponents
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
+            
+            attackDuration = Mathf.Max(0.1f, 1f / (attack.attacker.statSheet[StatType.AttackSpeed] / 10f));
             
             // 불꽃 공격 시작
             StartFireAttack();

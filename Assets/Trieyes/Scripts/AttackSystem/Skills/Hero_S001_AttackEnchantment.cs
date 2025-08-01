@@ -51,6 +51,12 @@ namespace AttackComponents
             base.Activate(attack, direction);
             
             character = attack.attacker as Character001_Hero;
+
+            if (character is null)
+            {
+                Debug.LogError("[S001] Character001_Hero 컴포넌트를 찾을 수 없습니다!");
+                return;
+            }
             
             // 초기 상태 설정
             enchantmentState = EnchantmentState.Preparing;
@@ -98,6 +104,11 @@ namespace AttackComponents
                     
                     if (enchantmentTimer >= 0.1f) // 준비 시간
                     {
+                        if (character.RAC009Trigger && !rac009StarCreated)
+                        {
+                            character.rac009Component.CreateOrbitingStar();
+                            rac009StarCreated = true;
+                        }
                         enchantmentState = EnchantmentState.Active;
                         enchantmentTimer = 0f;
                     }

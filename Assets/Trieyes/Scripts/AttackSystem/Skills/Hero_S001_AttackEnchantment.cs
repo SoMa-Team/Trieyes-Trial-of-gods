@@ -24,7 +24,6 @@ namespace AttackComponents
         // FSM 상태 관리
         private EnchantmentState enchantmentState = EnchantmentState.None;
         private float enchantmentTimer = 0f;
-        private bool rac009StarCreated = false; // RAC009 1회 제한 관리
 
         // 강화 효과 상태 열거형
         private enum EnchantmentState
@@ -104,11 +103,6 @@ namespace AttackComponents
                     
                     if (enchantmentTimer >= 0.1f) // 준비 시간
                     {
-                        if (character.RAC009Trigger && !rac009StarCreated)
-                        {
-                            character.rac009Component.CreateOrbitingStar();
-                            rac009StarCreated = true;
-                        }
                         enchantmentState = EnchantmentState.Active;
                         enchantmentTimer = 0f;
                     }
@@ -172,9 +166,6 @@ namespace AttackComponents
             lastEnchantmentTime = 0f;
             character.killedDuringSkill001 = 0;
             character.killedDuringSkill002 = 0;
-            
-            // RAC 관련 초기화
-            rac009StarCreated = false;
         }
 
         private void TriggerRandomEnchantment()

@@ -33,13 +33,12 @@ namespace CharacterSystem
         // RAC 관련 트리거 변수들
         public bool RAC006Trigger = false; // 속성 검기 발사용
         public bool RAC008Trigger = false; // 지속시간 증가용
-        public bool RAC009Trigger = false; // 공전 별 생성용 (1회만)
         public bool RAC010Trigger = false; // 번개 속성 공격속도 증가용
         public bool RAC011Trigger = false; // 화상 중첩 효과용
         public bool RAC012Trigger = false; // 둔화 중첩 효과용
         
         // RAC009 컴포넌트 (hero가 직접 소유)
-        public RAC009_OrbitingStarGenerator rac009Component;
+        public AC108_OrbitingManager orbitingManager;
         
         // Pawn의 추상 멤버 구현
         

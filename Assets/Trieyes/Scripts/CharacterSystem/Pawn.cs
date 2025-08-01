@@ -385,12 +385,9 @@ namespace CharacterSystem
                         Animator.SetBool("1_Move", false);
                         break;
                     case "ATTACK":
-                        Debug.Log($"<color=cyan>[ANIMATION] {gameObject.name} attack animation time interval: {Time.time - _animationTime}</color>");
-                        _animationTime = Time.time;
-                        Animator.SetTrigger("2_Attack");
-                        // 공격속도에 맞춰 애니메이션 속도 조절
                         float attackSpeed = GetStatValue(StatType.AttackSpeed);
-                        Animator.speed = Mathf.Max(0f, attackSpeed / 10f); // 최소 0.1배속 보장
+                        Animator.speed = Mathf.Max(0f, attackSpeed / 10f);
+                        Animator.SetTrigger("2_Attack");
                         break;
                     case "DAMAGED":
                         Animator.SetTrigger("3_Damaged");

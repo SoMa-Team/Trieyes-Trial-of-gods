@@ -60,12 +60,11 @@ namespace AttackComponents
         private List<GameObject> spawnedVFXs = new List<GameObject>(); // 각 콜라이더별 VFX
 
         // FSM 상태 관리
-        private OrbitState orbitState = OrbitState.None;
+        private OrbitState orbitState = OrbitState.Preparing;
 
         // 공전 상태 열거형
-        private enum OrbitState
+        public enum OrbitState
         {
-            None,
             Preparing,
             Active,
             Finishing,
@@ -80,6 +79,8 @@ namespace AttackComponents
             orbitState = OrbitState.Preparing;
             currentAngle = orbitOffset;
             hitTargets.Clear();
+            
+            Debug.Log("<color=purple>[AC107] 공전 요소 초기화 완료! (Preparing 상태)</color>");
         }
 
         /// <summary>
@@ -119,10 +120,27 @@ namespace AttackComponents
             colliderRadius = radius;
         }
 
+        /// <summary>
+        /// 외부에서 공전 요소를 Active 상태로 전환합니다.
+        /// </summary>
+        public void ActivateOrbiting()
+        {
+            if (orbitState == OrbitState.Preparing)
+            {
+                StartOrbiting();
+                CreateOrbitingColliders(); // 별(콜라이더와 VFX) 생성
+
+                orbitState = OrbitState.Active;
+                Debug.Log("<color=green>[AC107] 외부에서 공전 요소 Active 상태로 전환!</color>");
+            }
+            else
+            {
+                Debug.LogWarning($"[AC107] 현재 상태({orbitState})에서는 Active로 전환할 수 없습니다!");
+            }
+        }
+        
         private void StartOrbiting()
         {
-            orbitState = OrbitState.Preparing;
-            
             // 공전 중심 설정
             if (orbitTarget != null)
             {
@@ -225,15 +243,7 @@ namespace AttackComponents
         {
             switch (orbitState)
             {
-                case OrbitState.None:
-                    // 공전 시작
-                    StartOrbiting();
-                    break;
-
                 case OrbitState.Preparing:
-                    // 콜라이더 생성 (VFX도 함께 생성)
-                    CreateOrbitingColliders();
-                    orbitState = OrbitState.Active;
                     break;
 
                 case OrbitState.Active:
@@ -246,7 +256,7 @@ namespace AttackComponents
                     break;
 
                 case OrbitState.Finished:
-                    orbitState = OrbitState.None;
+                    orbitState = OrbitState.Preparing;
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }

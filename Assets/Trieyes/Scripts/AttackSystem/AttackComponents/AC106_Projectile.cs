@@ -90,8 +90,37 @@ namespace AttackComponents
             isDestroyed = false;
             hitTargets.Clear(); // AC100~105 패턴: 리스트 초기화
             
-            // 발사체 시작
-            StartProjectile();
+            Debug.Log("<color=orange>[AC106] 발사체 초기화 완료! (Preparing 상태)</color>");
+        }
+
+        /// <summary>
+        /// 외부에서 발사체를 Active 상태로 전환합니다.
+        /// </summary>
+        public void ActivateProjectile()
+        {
+            if (projectileState == ProjectileState.Preparing)
+            {
+                projectileState = ProjectileState.Active;
+                StartProjectile();
+                Debug.Log("<color=green>[AC106] 외부에서 발사체 Active 상태로 전환!</color>");
+            }
+            else
+            {
+                Debug.LogWarning($"[AC106] 현재 상태({projectileState})에서는 Active로 전환할 수 없습니다!");
+            }
+        }
+
+        /// <summary>
+        /// 외부에서 발사체를 강제로 파괴합니다.
+        /// </summary>
+        public void ForceDestroyProjectile()
+        {
+            if (projectileState == ProjectileState.Active)
+            {
+                projectileState = ProjectileState.Destroying;
+                DestroyProjectile();
+                Debug.Log("<color=red>[AC106] 외부에서 발사체 강제 파괴!</color>");
+            }
         }
 
         /// <summary>
@@ -136,16 +165,49 @@ namespace AttackComponents
 
         private void StartProjectile()
         {
-            projectileState = ProjectileState.Preparing;
-            
             // 콜라이더 설정
             SetupProjectileCollider();
             
             // VFX 생성 및 설정 (AC100~105 패턴)
             spawnedVFX = CreateAndSetupVFX(projectileVFXPrefab, attack.transform.position, projectileDirection);
-            PlayVFX(spawnedVFX);
+            
+            // VFX 즉시 재생 및 강제 시작
+            if (spawnedVFX != null)
+            {
+                PlayVFX(spawnedVFX);
+                ForceStartParticleSystems(spawnedVFX);
+            }
             
             Debug.Log("<color=orange>[AC106] 발사체 시작!</color>");
+        }
+
+        /// <summary>
+        /// ParticleSystem을 강제로 즉시 시작합니다.
+        /// </summary>
+        /// <param name="vfx">VFX 게임오브젝트</param>
+        private void ForceStartParticleSystems(GameObject vfx)
+        {
+            if (vfx == null) return;
+            
+            ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
+            foreach (var ps in particleSystems)
+            {
+                // ParticleSystem을 즉시 시작
+                ps.Play(true); // true = 자식들도 함께 재생
+                
+                // 시작 시간을 0으로 설정하여 즉시 보이도록 함
+                var main = ps.main;
+                main.startDelay = 0f;
+                
+                // 이미 재생 중이면 다시 시작
+                if (ps.isPlaying)
+                {
+                    ps.Stop();
+                    ps.Play(true);
+                }
+            }
+            
+            Debug.Log($"<color=cyan>[AC106] VFX ParticleSystem 강제 시작: {vfx.name}</color>");
         }
 
         private void SetupProjectileCollider()
@@ -176,9 +238,50 @@ namespace AttackComponents
             }
         }
 
+        /// <summary>
+        /// 발사체 VFX를 생성하고 설정합니다. (AC100~105 패턴)
+        /// </summary>
+        /// <param name="vfxPrefab">VFX 프리팹</param>
+        /// <param name="position">VFX 생성 위치</param>
+        /// <param name="direction">VFX 방향</param>
+        /// <returns>생성된 VFX 게임오브젝트</returns>
+        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
+        {
+            // 프리팹이 없으면 VFX 없이 진행
+            if (vfxPrefab == null)
+            {
+                Debug.LogWarning("[AC106] VFX 프리팹이 설정되지 않았습니다!");
+                return null;
+            }
+
+            // 기본 VFX 생성 (base 호출)
+            if (spawnedVFX is null)
+            {
+                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            }
+            
+            if (spawnedVFX != null)
+            {
+                spawnedVFX.transform.position = position;
+                
+                // 발사 방향에 따라 VFX 회전
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
+                
+                // VFX 즉시 활성화
+                spawnedVFX.SetActive(true);
+                
+                Debug.Log($"<color=green>[AC106] VFX 생성 완료: {spawnedVFX.name} at {position}</color>");
+            }
+            
+            return spawnedVFX;
+        }
+
         protected override void Update()
         {
             base.Update();
+
+            if (isLocked) return;
             
             // 발사체 상태 처리
             ProcessProjectileState();
@@ -192,7 +295,7 @@ namespace AttackComponents
                     break;
 
                 case ProjectileState.Preparing:
-                    projectileState = ProjectileState.Active;
+                    // Preparing 상태에서는 외부에서 ActivateProjectile() 호출을 기다림
                     break;
 
                 case ProjectileState.Active:
@@ -327,38 +430,6 @@ namespace AttackComponents
                     DestroyProjectile();
                 }
             }
-        }
-
-        /// <summary>
-        /// 발사체 VFX를 생성하고 설정합니다. (AC100~105 패턴)
-        /// </summary>
-        /// <param name="vfxPrefab">VFX 프리팹</param>
-        /// <param name="position">VFX 생성 위치</param>
-        /// <param name="direction">VFX 방향</param>
-        /// <returns>생성된 VFX 게임오브젝트</returns>
-        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
-        {
-            // 프리팹이 없으면 VFX 없이 진행
-            if (vfxPrefab == null)
-            {
-                return null;
-            }
-
-            // 기본 VFX 생성 (base 호출)
-            if (spawnedVFX is null)
-            {
-                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
-            }
-            
-            spawnedVFX.transform.position = position;
-            
-            // 발사 방향에 따라 VFX 회전
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
-            
-            spawnedVFX.SetActive(true);
-            
-            return spawnedVFX;
         }
 
         public override void Deactivate()

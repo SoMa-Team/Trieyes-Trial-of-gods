@@ -364,6 +364,8 @@ namespace CharacterSystem
             }
         }
 
+        private float _animationTime = 0f;
+
         /// <summary>
         /// 애니메이션 상태를 변경합니다.
         /// </summary>
@@ -372,6 +374,7 @@ namespace CharacterSystem
         {          
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
+                Animator.speed = 1f;
                 // switch로 각 newStat에 대한 Parameter 값을 변경
                 switch (newState)
                 {
@@ -382,16 +385,22 @@ namespace CharacterSystem
                         Animator.SetBool("1_Move", false);
                         break;
                     case "ATTACK":
+                        Debug.Log($"<color=cyan>[ANIMATION] {gameObject.name} attack animation time interval: {Time.time - _animationTime}</color>");
+                        _animationTime = Time.time;
                         Animator.SetTrigger("2_Attack");
+                        // 공격속도에 맞춰 애니메이션 속도 조절
+                        float attackSpeed = GetStatValue(StatType.AttackSpeed);
+                        Animator.speed = Mathf.Max(0f, attackSpeed / 10f); // 최소 0.1배속 보장
                         break;
                     case "DAMAGED":
                         Animator.SetTrigger("3_Damaged");
                         break;
                     case "DEATH":
                         Animator.SetBool("isDeath", true);
-                        Debug.Log($"<color=red>[ANIMATION] {gameObject.name} changed to DEATH</color>");
                         break;
                 }
+                
+                currentAnimationState = newState;
             }
         }
 

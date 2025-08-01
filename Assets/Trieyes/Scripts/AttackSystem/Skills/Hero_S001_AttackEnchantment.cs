@@ -3,6 +3,7 @@ using AttackSystem;
 using CharacterSystem;
 using UnityEngine;
 using BattleSystem;
+using Stats;
 
 namespace AttackComponents
 {
@@ -57,6 +58,12 @@ namespace AttackComponents
                 return;
             }
             
+            // 공격속도에 맞춰 강화 효과 생성 간격 설정
+            float attackSpeed = character.GetStatValue(StatType.AttackSpeed);
+            generationInterval = Mathf.Max(0.0001f, 1f / (attackSpeed / 10f));
+            
+            Debug.Log($"[S001] 공격속도 기반 생성 간격 설정: AttackSpeed={attackSpeed}, GenerationInterval={generationInterval:F2}s");
+            
             // 초기 상태 설정
             enchantmentState = EnchantmentState.Preparing;
             enchantmentTimer = 0f;
@@ -103,6 +110,10 @@ namespace AttackComponents
                     
                     if (enchantmentTimer >= 0.1f) // 준비 시간
                     {
+                        if(character.RAC010Trigger)
+                        {
+                            GetAttackSpeedBoost();
+                        }
                         enchantmentState = EnchantmentState.Active;
                         enchantmentTimer = 0f;
                     }
@@ -276,6 +287,25 @@ namespace AttackComponents
             debuff.Activate(debuffInfo);
 
             Debug.Log("<color=yellow>[S001] 천상 버프 적용 완료!</color>");
+        }
+
+        private void GetAttackSpeedBoost()
+        {
+            var _attacker = attack.attacker as Character001_Hero;
+            if (_attacker != null)
+            {
+                var buffInfo = new BuffInfo
+                {
+                    buffType = BUFFType.IncreaseAttackSpeed,
+                    attack = attack,
+                    target = attack.attacker,
+                    buffMultiplier = 200f,
+                    buffDuration = enchantmentDuration,
+                };
+
+                var buff = new BUFF();
+                buff.Activate(buffInfo);
+            }
         }
     }
 } 

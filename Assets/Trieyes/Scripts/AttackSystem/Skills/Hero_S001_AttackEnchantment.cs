@@ -24,10 +24,6 @@ namespace AttackComponents
         // FSM 상태 관리
         private EnchantmentState enchantmentState = EnchantmentState.None;
         private float enchantmentTimer = 0f;
-        
-        // RAC 컴포넌트 캐싱
-        private RAC006_ProjectileGenerator rac006Component;
-        private RAC009_OrbitingStarGenerator rac009Component;
         private bool rac009StarCreated = false; // RAC009 1회 제한 관리
 
         // 강화 효과 상태 열거형
@@ -67,33 +63,7 @@ namespace AttackComponents
         public override void OnLockActivate()
         {
             base.OnLockActivate();
-            
-            // Lock 상태에서 RAC 컴포넌트들을 미리 찾아서 캐싱
-            CacheRAComponents();
-        }
-        
-        /// <summary>
-        /// RAC 컴포넌트들을 미리 찾아서 캐싱합니다.
-        /// </summary>
-        private void CacheRAComponents()
-        {
-            rac006Component = null;
-            rac009Component = null;
-            rac009StarCreated = false;
-            
-            foreach (var component in attack.components)
-            {
-                if (component is RAC006_ProjectileGenerator rac006)
-                {
-                    rac006Component = rac006;
-                }
-                else if (component is RAC009_OrbitingStarGenerator rac009)
-                {
-                    rac009Component = rac009;
-                }
-            }
-            
-            Debug.Log($"[S001] RAC 컴포넌트 캐싱 완료 - RAC006: {(rac006Component != null ? "찾음" : "없음")}, RAC009: {(rac009Component != null ? "찾음" : "없음")}");
+            DetermineAndSetEnchantment();
         }
 
         private void DetermineAndSetEnchantment()
@@ -128,7 +98,6 @@ namespace AttackComponents
                     
                     if (enchantmentTimer >= 0.1f) // 준비 시간
                     {
-                        DetermineAndSetEnchantment();
                         enchantmentState = EnchantmentState.Active;
                         enchantmentTimer = 0f;
                     }
@@ -203,34 +172,6 @@ namespace AttackComponents
             AttackFactory.Instance.Create(attackDatas[randomEnchantmentID], character, null, character.LastMoveDirection);
             Debug.Log($"<color=yellow>[S001] Random enchantment generated: ID {randomEnchantmentID}</color>");
             Debug.Log($"<color=yellow>[S001] {attack.gameObject.name} attackDatas: {attackDatas[randomEnchantmentID].attackId}, attacker: {character.gameObject.name}</color>");
-            
-            // RAC006 트리거 확인 및 AC106 생성
-            if (rac006Component != null && character.RAC006Trigger)
-            {
-                CreateRAC006Projectile();
-            }
-            if (!rac009StarCreated && character.RAC009Trigger && rac009Component != null)
-            {
-                CreateRAC009OrbitingStar();
-            }
-        }
-        
-        /// <summary>
-        /// RAC006 트리거 활성 시 AC106 Projectile 생성
-        /// </summary>
-        private void CreateRAC006Projectile()
-        {
-            rac006Component.CreateProjectile(character.LastMoveDirection);
-        }
-        
-        /// <summary>
-        /// RAC009 트리거 활성 시 AC107 Orbiting Star 생성 (1회만)
-        /// </summary>
-        private void CreateRAC009OrbitingStar()
-        {
-            rac009Component.CreateOrbitingStar();
-            rac009StarCreated = true; // 1회 생성 완료 플래그 설정
-            Debug.Log("[S001] RAC009 공전 별 1회 생성 완료!");
         }
 
         private void UpdateEnchantmentDuration()

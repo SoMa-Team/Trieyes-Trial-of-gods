@@ -154,17 +154,17 @@ namespace AttackSystem
             {
                 AttackComponentFactory.Instance.Activate(attackComponent, this, direction);
             }
+
+            // 3. Lock 상태에서 초기 설정 수행 (부모 → 자식 순서)
+            OnLockActivate();
             
-            // 3. 재귀적으로 자식 Attack들도 Activate
+            // 4. 재귀적으로 자식 Attack들도 Activate
             foreach (var child in children)
             {
                 child.Activate(attacker, direction);
             }
             
-            // 4. Lock 상태에서 초기 설정 수행 (부모 → 자식 순서)
-            OnLockActivate();
-            
-            // 5. Lock 해제 (부모 → 손자 순서로 재귀적 해제)
+            // 5. Lock 해제
             SetLock(false);
         }
 

@@ -76,7 +76,7 @@ namespace AttackComponents
                     Vector2 newPosition = CalculateOrbitPosition(realAngle);
                     
                     // 실시간 위치 업데이트 (매우 짧은 지속시간으로 부드럽게)
-                    Tween.Position(obj.transform, newPosition, 0.05f, Ease.Linear);
+                    Tween.Position(obj.transform, newPosition, 0.1f, Ease.InOutSine);
                 }
             }
         }
@@ -126,15 +126,14 @@ namespace AttackComponents
                 if (orbitingComponent != null)
                 {
                     // 객체 설정
-                    orbitingComponent.SetupOrbitingObject(attackData, attacker, vfxPrefab, orbitRadius);
-                    orbitingComponent.SetOrbitTarget(orbitTarget);
+                    orbitingComponent.SetupOrbitingObject(attackData, attacker, vfxPrefab);
                 }
                 
                 // 리스트에 추가
                 orbitingObjects.Add(orbitingAttack);
                 
-                // 궤도 재계산 및 애니메이션 (모든 각도가 동일하게)
-                RecalculateOrbitPositionsWithPrimeTween();
+                // 객체를 즉시 올바른 궤도 위치에 배치
+                PlaceObjectAtCorrectOrbitPosition(orbitingAttack, orbitingObjects.Count - 1);
                 
                 // 등장 애니메이션
                 PlaySpawnAnimation(orbitingAttack);
@@ -143,6 +142,36 @@ namespace AttackComponents
             }
             
             return orbitingAttack;
+        }
+        
+        /// <summary>
+        /// 객체를 올바른 궤도 위치에 배치합니다.
+        /// </summary>
+        /// <param name="orbitingAttack">배치할 Attack 객체</param>
+        /// <param name="index">궤도에서의 인덱스</param>
+        private void PlaceObjectAtCorrectOrbitPosition(Attack orbitingAttack, int index)
+        {
+            if (orbitingObjects.Count == 0) return;
+            
+            float angleStep = 360f / orbitingObjects.Count;
+            float targetAngle = angleStep * index;
+            Vector2 targetPosition = CalculateOrbitPosition(targetAngle);
+            
+            // owner(플레이어) 위치에서 시작
+            orbitingAttack.transform.position = orbitOwner.transform.position;
+            
+            // AC107의 궤도 인덱스 설정
+            AC107_OrbitingElement orbitingComponent = orbitingAttack.GetComponent<AC107_OrbitingElement>();
+            if (orbitingComponent != null)
+            {
+                orbitingComponent.SetOrbitIndex(index, orbitingObjects.Count);
+            }
+            
+            // owner 위치에서 플레이어 주변 궤도로 Tween 이동
+            Tween moveTween = Tween.Position(orbitingAttack.transform, targetPosition, positionMoveDuration, Ease.OutQuad);
+            activeTweens[orbitingAttack] = moveTween;
+            
+            Debug.Log($"[AC108] AC107 {index}번째 객체를 owner에서 각도 {targetAngle}°로 이동");
         }
         
         /// <summary>
@@ -161,7 +190,7 @@ namespace AttackComponents
                     // 풀로 반환
                     ReturnToPool(orbitingAttack);
                     
-                    // 궤도 재계산 (모든 각도가 동일하게)
+                    // 나머지 객체들을 올바른 궤도 위치로 재배치
                     RecalculateOrbitPositionsWithPrimeTween();
                     
                     Debug.Log($"[AC108] 공전 객체 제거 완료! (현재 {orbitingObjects.Count}개)");

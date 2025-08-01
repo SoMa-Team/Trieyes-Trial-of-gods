@@ -26,7 +26,6 @@ namespace AttackComponents
         private float attackTimer = 0f;
         private Vector2 attackDirection;
 
-        public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // Skill 002에 대하여 AOE 공격 발동 시 AOE의 기본 정보들

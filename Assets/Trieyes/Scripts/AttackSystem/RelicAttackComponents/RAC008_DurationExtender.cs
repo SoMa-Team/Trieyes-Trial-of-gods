@@ -11,7 +11,6 @@ namespace AttackComponents
     public class RAC008_DurationExtender : AttackComponent
     {
         private Character001_Hero hero;
-        private float lastKillCount = 0;
 
         public override void Activate(Attack attack, Vector2 direction)
         {
@@ -20,7 +19,6 @@ namespace AttackComponents
             hero = attack.attacker as Character001_Hero;
             if (hero != null)
             {
-                lastKillCount = hero.killedDuringSkill001;
                 hero.RAC008Trigger = true;
             }
         }

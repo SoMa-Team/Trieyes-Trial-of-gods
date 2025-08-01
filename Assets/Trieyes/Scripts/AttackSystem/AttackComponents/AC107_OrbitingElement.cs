@@ -27,7 +27,6 @@ namespace AttackComponents
     {   
         // 공전 대상 설정
         [Header("공전 대상 설정")]
-        public Transform orbitTarget;      // 공전할 대상 (외부에서 설정)
         public Pawn orbitOwner;
 
         // 콜라이더 설정
@@ -51,8 +50,6 @@ namespace AttackComponents
         
         // 궤도 각도 상태
         private float baseAngle = 0f;      // 고정 각도 (360/N * index)
-        private float currentAngle = 0f;    // 현재 각도 (baseAngle + 회전)
-        private int orbitIndex = -1;        // 궤도에서의 인덱스
 
         /// <summary>
         /// 공전 객체를 설정합니다. (AC108에서 호출)
@@ -60,8 +57,7 @@ namespace AttackComponents
         /// <param name="attackData">공격 데이터</param>
         /// <param name="orbitOwner">공격자 (Pawn 타입)</param>
         /// <param name="vfxPrefab">VFX 프리팹</param>
-        /// <param name="radius">공전 반지름</param>
-        public void SetupOrbitingObject(AttackData attackData, Pawn orbitOwner, GameObject vfxPrefab, float radius)
+        public void SetupOrbitingObject(AttackData attackData, Pawn orbitOwner, GameObject vfxPrefab)
         {
             this.attackData = attackData;
             this.orbitVFXPrefab = vfxPrefab;
@@ -74,15 +70,6 @@ namespace AttackComponents
             CreateVFX();
             
             Debug.Log($"[AC107] 공전 객체 설정 완료! (위치: {transform.position}, 소유자: {orbitOwner.name})");
-        }
-
-        /// <summary>
-        /// 공전 대상을 설정합니다.
-        /// </summary>
-        /// <param name="target">공전할 대상</param>
-        public void SetOrbitTarget(Transform target)
-        {
-            orbitTarget = target;
         }
 
         /// <summary>
@@ -166,67 +153,11 @@ namespace AttackComponents
         /// <param name="totalCount">전체 객체 수</param>
         public void SetOrbitIndex(int index, int totalCount)
         {
-            orbitIndex = index;
+            // orbitIndex = index; // 사용되지 않는 변수
             baseAngle = (360f / totalCount) * index;
-            currentAngle = baseAngle;
+            // currentAngle = baseAngle; // 사용되지 않는 변수
             
             Debug.Log($"[AC107] 궤도 인덱스 설정: {index}/{totalCount} (각도: {baseAngle}°)");
-        }
-        
-        /// <summary>
-        /// 궤도 위치를 업데이트합니다.
-        /// </summary>
-        /// <param name="rotationAngle">추가 회전 각도</param>
-        /// <param name="orbitCenter">궤도 중심</param>
-        /// <param name="orbitRadius">궤도 반지름</param>
-        public void UpdateOrbitPosition(float rotationAngle, Vector2 orbitCenter, float orbitRadius)
-        {
-            currentAngle = baseAngle + rotationAngle;
-            Vector2 newPosition = CalculateOrbitPosition(currentAngle, orbitCenter, orbitRadius);
-            
-            // PrimeTween으로 부드러운 이동
-            Tween.Position(transform, newPosition, 0.1f, Ease.OutQuad);
-        }
-        
-        /// <summary>
-        /// 궤도 위치를 계산합니다.
-        /// </summary>
-        /// <param name="angle">각도 (도)</param>
-        /// <param name="center">궤도 중심</param>
-        /// <param name="radius">궤도 반지름</param>
-        /// <returns>계산된 위치</returns>
-        private Vector2 CalculateOrbitPosition(float angle, Vector2 center, float radius)
-        {
-            float radian = angle * Mathf.Deg2Rad;
-            float x = center.x + (radius * Mathf.Cos(radian));
-            float y = center.y + (radius * Mathf.Sin(radian));
-            
-            return new Vector2(x, y);
-        }
-        
-        /// <summary>
-        /// 객체를 정리합니다.
-        /// </summary>
-        public void Cleanup()
-        {
-            // VFX 정리
-            if (spawnedVFX != null)
-            {
-                var particleSystem = spawnedVFX.GetComponent<ParticleSystem>();
-                if (particleSystem != null)
-                {
-                    particleSystem.Stop();
-                }
-                DestroyImmediate(spawnedVFX);
-            }
-            
-            // Attack 정리
-            if (attack != null)
-            {
-                AttackFactory.Instance.Deactivate(attack);
-            }
-            
-            Debug.Log("[AC107] 객체 정리 완료!");
         }
     }
 

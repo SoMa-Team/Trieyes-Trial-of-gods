@@ -76,6 +76,7 @@ namespace AttackComponents
         {
             base.OnLockActivate();
             DetermineAndSetEnchantment();
+            character.activeSkill001Count++;
         }
 
         private void DetermineAndSetEnchantment()
@@ -137,6 +138,7 @@ namespace AttackComponents
                     {
                         enchantmentState = EnchantmentState.Finishing;
                         enchantmentTimer = 0f;
+                        character.activeSkill001Count -= 1;
                         FinishEnchantment();
                     }
                     break;
@@ -160,7 +162,10 @@ namespace AttackComponents
         private void FinishEnchantment()
         {
             character.weaponElementState = HeroWeaponElementState.None;
-            character.lockBasicAttack = false;
+            if (character.activeSkill001Count == 0)
+            {
+                character.lockBasicAttack = false;
+            }
             
             Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 종료!</color>");
         }
@@ -170,9 +175,7 @@ namespace AttackComponents
             base.Deactivate();
             
             character.weaponElementState = HeroWeaponElementState.None;
-            character.lockBasicAttack = false;
-            
-            enchantmentState = EnchantmentState.None;
+
             enchantmentTimer = 0f;
             lastEnchantmentTime = 0f;
             character.killedDuringSkill001 = 0;

@@ -22,7 +22,6 @@ namespace AttackComponents
         public float attackDuration = 1f; // 기본값 (hero 공격속도로 덮어씌워짐)
         public float attackRadius = 1f; // 회전 반지름
 
-        public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // 번개 연쇄 설정
@@ -273,9 +272,6 @@ namespace AttackComponents
 
                 case LightningAttackState.Active:
                     attackTimer += Time.deltaTime;
-
-                    // TO-DO : 유물 존재 시 이 버프 주는 것 발동
-                    // GetAttackSpeedBoost();
                     
                     // 위치 업데이트
                     attack.transform.position = attack.attacker.transform.position;
@@ -293,25 +289,6 @@ namespace AttackComponents
                     attackState = LightningAttackState.None;
                     AttackFactory.Instance.Deactivate(attack);
                     break;
-            }
-        }
-
-        private void GetAttackSpeedBoost()
-        {
-            var _attacker = attack.attacker as Character001_Hero;
-            if (_attacker != null)
-            {
-                var buffInfo = new BuffInfo
-                {
-                    buffType = BUFFType.IncreaseAttackSpeed,
-                    attack = attack,
-                    target = attack.attacker,
-                    buffMultiplier = 200f,
-                    buffDuration = attackDuration,
-                };
-
-                var buff = new BUFF();
-                buff.Activate(buffInfo);
             }
         }
 

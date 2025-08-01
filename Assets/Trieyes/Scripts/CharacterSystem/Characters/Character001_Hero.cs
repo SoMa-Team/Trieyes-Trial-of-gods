@@ -27,6 +27,8 @@ namespace CharacterSystem
         public int minRandomEnchantmentID = 1;
         public int maxRandomEnchantmentID = 4;
 
+        public int activeSkill001Count = 0;
+        public int activeSkill002Count = 0;
         public int killedDuringSkill001 = 0;
         public int killedDuringSkill002 = 0;
         

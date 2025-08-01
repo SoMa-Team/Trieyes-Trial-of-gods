@@ -110,7 +110,7 @@ namespace GameFramework
 
 
             // mainCharacter.AddRelic(RelicFactory.Create(720008));
-            // mainCharacter.AddRelic(RelicFactory.Create(720011));
+            mainCharacter.AddRelic(RelicFactory.Create(720011));
             // mainCharacter.AddRelic(RelicFactory.Create(720013));
             mainCharacter.ApplyRelic();
 

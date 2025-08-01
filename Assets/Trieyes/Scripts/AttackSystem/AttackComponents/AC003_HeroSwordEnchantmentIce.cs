@@ -24,7 +24,6 @@ namespace AttackComponents
         
         public float debuffDuration = 3f; // 둔화 지속 시간
 
-        public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // FSM 상태 관리

@@ -46,40 +46,6 @@ namespace AttackComponents
             }
         }
 
-        protected override void Update()
-        {
-            base.Update();
-            
-            // Lock 상태일 때는 Update 실행하지 않음
-            if (isLocked) return;
-            
-            if (hero != null && hero.RAC010Trigger && !boostApplied)
-            {
-                ApplyAttackSpeedBoost();
-            }
-        }
-
-        private void ApplyAttackSpeedBoost()
-        {
-            if (boostApplied) return;
-
-            var buffInfo = new BuffInfo
-            {
-                buffType = BUFFType.IncreaseAttackSpeed,
-                attack = attack,
-                target = hero,
-                buffMultiplier = 50f,
-                buffDuration = 10f,
-            };
-
-            var buff = new BUFF();
-            buff.Activate(buffInfo);
-            
-            boostApplied = true;
-            
-            Debug.Log($"[RAC010] 번개 속성으로 공격속도 증가!");
-        }
-
         public override void Deactivate()
         {
             base.Deactivate();

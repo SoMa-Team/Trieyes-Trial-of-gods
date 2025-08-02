@@ -75,7 +75,6 @@ namespace AttackComponents
         public override void OnLockActivate()
         {
             base.OnLockActivate();
-            DetermineAndSetEnchantment();
             character.activeSkill001Count++;
         }
 
@@ -111,6 +110,7 @@ namespace AttackComponents
                     
                     if (enchantmentTimer >= 0.1f) // 준비 시간
                     {
+                        DetermineAndSetEnchantment();
                         if(character.RAC010Trigger)
                         {
                             GetAttackSpeedBoost();
@@ -122,8 +122,11 @@ namespace AttackComponents
 
                 case EnchantmentState.Active:
                     enchantmentTimer += Time.deltaTime;
-                    
-                    // 1초에 1번 강화 효과 생성
+
+                    // 공격속도에 맞춰 강화 효과 생성 간격 설정
+                    float attackSpeed = character.GetStatValue(StatType.AttackSpeed);
+                    generationInterval = Mathf.Max(0.0001f, 1f / (attackSpeed / 10f));
+                                        
                     if (Time.time - lastEnchantmentTime >= generationInterval)
                     {
                         if (character.RAC008Trigger)
@@ -302,7 +305,7 @@ namespace AttackComponents
                     buffType = BUFFType.IncreaseAttackSpeed,
                     attack = attack,
                     target = attack.attacker,
-                    buffMultiplier = 200f,
+                    buffMultiplier = 50f,
                     buffDuration = enchantmentDuration,
                 };
 

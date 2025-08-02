@@ -25,6 +25,7 @@ namespace AttackComponents
         {
             base.Activate(attack, direction);
             hero = attack.attacker as Character001_Hero;
+            gameObject.SetActive(true);
             
             if (hero != null && hero.orbitingManager == null)
             {
@@ -37,17 +38,17 @@ namespace AttackComponents
             }
         }
 
-        public override void OnLockActivate()
+        protected override void Update()
         {
-            base.OnLockActivate();
-
-            if (hero != null)
-            {     
+            if (hero != null && hero.weaponElementState != HeroWeaponElementState.None)
+            {
                 // 속성별 VFX 프리팹 선택
                 GameObject vfxPrefab = GetVFXPrefabByElement(hero.weaponElementState);
                 
                 // AC108 매니저를 통해 공전 객체 추가 (Pawn 타입 전달)
                 hero.orbitingManager.AddOrbitingObject(orbitingStarAttackData, hero, vfxPrefab);
+                
+                gameObject.SetActive(false);
             }
         }
 

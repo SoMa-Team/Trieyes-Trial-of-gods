@@ -126,11 +126,14 @@ namespace AttackComponents
                 {
                     projectileComponent.destroyType = ProjectileDestroyType.OnTime;
                     projectileComponent.maxLifetime = 1f;
+                    projectileComponent.vfxLifetimeMishmatch = true;
+                    projectileComponent.vfxLifetime = 0.65f;
                     projectileComponent.colliderType = ProjectileColliderType.Box;
-                    projectileComponent.colliderWidth = 0.5f;
-                    projectileComponent.colliderHeight = 0.5f;
+                    projectileComponent.colliderWidth = 2f;
+                    projectileComponent.colliderHeight = 2f;
                     
                     SetupProjectileByElement(projectileComponent, hero.weaponElementState);
+
                     // 외부에서 발사체를 Active 상태로 전환
                     projectileComponent.ActivateProjectile();
                 }
@@ -145,21 +148,21 @@ namespace AttackComponents
             {
                 case HeroWeaponElementState.Fire:
                     // 불 속성 검기 설정
-                    projectileComponent.SetProjectileSpeed(8f);
+                    projectileComponent.SetProjectileSpeed(10f);
                     projectileComponent.SetPierceCount(0);
                     projectileComponent.projectileVFXPrefab = FireVFX;
                     break;
                     
                 case HeroWeaponElementState.Ice:
                     // 얼음 속성 검기 설정
-                    projectileComponent.SetProjectileSpeed(6f);
+                    projectileComponent.SetProjectileSpeed(10f);
                     projectileComponent.SetPierceCount(0);
                     projectileComponent.projectileVFXPrefab = IceVFX;
                     break;
                     
                 case HeroWeaponElementState.Lightning:
                     // 번개 속성 검기 설정
-                    projectileComponent.SetProjectileSpeed(12f);
+                    projectileComponent.SetProjectileSpeed(10f);
                     projectileComponent.SetPierceCount(0); // 무한 관통
                     projectileComponent.projectileVFXPrefab = LightningVFX;
                     break;
@@ -173,7 +176,7 @@ namespace AttackComponents
                     
                 default:
                     // 기본 설정
-                    projectileComponent.SetProjectileSpeed(7f);
+                    projectileComponent.SetProjectileSpeed(10f);
                     projectileComponent.SetPierceCount(0);
                     projectileComponent.projectileVFXPrefab = FireVFX;
                     break;

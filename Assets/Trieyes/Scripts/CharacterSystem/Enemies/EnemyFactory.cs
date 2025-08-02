@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using BattleSystem;
+using Stats;
+using Utils;
 
 namespace CharacterSystem
 {
@@ -51,13 +53,14 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="id">생성할 적의 ID</param>
         /// <returns>생성된 gameObject에 부착된 Enemy 객체</returns>
-        public Enemy Create(EnemyID id)
+        public Enemy Create(int enemyId)
         {
-            var enemy = popEnemy(id);
+            var enemy = popEnemy(enemyId);
             if (enemy is null)
-                enemy = ClonePrefab(id);
+                enemy = ClonePrefab(enemyId);
             
-            enemy.enemyID = id;
+            enemy.enemyID = enemyId;
+            
             Activate(enemy);
             
             return enemy;

@@ -40,12 +40,12 @@ namespace CharacterSystem
     {
         // ===== [필드] =====
         [Header("Pawn Settings")]
-        public int maxHp = 100;
+        public int maxHp;
         public int currentHp;
 
         public float moveSpeed => GetStatValue(StatType.MoveSpeed);
 
-        [Header("Components")] 
+        [Header("Components")]
         public Rigidbody2D rb;
         public Collider2D Collider;
 
@@ -200,7 +200,6 @@ namespace CharacterSystem
             }
 
             isDead = false;
-            currentHp = maxHp;
             Collider.enabled = true;
             
             // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
@@ -233,6 +232,8 @@ namespace CharacterSystem
 
             deck.Activate(this, true);
             initBaseStat();
+            
+            SyncHP();
             
             gameObject.SetActive(true);
             
@@ -276,6 +277,12 @@ namespace CharacterSystem
             Controller.Deactivate();
             statuses.Clear();
             ClearStatModifier();
+        }
+        
+        public void SyncHP()
+        {
+            maxHp = statSheet[StatType.Health].Value;
+            currentHp = maxHp;
         }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)

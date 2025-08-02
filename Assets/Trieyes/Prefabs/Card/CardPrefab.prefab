@@ -808,6 +808,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 284955019594156341}
+  - component: {fileID: 5173740652284747469}
   m_Layer: 5
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -830,7 +831,6 @@ RectTransform:
   - {fileID: 1032956101318027911}
   - {fileID: 6671897186701640713}
   - {fileID: 5712901546964222848}
-  - {fileID: 6883454820936512441}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -838,6 +838,28 @@ RectTransform:
   m_AnchoredPosition: {x: 332, y: -41.298}
   m_SizeDelta: {x: 590, y: 860}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5173740652284747469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4986477773496189538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00a6e64ef5dd46dc974d52f9a9dd732c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  illustrationImage: {fileID: 528979332093525092}
+  cardNameText: {fileID: 3554468277644420399}
+  descriptionText: {fileID: 8672422179459943294}
+  propertyEmblemImage: {fileID: 7709777153652077944}
+  propertyEmblemTable: {fileID: 11400000, guid: 8c69fb7f194194fdc96bb0a3d4ca082f, type: 2}
+  statTypeEmblemTable: {fileID: 11400000, guid: 971139292652e4671a6b541497d3f407, type: 2}
+  statTypeEmblemImage: {fileID: 519003180871996064}
+  statIntegerValueText: {fileID: 1061771927131967890}
+  selectionOutline: {fileID: 276490263084511985}
+  stickerBackgroundSprites: []
 --- !u!1 &5006213569322011053
 GameObject:
   m_ObjectHideFlags: 0
@@ -1367,60 +1389,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &5518927288208003606
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6883454820936512441}
-  - component: {fileID: 5757192736278333720}
-  m_Layer: 0
-  m_Name: CardViewTest
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6883454820936512441
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5518927288208003606}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.00005340576, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 284955019594156341}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5757192736278333720
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5518927288208003606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1406d624b114d6c9f0ed593a8270a0c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  illustrationImage: {fileID: 528979332093525092}
-  cardNameText: {fileID: 3554468277644420399}
-  descriptionText: {fileID: 8672422179459943294}
-  propertyEmblemImage: {fileID: 7709777153652077944}
-  propertyEmblemTable: {fileID: 11400000, guid: 8c69fb7f194194fdc96bb0a3d4ca082f, type: 2}
-  statTypeEmblemTable: {fileID: 11400000, guid: 971139292652e4671a6b541497d3f407, type: 2}
-  statTypeEmblemImage: {fileID: 519003180871996064}
-  statIntegerValueText: {fileID: 1061771927131967890}
-  selectionOutline: {fileID: 276490263084511985}
-  stickerBackgroundSprites: []
 --- !u!1 &6431803570433567072
 GameObject:
   m_ObjectHideFlags: 0

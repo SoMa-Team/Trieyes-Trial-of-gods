@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 
 public static class CSVToCardInfoSOImporter
 {
-    private static readonly Regex ParamTokenRegex = new Regex(@"^\d+$");
     private const string TMP_FONT_ASSET_PATH = "Assets/Trieyes/Font/SDF/DNFForgedBlade-Bold SDF.asset";
     [MenuItem("Tools/CSVToCardInfoSO")]
     public static void ImportFromCSV()
@@ -133,7 +132,7 @@ public static class CSVToCardInfoSOImporter
 
         // Step 1. 파라미터 등장 순서대로 (ex. {0}, {1}, ...)
         var paramRanges = new List<ParamWordRange>();
-
+        int prefix = 0;
         for (int i = 0; i < tmp.textInfo.wordCount; i++)
         {
             var wi   = tmp.textInfo.wordInfo[i];
@@ -143,7 +142,7 @@ public static class CSVToCardInfoSOImporter
             if (Regex.IsMatch(word, @"^\d+$"))
             {
                 int paramIdx = int.Parse(word);
-
+        
                 // baseParams에서 이 파라미터가 치환되면 몇 단어를 차지하는지 계산
                 int count = 1;
                 if (baseParams != null && paramIdx < baseParams.Count)
@@ -152,9 +151,10 @@ public static class CSVToCardInfoSOImporter
                     count = string.IsNullOrWhiteSpace(paramValue) ? 1 :
                         paramValue.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
                 }
-
-                int start = i;
-                int end = i + count - 1;
+                
+                int start = i+prefix;
+                int end = start + count - 1;
+                prefix += count - 1;
                 paramRanges.Add(new ParamWordRange { start = start, end = end });
             }
         }

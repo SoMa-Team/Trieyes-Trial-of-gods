@@ -17,9 +17,7 @@ namespace CardViews
     {
         // ===== [UI 필드] =====
         public Image illustrationImage;
-        public Image expFill;
         public TMP_Text cardNameText;
-        public TMP_Text levelText;
         public TMP_Text descriptionText;
         public Image propertyEmblemImage;
         public PropertyEmblemSO propertyEmblemTable;
@@ -66,10 +64,13 @@ namespace CardViews
         {
             // 기본 정보/스탯 등 UI 반영
             illustrationImage.sprite = card.illustration;
-            expFill.fillAmount = (float)card.cardEnhancement.exp.Value / (card.cardEnhancement.level.Value * 10);
 
             cardNameText.text = card.cardName;
-            levelText.text = $"Lv.{card.cardEnhancement.level.Value}";
+            if (card.cardEnhancement.level.Value > 1)
+            {
+                int plusLevel = card.cardEnhancement.level.Value - 1;
+                cardNameText.text += $" <color=#FFD600>+{plusLevel}</color>";
+            }
 
             // 카드 설명의 파라미터 값 적용
             var descParams = card.GetEffectiveParamTexts();

@@ -33,14 +33,8 @@ namespace CardViews
         private DeckView parentDeckView;
         private readonly List<GameObject> activeStickerOverlays = new();
 
-        /// <summary>
-        /// 상위 덱 뷰 참조 연결
-        /// </summary>
         public void SetParentDeckView(DeckViews.DeckView deckView) => parentDeckView = deckView;
 
-        /// <summary>
-        /// 카드 정보 할당 및 UI 초기화
-        /// </summary>
         public virtual void SetCard(Card card)
         {
             this.card = card;
@@ -48,21 +42,14 @@ namespace CardViews
             UpdateView();
         }
 
-        /// <summary>
-        /// 현재 할당된 카드 반환
-        /// </summary>
         public Card GetCurrentCard()
         {
             if (card == null) Debug.LogError("CardView.GetCurrentCard: card is null");
             return card;
         }
 
-        /// <summary>
-        /// 카드 정보에 따라 UI 전체 갱신
-        /// </summary>
         public void UpdateView()
         {
-            // 기본 정보/스탯 등 UI 반영
             illustrationImage.sprite = card.illustration;
 
             cardNameText.text = card.cardName;
@@ -72,11 +59,9 @@ namespace CardViews
                 cardNameText.text += $" <color=#FFD600>+{plusLevel}</color>";
             }
 
-            // 카드 설명의 파라미터 값 적용
             var descParams = card.GetEffectiveParamTexts();
             descriptionText.text = FormatDescription(card.cardDescription, descParams);
 
-            // 속성 엠블럼 처리
             if (card.properties != null && card.properties.Length > 0 && propertyEmblemTable != null)
             {
                 propertyEmblemImage.sprite = propertyEmblemTable.GetEmblem(card.properties[0]);
@@ -84,7 +69,6 @@ namespace CardViews
             }
             else propertyEmblemImage.enabled = false;
 
-            // 스탯 엠블럼 및 값 표시
             if (card.cardStats.stats.Count > 0 && statTypeEmblemTable != null)
             {
                 var stat = card.cardStats.stats[0];
@@ -99,35 +83,31 @@ namespace CardViews
                 statIntegerValueText.enabled = false;
             }
 
-            // --- 스티커 오버레이 ---
             SyncStickerOverlays();
         }
 
         /// <summary>
-        /// 카드 설명 내 치환 파라미터 단어에 스티커 배경 오버레이 이미지를 생성/배치
+        /// 카드 설명 내 치환 파라미터(글자 범위)에 스티커 배경 오버레이 이미지를 생성/배치
         /// </summary>
         private void SyncStickerOverlays()
         {
-            // 1. 기존 오버레이 제거
             foreach (var go in activeStickerOverlays)
                 Destroy(go);
             activeStickerOverlays.Clear();
 
-            // 2. 텍스트 mesh 정보 확보
             descriptionText.ForceMeshUpdate();
             var textInfo = descriptionText.textInfo;
 
-            // 3. 각 스티커 파라미터마다 char index 기준으로 오버레이 생성
             foreach (var kv in card.stickerOverrides)
             {
                 int paramIdx = kv.Key;
                 Sticker sticker = kv.Value;
 
-                if (paramIdx < 0 || card.paramWordRanges == null || paramIdx >= card.paramWordRanges.Count)
+                if (paramIdx < 0 || card.paramCharRanges == null || paramIdx >= card.paramCharRanges.Count)
                     continue;
-                var range = card.paramWordRanges[paramIdx];
+                var range = card.paramCharRanges[paramIdx];
 
-                // [핵심] char index → 줄(line) 단위로 그룹핑
+                // 줄(line) 단위로 그룹핑
                 Dictionary<int, List<int>> lineToCharIdx = new();
                 for (int charIdx = range.start; charIdx <= range.end; charIdx++)
                 {
@@ -139,20 +119,17 @@ namespace CardViews
                     lineToCharIdx[lineNum].Add(charIdx);
                 }
 
-                // 4. 줄별로 오버레이 생성
                 foreach (var lineKv in lineToCharIdx)
                 {
                     var charIndices = lineKv.Value;
                     var firstCharInfo = textInfo.characterInfo[charIndices[0]];
                     var lastCharInfo = textInfo.characterInfo[charIndices[^1]];
 
-                    // 각 줄의 "첫 글자"와 "마지막 글자"의 local 좌표/크기
                     Vector3 bl = firstCharInfo.bottomLeft;
                     Vector3 tr = lastCharInfo.topRight;
                     float width = tr.x - bl.x;
                     float height = tr.y - bl.y;
 
-                    // 오버레이 생성 및 배치
                     var overlayGO = new GameObject($"StickerOverlay_{paramIdx}_line{lineKv.Key}", typeof(UnityEngine.UI.Image));
                     overlayGO.transform.SetParent(descriptionText.transform.parent, false);
                     overlayGO.transform.SetAsFirstSibling();
@@ -161,14 +138,12 @@ namespace CardViews
                     img.sprite = stickerBackgroundSprites[(int)sticker.type];
                     img.color = Color.white;
 
-                    // RectTransform 세팅 (좌상단 anchor/pivot)
                     var rt = overlayGO.GetComponent<RectTransform>();
                     rt.pivot = new Vector2(0, 1);
                     rt.anchorMin = rt.anchorMax = new Vector2(0, 1);
                     rt.localScale = Vector3.one;
                     rt.localRotation = Quaternion.identity;
 
-                    // padding 조정
                     float padding = 6f;
                     rt.sizeDelta = new Vector2(width + padding, Mathf.Abs(height) + padding);
                     rt.anchoredPosition = new Vector2(bl.x - padding * 0.5f, bl.y + Mathf.Abs(height) + padding * 0.5f);
@@ -178,10 +153,6 @@ namespace CardViews
             }
         }
 
-
-        /// <summary>
-        /// 카드 설명(템플릿)에 실제 파라미터 값을 대입해 반환
-        /// </summary>
         private string FormatDescription(string template, List<string> descParams)
         {
             if (descParams == null || descParams.Count == 0)
@@ -193,30 +164,29 @@ namespace CardViews
         }
 
         /// <summary>
-        /// 카드 설명 클릭 시 단어 인덱스 계산 & 스티커 적용 시도.
+        /// 카드 설명 클릭 시 글자 인덱스 계산 & 스티커 적용 시도.
         /// 아니면 부모 덱 뷰로 카드 클릭 알림.
         /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
-            // 설명 영역 클릭 시만 처리
             if (RectTransformUtility.RectangleContainsScreenPoint(
                     descriptionText.rectTransform, eventData.position, eventData.pressEventCamera))
             {
-                int wordIndex = TMP_TextUtilities.FindIntersectingWord(
-                    descriptionText, eventData.position, eventData.pressEventCamera);
+                int charIndex = TMP_TextUtilities.FindIntersectingCharacter(
+                    descriptionText, eventData.position, eventData.pressEventCamera, true);
 
-                Debug.Log($"[CardView] 클릭 단어 인덱스: {wordIndex}");
+                Debug.Log($"[CardView] 클릭 글자 인덱스: {charIndex}");
 
-                if (wordIndex != -1)
+                if (charIndex != -1)
                 {
                     var sticker = ShopSceneManager.Instance?.selectedSticker;
                     if (sticker != null)
                     {
-                        bool applied = card.TryApplyStickerOverride(wordIndex, sticker);
+                        bool applied = card.TryApplyStickerOverride(charIndex, sticker);
                         if (applied)
                         {
                             UpdateView();
-                            Debug.Log($"[CardView] 스티커가 {wordIndex}번째 파라미터에 적용됨");
+                            Debug.Log($"[CardView] 스티커가 char {charIndex}번째 파라미터에 적용됨");
                         }
                         else
                         {
@@ -224,15 +194,11 @@ namespace CardViews
                         }
                         return;
                     }
-                    // 스티커 없으면 아래로 Fall-through
                 }
             }
-            parentDeckView?.OnCardClicked(this); // 카드 선택 등 기존 처리
+            parentDeckView?.OnCardClicked(this);
         }
 
-        /// <summary>
-        /// 카드가 선택 상태면 강조, 아니면 기본 색
-        /// </summary>
         public void SetSelected(bool selected)
         {
             if (selectionOutline != null)

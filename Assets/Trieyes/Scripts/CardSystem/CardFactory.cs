@@ -125,7 +125,7 @@ namespace CardSystem
             card.cardDescription = info.cardDescription;
             card.eventTypes = info.eventTypes != null ? new List<EventType>(info.eventTypes) : new List<EventType>();
             card.baseParams = info.baseParams != null ? new List<string>(info.baseParams) : new List<string>();
-            card.paramWordRanges = info.paramWordRanges != null ? new List<ParamWordRange>(info.paramWordRanges) : new List<ParamWordRange>();
+            card.paramCharRanges = info.paramCharRanges != null ? new List<ParamCharRange>(info.paramCharRanges) : new List<ParamCharRange>();
         }
     }
 }

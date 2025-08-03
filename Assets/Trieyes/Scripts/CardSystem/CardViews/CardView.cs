@@ -113,11 +113,11 @@ namespace CardViews
                 Destroy(go);
             activeStickerOverlays.Clear();
 
-            // 2. 최신 텍스트 mesh 정보 확보
+            // 2. 텍스트 mesh 정보 확보
             descriptionText.ForceMeshUpdate();
             var textInfo = descriptionText.textInfo;
 
-            // 3. 각 스티커 파라미터마다 줄 단위로 오버레이를 생성
+            // 3. 각 스티커 파라미터마다 char index 기준으로 오버레이 생성
             foreach (var kv in card.stickerOverrides)
             {
                 int paramIdx = kv.Key;
@@ -127,43 +127,35 @@ namespace CardViews
                     continue;
                 var range = card.paramWordRanges[paramIdx];
 
-                // [핵심] 단어 인덱스 → 줄(line) 단위 그룹핑
-                Dictionary<int, List<int>> lineToWordIdx = new();
-                for (int wordIdx = range.start; wordIdx <= range.end; wordIdx++)
+                // [핵심] char index → 줄(line) 단위로 그룹핑
+                Dictionary<int, List<int>> lineToCharIdx = new();
+                for (int charIdx = range.start; charIdx <= range.end; charIdx++)
                 {
-                    if (wordIdx < 0 || wordIdx >= textInfo.wordCount)
+                    if (charIdx < 0 || charIdx >= textInfo.characterCount)
                         continue;
-                    int firstCharIdx = textInfo.wordInfo[wordIdx].firstCharacterIndex;
-                    if (firstCharIdx < 0 || firstCharIdx >= textInfo.characterCount)
-                        continue;
-                    int lineNum = textInfo.characterInfo[firstCharIdx].lineNumber;
-                    if (!lineToWordIdx.ContainsKey(lineNum))
-                        lineToWordIdx[lineNum] = new List<int>();
-                    lineToWordIdx[lineNum].Add(wordIdx);
+                    int lineNum = textInfo.characterInfo[charIdx].lineNumber;
+                    if (!lineToCharIdx.ContainsKey(lineNum))
+                        lineToCharIdx[lineNum] = new List<int>();
+                    lineToCharIdx[lineNum].Add(charIdx);
                 }
 
-                // 4. 줄별로 나눈 그룹 당 해당 그룹의 배경이 될 하나의 오버레이 박스를 생성
-                foreach (var lineKv in lineToWordIdx)
+                // 4. 줄별로 오버레이 생성
+                foreach (var lineKv in lineToCharIdx)
                 {
-                    var wordIndices = lineKv.Value;
-                    var wordInfoStart = textInfo.wordInfo[wordIndices[0]];
-                    var wordInfoEnd = textInfo.wordInfo[wordIndices[^1]];
+                    var charIndices = lineKv.Value;
+                    var firstCharInfo = textInfo.characterInfo[charIndices[0]];
+                    var lastCharInfo = textInfo.characterInfo[charIndices[^1]];
 
-                    // 각 줄의 "첫 단어"와 "마지막 단어"의 localRect(좌표+크기)
-                    var localRectStart = wordInfoStart.GetLocalRect(descriptionText);
-                    var localRectEnd = wordInfoEnd.GetLocalRect(descriptionText);
+                    // 각 줄의 "첫 글자"와 "마지막 글자"의 local 좌표/크기
+                    Vector3 bl = firstCharInfo.bottomLeft;
+                    Vector3 tr = lastCharInfo.topRight;
+                    float width = tr.x - bl.x;
+                    float height = tr.y - bl.y;
 
-                    // (줄 내 여러 단어를 커버하는) 오버레이 박스 크기/좌표 계산
-                    float left = localRectStart.x;
-                    float right = localRectEnd.x + localRectEnd.width;
-                    float top = localRectStart.y;
-                    float height = localRectStart.height;
-                    float width = right - left;
-
-                    // 5. 실제 오버레이 이미지 오브젝트 생성 및 배치
+                    // 오버레이 생성 및 배치
                     var overlayGO = new GameObject($"StickerOverlay_{paramIdx}_line{lineKv.Key}", typeof(UnityEngine.UI.Image));
                     overlayGO.transform.SetParent(descriptionText.transform.parent, false);
-                    overlayGO.transform.SetAsFirstSibling(); // 텍스트 뒤에 렌더
+                    overlayGO.transform.SetAsFirstSibling();
 
                     var img = overlayGO.GetComponent<UnityEngine.UI.Image>();
                     img.sprite = stickerBackgroundSprites[(int)sticker.type];
@@ -176,15 +168,16 @@ namespace CardViews
                     rt.localScale = Vector3.one;
                     rt.localRotation = Quaternion.identity;
 
-                    // padding은 여유롭게(글자가 꽉 차보이지 않게)
+                    // padding 조정
                     float padding = 6f;
-                    rt.sizeDelta = new Vector2(width + padding, height + padding);
-                    rt.anchoredPosition = new Vector2(left - padding * 0.5f, top + padding * 0.5f);
+                    rt.sizeDelta = new Vector2(width + padding, Mathf.Abs(height) + padding);
+                    rt.anchoredPosition = new Vector2(bl.x - padding * 0.5f, bl.y + Mathf.Abs(height) + padding * 0.5f);
 
                     activeStickerOverlays.Add(overlayGO);
                 }
             }
         }
+
 
         /// <summary>
         /// 카드 설명(템플릿)에 실제 파라미터 값을 대입해 반환

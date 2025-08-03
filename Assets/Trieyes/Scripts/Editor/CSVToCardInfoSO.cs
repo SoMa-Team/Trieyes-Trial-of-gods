@@ -133,29 +133,24 @@ public static class CSVToCardInfoSOImporter
         // Step 1. 파라미터 등장 순서대로 (ex. {0}, {1}, ...)
         var paramRanges = new List<ParamWordRange>();
         int prefix = 0;
-        for (int i = 0; i < tmp.textInfo.wordCount; i++)
+        for (int i = 0; i < tmp.textInfo.characterCount; i++)
         {
-            var wi   = tmp.textInfo.wordInfo[i];
-            string word = wi.GetWord();
-            
-            // 파라미터라면 (word가 숫자 하나)
-            if (Regex.IsMatch(word, @"^\d+$"))
+            char cur = tmp.textInfo.characterInfo[i].character;
+            if (cur == '{')
             {
-                int paramIdx = int.Parse(word);
-        
-                // baseParams에서 이 파라미터가 치환되면 몇 단어를 차지하는지 계산
-                int count = 1;
-                if (baseParams != null && paramIdx < baseParams.Count)
+                if (i + 1 == tmp.textInfo.characterCount)
                 {
-                    string paramValue = baseParams[paramIdx];
-                    count = string.IsNullOrWhiteSpace(paramValue) ? 1 :
-                        paramValue.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
+                    Debug.LogError("디스크립션의 형식이 잘못되었습니다.");
                 }
-                
-                int start = i+prefix;
+
+                char nxt = tmp.textInfo.characterInfo[i + 1].character;
+                int paramIdx = Int32.Parse(nxt.ToString());
+                string paramValue = baseParams[paramIdx];
+                int count = paramValue.Length;
+                int start = i + prefix;
                 int end = start + count - 1;
-                prefix += count - 1;
-                paramRanges.Add(new ParamWordRange { start = start, end = end });
+                prefix += count - 3;
+                paramRanges.Add(new ParamWordRange() { start = start, end = end });
             }
         }
 

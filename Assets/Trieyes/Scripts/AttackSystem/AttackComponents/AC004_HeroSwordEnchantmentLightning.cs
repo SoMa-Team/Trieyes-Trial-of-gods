@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading;
 using BattleSystem;
 using System;
+using System.Collections.Generic;
 using VFXSystem;
 
 namespace AttackComponents
@@ -18,25 +19,23 @@ namespace AttackComponents
     public class AC004_HeroSwordEnchantmentLightning : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
-        public float attackDuration = 1f;
+        public float attackDuration = 1f; // 기본값 (hero 공격속도로 덮어씌워짐)
         public float attackRadius = 1f; // 회전 반지름
 
-        public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // 번개 연쇄 설정
         public int chainDamage; // Attack.StatSheet.stats 에서 가져와야 함
         public float chainRadius;
         public int chainCount;
-
         public float chainDelay;
+
+        public AttackData chainAttackData;
 
         // FSM 상태 관리
         private LightningAttackState attackState = LightningAttackState.None;
         private float attackTimer = 0f;
         private Vector2 attackDirection;
-
-        public AttackData chainAttackData;
 
         // VFX 설정
         [Header("VFX Settings")]
@@ -62,12 +61,27 @@ namespace AttackComponents
             attackState = LightningAttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
-            
+
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
+            attackDuration = Mathf.Max(0.1f, 1f / (attack.attacker.statSheet[StatType.AttackSpeed] / 10f));
+            
             // 번개 공격 시작
             StartLightningAttack();
+        }
+
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
+                {
+                    _attacker.killedDuringSkill001++;
+                }
+            }
         }
 
         private void StartLightningAttack()
@@ -133,6 +147,9 @@ namespace AttackComponents
                 
                 // VFX 프리팹 전달
                 lightningChainComponent.chainVFXPrefab = chainVFXPrefab;
+
+                lightningChainComponent.statusType = PawnStatusType.ElectricShock;
+                lightningChainComponent.statusDuration = 3f;
                 
                 // 번개 연쇄 시작
                 lightningChainComponent.StartLightningChain(targetPawn.transform.position);
@@ -197,6 +214,9 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
+            
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
             
             // 번개 공격 상태 처리
             ProcessLightningAttackState();

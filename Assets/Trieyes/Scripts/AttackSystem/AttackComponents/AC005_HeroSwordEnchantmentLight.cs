@@ -26,7 +26,6 @@ namespace AttackComponents
         private float attackTimer = 0f;
         private Vector2 attackDirection;
 
-        public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // Skill 002에 대하여 AOE 공격 발동 시 AOE의 기본 정보들
@@ -71,9 +70,23 @@ namespace AttackComponents
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
+            attackDuration = Mathf.Max(0.1f, 1f / (attack.attacker.statSheet[StatType.AttackSpeed] / 10f));
             
             // 공격 시작
             StartHeavenAttack();
+        }
+
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
+                {
+                    _attacker.killedDuringSkill001++;
+                }
+            }
         }
 
         private void StartHeavenAttack()
@@ -216,6 +229,9 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
+            
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
             
             // 천상 공격 상태 처리
             ProcessHeavenAttackState();

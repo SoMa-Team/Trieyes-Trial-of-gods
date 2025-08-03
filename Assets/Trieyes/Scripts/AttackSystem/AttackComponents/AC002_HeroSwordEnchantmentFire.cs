@@ -18,10 +18,9 @@ namespace AttackComponents
     public class AC002_HeroSwordEnchantmentFire : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
-        public float attackDuration = 1f;
+        public float attackDuration = 1f; // 기본값 (hero 공격속도로 덮어씌워짐)
         public float attackRadius = 1f; // 회전 반지름
 
-        public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // FSM 상태 관리
@@ -65,8 +64,23 @@ namespace AttackComponents
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
+            attackDuration = Mathf.Max(0.1f, 1f / (attack.attacker.statSheet[StatType.AttackSpeed] / 10f));
+            
             // 불꽃 공격 시작
             StartFireAttack();
+        }
+
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
+                {
+                    _attacker.killedDuringSkill001++;
+                }
+            }
         }
 
         private void StartFireAttack()
@@ -116,6 +130,14 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
+            var hero = attack.attacker as Character001_Hero;
+            if (hero != null && hero.RAC011Trigger && targetPawn.bIsStatusValid(PawnStatusType.Burn))
+            {
+                // 화상 중첩 효과 처리
+                ProcessBurnStackEffect(targetPawn);
+                return;
+            }
+
             // 단일 대상에게 도트 데미지를 주는 DOT 소환
             var dotAttack = AttackFactory.Instance. Create(dotAttackData, attack.attacker, null, Vector2.zero);
 
@@ -128,10 +150,30 @@ namespace AttackComponents
                 dotComponent.dotDuration = dotDuration;
                 dotComponent.dotInterval = dotInterval;
                 dotComponent.dotTargets.Add(targetPawn as Enemy);
+                dotComponent.dotStatusType = PawnStatusType.Burn;
                 
                 // VFX 프리팹 전달
                 dotComponent.dotVFXPrefab = dotVFXPrefab;
             }
+        }
+
+        /// <summary>
+        /// 화상 중첩 효과를 처리합니다.
+        /// </summary>
+        /// <param name="targetPawn">대상</param>
+        private void ProcessBurnStackEffect(Pawn targetPawn)
+        {
+            // 남은 화상 피해량 계산
+            var _status = (PawnStatus)targetPawn.statuses[PawnStatusType.Burn];
+            float dotStartTime = _status.lastTime;
+            float currentTime = Time.time;
+            float remainingTime = dotStartTime + dotDuration - currentTime;
+            int remainingDamage = (int)(dotDamage * (remainingTime / dotInterval));
+
+            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(remainingDamage);
+            DamageProcessor.ProcessHit(attack, targetPawn);
+
+            targetPawn.RemoveStatus(PawnStatusType.Burn);
         }
 
         /// <summary>
@@ -192,6 +234,9 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
+            
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
             
             // 불꽃 공격 상태 처리
             ProcessFireAttackState();

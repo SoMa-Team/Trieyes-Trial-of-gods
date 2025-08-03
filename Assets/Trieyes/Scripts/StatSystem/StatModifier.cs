@@ -59,7 +59,6 @@ namespace Stats
         }
 
         // --- 메서드 ---
-
         /// <summary>
         /// 버프가 만료되었는지 확인합니다.
         /// </summary>

@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3459700317157637696}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 228.06139, y: 165.08362, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -45,19 +45,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rawAttackComponentPrefabs:
-  - id: 100
-    attackComponent: {fileID: 0}
-  - id: 101
-    attackComponent: {fileID: 0}
-  - id: 102
-    attackComponent: {fileID: 0}
-  - id: 103
-    attackComponent: {fileID: 0}
-  - id: 104
-    attackComponent: {fileID: 0}
-  - id: 105
-    attackComponent: {fileID: 0}
-  - id: 2
+  - id: 10006
+    attackComponent: {fileID: 1733085751111630116, guid: 9925d47185d0e51438b43c8fac1419e6, type: 3}
+  - id: 10008
+    attackComponent: {fileID: 7122730312388021638, guid: ffdd67ffb82e72d428dbf1ff7ba03ba1, type: 3}
+  - id: 10009
+    attackComponent: {fileID: 7925580454624493983, guid: 709469894a2f48c4b8b645a2220a3ec0, type: 3}
+  - id: 10010
+    attackComponent: {fileID: 135834546578427187, guid: 3302b06eb6538a34b9a276db6f50e4ee, type: 3}
+  - id: 10011
+    attackComponent: {fileID: 6304726205302653382, guid: 1cbebaf507784eb42ab1aebf24fc0462, type: 3}
+  - id: 10012
+    attackComponent: {fileID: 8442236075813412221, guid: ae6830643ca05e94ea7cb82907d00ef8, type: 3}
+  - id: 107
     attackComponent: {fileID: 0}
   - id: 3
     attackComponent: {fileID: 0}

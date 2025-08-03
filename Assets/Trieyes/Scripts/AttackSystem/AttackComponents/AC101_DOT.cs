@@ -46,6 +46,8 @@ namespace AttackComponents
         public float dotDuration = 5f;     // 지속시간
         public float dotInterval = 1f;     // 간격
 
+        public PawnStatusType dotStatusType;
+
         // DOT 상태 관리
         private float dotTimer = 0f;
         private float dotDurationTimer = 0f;
@@ -169,6 +171,12 @@ namespace AttackComponents
             }
         }
 
+        private void ProcessAC101TargetStatus(Pawn target)
+        {
+            target.AddStatus(dotStatusType, 
+            new PawnStatus { duration = dotDuration, lastTime = Time.time });
+        }
+
         private void ProcessAC101Attack()
         {
             // N회 발동
@@ -203,6 +211,9 @@ namespace AttackComponents
         private void ExecuteSingleTargetAttack()
         {
             if (dotTargets.Count == 0) return;
+
+            // 대상 상태 적용
+            ProcessAC101TargetStatus(dotTargets[0]);
 
             // 단일 대상에게 데미지 적용
             attack.statSheet[StatType.AttackPower] = new IntegerStatValue(dotDamage);

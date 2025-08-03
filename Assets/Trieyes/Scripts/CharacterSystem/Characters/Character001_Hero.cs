@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using AttackSystem;
 using Stats;
+using AttackComponents;
 
 namespace CharacterSystem
 {
@@ -22,6 +23,24 @@ namespace CharacterSystem
         public bool activateLight = false;
 
         public bool lockBasicAttack = false;
+
+        public int minRandomEnchantmentID = 1;
+        public int maxRandomEnchantmentID = 4;
+
+        public int activeSkill001Count = 0;
+        public int activeSkill002Count = 0;
+        public int killedDuringSkill001 = 0;
+        public int killedDuringSkill002 = 0;
+        
+        // RAC 관련 트리거 변수들
+        public bool RAC006Trigger = false; // 속성 검기 발사용
+        public bool RAC008Trigger = false; // 지속시간 증가용
+        public bool RAC010Trigger = false; // 번개 속성 공격속도 증가용
+        public bool RAC011Trigger = false; // 화상 중첩 효과용
+        public bool RAC012Trigger = false; // 둔화 중첩 효과용
+        
+        // RAC009 컴포넌트 (hero가 직접 소유)
+        public AC108_OrbitingManager orbitingManager;
         
         // Pawn의 추상 멤버 구현
         
@@ -100,6 +119,24 @@ namespace CharacterSystem
         public override void OnEvent(Utils.EventType eventType, object param)
         {
             base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                if (weaponElementState != HeroWeaponElementState.None)
+                {
+                    killedDuringSkill001++;
+                    killedDuringSkill002++;
+                }
+            }
+        }
+
+        public void SetRandomEnchantmentMinID(int min)
+        {
+            minRandomEnchantmentID = min;
+        }
+
+        public void SetRandomEnchantmentMaxID(int max)
+        {
+            maxRandomEnchantmentID = max;
         }
     }
 }

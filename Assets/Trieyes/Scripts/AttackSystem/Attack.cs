@@ -36,6 +36,9 @@ namespace AttackSystem
         public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
         public int objectID; // 공격 조회를 위한 ID
 
+        // ===== [Lock 메커니즘] =====
+        protected bool isLocked = false; // Lock 상태 관리
+
         public int getRelicStat(RelicStatType relicStatType)
         {
             if (!AttackTagManager.isValidRelicStat(relicStatType))
@@ -49,7 +52,7 @@ namespace AttackSystem
         {
             // TODO : 공격의 거리 제한에 대한 임시 코드
             float distance = Vector2.Distance(transform.position, attacker.transform.position);
-            var maxDistance = 30f;
+            var maxDistance = 100f;
             if (distance > maxDistance)
             {
                 AttackFactory.Instance.Deactivate(this);
@@ -141,11 +144,28 @@ namespace AttackSystem
         /// <param name="pawn"></param>
         public virtual void Activate(Pawn attacker, Vector2 direction)
         {
+            // 1. Lock 상태 설정 (맨 처음에 수행)
+            SetLock(true);
+            
             children = new List<Attack>();
+            
+            // 2. 모든 AttackComponent Activate (Lock true 상태로)
             foreach (var attackComponent in components)
             {
                 AttackComponentFactory.Instance.Activate(attackComponent, this, direction);
             }
+
+            // 3. Lock 상태에서 초기 설정 수행 (부모 → 자식 순서)
+            OnLockActivate();
+            
+            // 4. 재귀적으로 자식 Attack들도 Activate
+            foreach (var child in children)
+            {
+                child.Activate(attacker, direction);
+            }
+            
+            // 5. Lock 해제
+            SetLock(false);
         }
 
         public void ApplyStatSheet(StatSheet attackerStatSheet)
@@ -185,6 +205,34 @@ namespace AttackSystem
             parent = null;
         }
         
+        // ===== [Lock 메커니즘] =====
+        /// <summary>
+        /// Lock 상태를 설정합니다.
+        /// </summary>
+        /// <param name="locked">Lock 여부</param>
+        public virtual void SetLock(bool locked)
+        {
+            isLocked = locked;
+            
+            // 모든 자식 컴포넌트들에게도 Lock 상태 전파
+            foreach (var component in components)
+            {
+                component.SetLock(locked);
+            }
+        }
+
+        /// <summary>
+        /// Lock 상태에서 실행해야 하는 초기 설정을 수행합니다.
+        /// </summary>
+        public virtual void OnLockActivate()
+        {
+            // 모든 자식 컴포넌트들의 Lock 상태 초기 설정 수행
+            foreach (var component in components)
+            {
+                component.OnLockActivate();
+            }
+        }
+
         // ===== [기능 9] 이벤트 처리 =====
         public void OnEvent(Utils.EventType eventType, object param)
         {
@@ -195,20 +243,18 @@ namespace AttackSystem
             switch (eventType)
             {
                 case Utils.EventType.OnAttackHit:
-                    // 공격 시작 이벤트 처리
-                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnAttackHit</color>");
                     break;
-                
                 case Utils.EventType.OnAttack:
-                    // 공격 종료 이벤트 처리
-                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnAttack</color>");
                     break;
                 
                 case Utils.EventType.OnDamageHit:
-                    // 타격 이벤트 처리
-                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing OnDamageHit</color>");
                     break;
                 
+                case Utils.EventType.OnKilled:
+                    break;
+                
+                case Utils.EventType.OnKilledByCritical:
+                    break; 
                 default:
                     // 기본 이벤트 처리
                     //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing {eventType}</color>");

@@ -23,6 +23,9 @@ namespace AttackComponents
         // VFX GameObject 구현하는 방향으로 변경
         [SerializeField] protected List<GameObject> vfxList = new List<GameObject>();
 
+        // ===== [Lock 메커니즘] =====
+        protected bool isLocked = false; // Lock 상태 관리
+
         protected virtual void Start()
         {
         }
@@ -34,6 +37,9 @@ namespace AttackComponents
 
         protected virtual void Update()
         {
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
+            
             // 기존 Update 유지
             // ... existing code ...
 
@@ -45,6 +51,9 @@ namespace AttackComponents
         /// </summary>
         public virtual void Activate(Attack attack, Vector2 direction)
         {
+            // Lock 상태 설정 (맨 처음에 수행)
+            SetLock(true);
+            
             this.attack = attack;
         }
 
@@ -53,6 +62,24 @@ namespace AttackComponents
         /// </summary>
         public virtual void Deactivate()
         {
+        }
+
+        // ===== [Lock 메커니즘] =====
+        /// <summary>
+        /// Lock 상태를 설정합니다.
+        /// </summary>
+        /// <param name="locked">Lock 여부</param>
+        public virtual void SetLock(bool locked)
+        {
+            isLocked = locked;
+        }
+
+        /// <summary>
+        /// Lock 상태에서 실행해야 하는 초기 설정을 수행합니다.
+        /// </summary>
+        public virtual void OnLockActivate()
+        {
+            // 하위 클래스에서 오버라이드하여 구현
         }
 
         // ===== [기능 3] 충돌 처리 =====

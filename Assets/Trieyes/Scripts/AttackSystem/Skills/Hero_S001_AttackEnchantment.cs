@@ -3,6 +3,7 @@ using AttackSystem;
 using CharacterSystem;
 using UnityEngine;
 using BattleSystem;
+using Stats;
 
 namespace AttackComponents
 {
@@ -42,40 +43,56 @@ namespace AttackComponents
         private const int LIGHT_ENCHANTMENT_ID = 4;   // AC006_HeroSwordEnchantmentLight
 
         [SerializeField] public List<AttackData> attackDatas;
+
+        private int currentKilledCount = 0;
         
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
             
             character = attack.attacker as Character001_Hero;
+
+            if (character is null)
+            {
+                Debug.LogError("[S001] Character001_Hero 컴포넌트를 찾을 수 없습니다!");
+                return;
+            }
+            
+            // 공격속도에 맞춰 강화 효과 생성 간격 설정
+            float attackSpeed = character.GetStatValue(StatType.AttackSpeed);
+            generationInterval = Mathf.Max(0.0001f, 1f / (attackSpeed / 10f));
+            
+            Debug.Log($"[S001] 공격속도 기반 생성 간격 설정: AttackSpeed={attackSpeed}, GenerationInterval={generationInterval:F2}s");
             
             // 초기 상태 설정
             enchantmentState = EnchantmentState.Preparing;
             enchantmentTimer = 0f;
             lastEnchantmentTime = 0f;
             
-            // 강화 효과 시작
-            StartEnchantmentEffect();
+            character.lockBasicAttack = true;
         }
 
-        private void StartEnchantmentEffect()
+        public override void OnLockActivate()
         {
-            enchantmentState = EnchantmentState.Preparing;
-            enchantmentTimer = 0f;
-            lastEnchantmentTime = 0f;
-            
+            base.OnLockActivate();
+            character.activeSkill001Count++;
+        }
+
+        private void DetermineAndSetEnchantment()
+        {
             // 랜덤 강화 효과 선택
             randomEnchantmentID = GetRandomEnchantmentID();
             SetHeroWeaponElementState(randomEnchantmentID);
             
-            character.lockBasicAttack = true;
-            
-            Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 시작!</color>");
+            Debug.Log($"[S001] {randomEnchantmentID}번 속성 결정됨!");
         }
 
         protected override void Update()
         {
             base.Update();
+            
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
             
             // 강화 효과 상태 처리
             ProcessEnchantmentState();
@@ -93,18 +110,29 @@ namespace AttackComponents
                     
                     if (enchantmentTimer >= 0.1f) // 준비 시간
                     {
+                        DetermineAndSetEnchantment();
+                        if(character.RAC010Trigger)
+                        {
+                            GetAttackSpeedBoost();
+                        }
                         enchantmentState = EnchantmentState.Active;
                         enchantmentTimer = 0f;
-                        ActivateEnchantment();
                     }
                     break;
 
                 case EnchantmentState.Active:
                     enchantmentTimer += Time.deltaTime;
-                    
-                    // 1초에 1번 강화 효과 생성
+
+                    // 공격속도에 맞춰 강화 효과 생성 간격 설정
+                    float attackSpeed = character.GetStatValue(StatType.AttackSpeed);
+                    generationInterval = Mathf.Max(0.0001f, 1f / (attackSpeed / 10f));
+                                        
                     if (Time.time - lastEnchantmentTime >= generationInterval)
                     {
+                        if (character.RAC008Trigger)
+                        {
+                            UpdateEnchantmentDuration();
+                        }
                         TriggerRandomEnchantment();
                         lastEnchantmentTime = Time.time;
                     }
@@ -113,6 +141,7 @@ namespace AttackComponents
                     {
                         enchantmentState = EnchantmentState.Finishing;
                         enchantmentTimer = 0f;
+                        character.activeSkill001Count -= 1;
                         FinishEnchantment();
                     }
                     break;
@@ -133,15 +162,13 @@ namespace AttackComponents
             }
         }
 
-        private void ActivateEnchantment()
-        {
-            Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 활성화!</color>");
-        }
-
         private void FinishEnchantment()
         {
             character.weaponElementState = HeroWeaponElementState.None;
-            character.lockBasicAttack = false;
+            if (character.activeSkill001Count == 0)
+            {
+                character.lockBasicAttack = false;
+            }
             
             Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 종료!</color>");
         }
@@ -151,11 +178,11 @@ namespace AttackComponents
             base.Deactivate();
             
             character.weaponElementState = HeroWeaponElementState.None;
-            character.lockBasicAttack = false;
-            
-            enchantmentState = EnchantmentState.None;
+
             enchantmentTimer = 0f;
             lastEnchantmentTime = 0f;
+            character.killedDuringSkill001 = 0;
+            character.killedDuringSkill002 = 0;
         }
 
         private void TriggerRandomEnchantment()
@@ -166,11 +193,18 @@ namespace AttackComponents
             Debug.Log($"<color=yellow>[S001] {attack.gameObject.name} attackDatas: {attackDatas[randomEnchantmentID].attackId}, attacker: {character.gameObject.name}</color>");
         }
 
+        private void UpdateEnchantmentDuration()
+        {
+            var killCountDiff = character.killedDuringSkill001 - currentKilledCount;
+            currentKilledCount = character.killedDuringSkill001;
+            enchantmentDuration += killCountDiff * 0.1f;
+        }
+
         private int GetRandomEnchantmentID()
         {
             // 1-5 사이의 랜덤 숫자 생성
             // TO-DO : 유물 들어왔을 때 값이 최대를 4에서 5로 늘리는 로직 구현해야 함
-            int randomValue = Random.Range(1, 5);
+            int randomValue = Random.Range(character.minRandomEnchantmentID, character.maxRandomEnchantmentID);
 
             switch (randomValue)
             {
@@ -259,6 +293,25 @@ namespace AttackComponents
             debuff.Activate(debuffInfo);
 
             Debug.Log("<color=yellow>[S001] 천상 버프 적용 완료!</color>");
+        }
+
+        private void GetAttackSpeedBoost()
+        {
+            var _attacker = attack.attacker as Character001_Hero;
+            if (_attacker != null)
+            {
+                var buffInfo = new BuffInfo
+                {
+                    buffType = BUFFType.IncreaseAttackSpeed,
+                    attack = attack,
+                    target = attack.attacker,
+                    buffMultiplier = 50f,
+                    buffDuration = enchantmentDuration,
+                };
+
+                var buff = new BUFF();
+                buff.Activate(buffInfo);
+            }
         }
     }
 } 

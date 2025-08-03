@@ -21,8 +21,9 @@ namespace AttackComponents
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
         public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
+        
+        public float debuffDuration = 3f; // 둔화 지속 시간
 
-        public Vector2 direction;
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // FSM 상태 관리
@@ -56,9 +57,23 @@ namespace AttackComponents
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
+            attackDuration = Mathf.Max(0.1f, 1f / (attack.attacker.statSheet[StatType.AttackSpeed] / 10f));
             
             // 얼음 공격 시작
             StartIceAttack();
+        }
+
+        public override void OnEvent(Utils.EventType eventType, object param)
+        {
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            {
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
+                {
+                    _attacker.killedDuringSkill001++;
+                }
+            }
         }
 
         private void StartIceAttack()
@@ -108,20 +123,71 @@ namespace AttackComponents
 
         public override void ProcessComponentCollision(Pawn targetPawn)
         {
+            var hero = attack.attacker as Character001_Hero;
+            if (hero != null && hero.RAC012Trigger && targetPawn.bIsStatusValid(PawnStatusType.Freeze))
+            {
+                // 둔화 중첩 효과 처리
+                ProcessSlowStackEffect(targetPawn);
+                return;
+            }
+
+            // 기본 둔화 효과 적용
+            ApplyBasicSlowEffect(targetPawn);
+        }
+
+        /// <summary>
+        /// 둔화 중첩 효과를 처리합니다.
+        /// </summary>
+        /// <param name="targetPawn">대상</param>
+        private void ProcessSlowStackEffect(Pawn targetPawn)
+        {
+            //둔화가 걸린 적이 다시 둔화에 걸리는 경우 해당 적의 방어력이 대폭 감소합니다.
+            var _target = targetPawn as Enemy;
+            if (_target != null)
+            {
+                var debuffInfo = new DebuffInfo
+                {
+                    debuffType = DEBUFFType.DecreaseDefense,
+                    attack = attack,
+                    target = targetPawn,
+                    debuffMultiplier = 50f,
+                    debuffDuration = debuffDuration,
+                };
+
+                var debuff = new DEBUFF();
+                debuff.Activate(debuffInfo);
+            }
+
+            targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus 
+            { duration = debuffDuration, lastTime = Time.time });
+
+            // ApplyBasicSlowEffect(targetPawn);
+        }
+
+        /// <summary>
+        /// 기본 둔화 효과를 적용합니다.
+        /// </summary>
+        /// <param name="targetPawn">대상</param>
+        private void ApplyBasicSlowEffect(Pawn targetPawn)
+        {
             // 새로운 DEBUFF 클래스 사용
             var debuffInfo = new DebuffInfo
             {
                 debuffType = DEBUFFType.Slow,
                 attack = attack,
                 target = targetPawn,
-                debuffValue = 10,
-                debuffMultiplier = 15f,
-                debuffDuration = 5f,
-                debuffInterval = 1f,
+                debuffMultiplier = 10f,
+                debuffDuration = debuffDuration,
             };
 
             var debuff = new DEBUFF();
             debuff.Activate(debuffInfo);
+
+            targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus
+            {
+                duration = debuffDuration,
+                lastTime = Time.time,
+            });
         }
 
         /// <summary>
@@ -182,6 +248,9 @@ namespace AttackComponents
         protected override void Update()
         {
             base.Update();
+            
+            // Lock 상태일 때는 Update 실행하지 않음
+            if (isLocked) return;
             
             // 얼음 공격 상태 처리
             ProcessIceAttackState();

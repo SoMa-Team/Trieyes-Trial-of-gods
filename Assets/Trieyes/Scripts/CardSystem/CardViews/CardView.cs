@@ -26,7 +26,7 @@ namespace CardViews
         public TMP_Text statIntegerValueText;
         public Image selectionOutline;
 
-        public List<Sprite> stickerBackgroundSprites; // [0]=None, [1]=StatType, [2]=Number
+        public List<GameObject> stickerOverlayPrefabs; // [0]=None, [1]=StatType, [2]=Number
 
         // ===== [내부 필드] =====
         private Card card;
@@ -47,93 +47,7 @@ namespace CardViews
         private static readonly Color NoneStickerColor = new Color(137/255f, 137/255f, 137/255f, 1f); // R, G, B, A
         private static readonly Color StickerColor = new Color(171/255f, 205/255f, 239/255f, 1f); // R, G, B, A
 
-
-        private enum OverlayLayer
-        {
-            UnderDescription,      // descriptionText의 sibling 뒤 (BG만)
-            OverDescriptionBG,     // descriptionText의 자식, BG
-            OverDescriptionText    // descriptionText의 자식, Text
-        }
-
         #region Overlay 생성 및 관리
-
-        private GameObject CreateOverlayObject(
-            Vector2 anchoredPos, Vector2 size, string objName,
-            OverlayLayer layer,
-            Sprite sprite = null, Color? bgColor = null,
-            string text = null, TMP_FontAsset font = null, float? fontSize = null, Color? textColor = null)
-        {
-            GameObject go;
-
-            if (text == null)
-            {
-                go = new GameObject(objName, typeof(Image));
-                var img = go.GetComponent<Image>();
-                img.sprite = sprite;
-                img.color = bgColor ?? BgColorDefault;
-            }
-            else
-            {
-                go = new GameObject(objName, typeof(TextMeshProUGUI));
-                var tmp = go.GetComponent<TextMeshProUGUI>();
-                tmp.text = text;
-                tmp.font = descriptionText.font;
-                tmp.fontSize = descriptionText.fontSize;
-                tmp.fontStyle = descriptionText.fontStyle;
-                tmp.lineSpacing = descriptionText.lineSpacing;
-                tmp.fontWeight = descriptionText.fontWeight;
-                tmp.alignment = descriptionText.alignment;
-                tmp.enableAutoSizing = descriptionText.enableAutoSizing;
-                tmp.richText = descriptionText.richText;
-                tmp.characterSpacing = descriptionText.characterSpacing;
-                tmp.wordSpacing = descriptionText.wordSpacing;
-                tmp.paragraphSpacing = descriptionText.paragraphSpacing;
-                tmp.color = textColor ?? TextColorDefault;
-                tmp.raycastTarget = false;
-                go.transform.localScale = Vector3.one;
-            }
-            
-            var descRT = descriptionText.rectTransform;
-            var rt = go.GetComponent<RectTransform>();
-            rt.sizeDelta = size;
-            rt.localScale = Vector3.one;
-
-            if (layer == OverlayLayer.UnderDescription)
-            {
-                // 부모를 descriptionText의 부모로!
-                var parentRT = descRT.parent as RectTransform;
-                go.transform.SetParent(parentRT, false);
-                go.transform.SetAsFirstSibling();
-
-                // anchor/pivot 모두 부모의 구조와 동일하게!
-                rt.anchorMin = parentRT.anchorMin;
-                rt.anchorMax = parentRT.anchorMax;
-                rt.pivot = parentRT.pivot;
-
-                // World 좌표 변환 → 부모 로컬 기준 anchPos 보정
-                Vector3 worldPos = descRT.TransformPoint(anchoredPos);
-                Vector3 localPos = parentRT.InverseTransformPoint(worldPos);
-                rt.anchoredPosition = new Vector2(localPos.x, localPos.y);
-            }
-            else
-            {
-                // descriptionText를 부모로!
-                go.transform.SetParent(descRT, false);
-                go.transform.SetAsLastSibling();
-
-                // anchor/pivot descriptionText와 동일하게!
-                rt.anchorMin = descRT.anchorMin;
-                rt.anchorMax = descRT.anchorMax;
-                rt.pivot = descRT.pivot;
-
-                // anchPos 그대로 사용
-                rt.anchoredPosition = anchoredPos;
-            }
-
-            return go;
-        }
-
-
         private void CreateParamOverlays(
             int paramIdx, Dictionary<int, List<int>> groupCharsByLineNum, TMP_TextInfo textInfo, StickerType stickerType, string paramText = null)
         {
@@ -146,11 +60,11 @@ namespace CardViews
                 Vector3 tr = lastCharInfo.topRight;
                 float width = tr.x - bl.x;
                 float height = tr.y - bl.y;
-                
+        
                 Vector2 padding = stickerType == StickerType.None
                     ? overlayPadding
                     : overlayPadding + stickerPadding;
-                
+        
                 Vector2 overlayOffset = stickerType == StickerType.None
                     ? new Vector2(OverlayXOffset, OverlayYOffset)
                     : new Vector2(OverlayXOffset - 5f, OverlayYOffset);
@@ -160,43 +74,47 @@ namespace CardViews
                     Mathf.Abs(height) + padding.y
                 );
                 Vector2 overlayPos = bl + new Vector3(-padding.x * 0.5f, -padding.y * 0.5f, 0);
-                
                 overlayPos += overlayOffset;
+                
+                // == 프리팹 Instantiate, StickerView API 사용 ==
+                int prefabIndex = (int)stickerType; // StickerType을 index로
+                var prefab = stickerOverlayPrefabs[prefabIndex];
+                var go = Instantiate(prefab);
+                
+                var descRT = descriptionText.rectTransform;
+                var rt = go.GetComponent<RectTransform>();
+                rt.sizeDelta = overlaySize;
+                rt.localScale = Vector3.one;
 
                 if (stickerType == StickerType.None)
                 {
-                    // BG만 descriptionText sibling 뒤에 배치
-                    var bg = CreateOverlayObject(
-                        overlayPos, overlaySize, $"StickerBG_None_{paramIdx}_line{lineKv.Key}",
-                        OverlayLayer.UnderDescription,
-                        sprite: stickerBackgroundSprites[(int)StickerType.None],
-                        NoneStickerColor
-                    );
-                    activeStickerOverlays.Add(bg);
+                    var parentRT = descRT.parent as RectTransform;
+                    go.transform.SetParent(parentRT, false);
+                    go.transform.SetAsFirstSibling();
+                    rt.anchorMin = parentRT.anchorMin;
+                    rt.anchorMax = parentRT.anchorMax;
+                    rt.pivot = parentRT.pivot;
+                    Vector3 worldPos = descRT.TransformPoint(overlayPos);
+                    Vector3 localPos = parentRT.InverseTransformPoint(worldPos);
+                    rt.anchoredPosition = new Vector2(localPos.x, localPos.y);
                 }
                 else
                 {
-                    // BG 오버레이 (descriptionText 자식)
-                    var bg = CreateOverlayObject(
-                        overlayPos, overlaySize, $"StickerOverlay_{paramIdx}_line{lineKv.Key}",
-                        OverlayLayer.OverDescriptionBG,
-                        sprite: stickerBackgroundSprites[(int)stickerType],
-                        StickerColor
-                    );
-                    activeStickerOverlays.Add(bg);
-                    
-                    Vector2 textOffset = new Vector2(TextXOffset,  TextYOffset);
-
-                    // paramText TMP 오버레이 (BG 위)
-                    var txt = CreateOverlayObject(
-                        overlayPos+textOffset, overlaySize, $"StickerText_{paramIdx}_line{lineKv.Key}",
-                        OverlayLayer.OverDescriptionText,
-                        text: paramText,
-                        font: descriptionText.font,
-                        fontSize: descriptionText.fontSize
-                    );
-                    activeStickerOverlays.Add(txt);
+                    go.transform.SetParent(descRT, false);
+                    go.transform.SetAsLastSibling();
+                    rt.anchorMin = descRT.anchorMin;
+                    rt.anchorMax = descRT.anchorMax;
+                    rt.pivot = descRT.pivot;
+                    rt.anchoredPosition = overlayPos;
                 }
+                
+                var stickerView = go.GetComponent<StickerOverlayView>();
+                if (stickerView != null)
+                {
+                    // paramText가 null이면 빈 문자열
+                    stickerView.UpdateText(paramText ?? "", descriptionText);
+                }
+                activeStickerOverlays.Add(go);
             }
         }
 

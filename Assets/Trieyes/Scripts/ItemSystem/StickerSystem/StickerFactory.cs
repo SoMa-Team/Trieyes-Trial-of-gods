@@ -49,7 +49,7 @@ namespace StickerSystem
         public Sticker CreateRandomSticker(int minVal = 1, int maxVal = 101, int minLifeTime = 1, int maxLifeTime = 10)
         {
             var types = System.Enum.GetValues(typeof(StickerType));
-            var type = (StickerType)types.GetValue(Random.Range(0, types.Length));
+            var type = (StickerType)types.GetValue(Random.Range(1, types.Length));
             switch (type)
             {
                 case StickerType.Number:

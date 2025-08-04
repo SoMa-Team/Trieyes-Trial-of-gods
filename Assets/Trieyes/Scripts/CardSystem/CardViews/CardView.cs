@@ -26,12 +26,195 @@ namespace CardViews
         public TMP_Text statIntegerValueText;
         public Image selectionOutline;
 
-        public List<Sprite> stickerBackgroundSprites; // [0]=StatType, [1]=Number
+        public List<Sprite> stickerBackgroundSprites; // [0]=None, [1]=StatType, [2]=Number
 
         // ===== [내부 필드] =====
         private Card card;
         private DeckView parentDeckView;
         private readonly List<GameObject> activeStickerOverlays = new();
+
+        // ===== [상수 및 옵션] =====
+        Vector2 overlayPadding = new Vector2(6f, 40f);
+        private static readonly Color BgColorDefault = Color.white;
+        private static readonly Color TextColorDefault = Color.black;
+        
+        private static readonly Color NoneStickerColor = new Color(137/255f, 137/255f, 137/255f, 1f); // R, G, B, A
+        private static readonly Color StickerColor = new Color(171/255f, 205/255f, 239/255f, 1f); // R, G, B, A
+
+
+        private enum OverlayLayer
+        {
+            UnderDescription,      // descriptionText의 sibling 뒤 (BG만)
+            OverDescriptionBG,     // descriptionText의 자식, BG
+            OverDescriptionText    // descriptionText의 자식, Text
+        }
+
+        #region Overlay 생성 및 관리
+
+        private GameObject CreateOverlayObject(
+            Vector2 anchoredPos, Vector2 size, string objName,
+            OverlayLayer layer,
+            Sprite sprite = null, Color? bgColor = null,
+            string text = null, TMP_FontAsset font = null, float? fontSize = null, Color? textColor = null)
+        {
+            GameObject go;
+
+            if (text == null)
+            {
+                go = new GameObject(objName, typeof(Image));
+                var img = go.GetComponent<Image>();
+                img.sprite = sprite;
+                img.color = bgColor ?? BgColorDefault;
+            }
+            else
+            {
+                go = new GameObject(objName, typeof(TextMeshProUGUI));
+                var tmp = go.GetComponent<TextMeshProUGUI>();
+                tmp.text = text;
+                tmp.font = descriptionText.font;
+                tmp.fontSize = descriptionText.fontSize;
+                tmp.fontStyle = descriptionText.fontStyle;
+                tmp.lineSpacing = descriptionText.lineSpacing;
+                tmp.fontWeight = descriptionText.fontWeight;
+                tmp.alignment = descriptionText.alignment;
+                tmp.enableAutoSizing = descriptionText.enableAutoSizing;
+                tmp.richText = descriptionText.richText;
+                tmp.characterSpacing = descriptionText.characterSpacing;
+                tmp.wordSpacing = descriptionText.wordSpacing;
+                tmp.paragraphSpacing = descriptionText.paragraphSpacing;
+                tmp.color = textColor ?? TextColorDefault;
+                tmp.raycastTarget = false;
+                go.transform.localScale = Vector3.one;
+            }
+            
+            var descRT = descriptionText.rectTransform;
+            var rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = size;
+            rt.localScale = Vector3.one;
+
+            if (layer == OverlayLayer.UnderDescription)
+            {
+                // 부모를 descriptionText의 부모로!
+                var parentRT = descRT.parent as RectTransform;
+                go.transform.SetParent(parentRT, false);
+                go.transform.SetAsFirstSibling();
+
+                // anchor/pivot 모두 부모의 구조와 동일하게!
+                rt.anchorMin = parentRT.anchorMin;
+                rt.anchorMax = parentRT.anchorMax;
+                rt.pivot = parentRT.pivot;
+
+                // World 좌표 변환 → 부모 로컬 기준 anchPos 보정
+                Vector3 worldPos = descRT.TransformPoint(anchoredPos);
+                Vector3 localPos = parentRT.InverseTransformPoint(worldPos);
+                rt.anchoredPosition = new Vector2(localPos.x, localPos.y);
+            }
+            else
+            {
+                // descriptionText를 부모로!
+                go.transform.SetParent(descRT, false);
+                go.transform.SetAsLastSibling();
+
+                // anchor/pivot descriptionText와 동일하게!
+                rt.anchorMin = descRT.anchorMin;
+                rt.anchorMax = descRT.anchorMax;
+                rt.pivot = descRT.pivot;
+
+                // anchPos 그대로 사용
+                rt.anchoredPosition = anchoredPos;
+            }
+
+            return go;
+        }
+
+
+        private void CreateParamOverlays(
+            int paramIdx, Dictionary<int, List<int>> groupCharsByLineNum, TMP_TextInfo textInfo, StickerType stickerType, string paramText = null)
+        {
+            const float OverlayXOffset = 0f;
+            const float OverlayYOffset = -20f;
+            foreach (var lineKv in groupCharsByLineNum)
+            {
+                var charIndices = lineKv.Value;
+                var firstCharInfo = textInfo.characterInfo[charIndices[0]];
+                var lastCharInfo = textInfo.characterInfo[charIndices[^1]];
+                Vector3 bl = firstCharInfo.bottomLeft;
+                Vector3 tr = lastCharInfo.topRight;
+                float width = tr.x - bl.x;
+                float height = tr.y - bl.y;
+
+                Vector2 overlaySize = new Vector2(
+                    width + overlayPadding.x,
+                    Mathf.Abs(height) + overlayPadding.y
+                );
+                Vector2 overlayPos = bl + new Vector3(-overlayPadding.x * 0.5f, overlayPadding.y * 0.5f, 0);
+                
+                overlayPos.x += OverlayXOffset;
+                overlayPos.y += OverlayYOffset;
+
+                if (stickerType == StickerType.None)
+                {
+                    // BG만 descriptionText sibling 뒤에 배치
+                    var bg = CreateOverlayObject(
+                        overlayPos, overlaySize, $"StickerBG_None_{paramIdx}_line{lineKv.Key}",
+                        OverlayLayer.UnderDescription,
+                        sprite: stickerBackgroundSprites[(int)StickerType.None],
+                        NoneStickerColor
+                    );
+                    activeStickerOverlays.Add(bg);
+                }
+                else
+                {
+                    // BG 오버레이 (descriptionText 자식)
+                    var bg = CreateOverlayObject(
+                        overlayPos, overlaySize, $"StickerOverlay_{paramIdx}_line{lineKv.Key}",
+                        OverlayLayer.OverDescriptionBG,
+                        sprite: stickerBackgroundSprites[(int)stickerType],
+                        StickerColor
+                    );
+                    activeStickerOverlays.Add(bg);
+
+                    // paramText TMP 오버레이 (BG 위)
+                    var txt = CreateOverlayObject(
+                        overlayPos, overlaySize, $"StickerText_{paramIdx}_line{lineKv.Key}",
+                        OverlayLayer.OverDescriptionText,
+                        text: paramText,
+                        font: descriptionText.font,
+                        fontSize: descriptionText.fontSize
+                    );
+                    activeStickerOverlays.Add(txt);
+                }
+            }
+        }
+
+        private void SyncStickerOverlays()
+        {
+            foreach (var go in activeStickerOverlays)
+                Destroy(go);
+            activeStickerOverlays.Clear();
+
+            descriptionText.ForceMeshUpdate();
+            var textInfo = descriptionText.textInfo;
+
+            for (int paramIdx = 0; paramIdx < card.paramCharRanges.Count; paramIdx++)
+            {
+                var range = card.paramCharRanges[paramIdx];
+                StickerType stickerType = StickerType.None;
+                Sticker sticker;
+                if (card.stickerOverrides != null && card.stickerOverrides.TryGetValue(paramIdx, out sticker))
+                    stickerType = sticker.type;
+
+                var groupCharsByLineNum = GroupCharsByLineNum(range.start, range.end, textInfo);
+
+                // paramText는 BG만 그릴 때는 null로 전달, 오버레이일 때만 표시
+                string paramText = (stickerType != StickerType.None) ? card.GetEffectiveParamTexts()[paramIdx] : null;
+                CreateParamOverlays(paramIdx, groupCharsByLineNum, textInfo, stickerType, paramText);
+            }
+        }
+
+        #endregion
+
+        #region 기본 CardView 로직
 
         public void SetParentDeckView(DeckViews.DeckView deckView) => parentDeckView = deckView;
 
@@ -86,71 +269,18 @@ namespace CardViews
             SyncStickerOverlays();
         }
 
-        /// <summary>
-        /// 카드 설명 내 치환 파라미터(글자 범위)에 스티커 배경 오버레이 이미지를 생성/배치
-        /// </summary>
-        private void SyncStickerOverlays()
+        private Dictionary<int, List<int>> GroupCharsByLineNum(int start, int end, TMP_TextInfo textInfo)
         {
-            foreach (var go in activeStickerOverlays)
-                Destroy(go);
-            activeStickerOverlays.Clear();
-
-            descriptionText.ForceMeshUpdate();
-            var textInfo = descriptionText.textInfo;
-
-            foreach (var kv in card.stickerOverrides)
+            Dictionary<int, List<int>> res = new();
+            for (int i = start; i <= end; i++)
             {
-                int paramIdx = kv.Key;
-                Sticker sticker = kv.Value;
-
-                if (paramIdx < 0 || card.paramCharRanges == null || paramIdx >= card.paramCharRanges.Count)
-                    continue;
-                var range = card.paramCharRanges[paramIdx];
-
-                // 줄(line) 단위로 그룹핑
-                Dictionary<int, List<int>> lineToCharIdx = new();
-                for (int charIdx = range.start; charIdx <= range.end; charIdx++)
-                {
-                    if (charIdx < 0 || charIdx >= textInfo.characterCount)
-                        continue;
-                    int lineNum = textInfo.characterInfo[charIdx].lineNumber;
-                    if (!lineToCharIdx.ContainsKey(lineNum))
-                        lineToCharIdx[lineNum] = new List<int>();
-                    lineToCharIdx[lineNum].Add(charIdx);
-                }
-
-                foreach (var lineKv in lineToCharIdx)
-                {
-                    var charIndices = lineKv.Value;
-                    var firstCharInfo = textInfo.characterInfo[charIndices[0]];
-                    var lastCharInfo = textInfo.characterInfo[charIndices[^1]];
-
-                    Vector3 bl = firstCharInfo.bottomLeft;
-                    Vector3 tr = lastCharInfo.topRight;
-                    float width = tr.x - bl.x;
-                    float height = tr.y - bl.y;
-
-                    var overlayGO = new GameObject($"StickerOverlay_{paramIdx}_line{lineKv.Key}", typeof(UnityEngine.UI.Image));
-                    overlayGO.transform.SetParent(descriptionText.transform.parent, false);
-                    overlayGO.transform.SetAsFirstSibling();
-
-                    var img = overlayGO.GetComponent<UnityEngine.UI.Image>();
-                    img.sprite = stickerBackgroundSprites[(int)sticker.type];
-                    img.color = Color.white;
-
-                    var rt = overlayGO.GetComponent<RectTransform>();
-                    rt.pivot = new Vector2(0, 1);
-                    rt.anchorMin = rt.anchorMax = new Vector2(0, 1);
-                    rt.localScale = Vector3.one;
-                    rt.localRotation = Quaternion.identity;
-
-                    float padding = 6f;
-                    rt.sizeDelta = new Vector2(width + padding, Mathf.Abs(height) + padding);
-                    rt.anchoredPosition = new Vector2(bl.x - padding * 0.5f, bl.y + Mathf.Abs(height) + padding * 0.5f);
-
-                    activeStickerOverlays.Add(overlayGO);
-                }
+                if (i <= 0 || i >= textInfo.characterCount) continue;
+                int lineNum = textInfo.characterInfo[i].lineNumber;
+                if (!res.ContainsKey(lineNum))
+                    res[lineNum] = new List<int>();
+                res[lineNum].Add(i);
             }
+            return res;
         }
 
         private string FormatDescription(string template, List<string> descParams)
@@ -163,10 +293,6 @@ namespace CardViews
             return result;
         }
 
-        /// <summary>
-        /// 카드 설명 클릭 시 글자 인덱스 계산 & 스티커 적용 시도.
-        /// 아니면 부모 덱 뷰로 카드 클릭 알림.
-        /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
             if (RectTransformUtility.RectangleContainsScreenPoint(
@@ -204,5 +330,7 @@ namespace CardViews
             if (selectionOutline != null)
                 selectionOutline.color = selected ? Color.yellow : Color.black;
         }
+
+        #endregion
     }
 }

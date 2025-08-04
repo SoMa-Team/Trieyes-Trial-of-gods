@@ -8,6 +8,7 @@ using CardSystem;
 using Utils;
 using TMPro;
 using System;
+using System.Text.RegularExpressions;
 
 public static class CSVToCardInfoSOImporter
 {
@@ -15,9 +16,13 @@ public static class CSVToCardInfoSOImporter
     [MenuItem("Tools/CSVToCardInfoSO")]
     public static void ImportFromCSV()
     {
+        // 1. CSV 파일 선택
         string csvPath = "Assets/Trieyes/Data/CardInfoData/CardInfoData.csv";
+
+        // 2. SO 저장 폴더 선택
         string soOutputPath = "Assets/Trieyes/ScriptableObjects/CardInfos";
 
+        // 3. CSV 읽기
         var lines = File.ReadAllLines(csvPath);
         if (lines.Length < 2)
         {
@@ -44,9 +49,12 @@ public static class CSVToCardInfoSOImporter
             if (values.Length < headers.Length) continue;
             int Id = int.Parse(values[idx_Id]);
             string cardName = values[idx_cardName];
+
+            // SO 파일 경로 생성
             string soName = values[idx_soName].Trim();
             string assetPath = Path.Combine(soOutputPath, $"{soName}.asset");
 
+            // 기존 SO가 있으면 불러오고, 없으면 새로 생성
             CardInfo card = AssetDatabase.LoadAssetAtPath<CardInfo>(assetPath.Replace(Application.dataPath, "Assets"));
             bool isNew = false;
             if (card == null)
@@ -58,21 +66,25 @@ public static class CSVToCardInfoSOImporter
             card.Id = Id;
             card.cardName = cardName;
 
+            // rarity
             if (System.Enum.TryParse(typeof(Rarity), values[idx_rarity], out object rarityValue))
                 card.rarity = (Rarity)rarityValue;
 
+            // properties
             card.properties = values[idx_properties]
                 .Split('|')
                 .Select(s => (Property)System.Enum.Parse(typeof(Property), s))
                 .ToArray();
 
+            // illustration
             card.illustration = Resources.Load<Sprite>($"CardIllustration/{values[idx_illustration]}");
             if (card.illustration == null)
                 Debug.LogWarning($"{cardName}: CardIllustration/{values[idx_illustration]} Sprite를 Resources에서 못 찾음!");
 
             card.cardDescription = values[idx_cardDescription].Replace("\\n", "\n");
-            Debug.Log(card.cardDescription);
+            //Debug.Log(card.cardDescription);
 
+            // eventTypes
             card.eventTypes = values[idx_eventTypes]
                 .Split('|')
                 .Select(s => (Utils.EventType)System.Enum.Parse(typeof(Utils.EventType), s))
@@ -83,7 +95,7 @@ public static class CSVToCardInfoSOImporter
             else
                 card.baseParams = new List<string>();
             
-            card.paramCharRanges = ParseParamCharRangesWithTMP(card.cardDescription, card.baseParams);
+            card.paramCharRanges = ParseParamWordRangesWithTMP(card.cardDescription, card.baseParams);
 
             if (isNew)
                 AssetDatabase.CreateAsset(card, assetPath.Replace(Application.dataPath, "Assets"));
@@ -95,35 +107,56 @@ public static class CSVToCardInfoSOImporter
         AssetDatabase.Refresh();
         Debug.Log("CardInfoSO 생성/덮어쓰기 완료!");
     }
-
-    /// <summary>
-    /// 카드 설명(템플릿)에서 파라미터 치환 후, 각 파라미터 값의 [start, end] 글자 인덱스를 계산
-    /// </summary>
-    private static List<ParamCharRange> ParseParamCharRangesWithTMP(string description, List<string> baseParams)
+    
+    private static List<ParamCharRange> ParseParamWordRangesWithTMP(string description, List<string> baseParams)
     {
-        // 1. 치환된 텍스트 생성
-        string filled = description;
-        for (int i = 0; i < baseParams.Count; i++)
-            filled = filled.Replace("{" + i + "}", baseParams[i]);
-
-        var ranges = new List<ParamCharRange>();
-        int offset = 0;
-
-        for (int i = 0; i < baseParams.Count; i++)
+        // --- 에셋에서 TMP 폰트 로드 ---
+        var fontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TMP_FONT_ASSET_PATH);
+        if (fontAsset == null)
         {
-            string paramValue = baseParams[i];
-            int start = filled.IndexOf(paramValue, offset, StringComparison.Ordinal);
-            if (start == -1)
-            {
-                Debug.LogWarning($"파라미터 값 '{paramValue}'를 치환된 텍스트에서 찾을 수 없습니다. 중복 값 등 확인 필요.");
-                continue;
-            }
-            int end = start + paramValue.Length - 1;
-            ranges.Add(new ParamCharRange { start = start, end = end });
-            offset = end + 1;
+            Debug.LogError($"TMP 폰트 에셋을 찾을 수 없습니다: {TMP_FONT_ASSET_PATH}");
+            return new List<ParamCharRange>();
         }
 
-        return ranges;
+        // --- 임시 Canvas, TMP 객체 생성 ---
+        var canvasGo = new GameObject("TMP_Parser_Canvas", typeof(Canvas));
+        canvasGo.hideFlags = HideFlags.HideAndDontSave;
+        var go = new GameObject("TMPDescParser");
+        go.transform.SetParent(canvasGo.transform);
+        var tmp = go.AddComponent<TextMeshProUGUI>();
+        tmp.font = fontAsset;
+        tmp.text = description;
+        tmp.ForceMeshUpdate();
+
+        Debug.Log($"[TMP] text: {tmp.text}");
+
+        // Step 1. 파라미터 등장 순서대로 (ex. {0}, {1}, ...)
+        var paramRanges = new List<ParamCharRange>();
+        int prefix = 0;
+        for (int i = 0; i < tmp.textInfo.characterCount; i++)
+        {
+            char cur = tmp.textInfo.characterInfo[i].character;
+            Debug.Log($"[TMP] text: {tmp.textInfo.characterInfo[i].character}");
+            if (cur == '{')
+            {
+                if (i + 1 == tmp.textInfo.characterCount)
+                {
+                    Debug.LogError("디스크립션의 형식이 잘못되었습니다.");
+                }
+
+                char nxt = tmp.textInfo.characterInfo[i + 1].character;
+                int paramIdx = Int32.Parse(nxt.ToString());
+                string paramValue = baseParams[paramIdx];
+                int count = paramValue.Length;
+                int start = i + prefix;
+                int end = start + count - 1;
+                prefix += count - 3;
+                paramRanges.Add(new ParamCharRange() { start = start, end = end });
+            }
+        }
+
+        GameObject.DestroyImmediate(canvasGo);
+        return paramRanges;
     }
 }
 #endif

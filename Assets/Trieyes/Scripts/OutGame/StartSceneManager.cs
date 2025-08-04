@@ -24,6 +24,7 @@ namespace OutGame{
             CharacterSelectPanel.SetActive(false);
             SkillSelectPanel.SetActive(false);
             RelicSelectPanel.SetActive(false);
+            
             _Start();
         }
 

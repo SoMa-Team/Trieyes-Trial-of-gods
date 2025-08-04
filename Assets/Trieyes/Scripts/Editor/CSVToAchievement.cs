@@ -6,6 +6,8 @@ using System.Linq;
 using System.Collections.Generic;
 using GamePlayer;
 using System;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public static class CSVToAchievementImporter
 {
@@ -133,6 +135,41 @@ public static class CSVToAchievementImporter
             if (idx_addressableKey >= 0 && idx_addressableKey < values.Length)
             {
                 achievement.AddressableKey = values[idx_addressableKey];
+                
+                // AddressableKey를 사용하여 스프라이트 로드
+                if (!string.IsNullOrEmpty(achievement.AddressableKey))
+                {
+                    string addressablePath = "Assets/Trieyes/Addressable/Icons/Relics/" + achievement.AddressableKey + ".png";
+                    
+                    // Addressable에서 스프라이트 로드 시도
+                    var handle = Addressables.LoadAssetAsync<Sprite>(addressablePath);
+                    handle.Completed += (AsyncOperationHandle<Sprite> spriteHandle) =>
+                    {
+                        if (spriteHandle.Status == AsyncOperationStatus.Succeeded)
+                        {
+                            achievement.achievementIcon = spriteHandle.Result;
+                            Debug.Log($"스프라이트 로드 성공: {achievement.achievementName} - {addressablePath}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"스프라이트 로드 실패: {achievement.achievementName} - {addressablePath}");
+                        }
+                    };
+                    
+                    // 동기적으로 로드 (에디터에서는 가능)
+                    if (handle.IsDone)
+                    {
+                        if (handle.Status == AsyncOperationStatus.Succeeded)
+                        {
+                            achievement.achievementIcon = handle.Result;
+                            Debug.Log($"스프라이트 로드 성공: {achievement.achievementName} - {addressablePath}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"스프라이트 로드 실패: {achievement.achievementName} - {addressablePath}");
+                        }
+                    }
+                }
             }
             else
             {

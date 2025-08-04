@@ -43,48 +43,12 @@ namespace GamePlayer
             {
                 // ScriptableObject에서 업적 데이터 로드
                 achievement = new Achievement(achievementDatabase);
-                Debug.Log($"Player: ScriptableObject에서 업적 데이터 로드 완료 - {achievement.achievementDictionary.Count}개");
             }
             else
             {
                 // 폴백으로 CSV에서 로드
                 achievement = new Achievement();
-                Debug.LogWarning("Player: AchievementDatabaseSO가 할당되지 않아 CSV에서 로드합니다.");
             }
-        }
-        
-        // 인스펙터에서 SO 할당 시 자동으로 Achievement 재초기화
-        private void OnValidate()
-        {
-            if (achievementDatabase != null && achievement != null)
-            {
-                // 에디터에서만 실행되도록 체크
-                if (Application.isPlaying)
-                {
-                    InitializeAchievement();
-                }
-            }
-        }
-        
-        // 업적 관련 편의 메서드들
-        public bool IsAchievementUnlocked(int achievementId)
-        {
-            return achievement?.IsAchievementUnlocked(achievementId) ?? false;
-        }
-        
-        public AchievementData GetAchievementData(int achievementId)
-        {
-            return achievement?.GetAchievementData(achievementId);
-        }
-        
-        public void UpdateAchievementProgress(int achievementId, int newProgress)
-        {
-            achievement?.UpdateAchievementProgress(achievementId, newProgress);
-        }
-        
-        public void CheckAllAchievements()
-        {
-            achievement?.CheckAllAchievements();
         }
     }
 }

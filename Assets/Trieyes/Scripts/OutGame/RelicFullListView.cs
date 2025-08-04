@@ -4,11 +4,9 @@ using TMPro;
 using GamePlayer;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace OutGame{
-    public class RelicListView : MonoBehaviour
+    public class RelicFullListView : MonoBehaviour
     {
         [Header("UI References")]
         public Transform relicListContainer; // 유물 리스트를 담을 컨테이너
@@ -41,53 +39,6 @@ namespace OutGame{
             LoadAndDisplayRelics();
         }
         
-        // Addressable을 사용한 스프라이트 로드 메서드
-        private void LoadSpriteFromAddressable(string addressableKey, System.Action<Sprite> onComplete)
-        {
-            addressableKey = "Assets/Trieyes/Addressable/Icons/Relics/" + addressableKey + ".png";
-            if (string.IsNullOrEmpty(addressableKey))
-            {
-                Debug.LogWarning("AddressableKey가 비어있습니다.");
-                onComplete?.Invoke(null);
-                return;
-            }
-            
-            Addressables.LoadAssetAsync<Sprite>(addressableKey).Completed += (AsyncOperationHandle<Sprite> handle) =>
-            {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    onComplete?.Invoke(handle.Result);
-                }
-                else
-                {
-                    Debug.LogWarning($"Addressable에서 스프라이트를 로드할 수 없습니다: {addressableKey}");
-                    onComplete?.Invoke(null);
-                }
-            };
-        }
-        
-        // 기존 Resources 로드 메서드 (폴백용)
-        private Sprite LoadSpriteFromPath(string iconPath)
-        {
-            if (string.IsNullOrEmpty(iconPath))
-            {
-                Debug.LogWarning("아이콘 경로가 비어있습니다.");
-                return null;
-            }
-            
-            // Resources 폴더 기준으로 경로 변환
-            string resourcePath = iconPath.Replace("Assets/", "").Replace(".png", "").Replace(".jpg", "");
-            
-            Sprite sprite = Resources.Load<Sprite>(resourcePath);
-            if (sprite == null)
-            {
-                Debug.LogWarning($"스프라이트를 찾을 수 없습니다: {resourcePath}");
-                return null;
-            }
-            
-            return sprite;
-        }
-        
         // 유물 데이터 로드 및 UI 표시
         public void LoadAndDisplayRelics()
         {
@@ -100,8 +51,8 @@ namespace OutGame{
             // 기존 UI 아이템들 제거
             ClearRelicItems();
             
-            // player의 Achievement에서 해금한 유물 리스트를 가져온다.
-            unlockedRelics = player.achievement.achievementDataList;
+            // player의 Achievement에서 유물 리스트를 가져온다.
+            unlockedRelics = player.achievement.achievementDictionary.Values.Where(achievement => achievement.achievementType == AchievementType.RelicUnlock).ToList();
 
             foreach (var relic in unlockedRelics)
             {
@@ -150,24 +101,14 @@ namespace OutGame{
                     relicIconButton.onClick.AddListener(() => OnRelicIconClicked(relicView));
                 }
                 
-                // 아이콘 이미지 설정 - Addressable 사용
+                // 아이콘 이미지 설정 - SO에 저장된 스프라이트 사용
                 var relicIconImage = relicView.relicIcon.GetComponent<Image>();
                 if (relicIconImage != null)
                 {
-                    // AddressableKey가 있으면 Addressable 사용, 없으면 기존 방식 사용
-                    if (!string.IsNullOrEmpty(relic.AddressableKey))
+                    // SO에 저장된 스프라이트가 있으면 사용
+                    if (relic.achievementIcon != null)
                     {
-                        LoadSpriteFromAddressable(relic.AddressableKey, (sprite) =>
-                        {
-                            if (sprite != null)
-                            {
-                                relicIconImage.sprite = sprite;
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"Addressable에서 유물 아이콘을 로드할 수 없습니다: {relic.achievementName} (Key: {relic.AddressableKey})");
-                            }
-                        });
+                        relicIconImage.sprite = relic.achievementIcon;
                     }
                 }
             }
@@ -226,12 +167,13 @@ namespace OutGame{
             }
         }
 
+        // 해금된 유물 아이템 아이콘 클릭 이벤트
         public void OnRelicIconClicked(RelicView relicView)
         {
             Debug.Log($"유물 아이콘 클릭: {relicView.relic.achievementName}");
         }
         
-        // 해금된 유물 아이템 클릭 이벤트
+        // 해금된 유물 아이템 선택 버튼 클릭 이벤트
         public void OnUnlockedRelicItemClicked(int relicId)
         {
             Debug.Log($"해금된 유물 선택 버튼 클릭: {relicId}");
@@ -271,30 +213,6 @@ namespace OutGame{
                 }
             }
             relicItems.Clear();
-        }
-        
-        // 유물 리스트 새로고침
-        public void RefreshRelicList()
-        {
-            LoadAndDisplayRelics();
-        }
-        
-        // 특정 유물이 해금되었는지 확인
-        public bool IsRelicUnlocked(int relicId)
-        {
-            return unlockedRelics.Any(relic => relic.achievementID == relicId);
-        }
-        
-        // 해금된 유물 정보 가져오기
-        public AchievementData GetUnlockedRelicById(int relicId)
-        {
-            return unlockedRelics.FirstOrDefault(relic => relic.achievementID == relicId);
-        }
-        
-        // 해금된 유물 수 가져오기
-        public int GetUnlockedRelicCount()
-        {
-            return unlockedRelics.Count;
         }
     }
 }

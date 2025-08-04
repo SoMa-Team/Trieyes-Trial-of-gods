@@ -4,8 +4,6 @@ using TMPro;
 using GamePlayer;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace OutGame{
     public class RelicSelectedListView : MonoBehaviour
@@ -15,13 +13,11 @@ namespace OutGame{
         public GameObject selectedRelicItemPrefab; // 선택된 유물 UI 프리팹
 
         [Header("Selected Relics")]
-        public List<AchievementData> selectedRelics = new List<AchievementData>(3); // 최대 3개 선택 가능
+        public List<AchievementData> selectedRelics = new List<AchievementData>(3);
+        public List<RelicView> relicViews = new List<RelicView>(3);
         
         [Header("Player Reference")]
-        public Player player;
-        
-        private List<GameObject> relicItems = new List<GameObject>();
-        private List<RelicView> relicViews = new List<RelicView>(3); // 0, 1, 2 인덱스용
+        public Player player;        
 
         public void Awake()
         {           
@@ -33,32 +29,6 @@ namespace OutGame{
             
             // 초기 UI 슬롯 생성 (3개)
             CreateInitialSlots();
-        }
-        
-        // Addressable을 사용한 스프라이트 로드 메서드
-        private void LoadSpriteFromAddressable(string addressableKey, System.Action<Sprite> onComplete)
-        {
-            addressableKey = "Assets/Trieyes/Addressable/Icons/Relics/" + addressableKey + ".png";
-
-            if (string.IsNullOrEmpty(addressableKey))
-            {
-                Debug.LogWarning("AddressableKey가 비어있습니다.");
-                onComplete?.Invoke(null);
-                return;
-            }
-            
-            Addressables.LoadAssetAsync<Sprite>(addressableKey).Completed += (AsyncOperationHandle<Sprite> handle) =>
-            {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    onComplete?.Invoke(handle.Result);
-                }
-                else
-                {
-                    Debug.LogWarning($"Addressable에서 스프라이트를 로드할 수 없습니다: {addressableKey}");
-                    onComplete?.Invoke(null);
-                }
-            };
         }
         
         // 초기 UI 슬롯 생성 (0, 1, 2 인덱스)
@@ -74,24 +44,17 @@ namespace OutGame{
                 if (relicView != null)
                 {
                     relicViews.Add(relicView);
-                    relicItems.Add(relicItem);
                     
                     // 각 슬롯에 제거 버튼 이벤트 설정
-                    SetupRemoveButton(relicView, i);
-                }
-            }
-        }
-        
-        // 제거 버튼 설정
-        private void SetupRemoveButton(RelicView relicView, int slotIndex)
-        {
-            if (relicView.relicSelectButton != null)
-            {
-                var button = relicView.relicSelectButton.GetComponent<Button>();
-                if (button != null)
-                {
-                    button.onClick.RemoveAllListeners();
-                    button.onClick.AddListener(() => OnRemoveRelicClicked(slotIndex));
+                    if (relicView.relicSelectButton != null)
+                    {
+                        var button = relicView.relicSelectButton.GetComponent<Button>();
+                        if (button != null)
+                        {
+                            button.onClick.RemoveAllListeners();
+                            button.onClick.AddListener(() => OnRemoveRelicClicked(i));
+                        }
+                    }
                 }
             }
         }
@@ -110,7 +73,8 @@ namespace OutGame{
                 else
                 {
                     // 빈 슬롯
-                    SetEmptySlot(relicViews[i], i);
+                    relicViews[i].relic = null;
+                    relicViews[i].Init();
                 }
             }
         }
@@ -130,24 +94,14 @@ namespace OutGame{
                     relicIconButton.onClick.AddListener(() => OnRelicIconClicked(relicView));
                 }
 
-                // 아이콘 이미지 설정 - Addressable 사용
+                // 아이콘 이미지 설정 - SO에 저장된 스프라이트 사용
                 var relicIconImage = relicView.relicIcon.GetComponent<Image>();
                 if (relicIconImage != null)
                 {
-                    // AddressableKey가 있으면 Addressable 사용, 없으면 기존 방식 사용
-                    if (!string.IsNullOrEmpty(relic.AddressableKey))
+                    // SO에 저장된 스프라이트가 있으면 사용
+                    if (relic.achievementIcon != null)
                     {
-                        LoadSpriteFromAddressable(relic.AddressableKey, (sprite) =>
-                        {
-                            if (sprite != null)
-                            {
-                                relicIconImage.sprite = sprite;
-                            }
-                            else
-                            {
-                                Debug.LogWarning($"Addressable에서 유물 아이콘을 로드할 수 없습니다: {relic.achievementName} (Key: {relic.AddressableKey})");
-                            }
-                        });
+                        relicIconImage.sprite = relic.achievementIcon;
                     }
                 }
             }
@@ -183,13 +137,6 @@ namespace OutGame{
 
             relicView.relicIcon.SetActive(true);
             relicView.relicSelectButton.SetActive(true);
-        }
-        
-        // 빈 슬롯 설정
-        private void SetEmptySlot(RelicView relicView, int slotIndex)
-        {
-            relicView.relic = null;
-            relicView.Init();
         }
         
         // 유물 추가 (RelicListView에서 호출)
@@ -272,36 +219,6 @@ namespace OutGame{
             Debug.Log($"설명: {relic.achievementDescription}");
             Debug.Log($"진행도: {relic.achievementProgressCurrent}/{relic.achievementProgressMax}");
             Debug.Log($"해금 여부: {(relic.IsUnlocked ? "해금됨" : "잠금됨")}");
-        }
-        
-        // 선택된 유물 수 가져오기
-        public int GetSelectedRelicCount()
-        {
-            return selectedRelics.Count;
-        }
-        
-        // 최대 선택 가능한 유물 수
-        public int GetMaxRelicCount()
-        {
-            return 3;
-        }
-        
-        // 선택 가능한 슬롯이 있는지 확인
-        public bool HasAvailableSlot()
-        {
-            return selectedRelics.Count < 3;
-        }
-        
-        // 특정 유물이 선택되었는지 확인
-        public bool IsRelicSelected(int relicId)
-        {
-            return selectedRelics.Any(relic => relic.achievementID == relicId);
-        }
-        
-        // 선택된 유물 정보 가져오기
-        public AchievementData GetSelectedRelicById(int relicId)
-        {
-            return selectedRelics.FirstOrDefault(relic => relic.achievementID == relicId);
         }
         
         // 모든 선택된 유물 제거

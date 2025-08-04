@@ -34,12 +34,13 @@ namespace CardViews
         private readonly List<GameObject> activeStickerOverlays = new();
 
         // ===== [상수 및 옵션] =====
-        Vector2 overlayPadding = new Vector2(15f, 5f);
-        Vector2 stickerPadding = new Vector2(5f, 5f);
-        const float TextXOffset = 10f;
-        const float TextYOffset = 0f;	
-        const float OverlayXOffset = 0f;
+        Vector2 overlayPadding = new Vector2(15f, 15f);
+        Vector2 stickerPadding = new Vector2(0f, 0f);
+        const float OverlayXOffset = -5f;
         const float OverlayYOffset = 0f;
+        
+        const float BGXOffset = 0f;
+        const float BGYOffset = 0f;
 
         private static readonly Color BgColorDefault = Color.white;
         private static readonly Color TextColorDefault = Color.black;
@@ -66,8 +67,8 @@ namespace CardViews
                     : overlayPadding + stickerPadding;
         
                 Vector2 overlayOffset = stickerType == StickerType.None
-                    ? new Vector2(OverlayXOffset, OverlayYOffset)
-                    : new Vector2(OverlayXOffset - 5f, OverlayYOffset);
+                    ? new Vector2(BGXOffset, BGYOffset)
+                    : new Vector2(OverlayXOffset, OverlayYOffset);
 
                 Vector2 overlaySize = new Vector2(
                     width + padding.x,
@@ -91,22 +92,20 @@ namespace CardViews
                     var parentRT = descRT.parent as RectTransform;
                     go.transform.SetParent(parentRT, false);
                     go.transform.SetAsFirstSibling();
-                    rt.anchorMin = parentRT.anchorMin;
-                    rt.anchorMax = parentRT.anchorMax;
-                    rt.pivot = parentRT.pivot;
-                    Vector3 worldPos = descRT.TransformPoint(overlayPos);
-                    Vector3 localPos = parentRT.InverseTransformPoint(worldPos);
-                    rt.anchoredPosition = new Vector2(localPos.x, localPos.y);
+                    rt.localScale = Vector3.one;
+                    rt.anchoredPosition = overlayPos + descRT.anchoredPosition;
                 }
                 else
                 {
                     go.transform.SetParent(descRT, false);
                     go.transform.SetAsLastSibling();
-                    rt.anchorMin = descRT.anchorMin;
-                    rt.anchorMax = descRT.anchorMax;
-                    rt.pivot = descRT.pivot;
+                    rt.localScale = Vector3.one * 1.1f;
                     rt.anchoredPosition = overlayPos;
                 }
+                
+                rt.anchorMin = descRT.anchorMin;
+                rt.anchorMax = descRT.anchorMax;
+                rt.pivot = descRT.pivot;
                 
                 var stickerView = go.GetComponent<StickerOverlayView>();
                 if (stickerView != null)
@@ -115,6 +114,15 @@ namespace CardViews
                     stickerView.UpdateText(paramText ?? "", descriptionText);
                 }
                 activeStickerOverlays.Add(go);
+                Debug.Log($@"
+                            ==== Sticker Overlay Debug ====
+                            paramIdx: {paramIdx}, line: {lineKv.Key}, stickerType: {stickerType}
+                            overlayPos: {overlayPos}
+                            bl: {bl}, tr: {tr}, width: {width}, height: {height}
+                            descRT: anchoredPosition={descRT.anchoredPosition}, localPosition={descRT.localPosition}, position={descRT.position}
+                            rt(parent): anchoredPosition={rt.anchoredPosition}, localPosition={rt.localPosition}, position={rt.position}
+                            go.parent: {go.transform.parent.name}
+                            ");
             }
         }
 

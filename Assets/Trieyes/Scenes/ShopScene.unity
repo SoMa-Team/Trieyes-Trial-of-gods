@@ -2506,7 +2506,7 @@ MonoBehaviour:
   - {fileID: 72014587}
   - {fileID: 1752897949}
   shopStickerViews:
-  - {fileID: 2126182969}
+  - {fileID: 2126182972}
   buyCardButtons:
   - {fileID: 631915056}
   - {fileID: 64056261}
@@ -4438,30 +4438,90 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 47.1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6053877444818545275, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 3859521133909745150, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1465498856}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7865830866801335929, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2126182972}
   m_SourcePrefab: {fileID: 100100000, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
 --- !u!224 &2126182966 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3859521133909745150, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
   m_PrefabInstance: {fileID: 2126182965}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2126182969 stripped
+--- !u!114 &2126182967 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6053877444818545275, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
+  m_CorrespondingSourceObject: {fileID: 6496632134891474573, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
   m_PrefabInstance: {fileID: 2126182965}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff83de7d5a0746568491a12344dc470d, type: 3}
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2126182968 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 399117383314812528, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
+  m_PrefabInstance: {fileID: 2126182965}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2126182969 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8507381646615161606, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
+  m_PrefabInstance: {fileID: 2126182965}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &2126182970 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7865830866801335929, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
+  m_PrefabInstance: {fileID: 2126182965}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2126182971 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5551956766248392049, guid: 7fa18792a3e334208be41b990593c0e0, type: 3}
+  m_PrefabInstance: {fileID: 2126182965}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126182970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2126182972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126182970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a67ed155abf74e05886b9d28eb20061d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  background: {fileID: 2126182971}
+  valueText: {fileID: 2126182968}
+  typeText: {fileID: 2126182969}
+  lifeText: {fileID: 2126182967}
+  numberStickerBackground: {fileID: -8921602086792627531, guid: a0dd067f411fb4c1da69331449398659, type: 3}
+  statTypeStickerBackground: {fileID: 3953754183741517761, guid: 0df1c356ab34a4c569cdb24318f5eba3, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

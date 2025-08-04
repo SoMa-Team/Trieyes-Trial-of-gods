@@ -34,10 +34,10 @@ namespace CardViews
         private readonly List<GameObject> activeStickerOverlays = new();
 
         // ===== [상수 및 옵션] =====
-        Vector2 overlayPadding = new Vector2(15f, 40f);
-        Vector2 stickerPadding = new Vector2(5f, 15f);
-        const float TextXOffset = 6f;
-        const float TextYOffset = -8f;
+        Vector2 overlayPadding = new Vector2(15f, 5f);
+        Vector2 stickerPadding = new Vector2(5f, 5f);
+        const float TextXOffset = 10f;
+        const float TextYOffset = 0f;	
         const float OverlayXOffset = 0f;
         const float OverlayYOffset = 0f;
 

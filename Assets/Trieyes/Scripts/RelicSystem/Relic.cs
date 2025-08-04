@@ -23,13 +23,14 @@ namespace RelicSystem
         public List<int> filterAttackIDs;
         public AttackTag? filterAttackTag;
         public List<int> attackComponentIDs;
+        public Sprite icon = null;
 
         public List<RandomOption> randomOptions;
         
         // ===== [기능 3] 이벤트 처리 =====
         [CanBeNull] public Pawn owner; // 유물의 소유자 (Pawn)
         public List<Utils.EventType> acceptedEvents = new List<Utils.EventType>();
-        
+
         public virtual void OnEvent(Utils.EventType eventType, object param)
         {
         // owner 참조가 없으면 에러 발생

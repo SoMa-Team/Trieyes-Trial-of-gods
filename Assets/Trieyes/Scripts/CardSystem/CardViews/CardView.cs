@@ -34,7 +34,13 @@ namespace CardViews
         private readonly List<GameObject> activeStickerOverlays = new();
 
         // ===== [상수 및 옵션] =====
-        Vector2 overlayPadding = new Vector2(6f, 40f);
+        Vector2 overlayPadding = new Vector2(15f, 40f);
+        Vector2 stickerPadding = new Vector2(5f, 15f);
+        const float TextXOffset = 6f;
+        const float TextYOffset = -8f;
+        const float OverlayXOffset = 0f;
+        const float OverlayYOffset = 0f;
+
         private static readonly Color BgColorDefault = Color.white;
         private static readonly Color TextColorDefault = Color.black;
         
@@ -131,8 +137,6 @@ namespace CardViews
         private void CreateParamOverlays(
             int paramIdx, Dictionary<int, List<int>> groupCharsByLineNum, TMP_TextInfo textInfo, StickerType stickerType, string paramText = null)
         {
-            const float OverlayXOffset = 0f;
-            const float OverlayYOffset = -20f;
             foreach (var lineKv in groupCharsByLineNum)
             {
                 var charIndices = lineKv.Value;
@@ -142,15 +146,22 @@ namespace CardViews
                 Vector3 tr = lastCharInfo.topRight;
                 float width = tr.x - bl.x;
                 float height = tr.y - bl.y;
+                
+                Vector2 padding = stickerType == StickerType.None
+                    ? overlayPadding
+                    : overlayPadding + stickerPadding;
+                
+                Vector2 overlayOffset = stickerType == StickerType.None
+                    ? new Vector2(OverlayXOffset, OverlayYOffset)
+                    : new Vector2(OverlayXOffset - 5f, OverlayYOffset);
 
                 Vector2 overlaySize = new Vector2(
-                    width + overlayPadding.x,
-                    Mathf.Abs(height) + overlayPadding.y
+                    width + padding.x,
+                    Mathf.Abs(height) + padding.y
                 );
-                Vector2 overlayPos = bl + new Vector3(-overlayPadding.x * 0.5f, overlayPadding.y * 0.5f, 0);
+                Vector2 overlayPos = bl + new Vector3(-padding.x * 0.5f, -padding.y * 0.5f, 0);
                 
-                overlayPos.x += OverlayXOffset;
-                overlayPos.y += OverlayYOffset;
+                overlayPos += overlayOffset;
 
                 if (stickerType == StickerType.None)
                 {
@@ -173,10 +184,12 @@ namespace CardViews
                         StickerColor
                     );
                     activeStickerOverlays.Add(bg);
+                    
+                    Vector2 textOffset = new Vector2(TextXOffset,  TextYOffset);
 
                     // paramText TMP 오버레이 (BG 위)
                     var txt = CreateOverlayObject(
-                        overlayPos, overlaySize, $"StickerText_{paramIdx}_line{lineKv.Key}",
+                        overlayPos+textOffset, overlaySize, $"StickerText_{paramIdx}_line{lineKv.Key}",
                         OverlayLayer.OverDescriptionText,
                         text: paramText,
                         font: descriptionText.font,

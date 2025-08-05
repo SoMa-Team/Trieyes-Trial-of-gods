@@ -44,7 +44,7 @@ namespace CardSystem
                 return;
             }
             Instance = this;
-            // (DontDestroyOnLoad(gameObject)); // 씬 이동 시에도 유지하려면 주석 해제
+            DontDestroyOnLoad(gameObject); // 씬 이동 시에도 유지하려면 주석 해제
         }
 
         // ==== [카드 생성 및 관리] ====

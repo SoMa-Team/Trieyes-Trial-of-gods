@@ -248,7 +248,10 @@ namespace CharacterSystem
         /// </summary>
         protected virtual void ResetAnimator()
         {
-            Animator.Rebind();
+            if (Animator != null)
+            {
+                Animator.Rebind();
+            }
         }
 
         /// <summary>

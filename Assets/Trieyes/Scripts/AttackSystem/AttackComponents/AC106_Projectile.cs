@@ -538,7 +538,6 @@ namespace AttackComponents
             if (targetPawn != null && targetPawn != attacker)
             {
                 // 기본 데미지 설정 (필요시 수정)
-                attack.statSheet[StatType.AttackPower] = new IntegerStatValue(20);
                 DamageProcessor.ProcessHit(attack, targetPawn);
                 
                 // AC100~105 패턴: 타겟 리스트에 추가

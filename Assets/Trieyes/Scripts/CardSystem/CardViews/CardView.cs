@@ -42,12 +42,8 @@ namespace CardViews
         const float BGXOffset = 0f;
         const float BGYOffset = 0f;
 
-        private static readonly Color BgColorDefault = Color.white;
-        private static readonly Color TextColorDefault = Color.black;
-        
-        private static readonly Color NoneStickerColor = new Color(137/255f, 137/255f, 137/255f, 1f); // R, G, B, A
-        private static readonly Color StickerColor = new Color(171/255f, 205/255f, 239/255f, 1f); // R, G, B, A
-
+        private const float StickerOverlayFixedHeight = 58.28125f;
+        private const float NumberStickerOverlayYOffset = -5.1719f;
         #region Overlay 생성 및 관리
         private void CreateParamOverlays(
             int paramIdx, Dictionary<int, List<int>> groupCharsByLineNum, TMP_TextInfo textInfo, StickerType stickerType, string paramText = null)
@@ -72,9 +68,13 @@ namespace CardViews
 
                 Vector2 overlaySize = new Vector2(
                     width + padding.x,
-                    Mathf.Abs(height) + padding.y
+                    (stickerType == StickerType.None) ? Mathf.Abs(height) + padding.y : StickerOverlayFixedHeight
                 );
                 Vector2 overlayPos = bl + new Vector3(-padding.x * 0.5f, -padding.y * 0.5f, 0);
+                if (stickerType == StickerType.Number)
+                {
+                    overlayPos.y += NumberStickerOverlayYOffset;
+                }
                 overlayPos += overlayOffset;
                 
                 // == 프리팹 Instantiate, StickerView API 사용 ==

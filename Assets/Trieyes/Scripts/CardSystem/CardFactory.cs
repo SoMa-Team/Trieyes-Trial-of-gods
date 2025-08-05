@@ -20,11 +20,19 @@ namespace CardSystem
         /// </summary>
         public static CardFactory Instance { get; private set; }
 
+        private readonly float COMMON_PROB = 53f;
+        private readonly float UNCOMMON_PROB = 33f;
+        private readonly float LEGENDARY_PROB = 13f;
+        private readonly float EXCEED_PROB = 1f;
+
         /// <summary>
         /// 등록된 CardInfo ScriptableObject 리스트.
         /// 인덱스가 CardActionID 역할도 겸함.
         /// </summary>
-        public List<CardInfo> cardInfos = new();
+        public List<CardInfo> CommonCards = new();
+        public List<CardInfo> UncommonCards = new();
+        public List<CardInfo> LegendaryCards = new();
+        public List<CardInfo> ExceedCards = new();
 
         // ==== [싱글톤 패턴] ====
 
@@ -46,12 +54,48 @@ namespace CardSystem
         /// </summary>
         /// <param name="level">생성할 카드 레벨</param>
         /// <param name="CardActionID">생성할 CardInfo/CardAction 인덱스</param>
-        public Card Create(int level, int CardActionID)
+        public Card Create(int level, CardInfo cardInfo)
         {
-            Debug.Log($"[CardFactory] Create Card: {CardActionID}, Level: {level}");
             var card = new Card();
-            Activate(card, level, CardActionID);
+            Activate(card, level, cardInfo);
             return card;
+        }
+
+        public Card RandomCreate(int level = 1)
+        {
+            // 누적 확률 (0~100)
+            // Common: 53%, Uncommon: 33%, Legendary: 13%, Exceed: 1%
+            float rand = UnityEngine.Random.Range(0f, 100f);
+
+            List<CardInfo> pool = null;
+
+            if (rand < COMMON_PROB) // Common
+            {
+                pool = CommonCards;
+            }
+            else if (rand < COMMON_PROB+UNCOMMON_PROB) // Uncommon
+            {
+                pool = UncommonCards;
+            }
+            else if (rand < COMMON_PROB+UNCOMMON_PROB+LEGENDARY_PROB) // Legendary
+            {
+                pool = LegendaryCards;
+            }
+            else // Exceed
+            {
+                pool = ExceedCards;
+            }
+
+            if (pool == null || pool.Count == 0)
+            {
+                Debug.LogWarning("[CardFactory] 카드 풀에 카드가 없습니다.");
+                return null;
+            }
+
+            int idx = UnityEngine.Random.Range(0, pool.Count);
+            CardInfo info = pool[idx];
+
+            return Create(level, info);
         }
 
         /// <summary>
@@ -67,15 +111,10 @@ namespace CardSystem
         /// <summary>
         /// 카드에 CardInfo 및 CardAction을 할당하고, 레벨에 맞게 초기화합니다.
         /// </summary>
-        private void Activate(Card card, int level, int CardActionID)
+        private void Activate(Card card, int level, CardInfo cardInfo)
         {
-            if (CardActionID < 0 || CardActionID >= cardInfos.Count)
-            {
-                Debug.LogError($"[CardFactory] 유효하지 않은 CardActionID: {CardActionID}");
-                return;
-            }
-            InitCardInfo(card, cardInfos[CardActionID]);
-            var action = CreateActionByID(CardActionID);
+            InitCardInfo(card, cardInfo);
+            var action = CreateActionByID(cardInfo.Id);
 
             if (action != null)
             {
@@ -93,20 +132,20 @@ namespace CardSystem
         {
             switch (id)
             {
-                case 0: return new Card0001_PreparingMarch();
-                case 1: return new Card0002_Crouch();
-                case 2: return new Card0003_Haste();
-                case 3: return new Card0004_WeightReduction();
-                case 4: return new Card0201_ImmatureSparring();
-                case 5: return new Card0202_WeaponEnlargement();
-                case 6: return new Card0401_Shadow();
-                case 7: return new Card0402_WeightOfArmor();
-                case 8: return new Card0403_AttackIsTheBestDefense();
-                case 9: return new Card0404_KillingSpree();
-                case 10: return new Card0601_AbsorbingBlade();
-                case 11: return new Card0602_Berserker();
-                case 12: return new Card0801_FTL();
-                case 13: return new Card0802_RageOfBlade();
+                case 1: return new Card0001_PreparingMarch();
+                case 2: return new Card0002_Crouch();
+                case 3: return new Card0003_Haste();
+                case 4: return new Card0004_WeightReduction();
+                case 201: return new Card0201_ImmatureSparring();
+                case 202: return new Card0202_WeaponEnlargement();
+                case 401: return new Card0401_Shadow();
+                case 402: return new Card0402_WeightOfArmor();
+                case 403: return new Card0403_AttackIsTheBestDefense();
+                case 404: return new Card0404_KillingSpree();
+                case 601: return new Card0601_AbsorbingBlade();
+                case 602: return new Card0602_Berserker();
+                case 801: return new Card0801_FTL();
+                case 802: return new Card0802_RageOfBlade();
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {id}");
                     return null;

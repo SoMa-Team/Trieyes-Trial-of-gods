@@ -20,13 +20,14 @@ namespace CardViews
         public TMP_Text cardNameText;
         public TMP_Text descriptionText;
         public Image propertyEmblemImage;
-        public PropertyEmblemSO propertyEmblemTable;
         public StatTypeEmblemSO statTypeEmblemTable;
         public Image statTypeEmblemImage;
         public TMP_Text statIntegerValueText;
         public Image selectionOutline;
 
         public List<GameObject> stickerOverlayPrefabs; // [0]=None, [1]=StatType, [2]=Number
+        public List<GameObject> propertyTypeEmblems; // [0]=Fire, [1]=Ice, [2]=Light, [3]=Dark, [4]=Steel
+        public List<GameObject> rarityEmblems;
 
         // ===== [내부 필드] =====
         private Card card;
@@ -184,12 +185,39 @@ namespace CardViews
             var descParams = card.GetEffectiveParamTexts();
             descriptionText.text = FormatDescription(card.cardDescription, descParams);
 
-            if (card.properties != null && card.properties.Length > 0 && propertyEmblemTable != null)
+            for (int i = 0; i < propertyTypeEmblems.Count; i++)
             {
-                propertyEmblemImage.sprite = propertyEmblemTable.GetEmblem(card.properties[0]);
-                propertyEmblemImage.enabled = propertyEmblemImage.sprite != null;
+                int flag = 0;
+                foreach (var property in card.properties)
+                {
+                    if (i == (int)property)
+                    {
+                        flag = 1;
+                        break;
+                    }
+                }
+
+                if (flag==1)
+                {
+                    propertyTypeEmblems[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    propertyTypeEmblems[i].gameObject.SetActive(false);
+                }
             }
-            else propertyEmblemImage.enabled = false;
+
+            for (int i = 0; i < rarityEmblems.Count; i++)
+            {
+                if (i == (int)card.rarity)
+                {
+                    rarityEmblems[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    rarityEmblems[i].gameObject.SetActive(false);   
+                }
+            }
 
             if (card.cardStats.stats.Count > 0 && statTypeEmblemTable != null)
             {

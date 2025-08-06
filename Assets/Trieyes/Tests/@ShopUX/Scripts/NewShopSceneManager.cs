@@ -27,6 +27,8 @@ public class NewShopSceneManager : MonoBehaviour
     [HideInInspector] public CardView selectedCard2;
     [HideInInspector] public Sticker selectedSticker;
 
+    private readonly int CARD_SELL_PRICE = 30; //ToDo: 카드 희귀도별 판매 가격 결정되면 그걸로 변경
+
     void Awake()
     {
         if (Instance is not null)
@@ -180,12 +182,17 @@ public class NewShopSceneManager : MonoBehaviour
         RefreshShopSlots();
     }
 
-    // public void RemoveCard()
-    // {
-    //     if (selectedCard1 == null) return;
-    //     Deck deck = mainCharacter.deck;
-    //     
-    // }
+    public void SellCard()
+    {
+        if (selectedCard1 == null) return;
+        Deck deck = mainCharacter.deck;
+        deck.RemoveCard(selectedCard1.GetCurrentCard());
+        selectedCard1.SetSelected(false);
+        selectedCard1 = null;
+        sellButton.interactable = false;
+        SyncWithDeck();
+        mainCharacter.gold += CARD_SELL_PRICE;
+    }
 
     private void RefreshShopSlots()
     {

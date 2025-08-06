@@ -436,6 +436,38 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1817888161285489941, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1817888161285489941, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1817888161285489941, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2135506021}
+    - target: {fileID: 1817888161285489941, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1817888161285489941, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SellCard
+      objectReference: {fileID: 0}
+    - target: {fileID: 1817888161285489941, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: NewShopSceneManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1817888161285489941, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 2035555758130435071, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_Name
+      value: SellButton
+      objectReference: {fileID: 0}
     - target: {fileID: 2459982713996576146, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_Name
       value: ShopSceneManager
@@ -673,6 +705,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5576991401071774346, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: sellButton
+      value: 
+      objectReference: {fileID: 2140358072}
+    - target: {fileID: 5576991401071774346, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: deckCardView
       value: 
       objectReference: {fileID: 4986477773496189538, guid: 57117521023954de2a4709ce6555217c, type: 3}
@@ -718,7 +754,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6596087777759807577, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -576.3025
+      value: -576.2339
       objectReference: {fileID: 0}
     - target: {fileID: 6826070192694617963, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1352,6 +1388,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 004e22980f48a445290ad59b625b4aaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2140358072 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1817888161285489941, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+  m_PrefabInstance: {fileID: 911928233}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807

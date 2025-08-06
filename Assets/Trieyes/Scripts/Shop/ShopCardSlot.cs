@@ -60,8 +60,7 @@ public class ShopCardSlot : MonoBehaviour
 
     public void OnClickBuyButton()
     {
-        Pawn mainCharacter=ShopSceneManager.Instance.mainCharacter;
-        DeckView deckView=ShopSceneManager.Instance.deckView;
+        Pawn mainCharacter=NewShopSceneManager.Instance.mainCharacter;
         if (mainCharacter.gold < price)
         {
             Debug.LogError("Not enough gold");
@@ -69,7 +68,7 @@ public class ShopCardSlot : MonoBehaviour
         }
         mainCharacter.gold -= price;
         mainCharacter.deck.AddCard(GetCurrentCard().DeepCopy());
-        deckView.RefreshDeckUI();
         disableOverlay.SetActive(true);
+        NewShopSceneManager.Instance.SyncWithDeck();
     }
 }

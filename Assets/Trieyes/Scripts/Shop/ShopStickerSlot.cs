@@ -60,13 +60,13 @@ public class ShopStickerSlot : MonoBehaviour
 
     public void OnClickBuyButton()
     {
-        Pawn mainCharacter = ShopSceneManager.Instance.mainCharacter;
+        Pawn mainCharacter = NewShopSceneManager.Instance.mainCharacter;
         if (mainCharacter.gold < price)
         {
             Debug.LogError("Not enough gold");
             return;
         }
         mainCharacter.gold -= price;
-        ShopSceneManager.Instance.selectedSticker = sticker;
+        NewShopSceneManager.Instance.selectedSticker = sticker;
     }
 }

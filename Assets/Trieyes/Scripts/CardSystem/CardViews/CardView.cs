@@ -263,7 +263,7 @@ namespace CardViews
 
                 if (charIndex != -1)
                 {
-                    var sticker = ShopSceneManager.Instance?.selectedSticker;
+                    var sticker = NewShopSceneManager.Instance.selectedSticker;
                     if (sticker != null)
                     {
                         bool applied = card.TryApplyStickerOverride(charIndex, sticker);

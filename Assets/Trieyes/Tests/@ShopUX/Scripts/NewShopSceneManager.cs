@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CardSystem;
+using CardViews;
 using CharacterSystem;
 using Stats;
 using StickerSystem;
@@ -16,6 +17,16 @@ public class NewShopSceneManager : MonoBehaviour
     
     public GameObject shopCardSlot;
     public GameObject shopStickerSlot;
+    public GameObject deckCardView;
+    
+    [HideInInspector]
+    public Character mainCharacter;
+
+    public CardView selectedCard1;
+    public CardView selectedCard2;
+    public Sticker selectedSticker;
+    
+    public Button removeButton;
 
     void Awake()
     {
@@ -28,8 +39,6 @@ public class NewShopSceneManager : MonoBehaviour
         Instance = this;
     }
     
-    
-    private Character mainCharacter;
     private Difficulty difficulty;
 
     private const int CARD_PROB = 85;
@@ -189,6 +198,64 @@ public class NewShopSceneManager : MonoBehaviour
             {
                 Instantiate(shopStickerSlot, ShopScaleRect);
             }
+        }
+    }
+
+    public void SyncWithDeck()
+    {
+        foreach (Transform child in DeckScaleRect)
+        {
+            Destroy(child.gameObject);
+        }
+        Deck deck = mainCharacter.deck;
+        foreach (var card in deck.cards)
+        {
+            var obj = Instantiate(deckCardView,  DeckScaleRect);
+            obj.transform.localScale = Vector3.one;
+            var cardView = obj.GetComponent<CardView>();
+            cardView.SetCard(card);
+        }
+    }
+
+    public void OnCardClicked(CardView cardView)
+    {
+        Deck deck = mainCharacter.deck;
+        if (selectedCard1 == null)
+        {
+            selectedCard1 = cardView;
+            selectedCard1.SetSelected(true);
+            removeButton.interactable = true;
+            return;
+        }
+        else if (selectedCard1 == cardView)
+        {
+            selectedCard1.SetSelected(false);
+            selectedCard1 = null;
+            removeButton.interactable = false;
+            return;
+        }
+        else
+        {
+            selectedCard2 = cardView;
+            selectedCard2.SetSelected(true);
+
+            if (deck == null) return;
+
+            // 병합 or 스왑
+            var cardA = selectedCard1.GetCurrentCard();
+            var cardB = selectedCard2.GetCurrentCard();
+
+            if (cardA.cardName == cardB.cardName)
+                deck.MergeCards(cardA, cardB);
+            else
+                deck.SwapCards(cardA, cardB);
+
+            // 선택 해제
+            selectedCard1.SetSelected(false);
+            selectedCard2.SetSelected(false);
+            selectedCard1 = null;
+            selectedCard2 = null;
+            removeButton.interactable = false;
         }
     }
 }

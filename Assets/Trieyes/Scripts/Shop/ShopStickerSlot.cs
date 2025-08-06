@@ -33,7 +33,7 @@ public class ShopStickerSlot : MonoBehaviour
 
     public void SetSticker()
     {
-        sticker = StickerFactory.Instance.CreateRandomSticker();
+        sticker = StickerFactory.CreateRandomSticker();
         string value;
         switch (sticker.type)
         {

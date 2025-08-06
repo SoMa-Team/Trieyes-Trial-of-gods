@@ -70,5 +70,9 @@ public class ShopCardSlot : MonoBehaviour
         mainCharacter.deck.AddCard(GetCurrentCard().DeepCopy());
         disableOverlay.SetActive(true);
         NewShopSceneManager.Instance.SyncWithDeck();
+        if (NewShopSceneManager.Instance.mainCharacter.deck.IsDeckFull())
+        {
+            
+        }
     }
 }

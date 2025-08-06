@@ -21,6 +21,8 @@ public class NewShopSceneManager : MonoBehaviour
     public GameObject deckCardView;
     
     public Button sellButton;
+    public Button rerollButton;
+    public Button nextBattleButton;
     
     [HideInInspector] public Character mainCharacter;
     [HideInInspector] public CardView selectedCard1;
@@ -28,6 +30,11 @@ public class NewShopSceneManager : MonoBehaviour
     [HideInInspector] public Sticker selectedSticker;
 
     private readonly int CARD_SELL_PRICE = 30; //ToDo: 카드 희귀도별 판매 가격 결정되면 그걸로 변경
+
+    public TMP_Text sellPriceText;
+    public TMP_Text rerollPriceText;
+    
+    private int rerollPrice;
 
     void Awake()
     {
@@ -50,6 +57,11 @@ public class NewShopSceneManager : MonoBehaviour
     {
         this.mainCharacter = mainCharacter;
         this.difficulty = difficulty;
+
+        rerollPrice = 10;
+
+        sellPriceText.text = CARD_SELL_PRICE.ToString();
+        rerollPriceText.text = rerollPrice.ToString();
         
         UpdatePlayerRelics();
         OnScreenResized();
@@ -179,6 +191,13 @@ public class NewShopSceneManager : MonoBehaviour
 
     public void Reroll()
     {
+        if (mainCharacter.gold < rerollPrice)
+        {
+            Debug.LogError("Not enough gold to reroll");
+        }
+        mainCharacter.gold -= rerollPrice;
+        rerollPrice += 10;
+        rerollPriceText.text = rerollPrice.ToString();
         RefreshShopSlots();
     }
 

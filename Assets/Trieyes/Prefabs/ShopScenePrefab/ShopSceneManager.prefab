@@ -2106,7 +2106,7 @@ GameObject:
   - component: {fileID: 8074559591407061357}
   - component: {fileID: 2956487699327124029}
   m_Layer: 5
-  m_Name: CellButton
+  m_Name: SellButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2177,7 +2177,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2956487699327124029}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5576991401071774346}
+        m_TargetAssemblyTypeName: NewShopSceneManager, Assembly-CSharp
+        m_MethodName: SellCard
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!222 &8074559591407061357
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2948,8 +2960,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shopCardSlot: {fileID: 1655834104151316082, guid: 8d391b3ff288d4515a6a80e0d2c16ded, type: 3}
   shopStickerSlot: {fileID: 6242317248085038734, guid: 52954f236b5744ce9abec4ce4d3670fd, type: 3}
-  deckCardView: {fileID: 0}
+  deckCardView: {fileID: 4986477773496189538, guid: 57117521023954de2a4709ce6555217c, type: 3}
+  sellButton: {fileID: 1817888161285489941}
+  rerollButton: {fileID: 414559632359810911}
+  nextBattleButton: {fileID: 8789414774319112187}
+  sellPriceText: {fileID: 1034763202252983098}
+  rerollPriceText: {fileID: 3720203239092666871}
+  deckCountText: {fileID: 7388549943736382579}
   mainCharacter: {fileID: 0}
+  selectedCard1: {fileID: 0}
+  selectedCard2: {fileID: 0}
   textRoundInfo: {fileID: 2302371082959405882}
   textGold: {fileID: 5187600618708536375}
   imageRelics:
@@ -9372,8 +9392,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7661672993949363519}
   m_HandleRect: {fileID: 7484478533454172163}
   m_Direction: 0
-  m_Value: 1.0000001
-  m_Size: 0.63260376
+  m_Value: 1.0000005
+  m_Size: 0.6371507
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -11123,7 +11143,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 9086128440602789431}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.6653766
+  m_Size: 0.66537654
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12086,7 +12106,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -576.23395, y: 0}
+  m_AnchoredPosition: {x: -576.2342, y: 0}
   m_SizeDelta: {x: 3318.8398, y: 860}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8909121059314985013

@@ -24,15 +24,16 @@ public class NewShopSceneManager : MonoBehaviour
     public Button rerollButton;
     public Button nextBattleButton;
     
+    public TMP_Text sellPriceText;
+    public TMP_Text rerollPriceText;
+    public TMP_Text deckCountText;
+    
     [HideInInspector] public Character mainCharacter;
     [HideInInspector] public CardView selectedCard1;
     [HideInInspector] public CardView selectedCard2;
     [HideInInspector] public Sticker selectedSticker;
 
     private readonly int CARD_SELL_PRICE = 30; //ToDo: 카드 희귀도별 판매 가격 결정되면 그걸로 변경
-
-    public TMP_Text sellPriceText;
-    public TMP_Text rerollPriceText;
     
     private int rerollPrice;
 

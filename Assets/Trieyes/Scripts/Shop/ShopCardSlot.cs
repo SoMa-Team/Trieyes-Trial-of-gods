@@ -72,7 +72,9 @@ public class ShopCardSlot : MonoBehaviour
         NewShopSceneManager.Instance.SyncWithDeck();
         if (NewShopSceneManager.Instance.mainCharacter.deck.IsDeckFull())
         {
-            
+            NewShopSceneManager.Instance.rerollButton.interactable = false;
+            NewShopSceneManager.Instance.nextBattleButton.interactable = false;
+            NewShopSceneManager.Instance.deckCountText.color = Color.red;
         }
     }
 }

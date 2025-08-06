@@ -44,7 +44,7 @@ public class ShopStickerSlot : MonoBehaviour
                 backGround.color = numberStickerColor;
                 break;
             case(StickerType.StatType):
-                value = sticker.statTypeValue.ToString();
+                value = StatTypeTransformer.StatTypeToKorean(sticker.statTypeValue);
                 ValueText.text = value;
                 TitleText.text = value + " 스티커";
                 backGround.color = statTypeStickerColor;

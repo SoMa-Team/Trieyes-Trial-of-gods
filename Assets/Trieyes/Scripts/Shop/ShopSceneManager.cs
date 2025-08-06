@@ -156,7 +156,7 @@ public class ShopSceneManager : MonoBehaviour
 
         for (int i = 0; i < shopStickerViews.Count; i++)
         {
-            Sticker newSticker = StickerFactory.Instance.CreateRandomSticker();
+            Sticker newSticker = StickerFactory.CreateRandomSticker();
             shopStickers.Add(newSticker);
             shopStickerViews[i].SetSticker(newSticker);
         }

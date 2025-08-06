@@ -70,7 +70,7 @@ public class ShopCardSlot : MonoBehaviour
         mainCharacter.deck.AddCard(GetCurrentCard().DeepCopy());
         disableOverlay.SetActive(true);
         NewShopSceneManager.Instance.SyncWithDeck();
-        if (NewShopSceneManager.Instance.mainCharacter.deck.IsDeckFull())
+        if (NewShopSceneManager.Instance.mainCharacter.deck.IsDeckExceed())
         {
             NewShopSceneManager.Instance.rerollButton.interactable = false;
             NewShopSceneManager.Instance.nextBattleButton.interactable = false;

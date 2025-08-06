@@ -63,10 +63,12 @@ public class NewShopSceneManager : MonoBehaviour
 
         sellPriceText.text = CARD_SELL_PRICE.ToString();
         rerollPriceText.text = rerollPrice.ToString();
+        deckCountText.text = $"Cards : {mainCharacter.deck.cards.Count} / {mainCharacter.deck.maxCardCount}";
         
         UpdatePlayerRelics();
         OnScreenResized();
         RefreshShopSlots();
+        SyncWithDeck();
     }
 
     public void Deactivate()
@@ -160,7 +162,8 @@ public class NewShopSceneManager : MonoBehaviour
 
     public void OnClickNextRound()
     {
-        Debug.Log("OnClickNextRound");
+        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
+        UpdatePlayerStat();
     }
 
     public void OnClickStatInfo()
@@ -212,6 +215,12 @@ public class NewShopSceneManager : MonoBehaviour
         sellButton.interactable = false;
         SyncWithDeck();
         mainCharacter.gold += CARD_SELL_PRICE;
+        if (!mainCharacter.deck.IsDeckExceed())
+        {
+            rerollButton.interactable = true;
+            nextBattleButton.interactable = true;
+            deckCountText.color = Color.white;
+        }
     }
 
     private void RefreshShopSlots()
@@ -248,6 +257,7 @@ public class NewShopSceneManager : MonoBehaviour
             var cardView = obj.GetComponent<CardView>();
             cardView.SetCard(card);
         }
+        deckCountText.text = $"Cards : {mainCharacter.deck.cards.Count} / {mainCharacter.deck.maxCardCount}";
     }
 
     public void OnCardClicked(CardView cardView)

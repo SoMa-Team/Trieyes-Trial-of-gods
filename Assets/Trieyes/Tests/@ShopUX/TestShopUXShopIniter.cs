@@ -12,6 +12,8 @@ public class TestShopUXShopIniter : MonoBehaviour
     {
         var difficulty = Difficulty.GetByStageRound(1);
         mainCharacter.AddRelic(new Relic());
+        mainCharacter.initBaseStat();
+        mainCharacter.deck.Activate(mainCharacter, true);
         NewShopSceneManager.Instance.Activate(mainCharacter, difficulty);
     }
 }

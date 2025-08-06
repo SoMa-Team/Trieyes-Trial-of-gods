@@ -46,7 +46,7 @@ namespace CardSystem
         
         private DeckView deckView;
         
-        private int maxCardCount = 5;
+        public int maxCardCount = 5;
         
         // ===== [기능 3] 카드 호출 순서 관리 =====
         /// <summary>
@@ -118,7 +118,7 @@ namespace CardSystem
             {
                 case Utils.EventType.OnBattleSceneChange:
                     DestoryCardsBeforeBattleStart();
-                    deckView.RefreshDeckUI();
+                    NewShopSceneManager.Instance.SyncWithDeck();
                     CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
@@ -141,9 +141,15 @@ namespace CardSystem
             }
         }
 
-        public bool IsDeckFull()
+        public bool IsDeckFull()//ToDo: ShopSceneManager 이식 끝나면 없애기
         {
             if (cards.Count >= maxCardCount) return true;
+            else return false;
+        }
+
+        public bool IsDeckExceed()
+        {
+            if (cards.Count >= maxCardCount+1) return true;
             else return false;
         }
 
@@ -167,11 +173,6 @@ namespace CardSystem
         /// <param name="card">추가할 카드</param>
         public void AddCard(Card card)
         {
-            if (cards.Count == maxCardCount)
-            {
-                Debug.Log("Card count exceed max number of cards");
-                return;
-            }
             if (card != null)
             {
                 cards.Add(card);

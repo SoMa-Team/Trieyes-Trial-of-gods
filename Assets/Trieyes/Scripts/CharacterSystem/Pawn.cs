@@ -291,7 +291,7 @@ namespace CharacterSystem
         /// <summary>
         /// 기본 스탯을 초기화합니다.
         /// </summary>
-        protected void initBaseStat()
+        public void initBaseStat()
         {
             if(statSheet == null)
             {

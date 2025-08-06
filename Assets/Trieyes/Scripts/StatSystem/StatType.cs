@@ -41,4 +41,4 @@ namespace Stats
         Revival,            // 부활
         InstantDeath        // 즉사
     }
-} 
+}

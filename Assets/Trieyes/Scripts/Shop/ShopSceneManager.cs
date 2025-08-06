@@ -49,6 +49,8 @@ public class ShopSceneManager : MonoBehaviour
     [Header("돈복사버그")]
     public Button ShowMeTheMoneyButton;
     
+    [HideInInspector]
+    public Pawn mainCharacter;
     public static ShopSceneManager Instance;
 
     // --- 내부 필드 ---
@@ -57,8 +59,7 @@ public class ShopSceneManager : MonoBehaviour
     
     public Sticker selectedSticker;
     private StickerView selectedStickerView;
-
-    private Pawn mainCharacter;
+    
     private Difficulty difficulty;
     
     private void Awake()
@@ -148,17 +149,14 @@ public class ShopSceneManager : MonoBehaviour
         shopStickers.Clear();
         for (int i = 0; i < shopCardViews.Count; i++)
         {
-            Card newCard = CardFactory.Instance.Create(
-                UnityEngine.Random.Range(1, 4),         // 카드 레벨(1~3)
-                UnityEngine.Random.Range(0, CardFactory.Instance.cardInfos.Count)
-            );
+            Card newCard = CardFactory.Instance.RandomCreate();
             shopCards.Add(newCard);
             shopCardViews[i].SetCard(newCard);
         }
 
         for (int i = 0; i < shopStickerViews.Count; i++)
         {
-            Sticker newSticker = StickerFactory.Instance.CreateRandomSticker();
+            Sticker newSticker = StickerFactory.CreateRandomSticker();
             shopStickers.Add(newSticker);
             shopStickerViews[i].SetSticker(newSticker);
         }

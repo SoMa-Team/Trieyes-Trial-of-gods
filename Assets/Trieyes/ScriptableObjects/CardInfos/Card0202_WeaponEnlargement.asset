@@ -14,24 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: 202
   properties: 04000000
-  rarity: 1
+  rarity: 0
   cardName: "\uBB34\uAE30 \uAC70\uB300\uD654"
   illustration: {fileID: -1970440535734074314, guid: 7a55b410217c84aafbbc9bf1dbce9454, type: 3}
-  cardDescription: "\uC804\uD22C\uAC00 \uC2DC\uC791\uD560 \uB54C, \uD574\uB2F9 \uC804\uD22C
-    \uB3D9\uC548 {0} \uC744/\uB97C {1} \uAC10\uC18C\uC2DC\uD0A4\uACE0, {2} \uC744/\uB97C
-    {3} \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
+  cardDescription: "<size=35><b>\uC804\uD22C \uC2DC\uC791 \uC2DC</b></size>\n{0}   
+    {1} \uAC10\uC18C, {2}    {3} \uC99D\uAC00"
   eventTypes: 03000000
   baseParams:
   - "\uC774\uB3D9\uC18D\uB3C4"
   - 10
   - "\uC0AC\uC815\uAC70\uB9AC"
   - 10
-  paramWordRanges:
-  - start: 6
-    end: 6
-  - start: 9
-    end: 9
-  - start: 11
+  paramCharRanges:
+  - start: 8
     end: 11
-  - start: 14
-    end: 14
+  - start: 16
+    end: 17
+  - start: 23
+    end: 26
+  - start: 31
+    end: 32

@@ -215,12 +215,6 @@ public class NewShopSceneManager : MonoBehaviour
         sellButton.interactable = false;
         SyncWithDeck();
         mainCharacter.gold += CARD_SELL_PRICE;
-        if (!mainCharacter.deck.IsDeckExceed())
-        {
-            rerollButton.interactable = true;
-            nextBattleButton.interactable = true;
-            deckCountText.color = Color.white;
-        }
     }
 
     private void RefreshShopSlots()
@@ -256,6 +250,18 @@ public class NewShopSceneManager : MonoBehaviour
             obj.transform.localScale = Vector3.one;
             var cardView = obj.GetComponent<CardView>();
             cardView.SetCard(card);
+        }
+        if (!mainCharacter.deck.IsDeckExceed())
+        {
+            rerollButton.interactable = true;
+            nextBattleButton.interactable = true;
+            deckCountText.color = Color.white;
+        }
+        else
+        {
+            rerollButton.interactable = false;
+            nextBattleButton.interactable = false;
+            deckCountText.color = Color.red;
         }
         deckCountText.text = $"Cards : {mainCharacter.deck.cards.Count} / {mainCharacter.deck.maxCardCount}";
     }

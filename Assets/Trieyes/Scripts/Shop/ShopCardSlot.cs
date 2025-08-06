@@ -85,13 +85,5 @@ public class ShopCardSlot : MonoBehaviour
 
         // 덱 UI 동기화
         shopManager.SyncWithDeck();
-
-        // 덱 한도 초과 시 버튼/텍스트 비활성화 처리
-        if (mainCharacter.deck.IsDeckExceed())
-        {
-            shopManager.rerollButton.interactable = false;
-            shopManager.nextBattleButton.interactable = false;
-            shopManager.deckCountText.color = Color.red;
-        }
     }
 }

@@ -280,7 +280,7 @@ namespace CardViews
                     }
                 }
             }
-            parentDeckView?.OnCardClicked(this);
+            NewShopSceneManager.Instance.OnCardClicked(this);
         }
 
         public void SetSelected(bool selected)

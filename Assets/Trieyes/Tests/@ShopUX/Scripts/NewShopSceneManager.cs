@@ -7,6 +7,7 @@ using Stats;
 using StickerSystem;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.WSA;
 using Utils;
@@ -19,14 +20,12 @@ public class NewShopSceneManager : MonoBehaviour
     public GameObject shopStickerSlot;
     public GameObject deckCardView;
     
-    [HideInInspector]
-    public Character mainCharacter;
-
-    public CardView selectedCard1;
-    public CardView selectedCard2;
-    public Sticker selectedSticker;
+    public Button sellButton;
     
-    public Button removeButton;
+    [HideInInspector] public Character mainCharacter;
+    [HideInInspector] public CardView selectedCard1;
+    [HideInInspector] public CardView selectedCard2;
+    [HideInInspector] public Sticker selectedSticker;
 
     void Awake()
     {
@@ -181,6 +180,13 @@ public class NewShopSceneManager : MonoBehaviour
         RefreshShopSlots();
     }
 
+    // public void RemoveCard()
+    // {
+    //     if (selectedCard1 == null) return;
+    //     Deck deck = mainCharacter.deck;
+    //     
+    // }
+
     private void RefreshShopSlots()
     {
         foreach (Transform child in ShopScaleRect)
@@ -224,14 +230,14 @@ public class NewShopSceneManager : MonoBehaviour
         {
             selectedCard1 = cardView;
             selectedCard1.SetSelected(true);
-            removeButton.interactable = true;
+            sellButton.interactable = true;
             return;
         }
         else if (selectedCard1 == cardView)
         {
             selectedCard1.SetSelected(false);
             selectedCard1 = null;
-            removeButton.interactable = false;
+            sellButton.interactable = false;
             return;
         }
         else
@@ -255,7 +261,8 @@ public class NewShopSceneManager : MonoBehaviour
             selectedCard2.SetSelected(false);
             selectedCard1 = null;
             selectedCard2 = null;
-            removeButton.interactable = false;
+            sellButton.interactable = false;
+            SyncWithDeck();
         }
     }
 }

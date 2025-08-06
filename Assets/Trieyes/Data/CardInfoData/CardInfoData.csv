@@ -5,10 +5,10 @@ Card0003_Haste,3,성급함,Common,Light,Haste,<size=35><b>전투 시작 시</b><
 Card0004_WeightReduction,4,무기 경량화,Common,Steel,WeightReduction,<size=35><b>전투 시작 시</b></size>\n{0}    {1} 증가,OnBattleSceneChange,공격속도|10
 Card0201_ImmatureSparring,201,미숙한 난사,Common,Fire,ImmatureSparring,"<size=35><b>전투 시작 시</b></size>\n{0}    {1} 감소, {2}    {3} 증가",OnBattleSceneChange,방어력|10|공격속도|10
 Card0202_WeaponEnlargement,202,무기 거대화,Common,Steel,WeaponEnlargement,"<size=35><b>전투 시작 시</b></size>\n{0}    {1} 감소, {2}    {3} 증가",OnBattleSceneChange,이동속도|10|사정거리|10
-Card0401_Shadow,401,그림자,UnCommon,Dark,Shadow,<size=35><b>전투 시작 시</b></size>\n이름이 '그림자'가 아닌 모든 카드를 {0} 번 더 발동,OnBattleSceneChange,1
-Card402_WeightOfArmor,402,갑옷의 무게,UnCommon,Steel,WeightOfArmor,"<size=35><b>전투 시작 시</b></size>\n이름에 '갑옷'이 들어간 카드 1장 당 {0}    {1} % 증가, {2}    {3} % 감소",OnBattleSceneChange,방어력|10|이동속도|1
-Card403_AttackIsTheBestDefense,403,최선의 방어는 공격,UnCommon,Steel,AttackIsTheBestDefense,<size=35><b>전투 시작 시</b></size>\n'강철' 속성 카드 1장당 {0}    {1} % 증가,OnBattleSceneChange,공격력|10
-Card404_KillingSpree,404,학살,UnCommon,Dark,KillingSpree,"<size=35><b>적 처치 시</b></size>\n{0}    {1} % 증가, {2}    {3} % 증가",OnBattleSceneChange|OnKilled,이동속도|20|공격속도|20
+Card0401_Shadow,401,그림자,Uncommon,Dark,Shadow,<size=35><b>전투 시작 시</b></size>\n이름이 '그림자'가 아닌 모든 카드를 {0} 번 더 발동,OnBattleSceneChange,1
+Card402_WeightOfArmor,402,갑옷의 무게,Uncommon,Steel,WeightOfArmor,"<size=35><b>전투 시작 시</b></size>\n이름에 '갑옷'이 들어간 카드 1장 당 {0}    {1} % 증가, {2}    {3} % 감소",OnBattleSceneChange,방어력|10|이동속도|1
+Card403_AttackIsTheBestDefense,403,최선의 방어는 공격,Uncommon,Steel,AttackIsTheBestDefense,<size=35><b>전투 시작 시</b></size>\n'강철' 속성 카드 1장당 {0}    {1} % 증가,OnBattleSceneChange,공격력|10
+Card404_KillingSpree,404,학살,Uncommon,Dark,KillingSpree,"<size=35><b>적 처치 시</b></size>\n{0}    {1} % 증가, {2}    {3} % 증가",OnBattleSceneChange|OnKilled,이동속도|20|공격속도|20
 Card0601_AbsorbingBlade,601,흡수하는 칼날,Legendary,Dark,AbsorbingBlade,"<size=35><b>전투 시작 전</b></size>\n오른쪽 카드를 파괴, 경험치 일부 획득\n<size=35><b>전투 시작 시</b></size>\n{0}    {1} % 증가",DestoryCardsBeforeBattleStart|OnBattleSceneChange,흡혈 계수|10
 Card0602_Berserker,602,광전사의 분노,Legendary,Fire,Berserker,<size=35><b>피해를 받을 시</b></size>\n{0}    {1} 증가,OnBattleSceneChange|OnDamaged,공격력|1
 Card801_FTL,801,빛보다 빠르게,Legendary,Light,FTL,"<size=35><b>전투 시작 시</b></size>\n{0}    {1} % 감소, {2}    {3} % 증가",OnBattleSceneChange,공격력|100|공격속도|1000

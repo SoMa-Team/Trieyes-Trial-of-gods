@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using CardSystem;
 using CharacterSystem;
 using Stats;
+using StickerSystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +13,9 @@ using Utils;
 public class NewShopSceneManager : MonoBehaviour
 {
     public static NewShopSceneManager Instance { get; private set; }
+    
+    public GameObject shopCardSlot;
+    public GameObject shopStickerSlot;
 
     void Awake()
     {
@@ -27,6 +32,10 @@ public class NewShopSceneManager : MonoBehaviour
     private Character mainCharacter;
     private Difficulty difficulty;
 
+    private const int CARD_PROB = 85;
+    private const int STICKER_PROB = 15;
+    private int slotCount = 4;
+
     public void Activate(Character mainCharacter, Difficulty difficulty)
     {
         this.mainCharacter = mainCharacter;
@@ -34,6 +43,7 @@ public class NewShopSceneManager : MonoBehaviour
         
         UpdatePlayerRelics();
         OnScreenResized();
+        RefreshShopSlots();
     }
 
     public void Deactivate()
@@ -150,5 +160,35 @@ public class NewShopSceneManager : MonoBehaviour
 
         // DeckScaleRect.localScale = Vector3.one * deckScale;
         // ShopScaleRect.localScale = Vector3.one * shopScale;
+    }
+
+    public void ShowMeTheMoney()
+    {
+        mainCharacter.gold += 10000;
+    }
+
+    public void Reroll()
+    {
+        RefreshShopSlots();
+    }
+
+    private void RefreshShopSlots()
+    {
+        foreach (Transform child in ShopScaleRect)
+        {
+            Destroy(child.gameObject);
+        }
+        for (int i = 0; i < slotCount; i++)
+        {
+            float rand = UnityEngine.Random.Range(0f, 100f);
+            if (rand <= CARD_PROB)
+            {
+                Instantiate(shopCardSlot, ShopScaleRect);
+            }
+            else
+            {
+                Instantiate(shopStickerSlot, ShopScaleRect);
+            }
+        }
     }
 }

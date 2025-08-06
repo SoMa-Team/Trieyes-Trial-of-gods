@@ -1,3 +1,4 @@
+using System;
 using CardSystem;
 using UnityEngine;
 using CardViews;
@@ -19,9 +20,15 @@ public class ShopCardSlot : MonoBehaviour
 
     private int price;
 
-    public void SetCard(Card card)
+    private void Awake()
     {
         disableOverlay.SetActive(false);
+        Card card = CardFactory.Instance.RandomCreate();
+        SetCard(card);
+    }
+
+    public void SetCard(Card card)
+    {
         cardView.SetCard(card);
         switch (card.rarity)
         {

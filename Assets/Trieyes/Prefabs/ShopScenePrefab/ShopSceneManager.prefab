@@ -8563,6 +8563,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 004e22980f48a445290ad59b625b4aaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shopCardSlot: {fileID: 1655834104151316082, guid: 8d391b3ff288d4515a6a80e0d2c16ded, type: 3}
+  shopStickerSlot: {fileID: 6242317248085038734, guid: 52954f236b5744ce9abec4ce4d3670fd, type: 3}
   textRoundInfo: {fileID: 2302371082959405882}
   textGold: {fileID: 5187600618708536375}
   imageRelics:
@@ -18521,7 +18523,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4115502783841703065}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5576991401071774346}
+        m_TargetAssemblyTypeName: NewShopSceneManager, Assembly-CSharp
+        m_MethodName: Reroll
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!222 &2113153335436514811
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -24456,7 +24470,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 7484478533454172163}
   m_Direction: 0
   m_Value: 0.9999999
-  m_Size: 0.6382683
+  m_Size: 0.63828105
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

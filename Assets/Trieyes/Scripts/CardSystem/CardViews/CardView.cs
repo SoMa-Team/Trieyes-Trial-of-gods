@@ -115,15 +115,6 @@ namespace CardViews
                     stickerView.UpdateText(paramText ?? "", descriptionText);
                 }
                 activeStickerOverlays.Add(go);
-                Debug.Log($@"
-                            ==== Sticker Overlay Debug ====
-                            paramIdx: {paramIdx}, line: {lineKv.Key}, stickerType: {stickerType}
-                            overlayPos: {overlayPos}
-                            bl: {bl}, tr: {tr}, width: {width}, height: {height}
-                            descRT: anchoredPosition={descRT.anchoredPosition}, localPosition={descRT.localPosition}, position={descRT.position}
-                            rt(parent): anchoredPosition={rt.anchoredPosition}, localPosition={rt.localPosition}, position={rt.position}
-                            go.parent: {go.transform.parent.name}
-                            ");
             }
         }
 

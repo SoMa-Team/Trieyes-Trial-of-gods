@@ -91,7 +91,7 @@ namespace AttackComponents
 
                 projectileComponent.projectileDirection = direction;
 
-                projectileComponent.SetProjectileSpeed(10f);
+                projectileComponent.SetProjectileSpeed(5f);
                 projectileComponent.SetPierceCount(0);
                 projectileComponent.projectileVFXPrefab = MagicBallVFX;
 

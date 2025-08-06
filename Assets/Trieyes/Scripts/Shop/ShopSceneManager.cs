@@ -1,67 +1,57 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
+using System.Collections.Generic;
 using CardSystem;
 using CardViews;
 using DeckViews;
 using CharacterSystem;
 using BattleSystem;
 using Stats;
-using System;
 using StickerSystem;
-using System.Collections.Generic;
 using GameFramework;
 using Utils;
-using System.Collections;
 
 /// <summary>
-/// 상점 씬의 핵심 관리 클래스입니다.
-/// 카드 뽑기/구매/덱 갱신/전투 진입까지 UI-비즈니스 연결을 총괄.
+/// 상점 씬의 UI와 게임 로직을 연결하는 핵심 매니저 클래스.
+/// - 카드/스티커 리롤, 구매, 덱 갱신, 전투 진입 등 상점에서의 모든 흐름을 관리한다.
 /// </summary>
 public class ShopSceneManager : MonoBehaviour
 {
-    [Header("카드 슬롯 UI")]
-    public List<CardView> shopCardViews;    // 3개 카드뷰를 Inspector에서 순서대로 할당
-    
-    [Header("스티커 슬롯 UI")]
-    public List<StickerView> shopStickerViews;
+    // ========== [UI 연결] ==========
+    [Header("카드/스티커 슬롯 UI")]
+    public List<CardView> shopCardViews;        // 상점에 보여줄 카드뷰들 (Inspector에서 3개 할당)
+    public List<StickerView> shopStickerViews;  // 상점에 보여줄 스티커뷰들
 
-    [Header("카드 구매 버튼")]
-    public List<Button> buyCardButtons;         // 3개 버튼을 Inspector에서 순서대로 할당
-    
-    [Header("스티커 구매 버튼")]
-    public List<Button> buyStickerButtons;
-    
-    [Header("덱 UI 연동")]
-    public DeckView deckView; 
+    [Header("구매 버튼")]
+    public List<Button> buyCardButtons;         // 카드 구매 버튼 (3개)
+    public List<Button> buyStickerButtons;      // 스티커 구매 버튼 (3개)
 
-    [Header("리롤 & 전투 진입 버튼")]
-    public Button rerollButton;
-    public Button battleButton;
+    [Header("덱 및 액션 버튼")]
+    public DeckView deckView;                   // 플레이어의 덱 UI
+    public Button rerollButton;                 // 리롤 버튼
+    public Button battleButton;                 // 전투 시작 버튼
+    public Button showMeTheMoneyButton;         // 돈복사 버튼(테스트용)
 
-    [Header("플레이어 및 스탯 UI")]
+    [Header("플레이어 스탯 UI")]
     public TMP_Text attackStatText;
     public TMP_Text defenseStatText;
     public TMP_Text healthStatText;
     public TMP_Text moveSpeedStatText;
     public TMP_Text goldStatText;
-    
-    [Header("돈복사버그")]
-    public Button ShowMeTheMoneyButton;
-    
-    [HideInInspector]
-    public Pawn mainCharacter;
-    public static ShopSceneManager Instance;
 
-    // --- 내부 필드 ---
+    // ========== [상태 관리] ==========
+    [HideInInspector] public Pawn mainCharacter;
+    public static ShopSceneManager Instance { get; private set; }
+
     private List<Card> shopCards = new();
     private List<Sticker> shopStickers = new();
-    
-    public Sticker selectedSticker;
+    private Sticker selectedSticker;
     private StickerView selectedStickerView;
-    
     private Difficulty difficulty;
-    
+
+    // ======================== [생명주기] ========================
     private void Awake()
     {
         if (Instance != null)
@@ -72,71 +62,74 @@ public class ShopSceneManager : MonoBehaviour
         Instance = this;
     }
 
-    // --- 초기화 ---
+    /// <summary>
+    /// 상점 씬 활성화 및 UI 초기화 (씬 진입 시 호출)
+    /// </summary>
     public void Activate(Character mainCharacter, Difficulty difficulty)
     {
         this.mainCharacter = mainCharacter;
         this.difficulty = difficulty;
-        
+
+        // 부모 오브젝트 변경 (필요시)
         mainCharacter.transform.SetParent(this.transform);
-        // 2. 최초 상점 카드 리롤
+
+        // 골드 보너스 (테스트용/개발용)
         mainCharacter.gold += 10;
-        RefreshShopCards();
 
-        // 3. 덱 UI 연동 (플레이어 덱 표시)
-        deckView.SetDeck(mainCharacter.deck);
+        RefreshShopCards();         // 카드/스티커 리롤
+        deckView.SetDeck(mainCharacter.deck); // 덱 UI 동기화
+        HookButtonListeners();      // 버튼 리스너 연결
+        RefreshStatUI();            // 스탯 UI 갱신
+    }
 
-        // 4. 각 버튼 리스너 설정
-        if (rerollButton != null) rerollButton.onClick.AddListener(RefreshShopCards);
-        if (battleButton != null) battleButton.onClick.AddListener(OnBattleButtonPressed);
-        if(ShowMeTheMoneyButton != null)  ShowMeTheMoneyButton.onClick.AddListener(OnShowMeTheMoneyButtonPressed);
+    /// <summary>
+    /// 상점 씬 비활성화 및 이벤트/참조 해제 (씬 종료/이동 시 호출)
+    /// </summary>
+    public void Deactivate()
+    {
+        UnhookButtonListeners();
+        selectedSticker = null;
+        selectedStickerView = null;
+        shopCards.Clear();
+        shopStickers.Clear();
+        // Instance = null; // 싱글턴 해제는 필요시 활성화
+    }
+
+    // ========== [버튼 리스너 연결/해제] ==========
+    private void HookButtonListeners()
+    {
+        rerollButton?.onClick.AddListener(RefreshShopCards);
+        battleButton?.onClick.AddListener(OnBattleButtonPressed);
+        showMeTheMoneyButton?.onClick.AddListener(OnShowMeTheMoneyButtonPressed);
 
         for (int i = 0; i < buyCardButtons.Count; i++)
         {
-            int idx = i; // capture for closure
+            int idx = i;
             buyCardButtons[i].onClick.AddListener(() => OnCardBuyButtonPressed(idx));
         }
-
         for (int i = 0; i < buyStickerButtons.Count; i++)
         {
             int idx = i;
             buyStickerButtons[i].onClick.AddListener(() => OnStickerBuyButtonPressed(idx));
         }
-
-        RefreshStatUI();
     }
-    
-    public void Deactivate()
+
+    private void UnhookButtonListeners()
     {
-        // 1. 버튼 리스너 해제 (중복 AddListener 방지, 메모리 누수 방지)
-        if (rerollButton != null) rerollButton.onClick.RemoveListener(RefreshShopCards);
-        if (battleButton != null) battleButton.onClick.RemoveListener(OnBattleButtonPressed);
+        rerollButton?.onClick.RemoveListener(RefreshShopCards);
+        battleButton?.onClick.RemoveListener(OnBattleButtonPressed);
+        showMeTheMoneyButton?.onClick.RemoveListener(OnShowMeTheMoneyButtonPressed);
 
-        for (int i = 0; i < buyCardButtons.Count; i++)
-            buyCardButtons[i].onClick.RemoveAllListeners();
-
-        for (int i = 0; i < buyStickerButtons.Count; i++)
-            buyStickerButtons[i].onClick.RemoveAllListeners();
-
-        // 2. 내부 참조 해제 (메모리 관리)
-        //mainCharacter = null;
-        selectedSticker = null;
-        selectedStickerView = null;
-        shopCards.Clear();
-        shopStickers.Clear();
-
-        // 3. UI 상태 초기화/리셋 (필요시)
-        // 예: shopCardViews, shopStickerViews 초기화, 덱 UI 리셋 등
-
-        // 4. 싱글턴 참조 해제 (씬 언로드 대비)
-        Instance = null;
-
-        // 5. 오브젝트 비활성화 (혹은 Destroy)
-        // this.gameObject.SetActive(false); // 또는 Destroy(this.gameObject);
+        foreach (var btn in buyCardButtons)
+            btn.onClick.RemoveAllListeners();
+        foreach (var btn in buyStickerButtons)
+            btn.onClick.RemoveAllListeners();
     }
 
-
-    // --- 상점 카드 리롤 ---
+    // ======================= [상점 카드/스티커 리롤] =======================
+    /// <summary>
+    /// 상점에 노출될 카드/스티커를 새로 뽑아 UI를 갱신한다. (골드 차감)
+    /// </summary>
     private void RefreshShopCards()
     {
         if (mainCharacter.gold < 10)
@@ -144,54 +137,54 @@ public class ShopSceneManager : MonoBehaviour
             Debug.LogError("Not enough gold");
             return;
         }
+
         mainCharacter.gold -= 10;
         shopCards.Clear();
         shopStickers.Clear();
+
         for (int i = 0; i < shopCardViews.Count; i++)
         {
-            Card newCard = CardFactory.Instance.RandomCreate();
+            var newCard = CardFactory.Instance.RandomCreate();
             shopCards.Add(newCard);
             shopCardViews[i].SetCard(newCard);
         }
-
         for (int i = 0; i < shopStickerViews.Count; i++)
         {
-            Sticker newSticker = StickerFactory.CreateRandomSticker();
+            var newSticker = StickerFactory.CreateRandomSticker();
             shopStickers.Add(newSticker);
             shopStickerViews[i].SetSticker(newSticker);
         }
+
         RefreshStatUI();
+        SyncPurchaseButtons();
     }
 
-    // --- 카드 구매 ---
+    // ======================= [구매 및 UI 동기화] =======================
+    /// <summary>
+    /// 카드 구매 버튼 클릭 시 호출
+    /// </summary>
     private void OnCardBuyButtonPressed(int index)
     {
-        if (index < 0 || index >= shopCards.Count)
-            return;
-
+        if (index < 0 || index >= shopCards.Count) return;
         if (mainCharacter.gold < 5)
         {
             Debug.LogError("Not enough gold");
             return;
         }
-        
+
         mainCharacter.gold -= 5;
-
         var cardToBuy = shopCards[index];
-        if (cardToBuy == null)
-            return;
+        if (cardToBuy == null) return;
 
-        // 덱에 딥카피로 추가
-        mainCharacter.deck.AddCard(cardToBuy.DeepCopy());
-        // UI 갱신
-        deckView.RefreshDeckUI();
-        
-        SyncPurchaseButtons();
-
-        // 필요하다면 카드 구매 시마다 스탯도 갱신
-        RefreshStatUI();
+        mainCharacter.deck.AddCard(cardToBuy.DeepCopy()); // 덱에 추가(복사)
+        deckView.RefreshDeckUI();                         // 덱 UI 갱신
+        SyncPurchaseButtons();                            // 버튼 상태 갱신
+        RefreshStatUI();                                  // 스탯 UI 갱신
     }
-    
+
+    /// <summary>
+    /// 카드/스티커 구매 버튼 상태를 덱 상태에 맞춰 갱신
+    /// </summary>
     public void SyncPurchaseButtons()
     {
         bool deckFull = mainCharacter.deck.IsDeckFull();
@@ -199,54 +192,38 @@ public class ShopSceneManager : MonoBehaviour
             btn.interactable = !deckFull;
     }
 
+    /// <summary>
+    /// 스티커 구매 버튼 클릭 시 호출
+    /// </summary>
     private void OnStickerBuyButtonPressed(int index)
     {
-        if (index < 0 || index >= shopStickers.Count)
-            return;
-
-        // 1. 이전 선택 해제(SticekrView에서 selected 구현 되면 추가)
-        // if (selectedStickerView != null)
-        //     selectedStickerView.SetSelected(false);
-
+        if (index < 0 || index >= shopStickers.Count) return;
         if (mainCharacter.gold < 5)
         {
             Debug.LogError("Not enough gold");
             return;
         }
-        
+
         mainCharacter.gold -= 5;
-        // 2. 새로 선택
-        Debug.Log("<color=yellow>Sticker Selected!</color>");
         selectedSticker = shopStickers[index];
         selectedStickerView = shopStickerViews[index];
-        
+        // TODO: StickerView 하이라이트/모드 연동
         RefreshStatUI();
-
-        // 3. 하이라이트 효과 (StickerView에서 구현 필요)
-        //selectedStickerView.SetSelected(true);
-
-        // 4. 카드뷰들에 "스티커 적용 모드" 안내 등 필요하다면 표시
-        // (예시: CardView에 isStickerApplyMode 등)
     }
 
+    /// <summary>
+    /// 테스트용: 골드 1만 지급
+    /// </summary>
     private void OnShowMeTheMoneyButtonPressed()
     {
         mainCharacter.gold += 10000;
         RefreshStatUI();
     }
-    
-    private IEnumerator BattleButtonRoutine()
-    {
-        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        RefreshStatUI();
 
-        yield return new WaitForSeconds(0.8f); // 0.8초 정도, 원하는 시간으로 변경
-
-        this.Deactivate();
-        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
-    }
-
-    // --- 전투 진입 ---
+    // ======================= [전투 진입] =======================
+    /// <summary>
+    /// 전투 시작 버튼 클릭 시 호출 (비동기 루틴)
+    /// </summary>
     private void OnBattleButtonPressed()
     {
         Debug.Log("BattleSceneChangeTest");
@@ -258,13 +235,25 @@ public class ShopSceneManager : MonoBehaviour
         StartCoroutine(BattleButtonRoutine());
     }
 
-    // --- 스탯 UI 갱신 ---
+    private IEnumerator BattleButtonRoutine()
+    {
+        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
+        RefreshStatUI();
+        yield return new WaitForSeconds(0.8f); // 연출 대기(필요시 조정)
+        this.Deactivate();
+        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
+    }
+
+    // ======================= [스탯 UI 갱신] =======================
+    /// <summary>
+    /// 플레이어의 스탯/골드 UI를 실시간으로 갱신한다.
+    /// </summary>
     private void RefreshStatUI()
     {
-        attackStatText.text = mainCharacter.statSheet[StatType.AttackPower].Value.ToString();
-        defenseStatText.text = mainCharacter.statSheet[StatType.Defense].Value.ToString();
-        healthStatText.text = mainCharacter.statSheet[StatType.Health].Value.ToString();
-        moveSpeedStatText.text = mainCharacter.statSheet[StatType.MoveSpeed].Value.ToString();
-        goldStatText.text = mainCharacter.gold.ToString();
+        attackStatText.text     = mainCharacter.statSheet[StatType.AttackPower].Value.ToString();
+        defenseStatText.text    = mainCharacter.statSheet[StatType.Defense].Value.ToString();
+        healthStatText.text     = mainCharacter.statSheet[StatType.Health].Value.ToString();
+        moveSpeedStatText.text  = mainCharacter.statSheet[StatType.MoveSpeed].Value.ToString();
+        goldStatText.text       = mainCharacter.gold.ToString();
     }
 }

@@ -11,78 +11,81 @@ using Utils;
 namespace CardViews
 {
     /// <summary>
-    /// 카드의 정보를 UI에 표시하고, 선택/클릭/강조/스티커 적용까지 처리하는 뷰 클래스.
+    /// 카드 UI 정보 표시, 선택/클릭/강조/스티커 적용 등 카드 단위 뷰 관리 클래스
     /// </summary>
     public class CardView : MonoBehaviour, IPointerClickHandler
     {
-        // ===== [UI 필드] =====
+        // =================== [UI 참조] ===================
+        [Header("카드 기본 UI")]
         public Image illustrationImage;
         public TMP_Text cardNameText;
         public TMP_Text descriptionText;
         public Image propertyEmblemImage;
+
+        [Header("스탯/레어리티/특성 UI")]
         public StatTypeEmblemSO statTypeEmblemTable;
         public Image statTypeEmblemImage;
         public TMP_Text statIntegerValueText;
         public Image selectionOutline;
 
-        public List<GameObject> stickerOverlayPrefabs; // [0]=None, [1]=StatType, [2]=Number
-        public List<GameObject> propertyTypeEmblems; // [0]=Fire, [1]=Ice, [2]=Light, [3]=Dark, [4]=Steel
-        public List<GameObject> rarityEmblems;
+        [Header("오버레이/엠블럼 프리팹")]
+        public List<GameObject> stickerOverlayPrefabs;    // [0]=None, [1]=StatType, [2]=Number
+        public List<GameObject> propertyTypeEmblems;      // [0]=Fire, [1]=Ice, [2]=Light, [3]=Dark, [4]=Steel
+        public List<GameObject> rarityEmblems;            // 카드 레어리티 별 엠블럼
 
-        // ===== [내부 필드] =====
+        // =================== [내부 상태] ===================
         private Card card;
         private DeckView parentDeckView;
         private readonly List<GameObject> activeStickerOverlays = new();
 
-        // ===== [상수 및 옵션] =====
-        Vector2 overlayPadding = new Vector2(15f, 15f);
-        Vector2 stickerPadding = new Vector2(0f, 0f);
-        const float OverlayXOffset = -5f;
-        const float OverlayYOffset = 0f;
-        
-        const float BGXOffset = 0f;
-        const float BGYOffset = 0f;
+        // =================== [상수/옵션] ===================
+        private static readonly Vector2 OVERLAY_PADDING      = new(15f, 15f);
+        private static readonly Vector2 STICKER_PADDING      = new(0f, 0f);
+        private const float OVERLAY_X_OFFSET                 = -5f;
+        private const float OVERLAY_Y_OFFSET                 = 0f;
+        private const float BG_X_OFFSET                      = 0f;
+        private const float BG_Y_OFFSET                      = 0f;
+        private const float STICKER_OVERLAY_FIXED_HEIGHT     = 58.28125f;
+        private const float NUMBER_STICKER_OVERLAY_Y_OFFSET  = -5.1719f;
 
-        private const float StickerOverlayFixedHeight = 58.28125f;
-        private const float NumberStickerOverlayYOffset = -5.1719f;
+        // =============== [오버레이 생성/관리] ===============
         #region Overlay 생성 및 관리
+
+        /// <summary>
+        /// 파라미터(스티커 등)에 맞는 오버레이 UI 생성
+        /// </summary>
         private void CreateParamOverlays(
-            int paramIdx, Dictionary<int, List<int>> groupCharsByLineNum, TMP_TextInfo textInfo, StickerType stickerType, string paramText = null)
+            int paramIdx, Dictionary<int, List<int>> groupCharsByLineNum, TMP_TextInfo textInfo,
+            StickerType stickerType, string paramText = null)
         {
             foreach (var lineKv in groupCharsByLineNum)
             {
                 var charIndices = lineKv.Value;
                 var firstCharInfo = textInfo.characterInfo[charIndices[0]];
                 var lastCharInfo = textInfo.characterInfo[charIndices[^1]];
+
                 Vector3 bl = firstCharInfo.bottomLeft;
                 Vector3 tr = lastCharInfo.topRight;
                 float width = tr.x - bl.x;
                 float height = tr.y - bl.y;
-        
-                Vector2 padding = stickerType == StickerType.None
-                    ? overlayPadding
-                    : overlayPadding + stickerPadding;
-        
-                Vector2 overlayOffset = stickerType == StickerType.None
-                    ? new Vector2(BGXOffset, BGYOffset)
-                    : new Vector2(OverlayXOffset, OverlayYOffset);
 
-                Vector2 overlaySize = new Vector2(
+                Vector2 padding = stickerType == StickerType.None ? OVERLAY_PADDING : OVERLAY_PADDING + STICKER_PADDING;
+                Vector2 overlayOffset = stickerType == StickerType.None ? new(BG_X_OFFSET, BG_Y_OFFSET) : new(OVERLAY_X_OFFSET, OVERLAY_Y_OFFSET);
+
+                Vector2 overlaySize = new(
                     width + padding.x,
-                    (stickerType == StickerType.None) ? Mathf.Abs(height) + padding.y : StickerOverlayFixedHeight
+                    (stickerType == StickerType.None) ? Mathf.Abs(height) + padding.y : STICKER_OVERLAY_FIXED_HEIGHT
                 );
                 Vector2 overlayPos = bl + new Vector3(-padding.x * 0.5f, -padding.y * 0.5f, 0);
                 if (stickerType == StickerType.Number)
-                {
-                    overlayPos.y += NumberStickerOverlayYOffset;
-                }
+                    overlayPos.y += NUMBER_STICKER_OVERLAY_Y_OFFSET;
                 overlayPos += overlayOffset;
-                
-                // == 프리팹 Instantiate, StickerView API 사용 ==
-                int prefabIndex = (int)stickerType; // StickerType을 index로
+
+                // === 오버레이 프리팹 Instantiate ===
+                int prefabIndex = (int)stickerType;
                 var prefab = stickerOverlayPrefabs[prefabIndex];
                 var go = Instantiate(prefab);
-                
+
                 var descRT = descriptionText.rectTransform;
                 var rt = go.GetComponent<RectTransform>();
                 rt.sizeDelta = overlaySize;
@@ -93,7 +96,6 @@ namespace CardViews
                     var parentRT = descRT.parent as RectTransform;
                     go.transform.SetParent(parentRT, false);
                     go.transform.SetAsFirstSibling();
-                    rt.localScale = Vector3.one;
                     rt.anchoredPosition = overlayPos + descRT.anchoredPosition;
                 }
                 else
@@ -103,27 +105,29 @@ namespace CardViews
                     rt.localScale = Vector3.one * 1.1f;
                     rt.anchoredPosition = overlayPos;
                 }
-                
                 rt.anchorMin = descRT.anchorMin;
                 rt.anchorMax = descRT.anchorMax;
                 rt.pivot = descRT.pivot;
-                
+
                 var stickerView = go.GetComponent<StickerOverlayView>();
                 if (stickerView != null)
-                {
-                    // paramText가 null이면 빈 문자열
                     stickerView.UpdateText(paramText ?? "", descriptionText);
-                }
+
                 activeStickerOverlays.Add(go);
             }
         }
 
+        /// <summary>
+        /// 모든 오버레이(스티커, BG 등) 싱크 및 갱신
+        /// </summary>
         private void SyncStickerOverlays()
         {
+            // 1. 기존 오버레이 삭제
             foreach (var go in activeStickerOverlays)
                 Destroy(go);
             activeStickerOverlays.Clear();
 
+            // 2. 파라미터별 오버레이 생성
             descriptionText.ForceMeshUpdate();
             var textInfo = descriptionText.textInfo;
 
@@ -136,19 +140,18 @@ namespace CardViews
                     stickerType = sticker.type;
 
                 var groupCharsByLineNum = GroupCharsByLineNum(range.start, range.end, textInfo);
-
-                // paramText는 BG만 그릴 때는 null로 전달, 오버레이일 때만 표시
                 string paramText = (stickerType != StickerType.None) ? card.GetEffectiveParamTexts()[paramIdx] : null;
                 CreateParamOverlays(paramIdx, groupCharsByLineNum, textInfo, stickerType, paramText);
             }
         }
-
         #endregion
 
-        #region 기본 CardView 로직
+        // =============== [카드 기본/상태 관리] ===============
+        #region CardView 로직
 
-        public void SetParentDeckView(DeckViews.DeckView deckView) => parentDeckView = deckView;
+        public void SetParentDeckView(DeckView deckView) => parentDeckView = deckView;
 
+        /// <summary>카드 설정 및 UI 갱신</summary>
         public virtual void SetCard(Card card)
         {
             this.card = card;
@@ -156,16 +159,18 @@ namespace CardViews
             UpdateView();
         }
 
+        /// <summary>현재 카드 반환</summary>
         public Card GetCurrentCard()
         {
             if (card == null) Debug.LogError("CardView.GetCurrentCard: card is null");
             return card;
         }
 
+        /// <summary>카드 정보 및 스티커, 오버레이, UI 전반 갱신</summary>
         public void UpdateView()
         {
+            // 카드 일러스트, 이름, 강화레벨
             illustrationImage.sprite = card.illustration;
-
             cardNameText.text = card.cardName;
             if (card.cardEnhancement.level.Value > 1)
             {
@@ -173,43 +178,30 @@ namespace CardViews
                 cardNameText.text += $" <color=#FFD600>+{plusLevel}</color>";
             }
 
+            // 카드 설명/파라미터
             var descParams = card.GetEffectiveParamTexts();
             descriptionText.text = FormatDescription(card.cardDescription, descParams);
 
+            // 특성(속성) 엠블럼
             for (int i = 0; i < propertyTypeEmblems.Count; i++)
             {
-                int flag = 0;
+                bool hasProperty = false;
                 foreach (var property in card.properties)
                 {
                     if (i == (int)property)
                     {
-                        flag = 1;
+                        hasProperty = true;
                         break;
                     }
                 }
-
-                if (flag==1)
-                {
-                    propertyTypeEmblems[i].gameObject.SetActive(true);
-                }
-                else
-                {
-                    propertyTypeEmblems[i].gameObject.SetActive(false);
-                }
+                propertyTypeEmblems[i].gameObject.SetActive(hasProperty);
             }
 
+            // 레어리티 엠블럼
             for (int i = 0; i < rarityEmblems.Count; i++)
-            {
-                if (i == (int)card.rarity)
-                {
-                    rarityEmblems[i].gameObject.SetActive(true);
-                }
-                else
-                {
-                    rarityEmblems[i].gameObject.SetActive(false);   
-                }
-            }
+                rarityEmblems[i].gameObject.SetActive(i == (int)card.rarity);
 
+            // 스탯 엠블럼 및 값
             if (card.cardStats.stats.Count > 0 && statTypeEmblemTable != null)
             {
                 var stat = card.cardStats.stats[0];
@@ -224,9 +216,13 @@ namespace CardViews
                 statIntegerValueText.enabled = false;
             }
 
+            // 오버레이 싱크
             SyncStickerOverlays();
         }
 
+        /// <summary>
+        /// 텍스트(설명)의 지정된 범위(파라미터) 라인별로 그룹핑
+        /// </summary>
         private Dictionary<int, List<int>> GroupCharsByLineNum(int start, int end, TMP_TextInfo textInfo)
         {
             Dictionary<int, List<int>> res = new();
@@ -241,16 +237,21 @@ namespace CardViews
             return res;
         }
 
+        /// <summary>
+        /// 파라미터 적용된 카드 설명 텍스트 생성
+        /// </summary>
         private string FormatDescription(string template, List<string> descParams)
         {
-            if (descParams == null || descParams.Count == 0)
-                return template;
+            if (descParams == null || descParams.Count == 0) return template;
             string result = template;
             for (int i = 0; i < descParams.Count; i++)
                 result = result.Replace("{" + i + "}", descParams[i]);
             return result;
         }
 
+        /// <summary>
+        /// 카드 설명 클릭 이벤트 (스티커 적용 및 카드 선택)
+        /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
             if (RectTransformUtility.RectangleContainsScreenPoint(
@@ -283,6 +284,9 @@ namespace CardViews
             NewShopSceneManager.Instance.OnCardClicked(this);
         }
 
+        /// <summary>
+        /// 카드가 선택되었는지 시각적 강조
+        /// </summary>
         public void SetSelected(bool selected)
         {
             if (selectionOutline != null)

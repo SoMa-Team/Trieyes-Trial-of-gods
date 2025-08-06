@@ -33,7 +33,7 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
-            playerTarget = GameObject.FindGameObjectWithTag("Player").GetComponent<Character>();
+            playerTarget = BattleStage.now.mainCharacter;
             // TODO: AttackComponent 할당
             ////Debug.Log("Enemy001 Activated.");
 

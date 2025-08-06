@@ -796,6 +796,11 @@ namespace CharacterSystem
             }
         }
 
+        public void SetAutoMovement(bool isAutoMovement)
+        {
+            Controller.isAutoMovement = isAutoMovement;
+        }
+
         public virtual void PerformAutoAttack()
         {
             // 공격 수행

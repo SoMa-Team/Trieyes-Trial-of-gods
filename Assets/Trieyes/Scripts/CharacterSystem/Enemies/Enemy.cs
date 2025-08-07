@@ -4,6 +4,7 @@ using Utils;
 using System.Linq;
 using BattleSystem;
 using Stats;
+using System.Collections.Generic;
 
 namespace CharacterSystem
 {
@@ -16,6 +17,7 @@ namespace CharacterSystem
         [SerializeField] 
         protected int dropGold; // 드랍할 골드 양
         public Character playerTarget;
+        public Dictionary<string, GameObject> vfxCache = new Dictionary<string, GameObject>();
         
         // ===== [기능 2] 초기화 =====
         protected override void Start()
@@ -78,7 +80,6 @@ namespace CharacterSystem
                 // 기타 이벤트별 동작 추가
             }
         }
-
         public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
             var direction = (playerTarget.transform.position - transform.position).normalized;
@@ -140,6 +141,21 @@ namespace CharacterSystem
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");
                 Debug.Log($"Player Gold: {result.attacker.gold}");
             }
+        }
+
+        public bool IsVFXCached(string vfxName)
+        {
+            return vfxCache.ContainsKey(vfxName);
+        }
+
+        public GameObject GetVFX(string vfxName)
+        {
+            return vfxCache[vfxName];
+        }
+
+        public void AddVFX(string vfxName, GameObject vfx)
+        {
+            vfxCache[vfxName] = vfx;
         }
     }
 } 

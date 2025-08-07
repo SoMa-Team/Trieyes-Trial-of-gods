@@ -19,7 +19,7 @@ namespace CardSystem
         /// <summary>
         /// 덱에 포함된 카드들의 리스트입니다.
         /// </summary>
-        private List<Card> cards = new();
+        public List<Card> cards = new();
 
         /// <summary>
         /// 덱의 카드 리스트에 대한 읽기 전용 접근자입니다.
@@ -46,7 +46,7 @@ namespace CardSystem
         
         private DeckView deckView;
         
-        private int maxCardCount = 5;
+        public int maxCardCount = 5;
         
         // ===== [기능 3] 카드 호출 순서 관리 =====
         /// <summary>
@@ -118,7 +118,7 @@ namespace CardSystem
             {
                 case Utils.EventType.OnBattleSceneChange:
                     DestoryCardsBeforeBattleStart();
-                    deckView.RefreshDeckUI();
+                    NewShopSceneManager.Instance.SyncWithDeck();
                     CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
@@ -141,9 +141,15 @@ namespace CardSystem
             }
         }
 
-        public bool IsDeckFull()
+        public bool IsDeckFull()//ToDo: ShopSceneManager 이식 끝나면 없애기
         {
             if (cards.Count >= maxCardCount) return true;
+            else return false;
+        }
+
+        public bool IsDeckExceed()
+        {
+            if (cards.Count >= maxCardCount+1) return true;
             else return false;
         }
 
@@ -167,11 +173,6 @@ namespace CardSystem
         /// <param name="card">추가할 카드</param>
         public void AddCard(Card card)
         {
-            if (cards.Count == maxCardCount)
-            {
-                Debug.Log("Card count exceed max number of cards");
-                return;
-            }
             if (card != null)
             {
                 cards.Add(card);
@@ -249,35 +250,16 @@ namespace CardSystem
                 return false;
             }
 
-            int totalExpA = cardA.cardEnhancement.GetTotalExp();
-            int totalExpB = cardB.cardEnhancement.GetTotalExp();
+            int levelA = cardA.cardEnhancement.level.Value;
+            int levelB = cardB.cardEnhancement.level.Value;
 
-            Card higherExpCard, lowerExpCard;
+            // 높은 카드를 기준으로
+            cardA.cardEnhancement.level.SetBasicValue(levelA+levelB);
 
-            // GetTotalExp가 높은 카드와 낮은 카드 구분
-            if (totalExpA >= totalExpB)
-            {
-                higherExpCard = cardA;
-                lowerExpCard = cardB;
-            }
-            else
-            {
-                higherExpCard = cardB;
-                lowerExpCard = cardA;
-            }
-
-            // 낮은 카드의 총 경험치를 높은 카드에 추가
-            Debug.Log($"MergeCards: {higherExpCard.cardName}의 총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()}");
-            Debug.Log($"MergeCards: {lowerExpCard.cardName}의 총 경험치: {lowerExpCard.cardEnhancement.GetTotalExp()}");
-            higherExpCard.cardEnhancement.AddExp(lowerExpCard.cardEnhancement.GetTotalExp());
-            Debug.Log($"MergeCards: {higherExpCard.cardName}의 총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()}");
-
-            higherExpCard.RefreshStats();
+            cardA.RefreshStats();
 
             // 낮은 카드를 덱에서 제거
-            RemoveCard(lowerExpCard);
-
-            Debug.Log($"카드 합치기 완료: {higherExpCard.cardName} (총 경험치: {higherExpCard.cardEnhancement.GetTotalExp()})");
+            RemoveCard(cardB);
             return true;
         }
 

@@ -8,6 +8,8 @@ namespace CharacterSystem.Enemies
     {
         Idle,
         Move,
+
+        InitDash, // VFX 같은 거 만들고
         Dash,
     }
 

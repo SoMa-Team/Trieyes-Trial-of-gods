@@ -65,6 +65,9 @@ public class NewShopSceneManager : MonoBehaviour
     // ====== [UI - 카드/상점 슬롯 컨테이너] ======
     [SerializeField] private RectTransform DeckScaleRect;
     [SerializeField] private RectTransform ShopScaleRect;
+    
+    [SerializeField] private RectTransform DeckScaleRectParent;
+    [SerializeField] private RectTransform ShopScaleRectParent;
 
     // ====== [화면 사이즈 체크] ======
     private int lastScreenWidth;
@@ -108,6 +111,10 @@ public class NewShopSceneManager : MonoBehaviour
         UpdateRoundInfo();
         UpdatePlayerGold();
         UpdatePlayerStat();
+    }
+
+    private void LateUpdate()
+    {
         CheckScreenResize();
     }
 
@@ -153,17 +160,25 @@ public class NewShopSceneManager : MonoBehaviour
     {
         if (lastScreenWidth == Screen.width && lastScreenHeight == Screen.height)
             return;
-
+        
         OnScreenResized();
+        
         lastScreenWidth = Screen.width;
         lastScreenHeight = Screen.height;
     }
 
     private void OnScreenResized()
     {
-        // TODO: 카드/상점 슬롯의 스케일 보정 필요시 구현
-        // DeckScaleRect.localScale = ...;
-        // ShopScaleRect.localScale = ...;
+        Canvas.ForceUpdateCanvases();
+        AutoSizingOnScrollContent(DeckScaleRect, DeckScaleRectParent);
+        AutoSizingOnScrollContent(ShopScaleRect, ShopScaleRectParent);
+    }
+
+    private void AutoSizingOnScrollContent(RectTransform transform, RectTransform parentTransform)
+    {
+        var height = Vector2.Scale(transform.rect.size, transform.lossyScale).y;
+        var parentHeight = Vector2.Scale(parentTransform.rect.size, parentTransform.lossyScale).y;
+        transform.localScale *= parentHeight / height * Vector2.one;
     }
 
     // ============= [상점 슬롯 및 덱 동기화] =============

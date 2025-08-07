@@ -110,10 +110,9 @@ namespace CardSystem
         /// </summary>
         /// <param name="eventType">발생한 이벤트 타입</param>
         /// <param name="param">이벤트와 함께 전달된 매개변수</param>
-        public void OnEvent(Utils.EventType eventType, object param)
+        public bool OnEvent(Utils.EventType eventType, object param)
         {
             //Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) received {eventType} event</color>");
-
             switch (eventType)
             {
                 case Utils.EventType.OnBattleSceneChange:
@@ -122,23 +121,30 @@ namespace CardSystem
                     CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
+                    return true;
                     break;
                 case Utils.EventType.OnBattleEnd:
                     cardCallOrder.Clear();
                     cardCallCounts = new List<int>(new int[cards.Count]);
                     EventProcessor(eventType, param);
                     owner?.statSheet.ClearBuffs();
+                    return true;
                     break;
                 case Utils.EventType.OnCardPurchase:
                     if (param is Card newCard) AddCard(newCard);
+                    return true;
                     break;
                 case Utils.EventType.OnCardRemove:
                     if (param is Card removedCard) RemoveCard(removedCard);
+                    return true;
                     break;
                 default:
                     EventProcessor(eventType, param);
+                    return true;
                     break;
             }
+
+            return false;
         }
 
         public bool IsDeckFull()//ToDo: ShopSceneManager 이식 끝나면 없애기

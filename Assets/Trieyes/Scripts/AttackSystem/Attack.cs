@@ -234,7 +234,7 @@ namespace AttackSystem
         }
 
         // ===== [기능 9] 이벤트 처리 =====
-        public void OnEvent(Utils.EventType eventType, object param)
+        public bool OnEvent(Utils.EventType eventType, object param)
         {
             // 역할에 따른 로그 출력
             //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} received event: {eventType}</color>");
@@ -260,6 +260,8 @@ namespace AttackSystem
                     //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing {eventType}</color>");
                     break;
             }
+
+            return false;
         }
 
         public void AddAttack(Attack newAttack)

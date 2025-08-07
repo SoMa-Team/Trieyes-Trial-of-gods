@@ -674,7 +674,7 @@ namespace CharacterSystem
         }
 
         // ===== [기능 3] 이벤트 처리 =====
-        public virtual void OnEvent(Utils.EventType eventType, object param)
+        public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
             // Pawn 자체의 이벤트 처리
             if (eventType == Utils.EventType.OnDamaged)
@@ -683,8 +683,9 @@ namespace CharacterSystem
                 {
                     ApplyDamage(result);
                 }
+                
             }
-            
+
             if (eventType == Utils.EventType.OnDeath)
             {
                 HandleDeath();
@@ -707,6 +708,8 @@ namespace CharacterSystem
                 Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
             }
+
+            return true;
         }
 
         public void ApplyDamage(AttackResult result)

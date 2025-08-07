@@ -62,6 +62,6 @@ namespace Utils
     // ===== [기능 3] 이벤트 핸들러 인터페이스 =====
     public interface IEventHandler
     {
-        abstract void OnEvent(EventType eventType, object param);
+        abstract bool OnEvent(EventType eventType, object param);
     }
 }

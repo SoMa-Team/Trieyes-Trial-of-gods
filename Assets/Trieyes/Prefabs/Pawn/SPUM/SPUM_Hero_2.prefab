@@ -642,7 +642,7 @@ GameObject:
   - component: {fileID: 232341036140875247}
   - component: {fileID: 2174422523970756515}
   m_Layer: 5
-  m_Name: SPUM_20250714150355588
+  m_Name: SPUM_Hero_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -665,7 +665,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 1, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -170}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2174422523970756515
@@ -4033,7 +4033,7 @@ Animator:
   m_GameObject: {fileID: 2059494403265298039}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e9358c226bb09e24da9c5f7064768810, type: 2}
+  m_Controller: {fileID: 9100000, guid: a017292288bbdd04cb9807eecd67ef12, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

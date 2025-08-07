@@ -149,7 +149,7 @@ namespace AttackComponents
                 dotComponent.dotDamage = dotDamage;
                 dotComponent.dotDuration = dotDuration;
                 dotComponent.dotInterval = dotInterval;
-                dotComponent.dotTargets.Add(targetPawn as Enemy);
+                dotComponent.dotTarget = targetPawn as Enemy;
                 dotComponent.dotStatusType = PawnStatusType.Burn;
                 
                 // VFX 프리팹 전달

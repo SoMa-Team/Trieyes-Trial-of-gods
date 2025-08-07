@@ -9,8 +9,7 @@ namespace AttackComponents
 {
     public enum DOTTargetType
     {
-        SingleTarget,      // 단일 대상에게만 데미지
-        MultipleTargets    // 다중 대상에게 데미지
+        SingleTarget,
     }
 
     public enum DOTMode
@@ -33,6 +32,7 @@ namespace AttackComponents
     /// <summary>
     /// 대상 기반 DOT(Damage Over Time) 공격 컴포넌트
     /// 대상 또는 대상 리스트에 대한 지속적인 데미지를 구현합니다.
+    /// DOT VFX가 대상을 parent로 하여 자동으로 따라갑니다.
     /// </summary>
     public class AC101_DOT : AttackComponent
     {   
@@ -51,7 +51,7 @@ namespace AttackComponents
         // DOT 상태 관리
         private float dotTimer = 0f;
         private float dotDurationTimer = 0f;
-        public List<Enemy> dotTargets = new List<Enemy>(10);
+        public Enemy dotTarget;
 
         // 추가 버프 설정
         [Header("추가 버프 설정")]
@@ -63,8 +63,7 @@ namespace AttackComponents
         // DOT VFX 설정
         [Header("DOT VFX 설정")]
         [SerializeField] public GameObject dotVFXPrefab; // DOT VFX 프리팹 (외부에서 설정 가능)
-        private GameObject spawnedVFX;
-
+        private GameObject spawnedVFX; // 단일 VFX 관리
         public float dotVFXDuration = 0.3f;
 
         // FSM 상태 관리
@@ -88,20 +87,10 @@ namespace AttackComponents
             attackState = DOTAttackState.Preparing;
             dotTimer = 0f;
             dotDurationTimer = 0f;
-            dotTargets.Clear();
+            dotTarget = null;
             
             // DOT 공격 시작
             StartAC101Attack();
-        }
-
-        /// <summary>
-        /// 다중 대상을 설정합니다.
-        /// </summary>
-        /// <param name="targets">DOT를 적용할 대상 리스트</param>
-        public void SetMultipleTargets(List<Enemy> targets)
-        {
-            dotTargets.Clear();
-            dotTargets.AddRange(targets);
         }
 
         private void StartAC101Attack()
@@ -120,6 +109,7 @@ namespace AttackComponents
             // DOT 공격 상태 처리
             ProcessAC101AttackState();
         }
+
 
         private void ProcessAC101AttackState()
         {
@@ -179,10 +169,19 @@ namespace AttackComponents
 
         private void ProcessAC101Attack()
         {
+            // 대상이 유효한지 체크
+            if (!IsTargetValid())
+            {
+                // 대상이 죽었거나 유효하지 않으면 Finishing 상태로 변경
+                attackState = DOTAttackState.Finishing;
+                dotTimer = 0f;
+                return;
+            }
+
             // N회 발동
             if (dotTimer >= dotInterval)
             {
-                ExecuteAC101Attack();
+                ExecuteSingleTargetAttack();
                 dotTimer = 0f;
                 
                 // interval과 duration이 같을 때 1번 발동 후 바로 종료
@@ -190,66 +189,89 @@ namespace AttackComponents
                 {
                     attackState = DOTAttackState.Finishing;
                     dotTimer = 0f;
-                    FinishAC101Attack();
                 }
             }
         }
 
-        private void ExecuteAC101Attack()
+        /// <summary>
+        /// 대상이 유효한지 체크합니다.
+        /// </summary>
+        /// <returns>대상이 유효하면 true, 아니면 false</returns>
+        private bool IsTargetValid()
         {
-            switch (dotTargetType)
+            if (dotTarget == null || !dotTarget.gameObject.activeInHierarchy)
             {
-                case DOTTargetType.SingleTarget:
-                    ExecuteSingleTargetAttack();
-                    break;
-                case DOTTargetType.MultipleTargets:
-                    ExecuteMultipleTargetsAttack();
-                    break;
+                return false;
             }
+            return true;
         }
 
         private void ExecuteSingleTargetAttack()
         {
-            if (dotTargets.Count == 0) return;
+            if (!IsTargetValid()) return;
 
             // 대상 상태 적용
-            ProcessAC101TargetStatus(dotTargets[0]);
+            ProcessAC101TargetStatus(dotTarget);
 
             // 단일 대상에게 데미지 적용
             attack.statSheet[StatType.AttackPower] = new IntegerStatValue(dotDamage);
-            DamageProcessor.ProcessHit(attack, dotTargets[0]);
+            DamageProcessor.ProcessHit(attack, dotTarget);
 
             // 버프 적용
-            ApplyAdditionalBuffEffect(dotTargets[0]);
+            ApplyAdditionalBuffEffect(dotTarget);
 
-            // DOT VFX 생성
-            spawnedVFX = CreateAndSetupVFX(dotVFXPrefab, (Vector2)dotTargets[0].transform.position, Vector2.zero);
-            PlayVFX(spawnedVFX);
-
-            Debug.Log($"<color=yellow>[AC101] 단일 대상 {dotTargets[0].pawnName}에게 {dotDamage} 데미지 적용</color>");
-        }
-
-        private void ExecuteMultipleTargetsAttack()
-        {
-            // 다중 대상에게 데미지 적용
-            for (int i = 0; i < dotTargets.Count; i++)
+            // DOT VFX 생성 (대상을 parent로 설정)
+            if (!dotTarget.IsVFXCached(dotVFXPrefab.name))
             {
-                Pawn enemy = dotTargets[i];
-                if (enemy != null && enemy.gameObject.activeInHierarchy)
-                {
-                    attack.statSheet[StatType.AttackPower] = new IntegerStatValue(dotDamage);
-                    DamageProcessor.ProcessHit(attack, enemy);
-
-                    // 버프 적용
-                    ApplyAdditionalBuffEffect(enemy);
-
-                    // DOT VFX 생성
-                    spawnedVFX = CreateAndSetupVFX(dotVFXPrefab, (Vector2)enemy.transform.position, Vector2.zero);
-                    PlayVFX(spawnedVFX);
-                }
+                CreateDOTVFXForTarget(dotTarget);
+            }
+            else
+            {
+                spawnedVFX = dotTarget.GetVFX(dotVFXPrefab.name);
+                spawnedVFX.SetActive(true);
             }
 
-            Debug.Log($"<color=yellow>[AC101] 다중 대상 {dotTargets.Count}명에게 {dotDamage} 데미지 적용</color>");
+            Debug.Log($"<color=yellow>[AC101] 단일 대상 {dotTarget.pawnName}에게 {dotDamage} 데미지 적용</color>");
+        }
+
+        /// <summary>
+        /// 대상에 DOT VFX를 생성하고 대상을 parent로 설정합니다.
+        /// </summary>
+        /// <param name="target">DOT VFX를 적용할 대상</param>
+        private void CreateDOTVFXForTarget(Enemy target)
+        {
+            if (target == null || dotVFXPrefab == null) return;
+
+            // 대상이 유효한지 추가 체크
+            if (!target.gameObject.activeInHierarchy)
+            {
+                Debug.LogWarning($"[AC101] 대상 {target.pawnName}이 비활성화되어 VFX 생성 취소");
+                return;
+            }
+
+            // 기존 VFX가 있으면 제거
+            if (spawnedVFX != null)
+            {
+                StopAndDestroyVFX(spawnedVFX);
+                spawnedVFX = null;
+            }
+
+            // VFX 생성
+            spawnedVFX = CreateAndSetupVFX(dotVFXPrefab, Vector2.zero, Vector2.zero);
+            target.AddVFX(dotVFXPrefab.name, spawnedVFX);
+            
+            if (spawnedVFX != null)
+            {
+                // VFX를 대상의 자식으로 설정하여 자동으로 따라가도록 함
+                spawnedVFX.transform.SetParent(target.transform, false);
+                spawnedVFX.transform.localPosition = Vector3.zero; // 대상 중심에 위치
+                spawnedVFX.transform.localRotation = Quaternion.identity;
+                
+                // VFX 재생
+                PlayVFX(spawnedVFX);
+                
+                Debug.Log($"<color=green>[AC101] {target.pawnName}에게 DOT VFX 생성 및 부착</color>");
+            }
         }
 
         private bool ShouldFinishAC101Attack()
@@ -265,7 +287,34 @@ namespace AttackComponents
 
         private void FinishAC101Attack()
         {
+            // VFX 해제 작업 (Object Pooling 문제 해결 포함)
+            CleanupVFX();
+            
             Debug.Log("<color=orange>[AC101] 대상 기반 DOT 공격 종료!</color>");
+        }
+
+        /// <summary>
+        /// VFX를 정리합니다.
+        /// Object Pooling에서 Enemy가 비활성화되어도 VFX가 남아있는 문제를 해결합니다.
+        /// </summary>
+        private void CleanupVFX()
+        {
+            if (spawnedVFX == null) return;
+
+            // VFX의 부모(Enemy)가 비활성화되었는지 체크
+            Transform parent = spawnedVFX.transform.parent;
+            if (parent == null || !parent.gameObject.activeInHierarchy)
+            {
+                Debug.Log($"<color=blue>[AC101] 대상이 비활성화되어 VFX 정리: {spawnedVFX.name}</color>");
+            }
+            else
+            {
+                Debug.Log("<color=red>[AC101] DOT VFX 해제 완료</color>");
+            }
+
+            // VFX 정리
+            StopAndDestroyVFX(spawnedVFX);
+            spawnedVFX = null;
         }
 
         /// <summary>
@@ -284,25 +333,28 @@ namespace AttackComponents
             }
 
             // 기본 VFX 생성 (base 호출)
-            if (spawnedVFX is null)
+            GameObject vfx = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            
+            if (vfx != null)
             {
-                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+                vfx.transform.position = position;
+                
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
+                vfx.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
+                
+                vfx.SetActive(true);
             }
             
-            spawnedVFX.transform.position = position;
-            
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
-            spawnedVFX.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
-            
-            spawnedVFX.SetActive(true);
-            return spawnedVFX;
+            return vfx;
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
-            StopAndDestroyVFX(spawnedVFX);
+            
+            // VFX 정리
+            CleanupVFX();
         }
 
         private void ApplyAdditionalBuffEffect(Pawn target)

@@ -70,17 +70,24 @@ namespace AttackComponents
             StartFireAttack();
         }
 
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
-            base.OnEvent(eventType, param);
-            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            var result = base.OnEvent(eventType, param);
+
+            if (result)
             {
-                var _attacker = attack.attacker as Character001_Hero;
-                if (_attacker != null)
+                if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
                 {
-                    _attacker.killedDuringSkill001++;
+                    var _attacker = attack.attacker as Character001_Hero;
+                    if (_attacker != null)
+                    {
+                        _attacker.killedDuringSkill001++;
+                    }
                 }
+                return true;
             }
+
+            return result;
         }
 
         private void StartFireAttack()

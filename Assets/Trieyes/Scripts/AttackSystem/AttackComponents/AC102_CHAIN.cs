@@ -30,7 +30,6 @@ namespace AttackComponents
 
         // 번개 연쇄 상태 관리
         private LightningChainState chainState = LightningChainState.None;
-        private float chainTimer = 0f;
 
         public PawnStatusType statusType;
         public float statusDuration;
@@ -61,7 +60,6 @@ namespace AttackComponents
             base.Activate(attack, direction);
             // 초기 상태 설정
             chainState = LightningChainState.None;
-            chainTimer = 0f;
             chainPositions.Clear();
             currentChainCount = 0;
         }
@@ -70,7 +68,6 @@ namespace AttackComponents
         {
             // 초기 상태 설정
             chainState = LightningChainState.Starting;
-            chainTimer = 0f;
             chainPositions.Clear();
             chainPositions.Add(startPosition);
             currentChainCount = 0;

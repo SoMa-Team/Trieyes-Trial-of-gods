@@ -374,8 +374,6 @@ namespace CharacterSystem
             }
         }
 
-        private float _animationTime = 0f;
-
         /// <summary>
         /// 애니메이션 상태를 변경합니다.
         /// </summary>
@@ -677,7 +675,7 @@ namespace CharacterSystem
         }
 
         // ===== [기능 3] 이벤트 처리 =====
-        public virtual void OnEvent(Utils.EventType eventType, object param)
+        public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
             // Pawn 자체의 이벤트 처리
             if (eventType == Utils.EventType.OnDamaged)
@@ -686,11 +684,13 @@ namespace CharacterSystem
                 {
                     ApplyDamage(result);
                 }
+                return true;
             }
             
             if (eventType == Utils.EventType.OnDeath)
             {
                 HandleDeath();
+                return true;
             }
 
             // 유물들의 이벤트 처리 (필터링 적용)
@@ -701,6 +701,7 @@ namespace CharacterSystem
                     if (relic != null)
                     {
                         relic.OnEvent(eventType, param);
+                        return true;
                     }
                 }
             }
@@ -709,7 +710,9 @@ namespace CharacterSystem
             {
                 Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 deck.OnEvent(eventType, param);
+                return true;
             }
+            return true;
         }
 
         public void ApplyDamage(AttackResult result)
@@ -819,7 +822,7 @@ namespace CharacterSystem
                     {
                         CalculateAttackCooldown();
                         lastAttackTime = Time.time;
-                        ChangeAnimationState("ATTACK");
+                        ChangeAnimationState("ATTACK"); // 시간 1
                         AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
                         return true;
                     }

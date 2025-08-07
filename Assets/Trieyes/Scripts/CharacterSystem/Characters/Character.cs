@@ -60,7 +60,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="eventType">이벤트 타입</param>
         /// <param name="param">이벤트 파라미터</param>
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
             // 이벤트 필터링: Character001이 받지 않는 이벤트는 무시
             // if (!IsEventAccepted(eventType))
@@ -72,22 +72,29 @@ namespace CharacterSystem
             //Debug.Log($"<color=green>[EVENT_FILTER] {gameObject.name} (Character001) accepting event: {eventType}</color>");
 
             // 부모의 이벤트 전파 로직 호출 (필터링 적용됨)
-            base.OnEvent(eventType, param);
+            var result = base.OnEvent(eventType, param);
 
-            // Character001 고유의 이벤트 처리
-            switch (eventType)
+            if (result)
             {
-                case Utils.EventType.OnLevelUp:
-                    //Debug.Log($"<color=yellow>{gameObject.name} (Character001) gained a level!</color>");
-                    break;
-                case Utils.EventType.OnDeath:
-                    // 죽고 나서 할 것
-                    if(BattleStage.now.mainCharacter == this)
-                    {
-                        BattleStage.now.OnPlayerDeath();
-                    }
-                    break;
+                // Character001 고유의 이벤트 처리
+                switch (eventType)
+                {
+                    case Utils.EventType.OnLevelUp:
+                        //Debug.Log($"<color=yellow>{gameObject.name} (Character001) gained a level!</color>");
+                        return true;
+                    case Utils.EventType.OnDeath:
+                        // 죽고 나서 할 것
+                        if(BattleStage.now.mainCharacter == this)
+                        {
+                            BattleStage.now.OnPlayerDeath();
+                        }
+                        return true;
+                    default:
+                        return true;
+                }
             }
+
+            return result;
         }
     }
 }

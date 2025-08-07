@@ -71,17 +71,23 @@ namespace AttackComponents
             StartLightningAttack();
         }
 
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
-            base.OnEvent(eventType, param);
-            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+            var result = base.OnEvent(eventType, param);
+
+            if (result)
             {
-                var _attacker = attack.attacker as Character001_Hero;
-                if (_attacker != null)
+                if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
                 {
-                    _attacker.killedDuringSkill001++;
+                    var _attacker = attack.attacker as Character001_Hero;
+                    if (_attacker != null)
+                    {
+                        _attacker.killedDuringSkill001++;
+                    }
                 }
             }
+
+            return result;
         }
 
         private void StartLightningAttack()
@@ -109,7 +115,7 @@ namespace AttackComponents
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
             
             // VFX 재생
-            PlayVFX(spawnedVFX);
+            PlayVFX(spawnedVFX); // 시간 2
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
             if (attack.attackCollider == null)

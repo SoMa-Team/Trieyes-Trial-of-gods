@@ -82,20 +82,25 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="eventType">이벤트 타입</param>
         /// <param name="param">이벤트 파라미터</param>
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
-            base.OnEvent(eventType, param);
+            var result = base.OnEvent(eventType, param);
 
-            if (eventType == Utils.EventType.OnDamaged)
+            if (result)
             {
-                SetGlowEffect(Color.red, 10f);
-                Debug.Log("SetGlowEffect");
-            }
+                if (eventType == Utils.EventType.OnDamaged)
+                {
+                    SetGlowEffect(Color.red, 10f);
+                    Debug.Log("SetGlowEffect");
+                }
 
-            if (eventType == Utils.EventType.OnDeath)
-            {
-                EnemyFactory.Instance.Deactivate(this);
+                if (eventType == Utils.EventType.OnDeath)
+                {
+                    EnemyFactory.Instance.Deactivate(this);
+                }
+                return true;
             }
+            return result;
         }
 
         // ===== [이벤트 처리 메서드] =====

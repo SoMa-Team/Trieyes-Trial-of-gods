@@ -30,19 +30,20 @@ namespace RelicSystem
         [CanBeNull] public Pawn owner; // 유물의 소유자 (Pawn)
         public List<Utils.EventType> acceptedEvents = new List<Utils.EventType>();
         
-        public virtual void OnEvent(Utils.EventType eventType, object param)
+        public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
-        // owner 참조가 없으면 에러 발생
-        if (owner == null)
-        {
-            Debug.LogError($"<color=red>[Relic] {name ?? "Unknown"} has no owner reference! Ensure SetOwner() is called before using this relic.</color>");
-            return;
-        }
-        
-        Debug.Log($"<color=purple>[Relic] {name ?? "Unknown"} received event: {eventType} (accepted events: {string.Join(", ", acceptedEvents)})</color>");
-        
-        // 하위 클래스에서 이 메서드를 오버라이드하여
-        // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
+            // owner 참조가 없으면 에러 발생
+            if (owner == null)
+            {
+                Debug.LogError($"<color=red>[Relic] {name ?? "Unknown"} has no owner reference! Ensure SetOwner() is called before using this relic.</color>");
+                return false;
+            }
+            
+            Debug.Log($"<color=purple>[Relic] {name ?? "Unknown"} received event: {eventType} (accepted events: {string.Join(", ", acceptedEvents)})</color>");
+            
+            // 하위 클래스에서 이 메서드를 오버라이드하여
+            // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
+            return true;
         }
 
         public List<Utils.EventType> GetEventType()

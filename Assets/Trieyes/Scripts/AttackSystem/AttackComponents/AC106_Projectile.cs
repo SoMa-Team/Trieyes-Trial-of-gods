@@ -67,7 +67,6 @@ namespace AttackComponents
 
         // 디버그 설정
         [Header("디버그 설정")]
-        [SerializeField] private bool showDebugCollision = true; // 디버그 콜리전 표시 여부
         [SerializeField] private Color debugCollisionColor = Color.red; // 디버그 콜리전 색상
         [SerializeField] private float debugCollisionAlpha = 0.3f; // 디버그 콜리전 투명도
 
@@ -282,100 +281,6 @@ namespace AttackComponents
                     attack.attackCollider = capsuleCollider;
                     break;
             }
-            
-            // 디버그 콜리전 시각화 생성
-            // if (showDebugCollision)
-            // {
-            //     CreateDebugCollisionVisual();
-            // }
-        }
-
-        /// <summary>
-        /// 디버그용 콜리전 시각화를 생성합니다.
-        /// </summary>
-        private void CreateDebugCollisionVisual()
-        {
-            // 디버그 콜리전 오브젝트 생성
-            GameObject debugCollision = new GameObject("DebugCollision");
-            debugCollision.transform.SetParent(attack.transform);
-            debugCollision.transform.localPosition = Vector3.zero;
-            
-            // SpriteRenderer 추가
-            SpriteRenderer spriteRenderer = debugCollision.AddComponent<SpriteRenderer>();
-            
-            // 디버그용 스프라이트 생성
-            Texture2D debugTexture = CreateDebugTexture();
-            Sprite debugSprite = Sprite.Create(debugTexture, new Rect(0, 0, debugTexture.width, debugTexture.height), new Vector2(0.5f, 0.5f));
-            spriteRenderer.sprite = debugSprite;
-            
-            // 색상 및 투명도 설정
-            Color debugColor = debugCollisionColor;
-            debugColor.a = debugCollisionAlpha;
-            spriteRenderer.color = debugColor;
-            
-            // 크기 설정
-            switch (colliderType)
-            {
-                case ProjectileColliderType.Box:
-                    debugCollision.transform.localScale = new Vector3(colliderWidth, colliderHeight, 1f);
-                    break;
-                case ProjectileColliderType.Capsule:
-                    debugCollision.transform.localScale = new Vector3(colliderWidth, colliderHeight, 1f);
-                    break;
-            }
-            
-            // 렌더링 순서 설정 (콜리전이 잘 보이도록)
-            spriteRenderer.sortingOrder = 100;
-            
-            Debug.Log($"<color=red>[AC106] 디버그 콜리전 시각화 생성: {colliderType}, 크기: {debugCollision.transform.localScale}</color>");
-        }
-        
-        /// <summary>
-        /// 디버그 콜리전 시각화를 제거합니다.
-        /// </summary>
-        private void RemoveDebugCollisionVisual()
-        {
-            Transform debugCollision = attack.transform.Find("DebugCollision");
-            if (debugCollision != null)
-            {
-                DestroyImmediate(debugCollision.gameObject);
-                Debug.Log("<color=red>[AC106] 디버그 콜리전 시각화 제거</color>");
-            }
-        }
-        
-        /// <summary>
-        /// 디버그용 텍스처를 생성합니다.
-        /// </summary>
-        /// <returns>생성된 텍스처</returns>
-        private Texture2D CreateDebugTexture()
-        {
-            int size = 64;
-            Texture2D texture = new Texture2D(size, size);
-            
-            // 빨간색 테두리와 반투명 배경 생성
-            for (int x = 0; x < size; x++)
-            {
-                for (int y = 0; y < size; y++)
-                {
-                    Color color = Color.clear;
-                    
-                    // 테두리 (빨간색)
-                    if (x < 2 || x >= size - 2 || y < 2 || y >= size - 2)
-                    {
-                        color = Color.red;
-                    }
-                    // 내부 (반투명 빨간색)
-                    else
-                    {
-                        color = new Color(1f, 0f, 0f, 0.3f);
-                    }
-                    
-                    texture.SetPixel(x, y, color);
-                }
-            }
-            
-            texture.Apply();
-            return texture;
         }
 
         /// <summary>

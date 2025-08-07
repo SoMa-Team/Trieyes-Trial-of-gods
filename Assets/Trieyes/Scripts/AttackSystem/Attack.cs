@@ -234,7 +234,7 @@ namespace AttackSystem
         }
 
         // ===== [기능 9] 이벤트 처리 =====
-        public void OnEvent(Utils.EventType eventType, object param)
+        public bool OnEvent(Utils.EventType eventType, object param)
         {
             // 역할에 따른 로그 출력
             //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} received event: {eventType}</color>");
@@ -243,22 +243,23 @@ namespace AttackSystem
             switch (eventType)
             {
                 case Utils.EventType.OnAttackHit:
-                    break;
+
+                    return true;
                 case Utils.EventType.OnAttack:
-                    break;
+                    return true;
                 
                 case Utils.EventType.OnDamageHit:
-                    break;
+                    return true;
                 
                 case Utils.EventType.OnKilled:
-                    break;
+                    return true;
                 
                 case Utils.EventType.OnKilledByCritical:
-                    break; 
+                    return true; 
                 default:
                     // 기본 이벤트 처리
                     //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing {eventType}</color>");
-                    break;
+                    return true;
             }
         }
 

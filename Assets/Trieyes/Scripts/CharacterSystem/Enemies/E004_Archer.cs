@@ -55,9 +55,10 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="eventType">이벤트 타입</param>
         /// <param name="param">이벤트 파라미터</param>
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
             base.OnEvent(eventType, param);
+            return true;
         }
 
         // ===== [이벤트 처리 메서드] =====

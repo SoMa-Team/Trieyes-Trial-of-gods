@@ -64,8 +64,8 @@ namespace CardSystem
         /// <summary> 카드 파라미터의 원본 값 리스트 </summary>
         public List<string> baseParams;
 
-        /// <summary> 각 파라미터가 descriptionText에서 차지하는 [시작, 끝] 단어 인덱스 리스트 </summary>
-        public List<ParamWordRange> paramWordRanges;
+        /// <summary> 각 파라미터가 descriptionText에서 차지하는 [시작, 끝] 글자 인덱스 리스트 </summary>
+        public List<ParamCharRange> paramCharRanges;
 
         /// <summary> 카드 소유자 </summary>
         private Pawn owner;
@@ -185,30 +185,30 @@ namespace CardSystem
         }
 
         /// <summary>
-        /// (스티커/파라미터 적용 후) 각 파라미터가 차지하는 단어 범위를 다시 계산
+        /// (스티커/파라미터 적용 후) 각 파라미터가 차지하는 글자 범위를 다시 계산
         /// </summary>
-        public void RefreshParamWordRanges()
+        public void RefreshParamCharRanges()
         {
             var values = GetEffectiveParamTexts();
-            var wordCounts = values
-                .ConvertAll(v => string.IsNullOrWhiteSpace(v) ? 1 : v.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length);
+            var charCounts = values
+                .ConvertAll(v => string.IsNullOrEmpty(v) ? 1 : v.Length);
 
-            // paramWordRanges를 깊은 복사 후, 오프셋 계산
-            var newRanges = paramWordRanges.Select(r => new ParamWordRange { start = r.start, end = r.end }).ToList();
-            UpdateParamWordRanges(newRanges, wordCounts);
-            paramWordRanges = newRanges;
+            // paramCharRanges를 깊은 복사 후, 오프셋 계산
+            var newRanges = paramCharRanges.Select(r => new ParamCharRange { start = r.start, end = r.end }).ToList();
+            UpdateParamCharRanges(newRanges, charCounts);
+            paramCharRanges = newRanges;
         }
 
         /// <summary>
-        /// paramWordRanges 리스트를 파라미터 단어 수에 따라 갱신합니다.
+        /// paramCharRanges 리스트를 파라미터 글자 수에 따라 갱신합니다.
         /// </summary>
-        public static void UpdateParamWordRanges(List<ParamWordRange> ranges, List<int> paramWordCounts)
+        public static void UpdateParamCharRanges(List<ParamCharRange> ranges, List<int> paramCharCounts)
         {
             int offset = 0;
             for (int i = 0; i < ranges.Count; i++)
             {
                 int oldCount = ranges[i].end - ranges[i].start + 1;
-                int newCount = paramWordCounts[i];
+                int newCount = paramCharCounts[i];
                 ranges[i].start += offset;
                 ranges[i].end = ranges[i].start + newCount - 1;
                 offset += newCount - oldCount;
@@ -216,14 +216,14 @@ namespace CardSystem
         }
 
         /// <summary>
-        /// descriptionText의 특정 단어 인덱스에 스티커를 적용
+        /// descriptionText의 특정 글자 인덱스에 스티커를 적용
         /// </summary>
-        public bool TryApplyStickerOverride(int paramWordIndex, Sticker sticker)
+        public bool TryApplyStickerOverride(int paramCharIndex, Sticker sticker)
         {
-            if (paramWordRanges == null || paramWordRanges.Count == 0)
+            if (paramCharRanges == null || paramCharRanges.Count == 0)
                 return false;
-            // paramWordIndex(단어 인덱스)가 어느 파라미터 범위에 속하는지 탐색
-            int baseParamIdx = paramWordRanges.FindIndex(r => r.start <= paramWordIndex && paramWordIndex <= r.end);
+            // paramCharIndex(글자 인덱스)가 어느 파라미터 범위에 속하는지 탐색
+            int baseParamIdx = paramCharRanges.FindIndex(r => r.start <= paramCharIndex && paramCharIndex <= r.end);
             if (baseParamIdx == -1)
                 return false;
 
@@ -235,7 +235,7 @@ namespace CardSystem
 
             // 적용
             stickerOverrides[baseParamIdx] = sticker;
-            RefreshParamWordRanges();
+            RefreshParamCharRanges();
             return true;
         }
 
@@ -253,12 +253,12 @@ namespace CardSystem
                 cardDescription = this.cardDescription,
                 eventTypes = new List<Utils.EventType>(this.eventTypes),
                 baseParams = this.baseParams,
-                paramWordRanges = this.paramWordRanges != null ? new List<ParamWordRange>(this.paramWordRanges) : new List<ParamWordRange>(),
+                paramCharRanges = this.paramCharRanges != null ? new List<ParamCharRange>(this.paramCharRanges) : new List<ParamCharRange>(),
                 cardAction = this.cardAction?.DeepCopy(),
                 cardStats = this.cardStats?.DeepCopy(),
                 cardEnhancement = this.cardEnhancement?.DeepCopy()
             };
-            if(clone.cardAction != null) clone.cardAction.SetCard(clone);
+            if (clone.cardAction != null) clone.cardAction.SetCard(clone);
             return clone;
         }
     }

@@ -59,7 +59,6 @@ namespace AttackComponents
 
         public float debuffInterval = 1f;
 
-        public Attack attack;
         public Pawn target;
 
         public GameObject spawnedVFX;
@@ -133,54 +132,6 @@ namespace AttackComponents
                     break;
                 default:
                     break;
-            }
-
-            if (spawnedVFX != null && target as Enemy != null)
-            {
-                var enemy = target as Enemy;
-                if (enemy.IsVFXCached(spawnedVFX.name))
-                {
-                    var vfx = enemy.GetVFX(spawnedVFX.name);
-                    vfx.SetActive(true);
-                }
-                else
-                {
-                    CreateDOTVFXForTarget(target as Enemy);
-                }
-            }
-        }
-
-        private void CreateDOTVFXForTarget(Enemy target)
-        {
-            if (target == null || spawnedVFX == null) return;
-
-            // 대상이 유효한지 추가 체크
-            if (!target.gameObject.activeInHierarchy)
-            {
-                Debug.LogWarning($"[AC101] 대상 {target.pawnName}이 비활성화되어 VFX 생성 취소");
-                return;
-            }
-
-            // VFX 생성
-            spawnedVFX = CreateAndSetupVFX(spawnedVFX, Vector2.zero, Vector2.zero);
-            target.AddVFX(spawnedVFX.name, spawnedVFX);
-            
-            if (spawnedVFX != null)
-            {
-                // VFX를 대상의 자식으로 설정하여 자동으로 따라가도록 함
-                spawnedVFX.transform.SetParent(target.transform, false);
-                spawnedVFX.transform.localPosition = Vector3.zero; // 대상 중심에 위치
-                spawnedVFX.transform.localRotation = Quaternion.identity;
-
-                var main = spawnedVFX.transform.GetChild(0).GetComponent<ParticleSystem>().main;
-                main.duration = debuffDuration;
-                main.startLifetime = debuffDuration; // 예: 기존 1초였다면
-                main.simulationSpeed = 1f; // 느려지면 안되므로
-                
-                // VFX 재생
-                PlayVFX(spawnedVFX);
-                
-                Debug.Log($"<color=green>[AC101] {target.pawnName}에게 DOT VFX 생성 및 부착</color>");
             }
         }
 

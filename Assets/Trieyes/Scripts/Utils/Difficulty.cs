@@ -4,7 +4,7 @@ namespace Utils
 {
     public class Difficulty
     {
-        public float battleLength => 30; // 초단위
+        public float battleLength => 3000; // 초단위
 
         public int EnemyID = 0;
         public int shopLevel = 1;

@@ -3025,6 +3025,8 @@ MonoBehaviour:
     - {fileID: 8088980781480692076}
   DeckScaleRect: {fileID: 3120115679059456073}
   ShopScaleRect: {fileID: 6596087777759807577}
+  DeckScaleRectParent: {fileID: 3226882090397773203}
+  ShopScaleRectParent: {fileID: 5233618522731232700}
 --- !u!1 &2571280056375999010
 GameObject:
   m_ObjectHideFlags: 0
@@ -11173,8 +11175,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1555896134975069809}
   m_HandleRect: {fileID: 9086128440602789431}
   m_Direction: 0
-  m_Value: -0.000000090570424
-  m_Size: 0.66537654
+  m_Value: -0.00000009057044
+  m_Size: 0.6653766
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

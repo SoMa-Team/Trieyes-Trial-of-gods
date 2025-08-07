@@ -31,12 +31,12 @@ namespace CardActions
             };
         }
         
-        public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
+        public override bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             if (owner == null || deck == null)
             {
                 Debug.LogWarning("[ArmorWeightParam] owner 또는 deck이 정의되지 않았습니다.");
-                return;
+                return false;
             }
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
@@ -47,14 +47,17 @@ namespace CardActions
                 if (steelCardCount == 0)
                 {
                     Debug.Log("[ArmorWeightParam] '갑옷'이 포함된 카드 없음.");
-                    return;
+                    return false;
                 }
 
                 var stat = (StatType)GetEffectiveParam(statIndex);
                 int valuePercent = Convert.ToInt32(GetEffectiveParam(valueIndex)) * steelCardCount;
 
                 owner.statSheet[stat].AddBuff(new StatModifier(valuePercent, BuffOperationType.Multiplicative));
+                return true;
             }
+
+            return false;
         }
     }
 }

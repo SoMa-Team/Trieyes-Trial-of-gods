@@ -60,7 +60,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="eventType">이벤트 타입</param>
         /// <param name="param">이벤트 파라미터</param>
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
             // 이벤트 필터링: Character001이 받지 않는 이벤트는 무시
             // if (!IsEventAccepted(eventType))
@@ -79,6 +79,7 @@ namespace CharacterSystem
             {
                 case Utils.EventType.OnLevelUp:
                     //Debug.Log($"<color=yellow>{gameObject.name} (Character001) gained a level!</color>");
+                    return true;
                     break;
                 case Utils.EventType.OnDeath:
                     // 죽고 나서 할 것
@@ -86,8 +87,11 @@ namespace CharacterSystem
                     {
                         BattleStage.now.OnPlayerDeath();
                     }
+
+                    return true;
                     break;
             }
+            return false;
         }
     }
 }

@@ -29,12 +29,12 @@ namespace CardActions
         /// <summary>
         /// CalcActionInitOrder 이벤트에서 효과 발동.
         /// </summary>
-        public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
+        public override bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             if (owner == null || deck == null)
             {
                 Debug.LogWarning("[Shadow] owner 또는 deck이 정의되지 않았습니다.");
-                return;
+                return false;
             }
 
             if (eventType == Utils.EventType.CalcActionInitOrder)
@@ -50,7 +50,11 @@ namespace CardActions
                 {
                     Debug.LogError("[Shadow] param 형식이 잘못되었습니다. (ValueTuple<Card, int>이어야 함)");
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>

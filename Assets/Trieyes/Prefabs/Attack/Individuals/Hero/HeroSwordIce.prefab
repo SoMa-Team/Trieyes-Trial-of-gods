@@ -48,9 +48,11 @@ MonoBehaviour:
   attackAngle: 90
   attackDuration: 0.3
   attackRadius: 1.5
-  direction: {x: 0, y: 0}
+  debuffDuration: 3
+  debuffMultiplier: 15
   segments: 8
   vfxPrefab: {fileID: 4748681987041982144, guid: 0c75b68079d034f74b40e5769c99f000, type: 3}
+  DebuffVFXPrefab: {fileID: 4748681987041982144, guid: 961da7415cb25f24c9c662734346f244, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0

@@ -49,13 +49,13 @@ MonoBehaviour:
   attackDuration: 0.3
   attackRadius: 1.5
   segments: 8
-  chainDamage: 90
-  chainRadius: 20
-  chainCount: 10
-  chainDelay: 0.1
+  chainDamage: 12
+  chainRadius: 3.5
+  chainCount: 3
+  chainDelay: 0.4
   chainAttackData: {fileID: 11400000, guid: d894bbff8ad684abba0a3922d1715c6c, type: 2}
   vfxPrefab: {fileID: 4748681987041982144, guid: c0c9390dde8ef274bba581932d9f9465, type: 3}
-  chainVFXPrefab: {fileID: 4748681987041982144, guid: b33ea29041ee543fca2ec0ac88f88a06, type: 3}
+  chainVFXPrefab: {fileID: 2246134187322411851, guid: 7fe3fd9c32eff574c8a1b8cc77acce79, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0

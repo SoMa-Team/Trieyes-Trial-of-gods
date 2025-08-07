@@ -87,8 +87,22 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaClipThreshold: 0.45
+    - _AlphaCutoff: 0.5
     - _BackgroundContrast: 1
     - _BackgroundEmission: 1
     - _BackgroundPower: 1
@@ -106,6 +120,7 @@ Material:
     - _EdgeContrast: 1
     - _EdgeEmission: 2.1605341
     - _EdgePower: 2
+    - _EnvironmentReflections: 1
     - _ExtraGlow: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -118,8 +133,11 @@ Material:
     - _OcclusionStrength: 1
     - _PanStrength: 1
     - _Parallax: 0.02
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _RotationSpeed: 1
-    - _Smoothness: 0.5
+    - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -128,7 +146,7 @@ Material:
     - __dirty: 0
     m_Colors:
     - _BackgroundPanColor: {r: 0, g: 0.11485771, b: 0.7735849, a: 0}
-    - _BackgroundTint: {r: 0.13411766, g: 0.17117648, b: 0.28235295, a: 1}
+    - _BackgroundTint: {r: 0.10813458, g: 0.15470523, b: 0.2830189, a: 1}
     - _BobHeight: {r: 0, g: 0, b: 0.1, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color0: {r: 0.26125842, g: 0.28495952, b: 0.53773576, a: 0}
@@ -139,5 +157,6 @@ Material:
     - _PanColor: {r: 1, g: 0, b: 0.029678345, a: 1}
     - _PanColor1: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 0}
     - _Tint: {r: 0.48584908, g: 0.63157356, b: 1, a: 1}
+    - _Vector1: {r: 0, g: 0, b: 1, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

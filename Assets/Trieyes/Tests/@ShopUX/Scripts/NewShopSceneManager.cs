@@ -161,9 +161,16 @@ public class NewShopSceneManager : MonoBehaviour
 
     private void OnScreenResized()
     {
-        // TODO: 카드/상점 슬롯의 스케일 보정 필요시 구현
-        // DeckScaleRect.localScale = ...;
-        // ShopScaleRect.localScale = ...;
+        AutoSizingOnScrollContent(DeckScaleRect);
+        AutoSizingOnScrollContent(ShopScaleRect);
+    }
+
+    private void AutoSizingOnScrollContent(RectTransform transform)
+    {
+        var height = Vector2.Scale(transform.rect.size, transform.lossyScale).y;
+        var parent = transform.parent.parent.GetComponent<RectTransform>();
+        var parentHeight = Vector2.Scale(parent.rect.size, parent.lossyScale).y;
+        transform.localScale *= parentHeight / height * Vector2.one;
     }
 
     // ============= [상점 슬롯 및 덱 동기화] =============

@@ -853,14 +853,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 553817037230438132, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 553817037230438132, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1342948010709569801, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -871,31 +863,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2545377661321200618, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0000021343828
-      objectReference: {fileID: 0}
-    - target: {fileID: 2825173752874819193, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: AutoBasicAttackOnViews.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2825173752874819193, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: AutoBasicAttackOffViews.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2825173752874819193, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: 'AutoBasicAttackOnViews.Array.data[0]'
-      value: 
-      objectReference: {fileID: 936443419}
-    - target: {fileID: 2825173752874819193, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: 'AutoBasicAttackOnViews.Array.data[1]'
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2825173752874819193, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: 'AutoBasicAttackOffViews.Array.data[0]'
-      value: 
-      objectReference: {fileID: 936443418}
-    - target: {fileID: 2825173752874819193, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: 'AutoBasicAttackOffViews.Array.data[1]'
-      value: 
+      value: -0.002032618
       objectReference: {fileID: 0}
     - target: {fileID: 3917499004485017549, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_Name
@@ -913,12 +881,8 @@ PrefabInstance:
       propertyPath: m_AnchorMin.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7433019277674558432, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: m_fontSize
-      value: 43.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7433019277674558432, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-      propertyPath: m_enableAutoSizing
+    - target: {fileID: 5885405622204854387, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_Size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8169145042856787870, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
@@ -1026,22 +990,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 3027190119755920428, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-    - {fileID: 1376644652687065718, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
---- !u!1 &936443418 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2562983278040192034, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-  m_PrefabInstance: {fileID: 936443417}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &936443419 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 200473432828838988, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
-  m_PrefabInstance: {fileID: 936443417}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &958802129 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7166155399231846399, guid: ffdd67ffb82e72d428dbf1ff7ba03ba1, type: 3}

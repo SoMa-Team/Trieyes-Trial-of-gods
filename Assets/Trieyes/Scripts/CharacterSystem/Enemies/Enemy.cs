@@ -49,6 +49,10 @@ namespace CharacterSystem
         public override void Deactivate()
         {        
             base.Deactivate();
+            foreach (var vfx in vfxCache)
+            {
+                vfx.Value.SetActive(false);
+            }
             ////Debug.Log("Enemy001 Deactivated.");
         }
 

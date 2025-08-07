@@ -341,7 +341,6 @@ namespace AttackComponents
                 
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                 vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-                vfx.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
                 
                 vfx.SetActive(true);
             }

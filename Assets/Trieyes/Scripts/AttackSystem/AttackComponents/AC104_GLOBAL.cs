@@ -221,6 +221,7 @@ namespace AttackComponents
             GameObject vfx = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             
             vfx.transform.SetParent(attack.attacker.transform);
+            vfx.transform.localPosition = Vector3.zero;
 
             // 프리팹 및 자식 ParticleSystem까지 포함하여, duration 시간을 공격 지속 시간으로 설정
             var particleSystem = vfx.GetComponentInChildren<ParticleSystem>();

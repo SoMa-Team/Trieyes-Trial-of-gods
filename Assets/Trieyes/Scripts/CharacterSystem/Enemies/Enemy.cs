@@ -17,8 +17,7 @@ namespace CharacterSystem
         [SerializeField] 
         protected int dropGold; // 드랍할 골드 양
         public Character playerTarget;
-        public Dictionary<string, GameObject> vfxCache = new Dictionary<string, GameObject>();
-        
+   
         // ===== [기능 2] 초기화 =====
         protected override void Start()
         {
@@ -49,10 +48,6 @@ namespace CharacterSystem
         public override void Deactivate()
         {        
             base.Deactivate();
-            foreach (var vfx in vfxCache)
-            {
-                vfx.Value.SetActive(false);
-            }
             ////Debug.Log("Enemy001 Deactivated.");
         }
 
@@ -147,21 +142,6 @@ namespace CharacterSystem
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");
                 Debug.Log($"Player Gold: {result.attacker.gold}");
             }
-        }
-
-        public bool IsVFXCached(string vfxName)
-        {
-            return vfxCache.ContainsKey(vfxName);
-        }
-
-        public GameObject GetVFX(string vfxName)
-        {
-            return vfxCache[vfxName];
-        }
-
-        public void AddVFX(string vfxName, GameObject vfx)
-        {
-            vfxCache[vfxName] = vfx;
         }
     }
 } 

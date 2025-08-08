@@ -219,17 +219,11 @@ namespace AttackComponents
 
             // 버프 적용
             ApplyAdditionalBuffEffect(dotTarget);
-
-            // DOT VFX 생성 (대상을 parent로 설정)
-            if (!dotTarget.IsVFXCached(dotVFXPrefab.name))
-            {
-                CreateDOTVFXForTarget(dotTarget);
-            }
-            else
-            {
-                spawnedVFX = dotTarget.GetVFX(dotVFXPrefab.name);
-                spawnedVFX.SetActive(true);
-            }
+            CreateDOTVFXForTarget(dotTarget);
+            
+            // VFX 재생
+            spawnedVFX.SetActive(true);
+            PlayVFX(spawnedVFX);
 
             Debug.Log($"<color=yellow>[AC101] 단일 대상 {dotTarget.pawnName}에게 {dotDamage} 데미지 적용</color>");
         }
@@ -258,7 +252,6 @@ namespace AttackComponents
 
             // VFX 생성
             spawnedVFX = CreateAndSetupVFX(dotVFXPrefab, Vector2.zero, Vector2.zero);
-            target.AddVFX(dotVFXPrefab.name, spawnedVFX);
             
             if (spawnedVFX != null)
             {
@@ -266,9 +259,6 @@ namespace AttackComponents
                 spawnedVFX.transform.SetParent(target.transform, false);
                 spawnedVFX.transform.localPosition = Vector3.zero; // 대상 중심에 위치
                 spawnedVFX.transform.localRotation = Quaternion.identity;
-                
-                // VFX 재생
-                PlayVFX(spawnedVFX);
                 
                 Debug.Log($"<color=green>[AC101] {target.pawnName}에게 DOT VFX 생성 및 부착</color>");
             }
@@ -299,22 +289,7 @@ namespace AttackComponents
         /// </summary>
         private void CleanupVFX()
         {
-            if (spawnedVFX == null) return;
-
-            // VFX의 부모(Enemy)가 비활성화되었는지 체크
-            Transform parent = spawnedVFX.transform.parent;
-            if (parent == null || !parent.gameObject.activeInHierarchy)
-            {
-                Debug.Log($"<color=blue>[AC101] 대상이 비활성화되어 VFX 정리: {spawnedVFX.name}</color>");
-            }
-            else
-            {
-                Debug.Log("<color=red>[AC101] DOT VFX 해제 완료</color>");
-            }
-
-            // VFX 정리
-            StopAndDestroyVFX(spawnedVFX);
-            spawnedVFX = null;
+            Destroy(spawnedVFX);
         }
 
         /// <summary>
@@ -337,11 +312,7 @@ namespace AttackComponents
             
             if (vfx != null)
             {
-                vfx.transform.position = position;
-                
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-                
+                vfx.transform.SetParent(attack.attacker.transform);
                 vfx.SetActive(true);
             }
             

@@ -29,6 +29,7 @@ namespace BattleSystem
         public List<Pawn> characters = new ();
         public Dictionary<int, Enemy> enemies = new ();
         public Dictionary<int, Attack> attacks = new ();
+        public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
 
         public void Update()
@@ -94,6 +95,16 @@ namespace BattleSystem
         public void RemoveAttack(Attack attack)
         {
             attacks.Remove(attack.objectID);
+        }
+
+        public void AttachGold(Gold gold)
+        {
+            golds.Add(gold.objectID, gold);
+        }
+
+        public void RemoveGold(Gold gold)
+        {
+            golds.Remove(gold.objectID);
         }
 
         // 전투 클리어 시 호출

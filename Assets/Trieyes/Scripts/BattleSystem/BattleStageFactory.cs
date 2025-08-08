@@ -122,8 +122,14 @@ namespace BattleSystem
                 AttackFactory.Instance.Deactivate(attack);
             }
 
+            foreach (var golds in battleStage.golds.Values.ToList())
+            {
+                DropFactory.Instance.Deactivate(golds);
+            }
+
             AttackFactory.Instance.ClearPool();
             EnemyFactory.Instance.ClearPool();
+            DropFactory.Instance.ClearPool();
             
             battleStage.spawnManager.Deactivate();
             battleStage.Deactivate();

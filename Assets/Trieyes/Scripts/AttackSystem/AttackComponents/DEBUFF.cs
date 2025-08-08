@@ -65,7 +65,7 @@ namespace AttackComponents
 
         private const int AC101_SINGLE_DOT = 1;
 
-        public List<AttackData> attackDatas = new List<AttackData>();
+        public List<AttackData> attackDatas;
 
         public void Activate(DebuffInfo debuffInfo)
         {

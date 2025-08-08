@@ -109,7 +109,7 @@ namespace GameFramework
         {
             var mainCharacter = CharacterFactory.Instance.Create(0);
 
-            // mainCharacter.AddRelic(RelicFactory.Create(720014));
+            mainCharacter.AddRelic(RelicFactory.Create(720014));
             mainCharacter.ApplyRelic();
 
             CharacterFactory.Instance.Deactivate(mainCharacter);

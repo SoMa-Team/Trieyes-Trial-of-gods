@@ -46,6 +46,6 @@ public class BattleWorldCanvasController : MonoBehaviour
 
     public void Deactivate()
     {
-        Instance = null;
+        //Instance = null;
     }
 }

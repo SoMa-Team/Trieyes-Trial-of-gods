@@ -136,7 +136,6 @@ namespace AttackComponents
                 buffType = BUFFType.IncreaseMoveSpeed,
                 attack = attack,
                 target = attack.attacker,
-                buffValue = 10,
                 buffMultiplier = moveSpeedBoostMultiplier,
                 buffDuration = moveSpeedBoostDuration,
                 buffInterval = 1f,

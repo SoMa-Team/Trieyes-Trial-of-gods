@@ -116,7 +116,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="eventType">이벤트 타입</param>
         /// <param name="param">이벤트 파라미터</param>
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
             base.OnEvent(eventType, param);
             if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
@@ -126,7 +126,11 @@ namespace CharacterSystem
                     killedDuringSkill001++;
                     killedDuringSkill002++;
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         public void SetRandomEnchantmentMinID(int min)

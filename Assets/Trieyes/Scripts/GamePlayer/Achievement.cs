@@ -7,6 +7,8 @@ namespace GamePlayer
     {
         None = 0,
         CharacterUnlock,
+
+        SkillUnlock,
         RelicUnlock,
     }
     

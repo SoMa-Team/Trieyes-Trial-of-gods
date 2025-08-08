@@ -23,10 +23,10 @@ namespace GamePlayer
         public List<int> unlockedAchievementIds = new List<int>();
 
         // 런타임용 딕셔너리 (직렬화되지 않음)
-        private Dictionary<int, AchievementData> _achievementDictionary;
+        [HideInInspector] private Dictionary<int, AchievementData> _achievementDictionary;
 
         // 딕셔너리 프로퍼티 (런타임에서 사용)
-        public Dictionary<int, AchievementData> achievementDictionary
+        [HideInInspector] public Dictionary<int, AchievementData> achievementDictionary
         {
             get
             {

@@ -213,10 +213,11 @@ namespace AttackComponents
         }
 
         // ===== [기능 4] 이벤트 처리 =====
-        public virtual void OnEvent(Utils.EventType eventType, object param)
+        public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
+            return false;
         }
 
         public void SetLevel(int level)

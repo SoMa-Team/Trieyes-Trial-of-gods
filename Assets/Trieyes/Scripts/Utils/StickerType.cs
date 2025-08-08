@@ -2,7 +2,8 @@ namespace Utils
 {
     public enum StickerType
     {
-        StatType = 0,
-        Number = 1,
+        None = 0,
+        StatType = 1,
+        Number = 2,
     }
 }

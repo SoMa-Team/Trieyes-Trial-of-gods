@@ -143,7 +143,7 @@ namespace CardSystem
                     return StatType.Health;
                 case Property.Dark:
                     return StatType.MoveSpeed;
-                case Property.Water:
+                case Property.Ice:
                     return StatType.AttackSpeed;
                 default:
                     return StatType.CriticalRate;

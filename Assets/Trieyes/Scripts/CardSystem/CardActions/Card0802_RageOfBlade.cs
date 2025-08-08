@@ -40,12 +40,12 @@ namespace CardActions
                 }),
             };
         }
-        public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
+        public override bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             if (owner == null || deck == null)
             {
                 Debug.LogWarning($"[GenericStatBuffOnBattleStartAction] owner 또는 deck이 정의되지 않았습니다.");
-                return;
+                return false;
             }
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
@@ -56,6 +56,7 @@ namespace CardActions
                 var value = Convert.ToInt32(GetEffectiveParam(downValueCoefIdx)) * -1;
                 
                 owner.statSheet[statType].AddBuff(new StatModifier(value, BuffOperationType.Multiplicative));
+                return true;
             }
 
             if (eventType == Utils.EventType.OnAttack)
@@ -65,7 +66,10 @@ namespace CardActions
                 stat1Modifier.value+=(int)GetEffectiveParam(upValueCoefIdx);
                 
                 owner.statSheet[statType].AddBuff(stat1Modifier);
+                return true;
             }
+
+            return false;
         }
     }
 }

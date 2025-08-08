@@ -7,35 +7,13 @@ namespace CardSystem
     /// </summary>
     public enum Rarity
     {
-        /// <summary>
-        /// 일반 등급 카드입니다.
-        /// 가장 기본적인 등급으로, 흔하게 획득할 수 있습니다.
-        /// </summary>
-        Common,
+        Common = 0,
 
-        /// <summary>
-        /// 고급 등급 카드입니다.
-        /// 일반보다 조금 더 강력하고 희귀합니다.
-        /// </summary>
-        Uncommon,
+        Uncommon = 1,
 
-        /// <summary>
-        /// 희귀 등급 카드입니다.
-        /// 강력한 효과를 가지고 있으며, 획득하기 어렵습니다.
-        /// </summary>
-        Rare,
-
-        /// <summary>
-        /// 영웅 등급 카드입니다.
-        /// 매우 강력하고 독특한 효과를 가진 카드입니다.
-        /// </summary>
-        Epic,
-
-        /// <summary>
-        /// 전설 등급 카드입니다.
-        /// 가장 강력하고 희귀한 카드로, 게임을 바꿀 수 있는 효과를 가집니다.
-        /// </summary>
-        Legendary
+        Legendary = 2,
+        
+        Exceed = 3,
     }
 
     // ===== [기능 2] Property Enum =====
@@ -45,10 +23,10 @@ namespace CardSystem
     /// </summary>
     public enum Property
     {
-        Fire,
-        Water,
-        Light,
-        Dark,
-        Steel
+        Fire = 0,
+        Ice = 1,
+        Light = 2,
+        Dark = 3,
+        Steel = 4,
     }
 } 

@@ -24,15 +24,14 @@ namespace CardActions
             });
         }
 
-        public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
+        public override bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
-            // 전투 시작 전: 오른쪽 카드 파괴 & 경험치 일부 흡수
             if (eventType == Utils.EventType.DestoryCardsBeforeBattleStart)
             {
                 if (!(param is int myIdx))
                 {
                     Debug.LogError("[Card0301] 카드 인덱스 param이 int가 아님!");
-                    return;
+                    return false;
                 }
                 if (myIdx < deck.Cards.Count - 1)
                 {
@@ -41,19 +40,22 @@ namespace CardActions
                     deck.RemoveCard(rightCard);
 
                     // 경험치 스택: 파괴된 카드 레벨 * 5
-                    card.cardEnhancement.AddExp(rightLevel * 5);
+                    card.cardEnhancement.level.AddToBasicValue(1);
                     card.RefreshStats();
 
                     Debug.Log($"[Card0301] 오른쪽 카드 {rightCard.cardName}(레벨 {rightLevel}) 파괴됨, 경험치 +{rightLevel * 5}");
+                    return true;
                 }
                 else
                 {
                     Debug.Log("[Card0301] 오른쪽 카드가 없음 (파괴 불가)");
+                    return false;
                 }
             }
 
             // 전투 시작 시: 스탯 버프는 부모쪽에서 자동 적용됨
             base.OnEvent(owner, deck, eventType, param);
+            return false;
         }
     }
 }

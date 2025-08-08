@@ -43,12 +43,12 @@ namespace CardActions
             }
         }
 
-        public override void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
+        public override bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             if (owner == null || deck == null)
             {
                 Debug.LogWarning($"[GenericStatBuffOnBattleStartAction] owner 또는 deck이 정의되지 않았습니다.");
-                return;
+                return false;
             }
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
@@ -56,7 +56,7 @@ namespace CardActions
                 if (owner == null || deck == null)
                 {
                     Debug.LogWarning("[GenericStatBuffOnBattleStartAction] owner 또는 deck이 정의되지 않았습니다.");
-                    return;
+                    return false;
                 }
                 for (int i = 0; i < pairCount; i++)
                 {
@@ -70,7 +70,9 @@ namespace CardActions
                     string opStr = isMultiplicative ? "Multiplicative(곱연산)" : "Additive(합연산)";
                     Debug.Log($"[GenericStatBuff] {statType} {(isMultiplicative ? "×" : "+")}{value} ({opStr}), 현재값: {owner.statSheet[statType].Value}");
                 }
+                return true;
             }
+            return false;
         }
     }
 }

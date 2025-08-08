@@ -17,14 +17,14 @@ MonoBehaviour:
   rarity: 0
   cardName: "\uD589\uC9C4 \uC900\uBE44!"
   illustration: {fileID: 8617762186402971161, guid: 62c279d556c894e78809382dd24f1fc8, type: 3}
-  cardDescription: "\uC804\uD22C\uAC00 \uC2DC\uC791\uD560 \uB54C, \uD574\uB2F9 \uC804\uD22C
-    \uB3D9\uC548 {0} \uC744/\uB97C {1} \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4."
+  cardDescription: "<size=35><b>\uC804\uD22C \uC2DC\uC791 \uC2DC</b></size>\n{0}   
+    {1} \uC99D\uAC00"
   eventTypes: 03000000
   baseParams:
   - "\uACF5\uACA9\uB825"
   - 10
-  paramWordRanges:
-  - start: 6
-    end: 6
-  - start: 9
-    end: 9
+  paramCharRanges:
+  - start: 8
+    end: 10
+  - start: 15
+    end: 16

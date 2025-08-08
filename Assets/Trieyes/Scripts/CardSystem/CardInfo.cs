@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace CardSystem
 {
     [System.Serializable]
-    public class ParamWordRange
+    public class ParamCharRange
     {
         public int start;
         public int end;
@@ -51,6 +51,6 @@ namespace CardSystem
             
         public List<string> baseParams = new List<string>();
         
-        public List<ParamWordRange> paramWordRanges = new List<ParamWordRange>();
+        public List<ParamCharRange> paramCharRanges = new List<ParamCharRange>();
     }
 }

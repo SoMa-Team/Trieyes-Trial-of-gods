@@ -155,14 +155,10 @@ namespace AttackComponents
                 return null;
             }
             GameObject _vfxPrefab = Instantiate(vfxPrefab);
+            _vfxPrefab.SetActive(false);
 
             // VFX 프리팹을 직접 활성화
-            _vfxPrefab.SetActive(true);
-            _vfxPrefab.transform.position = position;
-            
-            // 방향에 맞게 회전
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            _vfxPrefab.transform.rotation = Quaternion.Euler(0, 0, angle);
+            _vfxPrefab.transform.position = attack.transform.position;
             
             return _vfxPrefab;
         }

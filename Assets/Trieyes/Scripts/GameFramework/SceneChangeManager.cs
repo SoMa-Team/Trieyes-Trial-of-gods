@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using CharacterSystem;
 using Utils;
 using RelicSystem;
+using GamePlayer;
 
 namespace GameFramework
 {
@@ -22,6 +23,8 @@ namespace GameFramework
         private const string ShopSceneName = "ShopScene";
         private const string GameOverSceneName = "GameOverScene";
         private int stageRound = 1;
+
+        public Player player;
 
         // ====== 초기화 ======
         private void Awake()
@@ -42,6 +45,8 @@ namespace GameFramework
         /// </summary>
         public void StartBattleSceneTest()
         {
+            player = Player.Instance;
+            
             LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter);
         }
 
@@ -127,10 +132,11 @@ namespace GameFramework
         {
             var mainCharacter = CharacterFactory.Instance.Create(0);
 
+            foreach (var relicId in player.selectedRelicIds)
+            {
+                mainCharacter.AddRelic(RelicFactory.Create(relicId));
+            }
 
-            mainCharacter.AddRelic(RelicFactory.Create(720011));
-            // mainCharacter.AddRelic(RelicFactory.Create(720011));
-            // mainCharacter.AddRelic(RelicFactory.Create(720013));
             mainCharacter.ApplyRelic();
 
             CharacterFactory.Instance.Deactivate(mainCharacter);

@@ -2,10 +2,7 @@ using AttackSystem;
 using CharacterSystem;
 using Stats;
 using UnityEngine;
-using System.Threading;
 using BattleSystem;
-using System.Collections.Generic;
-using VFXSystem;
 
 namespace AttackComponents
 {

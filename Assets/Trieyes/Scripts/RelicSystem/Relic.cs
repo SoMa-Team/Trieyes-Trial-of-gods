@@ -23,6 +23,7 @@ namespace RelicSystem
         public List<int> filterAttackIDs;
         public AttackTag? filterAttackTag;
         public List<int> attackComponentIDs;
+        public Sprite icon = null;
 
         public List<RandomOption> randomOptions;
         

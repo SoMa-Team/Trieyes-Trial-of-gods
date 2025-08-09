@@ -9,6 +9,8 @@ using CharacterSystem;
 using Stats;
 using StickerSystem;
 using Utils;
+using GameFramework;
+using System.Collections;
 
 /// <summary>
 /// 상점(Shop) 씬의 핵심 관리 매니저.  
@@ -23,6 +25,7 @@ public class NewShopSceneManager : MonoBehaviour
     public GameObject shopCardSlot;
     public GameObject shopStickerSlot;
     public GameObject deckCardView;
+    public GameObject shopScenePrefab;
 
     [Header("버튼/텍스트 UI")]
     public Button sellButton;
@@ -87,8 +90,11 @@ public class NewShopSceneManager : MonoBehaviour
     // ================= [초기화 및 비활성화] =================
     public void Activate(Character mainCharacter, Difficulty difficulty)
     {
+        Debug.Log("NewShopSceneManager: Activate");
         this.mainCharacter = mainCharacter;
         this.difficulty = difficulty;
+        
+        shopScenePrefab.SetActive(true);
 
         rerollPrice = INIT_REROLL_PRICE;
         sellPriceText.text = CARD_SELL_PRICE.ToString();
@@ -102,7 +108,7 @@ public class NewShopSceneManager : MonoBehaviour
 
     public void Deactivate()
     {
-        // 필요시 리스너 해제, 상태/참조 정리 등 추가
+        shopScenePrefab.SetActive(false);
     }
 
     // ============= [매 프레임 UI 상태 동기화] =============
@@ -298,8 +304,18 @@ public class NewShopSceneManager : MonoBehaviour
 
     public void OnClickNextRound()
     {
+        StartCoroutine(BattleButtonRoutine());
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
         UpdatePlayerStat();
+    }
+    
+    private IEnumerator BattleButtonRoutine()
+    {
+        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
+        UpdatePlayerStat();
+        yield return new WaitForSeconds(0.8f); // 연출 대기(필요시 조정)
+        this.Deactivate();
+        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
     }
 
     public void OnClickStatInfo()

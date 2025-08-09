@@ -72,6 +72,7 @@ namespace CharacterSystem
         public override void Deactivate()
         {
             base.Deactivate();
+            lockBasicAttack = false;
         }
 
         protected override void OnTriggerEnter2D(Collider2D other)
@@ -88,7 +89,7 @@ namespace CharacterSystem
             // lockBasicAttack이 true면 기본 공격 차단
             if (lockBasicAttack && attackType == PawnAttackType.BasicAttack)
             {
-                //Debug.Log("<color=red>[HERO] Basic attack blocked by lockBasicAttack!</color>");
+                Debug.Log("<color=red>[HERO] Basic attack blocked by lockBasicAttack!</color>");
                 return false;
             }
             
@@ -116,7 +117,7 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="eventType">이벤트 타입</param>
         /// <param name="param">이벤트 파라미터</param>
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
             base.OnEvent(eventType, param);
             if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
@@ -126,7 +127,11 @@ namespace CharacterSystem
                     killedDuringSkill001++;
                     killedDuringSkill002++;
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         public void SetRandomEnchantmentMinID(int min)

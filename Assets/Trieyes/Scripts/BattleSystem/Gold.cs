@@ -11,6 +11,7 @@ namespace BattleSystem
     {
         private bool isActive = false;
         [SerializeField] private int goldAmount;
+        [HideInInspector] public int objectID;
 
         private void Update()
         {

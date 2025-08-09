@@ -70,7 +70,7 @@ namespace AttackComponents
             StartFireAttack();
         }
 
-        public override void OnEvent(Utils.EventType eventType, object param)
+        public override bool OnEvent(Utils.EventType eventType, object param)
         {
             base.OnEvent(eventType, param);
             if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
@@ -80,7 +80,11 @@ namespace AttackComponents
                 {
                     _attacker.killedDuringSkill001++;
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         private void StartFireAttack()

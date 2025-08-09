@@ -11,6 +11,8 @@ using StickerSystem;
 using Utils;
 using GameFramework;
 using System.Collections;
+using PrimeTween;
+using UISystem;
 
 /// <summary>
 /// 상점(Shop) 씬의 핵심 관리 매니저.  
@@ -51,7 +53,12 @@ public class NewShopSceneManager : MonoBehaviour
     private int rerollPrice;
     private Difficulty difficulty;
 
+    // ====== [UI - 전체 레이아웃] ======
+    [Header("전체 레이아웃")]
+    [SerializeField] private RectTransform rectTransform;
+    
     // ====== [UI - 스탯/라운드/릴릭] ======
+    [Header("Top/Side Bar")]
     [SerializeField] private TextMeshProUGUI textRoundInfo;
     [SerializeField] private TextMeshProUGUI textGold;
     [SerializeField] private List<Image> imageRelics;
@@ -66,11 +73,16 @@ public class NewShopSceneManager : MonoBehaviour
     [SerializeField] private StatTypeTMPPair[] statTypeTMPPairs;
 
     // ====== [UI - 카드/상점 슬롯 컨테이너] ======
+    [Header("Deck Auto Scaling")]
     [SerializeField] private RectTransform DeckScaleRect;
     [SerializeField] private RectTransform ShopScaleRect;
     
     [SerializeField] private RectTransform DeckScaleRectParent;
     [SerializeField] private RectTransform ShopScaleRectParent;
+    
+    [Header("전투 시작 애니메이션")]
+    [SerializeField] private RectTransform rectOnBattleStartPopup;
+    [SerializeField] private OnBattleStartPopupView onBattleStartPopupView;
 
     // ====== [화면 사이즈 체크] ======
     private int lastScreenWidth;
@@ -85,6 +97,14 @@ public class NewShopSceneManager : MonoBehaviour
             return;
         }
         Instance = this;
+    }
+
+    private void Start()
+    {
+        rectTransform.anchoredPosition = Vector2.zero;
+        
+        rectOnBattleStartPopup.gameObject.SetActive(false);
+        rectOnBattleStartPopup.anchoredPosition = Vector2.zero;
     }
 
     // ================= [초기화 및 비활성화] =================
@@ -304,11 +324,23 @@ public class NewShopSceneManager : MonoBehaviour
 
     public void OnClickNextRound()
     {
-        StartCoroutine(BattleButtonRoutine());
+        // TODO : 씬 변화 동작 연출 필요
+        rectOnBattleStartPopup.gameObject.SetActive(true);
+        onBattleStartPopupView.Activate();
+
+        // StartCoroutine(BattleButtonRoutine());
+        // mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
+        // UpdatePlayerStat();
+        CardStatChangeRecorder.Instance.RecordStart();
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        UpdatePlayerStat();
+        var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
+        
+        onBattleStartPopupView.AnimateTriggerEvent(triggerResult, () =>
+        {
+            SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
+        });
     }
-    
+
     private IEnumerator BattleButtonRoutine()
     {
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);

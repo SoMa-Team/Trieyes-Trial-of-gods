@@ -16,11 +16,13 @@ namespace CardViews
     public class CardView : MonoBehaviour, IPointerClickHandler
     {
         // =================== [UI 참조] ===================
+        [Header("카드 전체")]
+        public RectTransform rectTransform;
+        
         [Header("카드 기본 UI")]
         public Image illustrationImage;
         public TMP_Text cardNameText;
         public TMP_Text descriptionText;
-        public Image propertyEmblemImage;
 
         [Header("스탯/레어리티/특성 UI")]
         public StatTypeEmblemSO statTypeEmblemTable;

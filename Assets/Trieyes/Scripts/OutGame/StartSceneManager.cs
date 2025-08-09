@@ -11,7 +11,6 @@ using GamePlayer;
 namespace OutGame{
     public class StartSceneManager : MonoBehaviour
     {
-        public AttackData attackData;
 
         public Player player;
         

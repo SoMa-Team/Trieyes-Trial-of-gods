@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using CardSystem;
 using UnityEngine.EventSystems;
-using DeckViews;
 using System.Collections.Generic;
 using StickerSystem;
 using Utils;
@@ -35,7 +34,6 @@ namespace CardViews
 
         // =================== [내부 상태] ===================
         private Card card;
-        private DeckView parentDeckView;
         private readonly List<GameObject> activeStickerOverlays = new();
 
         // =================== [상수/옵션] ===================
@@ -148,8 +146,6 @@ namespace CardViews
 
         // =============== [카드 기본/상태 관리] ===============
         #region CardView 로직
-
-        public void SetParentDeckView(DeckView deckView) => parentDeckView = deckView;
 
         /// <summary>카드 설정 및 UI 갱신</summary>
         public virtual void SetCard(Card card)
@@ -268,7 +264,7 @@ namespace CardViews
 
                 if (charIndex != -1)
                 {
-                    var sticker = NewShopSceneManager.Instance.selectedSticker;
+                    var sticker = ShopSceneManager.Instance.selectedSticker;
                     if (sticker != null)
                     {
                         bool applied = card.TryApplyStickerOverride(charIndex, sticker);
@@ -285,7 +281,7 @@ namespace CardViews
                     }
                 }
             }
-            NewShopSceneManager.Instance.OnCardClicked(this);
+            ShopSceneManager.Instance.OnCardClicked(this);
         }
 
         /// <summary>

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Utils;
 using CharacterSystem;
-using DeckViews;
 using Stats;
 using UnityEngine;
 using System.Linq;
@@ -43,8 +42,6 @@ namespace CardSystem
         /// </summary>
         private Dictionary<Utils.EventType, int> eventTypeCount = new();
         public IReadOnlyDictionary<Utils.EventType, int> EventTypeCount => eventTypeCount;
-        
-        private DeckView deckView;
         
         public int maxCardCount = 5;
         
@@ -117,7 +114,7 @@ namespace CardSystem
             {
                 case Utils.EventType.OnBattleSceneChange:
                     DestoryCardsBeforeBattleStart();
-                    NewShopSceneManager.Instance.SyncWithDeck();
+                    ShopSceneManager.Instance.SyncWithDeck();
                     CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
@@ -417,16 +414,6 @@ namespace CardSystem
         {
             if (cardIndex >= 0 && cardIndex < cardCallCounts.Count)
                 cardCallCounts[cardIndex] += increment;
-        }
-
-        public void setDeckView(DeckView deckView)
-        {
-            this.deckView = deckView;
-        }
-
-        public DeckView GetDeckView()
-        {
-            return deckView;
         }
 
         /// <summary>

@@ -4,7 +4,6 @@ using TMPro;
 using CardSystem;
 using CardViews;
 using CharacterSystem;
-using DeckViews;
 
 /// <summary>
 /// 상점에 노출되는 단일 카드 슬롯(구매, UI, 가격 관리)을 담당
@@ -67,7 +66,7 @@ public class ShopCardSlot : MonoBehaviour
     /// </summary>
     public void OnClickBuyButton()
     {
-        var shopManager = NewShopSceneManager.Instance;
+        var shopManager = ShopSceneManager.Instance;
         Pawn mainCharacter = shopManager.mainCharacter;
 
         if (mainCharacter.gold < price)

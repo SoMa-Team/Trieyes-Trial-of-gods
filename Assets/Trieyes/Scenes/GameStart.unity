@@ -645,8 +645,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackData: {fileID: 0}
   player: {fileID: 8298278986126138086}
-  CharacterSelectPanel: {fileID: 7322448952113640247}
-  SkillSelectPanel: {fileID: 7322448952113640247}
+  CharacterSelectPanel: {fileID: 0}
+  SkillSelectPanel: {fileID: 0}
   RelicSelectPanel: {fileID: 7322448952113640247}
 --- !u!4 &2126304203
 Transform:
@@ -737,6 +737,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 95.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2875634739053696459, guid: fd8b55cd285c7314099451016dafe907, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2875634739053696459, guid: fd8b55cd285c7314099451016dafe907, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2875634739053696459, guid: fd8b55cd285c7314099451016dafe907, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3452285237899661808, guid: fd8b55cd285c7314099451016dafe907, type: 3}
       propertyPath: player
       value: 
@@ -752,6 +764,22 @@ PrefabInstance:
     - target: {fileID: 5539092481146384004, guid: fd8b55cd285c7314099451016dafe907, type: 3}
       propertyPath: m_Name
       value: relic_popup
+      objectReference: {fileID: 0}
+    - target: {fileID: 5539092481146384004, guid: fd8b55cd285c7314099451016dafe907, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6761231492199245898, guid: fd8b55cd285c7314099451016dafe907, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -664.9989
+      objectReference: {fileID: 0}
+    - target: {fileID: 6952690655688225951, guid: fd8b55cd285c7314099451016dafe907, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6952690655688225951, guid: fd8b55cd285c7314099451016dafe907, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7526295382788308473, guid: fd8b55cd285c7314099451016dafe907, type: 3}
       propertyPath: m_Pivot.x

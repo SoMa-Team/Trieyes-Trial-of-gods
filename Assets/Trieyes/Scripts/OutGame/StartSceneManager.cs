@@ -18,17 +18,18 @@ namespace OutGame{
         public GameObject SkillSelectPanel;
         public GameObject RelicSelectPanel;
 
-        void Start()
+        async void Start()
         {
             CharacterSelectPanel.SetActive(false);
             SkillSelectPanel.SetActive(false);
             RelicSelectPanel.SetActive(false);
             
-            _Start();
+            await _Start();
         }
 
         async Task _Start()
         {
+            Debug.Log("Initialize Async");
             await RelicDataBase.InitializeAsync();
         }
 

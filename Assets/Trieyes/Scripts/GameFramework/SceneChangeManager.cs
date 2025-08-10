@@ -127,6 +127,7 @@ namespace GameFramework
 
             foreach (var relicId in player.selectedRelicIds)
             {
+                Debug.Log($"Relic ID: {relicId}");
                 mainCharacter.AddRelic(RelicFactory.Create(relicId));
             }
 

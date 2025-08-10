@@ -20,6 +20,10 @@ namespace RelicSystem
             Debug.Log($"Relic ID: {relicID}");
 
             RelicDataSO data = RelicDataBase.GetRelicDataSO(relicID);
+            if (data == null)
+            {
+                Debug.LogError($"Relic ID: {relicID} not found");
+            }
             relic.relicID = relicID;
             relic.name = data.name;
             relic.description = data.description;

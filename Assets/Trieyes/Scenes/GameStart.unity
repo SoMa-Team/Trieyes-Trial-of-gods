@@ -643,7 +643,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 370d329946a4245b1af46be3e918c92b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 0}
   player: {fileID: 8298278986126138086}
   CharacterSelectPanel: {fileID: 0}
   SkillSelectPanel: {fileID: 0}
@@ -775,7 +774,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6952690655688225951, guid: fd8b55cd285c7314099451016dafe907, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.9999811
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6952690655688225951, guid: fd8b55cd285c7314099451016dafe907, type: 3}
       propertyPath: m_AnchorMax.y

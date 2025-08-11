@@ -19,12 +19,16 @@ namespace CardViews
         public Image illustrationImage;
         public TMP_Text cardNameText;
         public TMP_Text descriptionText;
-        public Image propertyEmblemImage;
 
         [Header("스탯/레어리티/특성 UI")]
         public StatTypeEmblemSO statTypeEmblemTable;
-        public Image statTypeEmblemImage;
-        public TMP_Text statIntegerValueText;
+
+        public GameObject StatTypePair1;
+        public GameObject StatTypePair2;
+        public Image statTypeEmblemImage1;
+        public TMP_Text statIntegerValueText1;
+        public Image statTypeEmblemImage2;
+        public TMP_Text statIntegerValueText2;
         public Image selectionOutline;
 
         [Header("오버레이/엠블럼 프리팹")]
@@ -201,15 +205,27 @@ namespace CardViews
             if (card.cardStats.stats.Count > 0 && statTypeEmblemTable != null)
             {
                 var stat = card.cardStats.stats[0];
-                statTypeEmblemImage.sprite = statTypeEmblemTable.GetEmblem(stat.type);
-                statTypeEmblemImage.enabled = statTypeEmblemImage.sprite != null;
-                statIntegerValueText.text = $"+{stat.value.Value}";
-                statIntegerValueText.enabled = true;
+                statTypeEmblemImage1.sprite = statTypeEmblemTable.GetEmblem(stat.type);
+                statTypeEmblemImage1.enabled = statTypeEmblemImage1.sprite != null;
+                statIntegerValueText1.text = $"+{stat.value.Value}";
+                statIntegerValueText1.enabled = true;
             }
             else
             {
-                statTypeEmblemImage.enabled = false;
-                statIntegerValueText.enabled = false;
+                StatTypePair1.SetActive(false);
+            }
+
+            if (card.cardStats.stats.Count > 1 && statTypeEmblemTable != null)
+            {
+                var stat = card.cardStats.stats[1];
+                statTypeEmblemImage2.sprite = statTypeEmblemTable.GetEmblem(stat.type);
+                statTypeEmblemImage2.enabled = statTypeEmblemImage2.sprite != null;
+                statIntegerValueText2.text = $"+{stat.value.Value}";
+                statIntegerValueText2.enabled = true;
+            }
+            else
+            {
+                StatTypePair2.SetActive(false);
             }
 
             // 오버레이 싱크

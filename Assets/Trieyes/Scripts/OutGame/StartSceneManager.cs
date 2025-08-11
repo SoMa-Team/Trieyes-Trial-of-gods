@@ -23,12 +23,7 @@ namespace OutGame{
             CharacterSelectPanel.SetActive(false);
             SkillSelectPanel.SetActive(false);
             RelicSelectPanel.SetActive(false);
-            
-            await _Start();
-        }
 
-        async Task _Start()
-        {
             Debug.Log("Initialize Async");
             await RelicDataBase.InitializeAsync();
         }

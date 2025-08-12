@@ -29,7 +29,6 @@ namespace RelicSystem
             var handle = Addressables.LoadAssetsAsync<RelicDataSO>("RelicDataSO", so =>
             {
                 relicDict[so.id] = so;
-                Debug.Log($"Loaded RelicDataSO: {so.id}");
             });
             
             // await handle.Task:

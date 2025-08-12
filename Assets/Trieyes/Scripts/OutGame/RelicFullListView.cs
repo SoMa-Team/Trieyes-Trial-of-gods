@@ -8,8 +8,9 @@ using System.Linq;
 namespace OutGame{
     public class RelicFullListView : MonoBehaviour
     {
+        [HideInInspector] public Transform relicListContainer; // 유물 리스트를 담을 컨테이너
+        
         [Header("UI References")]
-        public Transform relicListContainer; // 유물 리스트를 담을 컨테이너
         public GameObject unlockedRelicItemPrefab; // 해금된 유물 UI 프리팹
         public GameObject lockedRelicItemPrefab; // 잠금된 유물 UI 프리팹
         

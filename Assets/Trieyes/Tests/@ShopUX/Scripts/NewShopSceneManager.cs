@@ -232,7 +232,7 @@ public class NewShopSceneManager : MonoBehaviour
         foreach (var card in deck.cards)
         {
             var obj = Instantiate(deckCardView, DeckScaleRect);
-            obj.transform.localScale = Vector3.one;
+            // obj.transform.localScale = Vector3.one;
             var cardView = obj.GetComponent<CardView>();
             cardView.SetCard(card);
         }
@@ -325,7 +325,6 @@ public class NewShopSceneManager : MonoBehaviour
     public void OnClickNextRound()
     {
         // TODO : 씬 변화 동작 연출 필요
-        rectOnBattleStartPopup.gameObject.SetActive(true);
         onBattleStartPopupView.Activate();
 
         // StartCoroutine(BattleButtonRoutine());
@@ -337,6 +336,8 @@ public class NewShopSceneManager : MonoBehaviour
         
         onBattleStartPopupView.AnimateTriggerEvent(triggerResult, () =>
         {
+            UpdatePlayerStat();
+            Deactivate();
             SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
         });
     }

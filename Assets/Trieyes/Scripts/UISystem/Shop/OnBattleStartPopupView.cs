@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using CardSystem;
 using CardViews;
 using PrimeTween;
@@ -25,20 +24,52 @@ namespace UISystem
             Instance = this;
         }
 
+        private int lastScreenWidth;
+        private int lastScreenHeight;
+        private void Update()
+        {
+            if (Screen.width != lastScreenWidth || Screen.height != lastScreenHeight)
+            {
+                OnResize();
+                lastScreenWidth = Screen.width;
+                lastScreenHeight = Screen.height;
+            }
+        }
+
         public void Activate()
         {
+            gameObject.SetActive(true);
             OnResize();
-            
             InitCards();
             InitStat();
         }
 
+        private void Deactivate()
+        {
+            gameObject.SetActive(false);
+
+            for (int i = deckViewRect.transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(deckViewRect.transform.GetChild(i).gameObject);
+            }
+            
+            for (int i = statListRect.transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(statListRect.transform.GetChild(i).gameObject);
+            }
+            
+            statItems.Clear();
+            cards.Clear();
+        }
+
+        [Header("====== 상단 카드 ======")]
         [SerializeField] private CardTriggerSlot cardSlotPrefab;
         [SerializeField] private CardView cardViewPrefab;
 
         [SerializeField] private RectTransform deckViewRect;
         [SerializeField] private RectTransform deckViewRectTarget;
 
+        [Header("====== 사이드 스탯 ======")]
         [SerializeField] private RectTransform statListRect;
         [SerializeField] private StatItemInBattleStartPopupView statItemPrefab;
 
@@ -82,8 +113,6 @@ namespace UISystem
             foreach (StatType statType in applyStatLists)
             {
                 var statValue = character.statSheet[statType].Value;
-                // if (statValue == 0)
-                //     continue;
                 
                 var statItem = Instantiate(statItemPrefab, statListRect);
                 statItem.rect.anchoredPosition = new Vector2(0, -statItemHeight * index++);
@@ -101,7 +130,6 @@ namespace UISystem
         {
             Canvas.ForceUpdateCanvases();
             
-            // TODO : Resize가 화면 크기 변화에도 동작하도록 수정 필요!
             var size = Vector2.Scale(deckViewRect.rect.size, deckViewRect.lossyScale);
             var targetSize = Vector2.Scale(deckViewRectTarget.rect.size, deckViewRectTarget.lossyScale);
 
@@ -114,11 +142,12 @@ namespace UISystem
 
         private void AddCard(Card card, float position)
         {
-            const int cardHeight = 590;
+            const int cardWidth = 590;
+            const int cardHeight = 860;
 
             var cardSlot = Instantiate(cardSlotPrefab, deckViewRect);
-            var availableWidth = deckViewRect.rect.width - cardHeight;
-            cardSlot.rectTransform.anchoredPosition = new Vector2(availableWidth * position, 0);
+            var availableWidth = deckViewRect.rect.width - cardWidth;
+            cardSlot.rectTransform.anchoredPosition = new Vector2(availableWidth * position + cardWidth * 0.5f, cardHeight * 0.5f);
             cardSlot.transform.localScale = Vector3.one;
 
             var cardView = Instantiate(cardViewPrefab, cardSlot.gameObject.transform);
@@ -142,12 +171,16 @@ namespace UISystem
                 else
                     triggerCount += TriggerStat(sequence, trigger.statTriggerInfo, triggerCount);
             }
-            sequence.OnComplete(onComplete);
+            sequence.OnComplete(() =>
+            {
+                Deactivate();
+                onComplete?.Invoke();
+            });
         }
 
-        private float getAnimationDuration(int triggerCount)
+        private float GetAnimationDuration(int triggerCount)
         {
-            return 0.5f * Mathf.Pow(0.99f, triggerCount);
+            return Mathf.Max(0.8f * Mathf.Pow(0.98f, triggerCount), 1f); // TODO : 시간 되돌리기
         }
 
         private int TriggerCard(Sequence sequence, CardTriggerInfo cardTriggerInfo, int triggerCount)
@@ -160,8 +193,7 @@ namespace UISystem
                     continue;
 
                 var cardSlot = cards[i].Item2;
-                var tween = cardSlot.TriggerCard(getAnimationDuration(triggerCount));
-                sequence.Chain(tween);
+                sequence.Chain(cardSlot.TriggerCard(GetAnimationDuration(triggerCount)));
                 return 1;
             }
 
@@ -172,58 +204,20 @@ namespace UISystem
         {
             var statType = triggerStatTriggerInfo.statType;
             var modifier = triggerStatTriggerInfo.modifier;
-            var duration = getAnimationDuration(triggerCount);
-            //
-            // float pivotY = Single.NegativeInfinity;
-            //
-            // if (!statItems.ContainsKey(statType))
-            // {
-            //     var statItem = Instantiate(statItemPrefab, statListRect);
-            //     statItem.Activate(statType, 0, true);
-            //     statItem.rect.anchoredPosition = new Vector2(0, 0);
-            //     statItem.CreateAlphaSequence(0, 0);
-            //     
-            //     sequence.Chain(statItem.CreateAlphaSequence(duration, 1));
-            //     statItems.Add(statType, statItem);
-            // }
-            // else
-            // {
-            //     var statItem = statItems[statType];
-            //     pivotY = statItem.rect.anchoredPosition.y;
-            //     sequence.Chain(Tween.UIAnchoredPositionY(statItem.rect, 0, duration));
-            // }
-            //
-            // var view = statItems[statType];
-            // view.transform.SetAsLastSibling();
-            // view.TriggerModifier(statType, modifier, true);
-            //
-            // foreach (var key in statItems.Keys)
-            // {
-            //     if (key == statType)
-            //         continue;
-            //     
-            //     var statItem = statItems[key];
-            //     if (statItem.rect.anchoredPosition.y > pivotY)
-            //     {
-            //         var targetY = statItem.rect.anchoredPosition.y + statItemHeight;
-            //         sequence.Group(Tween.UIAnchoredPositionY(statItem.rect, targetY, duration)).OnComplete(() =>
-            //         {
-            //             statItem.TriggerEnd();
-            //         });
-            //     } 
-            // }
-
+            var duration = GetAnimationDuration(triggerCount);
+            
             if (!statItems.ContainsKey(statType))
                 return 0;
 
             var statItem = statItems[statType];
-            sequence.Group(Tween.Custom(0f, 1f, duration, t =>
+            sequence.Group(Tween.Delay(0).OnComplete(() =>
             {
-                statItem.transform.rotation = Quaternion.Euler(0, 0, 360 * t);
-            }).Group(Tween.Custom(0f, 1f, 0f, t =>
-            {
-                statItem.TriggerModifier(modifier, false);
-            })));
+                statItem.TriggerModifier(modifier, true);
+                Tween.Delay(duration).OnComplete(() =>
+                {
+                    statItem.TriggerEnd();
+                });
+            }));
             
             return 1;
         }

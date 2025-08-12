@@ -204,5 +204,10 @@ namespace UISystem
         {
             BattleStage.now.OnBattleClear();
         }
+
+        public void Test_OnClickAddTime()
+        {
+            BattleStage.now.AddTime(9999f);
+        }
     }
 }

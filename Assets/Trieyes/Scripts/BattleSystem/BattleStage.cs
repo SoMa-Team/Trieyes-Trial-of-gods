@@ -119,6 +119,11 @@ namespace BattleSystem
             return Time.time - startTime;
         }
 
+        public void AddTime(float time)
+        {
+            difficulty.battleLength += time;
+        }
+
         public List<Enemy> GetEnemiesInRectRange(Vector2 start, Vector2 end)
         {
             List<Enemy> enemiesInRange = new List<Enemy>();
@@ -198,6 +203,5 @@ namespace BattleSystem
             enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, start).CompareTo(Vector2.Distance(b.transform.position, start)));
             return enemiesInRange;
         }
-
     }
 } 

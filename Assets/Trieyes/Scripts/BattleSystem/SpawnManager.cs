@@ -133,8 +133,7 @@ namespace BattleSystem
         /// <returns>생성된 적 Pawn</returns>
         private Enemy SpawnEnemy()
         {
-            var enemy = EnemyFactory.Instance.Create(0);
-            // var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
+            var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
             enemy.statSheet[StatType.AttackPower].MultiplyToBasicValue(_difficulty.enemyAttackMultiplier);
             enemy.statSheet[StatType.Health].MultiplyToBasicValue(_difficulty.enemyHpMultiplier);
             enemy.SyncHP();

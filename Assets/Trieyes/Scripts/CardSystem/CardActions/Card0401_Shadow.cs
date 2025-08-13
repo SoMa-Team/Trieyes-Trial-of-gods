@@ -29,6 +29,7 @@ namespace CardActions
         /// <summary>
         /// CalcActionInitOrder 이벤트에서 효과 발동.
         /// </summary>
+        
         public override bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             if (owner == null || deck == null)
@@ -52,6 +53,11 @@ namespace CardActions
                 }
 
                 return true;
+            }
+
+            if (eventType == Utils.EventType.OnBattleSceneChange)
+            {
+                
             }
 
             return false;

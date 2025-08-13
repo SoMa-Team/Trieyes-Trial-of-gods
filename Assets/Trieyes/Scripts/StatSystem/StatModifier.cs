@@ -66,5 +66,15 @@ namespace Stats
         {
             return !isPermanent && BattleStage.now.GetTime() >= endTime;
         }
+
+        public int getNextValue(int initValue)
+        {
+            return operationType switch
+            {
+                BuffOperationType.Additive => initValue + value,
+                BuffOperationType.Multiplicative => initValue * (100 + value) / 100,
+                BuffOperationType.Set => value
+            };
+        }
     }
 }

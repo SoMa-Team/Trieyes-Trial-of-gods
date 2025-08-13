@@ -58,8 +58,20 @@ namespace UISystem
                 Destroy(statListRect.transform.GetChild(i).gameObject);
             }
             
+            for (int i = logListRect.transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(logListRect.transform.GetChild(i).gameObject);
+            }
+            
             statItems.Clear();
             cards.Clear();
+            logItems.Clear();
+            foreach (var cardTriggerParticle in particles)
+            {
+                if (cardTriggerParticle != null)
+                    cardTriggerParticle.Deactivate();
+            }
+            particles.Clear();
         }
 
         [Header("====== 상단 카드 ======")]
@@ -73,11 +85,25 @@ namespace UISystem
         [SerializeField] private RectTransform statListRect;
         [SerializeField] private StatItemInBattleStartPopupView statItemPrefab;
 
+        [Header("====== 파티클 ======")]
+        [SerializeField] private CardTriggerParticle particlePrefab;
+
+        [Header("====== 하단 로그 ======")]
+        [SerializeField] private RectTransform logListRect;
+        [SerializeField] private StatChangeLogItem logItemPrefab;
+
         private void InitCards()
         {
             var character = NewShopSceneManager.Instance.mainCharacter;
 
             var total = character.deck.Cards.Count;
+            if (total == 0)
+            {
+                var card = character.deck.Cards[0];
+                AddCard(card, 0.5f);
+                return;
+            }
+            
             for (int i = 0; i < total; i++)
             {
                 var card = character.deck.Cards[i];
@@ -113,10 +139,9 @@ namespace UISystem
             foreach (StatType statType in applyStatLists)
             {
                 var statValue = character.statSheet[statType].Value;
-                
                 var statItem = Instantiate(statItemPrefab, statListRect);
                 statItem.rect.anchoredPosition = new Vector2(0, -statItemHeight * index++);
-                statItem.Activate(statType, character.statSheet[statType].Value, false);
+                statItem.Activate(statType, statValue, false);
                 
                 statItems.Add(statType, statItem);
             }
@@ -136,7 +161,7 @@ namespace UISystem
             var scale = targetSize.y / size.y;
             deckViewRect.localScale *= scale * Vector2.one;
             var sizeDelta = deckViewRect.sizeDelta;
-            sizeDelta.x = targetSize.x / deckViewRect.localScale.x;
+            sizeDelta.x = targetSize.x / deckViewRect.lossyScale.x;
             deckViewRect.sizeDelta = sizeDelta;
         }
 
@@ -164,6 +189,7 @@ namespace UISystem
         {
             var sequence = Sequence.Create();
             int triggerCount = 0;
+            
             foreach (var trigger in triggerQueue)
             {
                 if (trigger.type == TriggerType.Card)
@@ -180,9 +206,10 @@ namespace UISystem
 
         private float GetAnimationDuration(int triggerCount)
         {
-            return Mathf.Max(0.8f * Mathf.Pow(0.98f, triggerCount), 1f); // TODO : 시간 되돌리기
+            return Mathf.Max(0.8f * Mathf.Pow(0.98f, triggerCount), 0.05f); // TODO : 시간 되돌리기
         }
 
+        private RectTransform rectLastTriggeredCard;
         private int TriggerCard(Sequence sequence, CardTriggerInfo cardTriggerInfo, int triggerCount)
         {
             var card = cardTriggerInfo.card;
@@ -194,12 +221,14 @@ namespace UISystem
 
                 var cardSlot = cards[i].Item2;
                 sequence.Chain(cardSlot.TriggerCard(GetAnimationDuration(triggerCount)));
+                rectLastTriggeredCard = cardSlot.rectTransform;
                 return 1;
             }
 
             return 0;
         }
 
+        private List<StatChangeLogItem> logItems = new List<StatChangeLogItem>();
         private int TriggerStat(Sequence sequence, StatTriggerInfo triggerStatTriggerInfo, int triggerCount)
         {
             var statType = triggerStatTriggerInfo.statType;
@@ -208,11 +237,28 @@ namespace UISystem
             
             if (!statItems.ContainsKey(statType))
                 return 0;
-
+            
             var statItem = statItems[statType];
+            var rectCard = rectLastTriggeredCard;
+            
             sequence.Group(Tween.Delay(0).OnComplete(() =>
             {
                 statItem.TriggerModifier(modifier, true);
+                
+                var logItem = Instantiate(logItemPrefab, logListRect);
+                logItem.Activate(statType, statItem.statValue, modifier, 0);
+                logItems.Add(logItem);
+
+                for (int i = 0; i < logItems.Count; i++)
+                {
+                    Tween.StopAll(logItems[i].rect);
+                    logItems[i].AnimateToPosition(duration * 0.9f, logItems.Count - 1 - i);
+                }
+
+                var nextValue = modifier.getNextValue(statItem.statValue);
+                var particleScale = Mathf.Clamp(statItem.statValue != 0 ? nextValue / statItem.statValue - 1 : 0, 0, 1);
+                TriggerCardStatParticle(rectCard, statItem.rect, duration, particleScale);
+                
                 Tween.Delay(duration).OnComplete(() =>
                 {
                     statItem.TriggerEnd();
@@ -220,6 +266,14 @@ namespace UISystem
             }));
             
             return 1;
+        }
+
+        private List<CardTriggerParticle> particles = new();
+        private void TriggerCardStatParticle(RectTransform rectCard, RectTransform rectStat, float duration, float scale)
+        {
+            var particle = Instantiate(particlePrefab, transform);
+            particles.Add(particle);
+            particle.Activate(rectCard, rectStat, duration, scale);
         }
     }
 }

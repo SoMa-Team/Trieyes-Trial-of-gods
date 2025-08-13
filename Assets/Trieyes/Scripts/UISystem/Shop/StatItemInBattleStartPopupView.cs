@@ -17,7 +17,7 @@ public class StatItemInBattleStartPopupView : MonoBehaviour
     [SerializeField] private List<Graphic> graphics;
     
     private StatType statType;
-    private int statValue;
+    public int statValue { get; private set; }
     private bool isActivate;
     
     public void Activate(StatType statType, int statValue, bool isActivate)
@@ -32,19 +32,7 @@ public class StatItemInBattleStartPopupView : MonoBehaviour
     public void TriggerModifier(StatModifier modifier, bool isActivate)
     {
         this.isActivate = isActivate;
-        switch (modifier.operationType)
-        {
-            case BuffOperationType.Additive:
-                statValue += modifier.value;
-                break;
-            case BuffOperationType.Multiplicative:
-                statValue = statValue * (100 + modifier.value) / 100;
-                break;
-            case BuffOperationType.Set:
-                statValue = modifier.value;
-                break;
-        }
-        
+        statValue = modifier.getNextValue(statValue);
         Invalidate();
     }
 

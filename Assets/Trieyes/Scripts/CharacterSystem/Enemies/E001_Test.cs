@@ -58,7 +58,7 @@ namespace CharacterSystem
         public override bool OnEvent(Utils.EventType eventType, object param)
         {
             base.OnEvent(eventType, param);
-            return true;
+            return false;
         }
 
         // ===== [이벤트 처리 메서드] =====

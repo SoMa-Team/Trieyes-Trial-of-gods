@@ -69,22 +69,20 @@ namespace AttackComponents
 
         public override bool OnEvent(Utils.EventType eventType, object param)
         {
-            var result = base.OnEvent(eventType, param);
-
-            if (result)
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
             {
-                if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+                var _attacker = attack.attacker as Character001_Hero;
+                if (_attacker != null)
                 {
-                    var _attacker = attack.attacker as Character001_Hero;
-                    if (_attacker != null)
-                    {
-                        _attacker.killedDuringSkill001++;
-                    }
+                    _attacker.killedDuringSkill001++;
+                    return true;
                 }
-                return true;
+
+                return false;
             }
 
-            return result;
+            return false;
         }
 
         private void StartFireAttack()

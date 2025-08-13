@@ -110,10 +110,9 @@ namespace CardSystem
         /// </summary>
         /// <param name="eventType">발생한 이벤트 타입</param>
         /// <param name="param">이벤트와 함께 전달된 매개변수</param>
-        public virtual bool OnEvent(Utils.EventType eventType, object param)
+        public bool OnEvent(Utils.EventType eventType, object param)
         {
             //Debug.Log($"<color=cyan>[DECK] {owner?.gameObject.name} ({owner?.GetType().Name}) received {eventType} event</color>");
-
             switch (eventType)
             {
                 case Utils.EventType.OnBattleSceneChange:

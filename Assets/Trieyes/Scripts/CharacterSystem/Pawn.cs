@@ -677,22 +677,6 @@ namespace CharacterSystem
         // ===== [기능 3] 이벤트 처리 =====
         public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
-            // Pawn 자체의 이벤트 처리
-            if (eventType == Utils.EventType.OnDamaged)
-            {
-                if (param is AttackResult result) 
-                {
-                    ApplyDamage(result);
-                }
-                return true;
-            }
-            
-            if (eventType == Utils.EventType.OnDeath)
-            {
-                HandleDeath();
-                return true;
-            }
-
             // 유물들의 이벤트 처리 (필터링 적용)
             if (relics != null && IsRelicEventAccepted(eventType))
             {
@@ -700,19 +684,34 @@ namespace CharacterSystem
                 {
                     if (relic != null)
                     {
-                        relic.OnEvent(eventType, param);
+                        var result = relic.OnEvent(eventType, param);
                     }
                 }
-                return true;
             }
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
             {
                 Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
-                deck.OnEvent(eventType, param);
-                return true;
+                var result = deck.OnEvent(eventType, param);
             }
-            return false;
+            
+            // Pawn 자체의 이벤트 처리
+            switch (eventType)
+            {
+                case Utils.EventType.OnDamaged:
+                    if (param is AttackResult result) 
+                    {
+                        ApplyDamage(result);
+                    }
+
+                    return true;
+                case Utils.EventType.OnDeath:
+                    HandleDeath();
+                    return true;
+                
+                default:
+                    return false;
+            }
         }
 
         public void ApplyDamage(AttackResult result)
@@ -822,7 +821,7 @@ namespace CharacterSystem
                     {
                         CalculateAttackCooldown();
                         lastAttackTime = Time.time;
-                        ChangeAnimationState("ATTACK"); // 시간 1
+                        ChangeAnimationState("ATTACK");
                         AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
                         return true;
                     }

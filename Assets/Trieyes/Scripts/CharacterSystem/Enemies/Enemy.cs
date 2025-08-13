@@ -76,11 +76,14 @@ namespace CharacterSystem
                     Debug.Log("OnDeath Event Activated");
                     OnSelfDeath(param as AttackResult);
                     return true;
+
                 // 기타 이벤트별 동작 추가
                 default:
-                    return true;
+                    return false;
             }
         }
+        
+        // TODO
         public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
             var direction = (playerTarget.transform.position - transform.position).normalized;

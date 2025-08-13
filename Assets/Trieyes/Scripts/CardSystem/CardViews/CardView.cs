@@ -55,7 +55,7 @@ namespace CardViews
         /// 파라미터(스티커 등)에 맞는 오버레이 UI 생성
         /// </summary>
         private void CreateParamOverlays(
-            int paramIdx, Dictionary<int, List<int>> groupCharsByLineNum, TMP_TextInfo textInfo,
+            Dictionary<int, List<int>> groupCharsByLineNum, TMP_TextInfo textInfo,
             StickerType stickerType, string paramText = null)
         {
             foreach (var lineKv in groupCharsByLineNum)
@@ -141,7 +141,7 @@ namespace CardViews
 
                 var groupCharsByLineNum = GroupCharsByLineNum(range.start, range.end, textInfo);
                 string paramText = (stickerType != StickerType.None) ? card.GetEffectiveParamTexts()[paramIdx] : null;
-                CreateParamOverlays(paramIdx, groupCharsByLineNum, textInfo, stickerType, paramText);
+                CreateParamOverlays(groupCharsByLineNum, textInfo, stickerType, paramText);
             }
         }
         #endregion
@@ -242,11 +242,15 @@ namespace CardViews
         /// </summary>
         private string FormatDescription(string template, List<string> descParams)
         {
-            if (descParams == null || descParams.Count == 0) return template;
-            string result = template;
-            for (int i = 0; i < descParams.Count; i++)
-                result = result.Replace("{" + i + "}", descParams[i]);
-            return result;
+            if (descParams == null || descParams.Count == 0)
+                return template;
+
+            var sb = new System.Text.StringBuilder(template);
+
+            for (int i = descParams.Count - 1; i >= 0; i--)
+                sb.Replace("{" + i + "}", descParams[i]);
+
+            return sb.ToString();
         }
 
         /// <summary>

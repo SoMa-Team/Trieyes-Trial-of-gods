@@ -12,7 +12,6 @@ namespace AttackComponents
     public class RAC010_LightningAttackSpeedBoost : AttackComponent
     {
         private Character001_Hero hero;
-        private bool boostApplied = false;
 
         public override void Activate(Attack attack, Vector2 direction)
         {

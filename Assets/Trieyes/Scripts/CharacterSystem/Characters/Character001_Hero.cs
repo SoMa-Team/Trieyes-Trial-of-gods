@@ -118,21 +118,19 @@ namespace CharacterSystem
         /// <param name="param">이벤트 파라미터</param>
         public override bool OnEvent(Utils.EventType eventType, object param)
         {
-            var result = base.OnEvent(eventType, param);
-
-            if (result)
+            base.OnEvent(eventType, param);
+            if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
             {
-                if (eventType == Utils.EventType.OnKilled || eventType == Utils.EventType.OnKilledByCritical)
+                if (weaponElementState != HeroWeaponElementState.None)
                 {
-                    if (weaponElementState != HeroWeaponElementState.None)
-                    {
-                        killedDuringSkill001++;
-                        killedDuringSkill002++;
-                    }
+                    killedDuringSkill001++;
+                    killedDuringSkill002++;
+                    
+                    return true;
                 }
-                return true;
+                return false;
             }
-            return result;
+            return false;
         }
 
         public void SetRandomEnchantmentMinID(int min)

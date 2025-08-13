@@ -242,24 +242,8 @@ namespace AttackSystem
             // 이벤트 타입에 따른 처리
             switch (eventType)
             {
-                case Utils.EventType.OnAttackHit:
-
-                    return true;
-                case Utils.EventType.OnAttack:
-                    return true;
-                
-                case Utils.EventType.OnDamageHit:
-                    return true;
-                
-                case Utils.EventType.OnKilled:
-                    return true;
-                
-                case Utils.EventType.OnKilledByCritical:
-                    return true; 
                 default:
-                    // 기본 이벤트 처리
-                    //Debug.Log($"<color=blue>[ATTACK] {gameObject.name} processing {eventType}</color>");
-                    return true;
+                    return false;
             }
         }
 

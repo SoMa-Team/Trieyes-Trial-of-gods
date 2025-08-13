@@ -35,8 +35,9 @@ namespace CardActions
         /// <summary>
         /// 실제 카드 이벤트 동작 (하위 클래스에서 오버라이드)
         /// </summary>
-        public virtual void OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
+        public virtual bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
+            return false;
             // 개별 카드별 효과 구현!
         }
 

@@ -97,7 +97,7 @@ namespace UISystem
             var character = NewShopSceneManager.Instance.mainCharacter;
 
             var total = character.deck.Cards.Count;
-            if (total == 0)
+            if (total == 1)
             {
                 var card = character.deck.Cards[0];
                 AddCard(card, 0.5f);
@@ -111,7 +111,7 @@ namespace UISystem
             }
         }
 
-        private const int statItemHeight = 50;
+        private const int statItemHeight = 50 - 3;
         private Dictionary<StatType, StatItemInBattleStartPopupView> statItems = new();
         private static readonly StatType[] applyStatLists =
         {

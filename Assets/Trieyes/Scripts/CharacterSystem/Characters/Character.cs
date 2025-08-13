@@ -29,6 +29,16 @@ namespace CharacterSystem
         {
             base.OnDestroy();
         }
+        
+        void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag("Boundary"))
+            {
+                // 경계선 밖으로 나가려 하면 이전 위치로 되돌림
+                transform.position = transform.position;
+                Debug.Log("Character001 OnTriggerExit2D");
+            }
+        }
 
         public override void Update()
         {

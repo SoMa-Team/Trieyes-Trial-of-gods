@@ -837,7 +837,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6767287169157618936, guid: 887868667e7a0a04ab4f72defdcbbf79, type: 3}
-      propertyPath: characterPrefabs.Array.data[0]
+      propertyPath: 'characterPrefabs.Array.data[0]'
       value: 
       objectReference: {fileID: 1541045329464624103, guid: e05e232813f3f41a2a06a415d44fcd5b, type: 3}
     m_RemovedComponents: []
@@ -853,6 +853,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 655678055966012019, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 655678055966012019, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 655678055966012019, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 655678055966012019, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1342948010709569801, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -863,11 +879,59 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2545377661321200618, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.002032618
+      value: -0.00013076985
+      objectReference: {fileID: 0}
+    - target: {fileID: 2708857933252183056, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2708857933252183056, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2708857933252183056, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2708857933252183056, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3917499004485017549, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_Name
       value: BattleOverlayCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 3935283825571143797, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3935283825571143797, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3935283825571143797, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3935283825571143797, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4381557117360207737, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4381557117360207737, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4381557117360207737, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4381557117360207737, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5356468457229423785, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_AnchorMax.x
@@ -884,6 +948,22 @@ PrefabInstance:
     - target: {fileID: 5885405622204854387, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_Size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121519786124356268, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121519786124356268, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121519786124356268, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6121519786124356268, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8169145042856787870, guid: 24708d74221dc413e9384bb3a457efbf, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1365,21 +1445,21 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2826276107497940061, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
-      propertyPath: enemyPrefabs.Array.data[0]
+      propertyPath: 'enemyPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 9048457892950683038, guid: b6d834719cf5d8942b17d541aadfd015, type: 3}
+    - target: {fileID: 2826276107497940061, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
+      propertyPath: 'enemyPrefabs.Array.data[1]'
       value: 
       objectReference: {fileID: 9048457892950683038, guid: c5ce9b9305773f6478cd33d3b36d20c5, type: 3}
     - target: {fileID: 2826276107497940061, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
-      propertyPath: enemyPrefabs.Array.data[1]
+      propertyPath: 'enemyPrefabs.Array.data[2]'
       value: 
       objectReference: {fileID: 9048457892950683038, guid: fff7f9c095e1bf24b8aa8aaeae72a857, type: 3}
     - target: {fileID: 2826276107497940061, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
-      propertyPath: enemyPrefabs.Array.data[2]
+      propertyPath: 'enemyPrefabs.Array.data[3]'
       value: 
       objectReference: {fileID: 9048457892950683038, guid: 33be74df552434940a8cc89f88552819, type: 3}
-    - target: {fileID: 2826276107497940061, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
-      propertyPath: enemyPrefabs.Array.data[3]
-      value: 
-      objectReference: {fileID: 9048457892950683038, guid: b6d834719cf5d8942b17d541aadfd015, type: 3}
     - target: {fileID: 8034793351879866816, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 100
@@ -3032,7 +3112,7 @@ PrefabInstance:
       value: BattleStageFactory
       objectReference: {fileID: 0}
     - target: {fileID: 7564836210491077033, guid: a98c40370aa497341a33d7671322148b, type: 3}
-      propertyPath: battleStagePrefabs.Array.data[0]
+      propertyPath: 'battleStagePrefabs.Array.data[0]'
       value: 
       objectReference: {fileID: 6405400953864103545, guid: 45a1fdd9629f04be4b340335f5c646da, type: 3}
     m_RemovedComponents: []
@@ -3093,10 +3173,6 @@ PrefabInstance:
       value: AttackFactory
       objectReference: {fileID: 0}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
-      propertyPath: rawAttackPrefab.Array.data[22].attackPrefab
-      value: 
-      objectReference: {fileID: 2257760205768175811, guid: 10d35d693e3d4f14fa32928d1353959c, type: 3}
-    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: rawAttackPrefab.Array.size
       value: 25
       objectReference: {fileID: 0}
@@ -3128,6 +3204,10 @@ PrefabInstance:
       propertyPath: rawAttackPrefab.Array.data[18].attackPrefab
       value: 
       objectReference: {fileID: 7350473350947833423, guid: bd2144be59ccf0a43b63e6e027c26913, type: 3}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[22].attackPrefab
+      value: 
+      objectReference: {fileID: 2257760205768175811, guid: 10d35d693e3d4f14fa32928d1353959c, type: 3}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: rawAttackPrefab.Array.data[23].attackPrefab
       value: 

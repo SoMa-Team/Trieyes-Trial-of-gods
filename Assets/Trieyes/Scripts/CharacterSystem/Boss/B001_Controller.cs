@@ -48,7 +48,7 @@ namespace CharacterSystem.Enemies
             var enemyPos = transform.position;
             Vector2 toPlayer = (playerPos - enemyPos);
 
-            if(isAutoMovement)
+            if(!lockMovement)
             {
                 if (toPlayer.magnitude <= bossOwner.dashRange)
                 {

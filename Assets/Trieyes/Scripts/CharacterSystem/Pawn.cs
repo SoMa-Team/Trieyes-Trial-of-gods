@@ -701,9 +701,9 @@ namespace CharacterSystem
                     if (relic != null)
                     {
                         relic.OnEvent(eventType, param);
-                        return true;
                     }
                 }
+                return true;
             }
             // 덱의 카드 액션들 처리 (필터링 적용)
             if (deck != null && IsCardEventAccepted(eventType))
@@ -712,7 +712,7 @@ namespace CharacterSystem
                 deck.OnEvent(eventType, param);
                 return true;
             }
-            return true;
+            return false;
         }
 
         public void ApplyDamage(AttackResult result)
@@ -799,9 +799,9 @@ namespace CharacterSystem
             }
         }
 
-        public void SetAutoMovement(bool isAutoMovement)
+        public void SetLockMovement(bool lockMovement)
         {
-            Controller.isAutoMovement = isAutoMovement;
+            Controller.lockMovement = lockMovement;
         }
 
         public virtual void PerformAutoAttack()

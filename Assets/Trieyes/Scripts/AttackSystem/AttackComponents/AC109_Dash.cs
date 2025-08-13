@@ -204,7 +204,7 @@ namespace AttackComponents
             dashTargetPosition = dashStartPosition + (dashDirection * dashRange);
 
             // Pawn의 자동 이동 비활성화
-            DisablePawnAutoMovement();
+            dashOwner.SetLockMovement(true);
 
             // Dash 활성화
             isDashActive = true;
@@ -216,20 +216,10 @@ namespace AttackComponents
             Debug.Log("<color=green>[AC109] Dash 공격 활성화!</color>");
         }
 
-        private void DisablePawnAutoMovement()
-        {
-            dashOwner.SetAutoMovement(false);
-        }
-
-        private void EnablePawnAutoMovement()
-        {
-            dashOwner.SetAutoMovement(true);
-        }
-
         private void FinishAC109Attack()
         {
             // Pawn의 자동 이동 다시 활성화
-            EnablePawnAutoMovement();
+            dashOwner.SetLockMovement(false);
 
             // Dash 비활성화
             isDashActive = false;
@@ -276,8 +266,7 @@ namespace AttackComponents
         {
             base.Deactivate();
             
-            // Pawn의 자동 이동 다시 활성화
-            EnablePawnAutoMovement();
+            dashOwner.SetLockMovement(false);
             
             // Dash 비활성화
             isDashActive = false;

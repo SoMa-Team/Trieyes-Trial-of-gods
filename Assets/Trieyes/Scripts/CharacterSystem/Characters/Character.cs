@@ -74,27 +74,19 @@ namespace CharacterSystem
             // 부모의 이벤트 전파 로직 호출 (필터링 적용됨)
             var result = base.OnEvent(eventType, param);
 
-            if (result)
+            // Character001 고유의 이벤트 처리
+            switch (eventType)
             {
-                // Character001 고유의 이벤트 처리
-                switch (eventType)
-                {
-                    case Utils.EventType.OnLevelUp:
-                        //Debug.Log($"<color=yellow>{gameObject.name} (Character001) gained a level!</color>");
-                        return true;
-                    case Utils.EventType.OnDeath:
-                        // 죽고 나서 할 것
-                        if(BattleStage.now.mainCharacter == this)
-                        {
-                            BattleStage.now.OnPlayerDeath();
-                        }
-                        return true;
-                    default:
-                        return true;
-                }
+                case Utils.EventType.OnDeath:
+                    // 죽고 나서 할 것
+                    if(BattleStage.now.mainCharacter == this)
+                    {
+                        BattleStage.now.OnPlayerDeath();
+                    }
+                    return true;
+                default:
+                    return false;
             }
-
-            return result;
         }
     }
 }

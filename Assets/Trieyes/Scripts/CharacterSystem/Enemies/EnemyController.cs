@@ -41,7 +41,7 @@ namespace CharacterSystem.Enemies
             var attackRange = owner.statSheet[StatType.AttackRange];
             var playerPos = playerTarget.position;
             var enemyPos = transform.position;
-            if (isAutoMovement)
+            if (!lockMovement)
             {
                 switch (enemyType)
                 {

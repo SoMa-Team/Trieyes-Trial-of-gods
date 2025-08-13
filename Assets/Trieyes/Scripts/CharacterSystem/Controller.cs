@@ -11,7 +11,7 @@ namespace CharacterSystem
         // ===== [필드] =====
         public Pawn owner;
 
-        public bool isAutoMovement;
+        public bool lockMovement;
 
         /// <summary>
         /// 현재 이동 방향
@@ -35,7 +35,7 @@ namespace CharacterSystem
         {
             enabled = true;
             isAutoAttack = true;
-            isAutoMovement = true;
+            lockMovement = false;
             owner = pawn;
         }
 

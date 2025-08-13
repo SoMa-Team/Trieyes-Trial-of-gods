@@ -602,6 +602,7 @@ GameObject:
   - component: {fileID: 4933727543172522708}
   - component: {fileID: 7332464425108868971}
   - component: {fileID: 3371363623915386645}
+  - component: {fileID: 9084391544922127379}
   m_Layer: 5
   m_Name: Viewport
   m_TagString: Untagged
@@ -680,6 +681,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
+--- !u!114 &9084391544922127379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535945741695662011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &567354923267853166
 GameObject:
   m_ObjectHideFlags: 0
@@ -3195,7 +3210,7 @@ MonoBehaviour:
   shopCardSlot: {fileID: 1655834104151316082, guid: 8d391b3ff288d4515a6a80e0d2c16ded, type: 3}
   shopStickerSlot: {fileID: 6242317248085038734, guid: 52954f236b5744ce9abec4ce4d3670fd, type: 3}
   deckCardView: {fileID: 4986477773496189538, guid: 57117521023954de2a4709ce6555217c, type: 3}
-  shopScenePrefab: {fileID: 2459982713996576146}
+  shopScenePrefab: {fileID: 0}
   sellButton: {fileID: 1817888161285489941}
   rerollButton: {fileID: 414559632359810911}
   nextBattleButton: {fileID: 8789414774319112187}
@@ -9750,6 +9765,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3120115679059456073}
   - component: {fileID: 1605613498375806199}
+  - component: {fileID: 1384537441943151303}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -9773,8 +9789,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -673.89734, y: 0}
-  m_SizeDelta: {x: 4195.619, y: 860}
+  m_AnchoredPosition: {x: 0.000031264044, y: 0}
+  m_SizeDelta: {x: 2791.7, y: 878.81}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1605613498375806199
 MonoBehaviour:
@@ -9800,6 +9816,18 @@ MonoBehaviour:
   m_Spacing: {x: 97.67, y: 0}
   m_Constraint: 2
   m_ConstraintCount: 1
+--- !u!114 &1384537441943151303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7098833138939736660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fcc3ac278ac43f6920ab51f51ddf328, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7104577142119537360
 GameObject:
   m_ObjectHideFlags: 0
@@ -10025,8 +10053,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7661672993949363519}
   m_HandleRect: {fileID: 7484478533454172163}
   m_Direction: 0
-  m_Value: 1.000001
-  m_Size: 0.8411575
+  m_Value: 0
+  m_Size: 0.9999881
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12069,8 +12097,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1555896134975069809}
   m_HandleRect: {fileID: 9086128440602789431}
   m_Direction: 0
-  m_Value: 1.0000004
-  m_Size: 0.6653766
+  m_Value: -0.0038461538
+  m_Size: 0.99998814
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12124,7 +12152,7 @@ GameObject:
   - component: {fileID: 961416460373002691}
   - component: {fileID: 1959381603311262530}
   - component: {fileID: 7796581143174965353}
-  - component: {fileID: 1548136266877542783}
+  - component: {fileID: 7391011358587699737}
   m_Layer: 5
   m_Name: Icon_Coin
   m_TagString: Untagged
@@ -12189,7 +12217,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1548136266877542783
+--- !u!114 &7391011358587699737
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12234,7 +12262,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5576991401071774346}
-        m_TargetAssemblyTypeName: NewShopSceneManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: ShopSceneManager, Assembly-CSharp
         m_MethodName: ShowMeTheMoney
         m_Mode: 1
         m_Arguments:
@@ -13142,6 +13170,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6596087777759807577}
   - component: {fileID: 8909121059314985013}
+  - component: {fileID: 8706540863744509144}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -13165,8 +13194,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -253.04318, y: 0}
-  m_SizeDelta: {x: 3318.8398, y: 860}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 2791.7, y: 866.67}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8909121059314985013
 MonoBehaviour:
@@ -13192,6 +13221,18 @@ MonoBehaviour:
   m_Spacing: {x: 97.67, y: 0}
   m_Constraint: 2
   m_ConstraintCount: 1
+--- !u!114 &8706540863744509144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8700098403956984780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fcc3ac278ac43f6920ab51f51ddf328, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8778994800282691959
 GameObject:
   m_ObjectHideFlags: 0

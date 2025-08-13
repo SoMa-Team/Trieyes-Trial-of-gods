@@ -9,7 +9,6 @@ namespace OutGame{
     public class RelicSelectedListView : MonoBehaviour
     {
         [Header("UI References")]
-        public Transform relicListContainer; // 선택된 유물 리스트를 담을 컨테이너
         public GameObject selectedRelicItemPrefab; // 선택된 유물 UI 프리팹
 
         [Header("Selected Relics")]
@@ -17,7 +16,9 @@ namespace OutGame{
         public List<RelicView> relicViews = new List<RelicView>(3);
         
         [Header("Player Reference")]
-        public Player player;        
+        public Player player;  
+        
+        [HideInInspector] public Transform relicListContainer; // 선택된 유물 리스트를 담을 컨테이너
 
         public void Awake()
         {           

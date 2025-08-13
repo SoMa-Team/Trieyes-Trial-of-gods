@@ -11,7 +11,6 @@ using GamePlayer;
 namespace OutGame{
     public class StartSceneManager : MonoBehaviour
     {
-        public AttackData attackData;
 
         public Player player;
         
@@ -21,8 +20,9 @@ namespace OutGame{
 
         void Start()
         {
-            CharacterSelectPanel.SetActive(false);
-            SkillSelectPanel.SetActive(false);
+            Debug.Log("StartSceneManager");
+            CharacterSelectPanel?.SetActive(false); //TODO: 패널 추가시 ? 해제
+            SkillSelectPanel?.SetActive(false); //TODO: 패널 추가시 ? 해제
             RelicSelectPanel.SetActive(false);
             
             _Start();

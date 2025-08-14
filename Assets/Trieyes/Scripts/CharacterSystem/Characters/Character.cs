@@ -11,6 +11,7 @@ namespace CharacterSystem
         // ===== [필드] =====
         
         // Pawn의 추상 멤버 구현
+        public Vector3 lastPosition;
         
         // ===== [Unity 생명주기] =====
         protected override void Start()
@@ -44,6 +45,7 @@ namespace CharacterSystem
         {
             base.Update();
             Controller?.ProcessInputActions();
+            lastPosition = transform.position;
         }
 
         // ===== [커스텀 메서드] =====
@@ -52,7 +54,7 @@ namespace CharacterSystem
             base.Activate();
 
             var capsuleCollider = Collider as CapsuleCollider2D;
-            capsuleCollider.isTrigger = true;
+            capsuleCollider.isTrigger = false;
             this.transform.position = Vector3.zero;
 
             //Debug.Log("Character001 Activated.");
@@ -62,6 +64,15 @@ namespace CharacterSystem
         {
             base.Deactivate();
             //Debug.Log("Character001 Deactivated.");
+        }
+
+        public void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Boundary"))
+            {
+                Debug.Log("Character001 OnTriggerEnter2D");
+                transform.position = lastPosition;
+            }
         }
 
         // ===== [이벤트 처리 메서드] =====

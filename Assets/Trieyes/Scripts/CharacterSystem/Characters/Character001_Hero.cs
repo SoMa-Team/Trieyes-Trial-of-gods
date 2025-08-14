@@ -74,11 +74,6 @@ namespace CharacterSystem
             base.Deactivate();
         }
 
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            base.OnTriggerEnter2D(other);
-        }
-
         // ===== [공격 처리 메서드] =====
         /// <summary>
         /// 공격을 실행합니다. lockBasicAttack이 true면 기본 공격을 차단합니다.

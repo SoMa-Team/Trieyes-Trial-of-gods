@@ -187,7 +187,7 @@ namespace UISystem
 
         public void Deactivate()
         {
-            Instance = null;
+            //Instance = null;
         }
         
         // ===== Test Panel Buttons =====

@@ -33,10 +33,10 @@ RectTransform:
   - {fileID: 6676428859649562523}
   m_Father: {fileID: 6074076188793009389}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 141, y: 0}
-  m_SizeDelta: {x: 206.577, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 180, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &189548622126497612
 GameObject:
@@ -272,6 +272,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6074076188793009389}
+  - component: {fileID: 7891435064028774510}
   m_Layer: 5
   m_Name: BaseStats
   m_TagString: Untagged
@@ -300,6 +301,32 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -420.9}
   m_SizeDelta: {x: 0, y: 80}
   m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &7891435064028774510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1662116505973571262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 90
+    m_Right: 90
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &3600638292415263018
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,10 +662,10 @@ RectTransform:
   - {fileID: 2578466906192900726}
   m_Father: {fileID: 6074076188793009389}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -138, y: 0}
-  m_SizeDelta: {x: 206.577, y: 80}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 180, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4583481311269310046
 GameObject:
@@ -766,13 +793,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00a6e64ef5dd46dc974d52f9a9dd732c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 284955019594156341}
   illustrationImage: {fileID: 528979332093525092}
   cardNameText: {fileID: 3554468277644420399}
   descriptionText: {fileID: 8672422179459943294}
-  propertyEmblemImage: {fileID: 0}
   statTypeEmblemTable: {fileID: 11400000, guid: 971139292652e4671a6b541497d3f407, type: 2}
-  statTypeEmblemImage: {fileID: 519003180871996064}
-  statIntegerValueText: {fileID: 1061771927131967890}
+  StatTypePair1: {fileID: 4329505709908991091}
+  StatTypePair2: {fileID: 35853433742293647}
+  statTypeEmblemImage1: {fileID: 519003180871996064}
+  statIntegerValueText1: {fileID: 1061771927131967890}
+  statTypeEmblemImage2: {fileID: 9094420830747113603}
+  statIntegerValueText2: {fileID: 5107504936520417061}
   selectionOutline: {fileID: 276490263084511985}
   stickerOverlayPrefabs:
   - {fileID: 3129819179372221451, guid: 0698e71770da042979742fe4d2e2b2e8, type: 3}

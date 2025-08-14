@@ -24,6 +24,7 @@ public class AnimationController : MonoBehaviour
 
     public void AttackOnAnimationStart()
     {
+        
     }
 
     public void AttackOnAnimationEnd()

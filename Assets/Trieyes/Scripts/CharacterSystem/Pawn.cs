@@ -817,6 +817,7 @@ namespace CharacterSystem
             switch (attackType)
             {
                 case PawnAttackType.BasicAttack:
+                    Debug.Log("BasicAttackCreateCommand!");
                     if (Time.time - lastAttackTime >= attackCooldown)
                     {
                         CalculateAttackCooldown();

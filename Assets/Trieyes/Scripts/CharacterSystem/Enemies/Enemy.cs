@@ -140,7 +140,8 @@ namespace CharacterSystem
             Debug.Log($"{result.attacker}");
             if (result.attacker != null)
             {
-                DropFactory.Instance.CreateGold(transform.position, dropGold);
+                Gold gold = DropFactory.Instance.CreateGold(transform.position, dropGold);
+                BattleStage.now.AttachGold(gold);
                 // result.attacker.ChangeGold(dropGold);
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");
                 Debug.Log($"Player Gold: {result.attacker.gold}");

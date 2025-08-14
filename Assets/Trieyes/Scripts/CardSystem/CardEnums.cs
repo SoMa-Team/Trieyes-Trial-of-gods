@@ -24,7 +24,7 @@ namespace CardSystem
     public enum Property
     {
         Fire = 0,
-        Ice = 1,
+        Wind = 1,
         Light = 2,
         Dark = 3,
         Steel = 4,

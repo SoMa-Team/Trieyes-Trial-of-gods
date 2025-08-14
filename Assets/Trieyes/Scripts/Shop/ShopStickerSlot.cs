@@ -74,7 +74,7 @@ public class ShopStickerSlot : MonoBehaviour
     /// </summary>
     public void OnClickBuyButton()
     {
-        var shopManager = NewShopSceneManager.Instance;
+        var shopManager = ShopSceneManager.Instance;
         Pawn mainCharacter = shopManager.mainCharacter;
 
         if (mainCharacter.gold < STICKER_PRICE)

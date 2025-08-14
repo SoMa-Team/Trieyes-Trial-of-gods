@@ -1,0 +1,83 @@
+using System.Collections.Generic;
+using System.IO;
+using CardViews;
+using PrimeTween;
+using Stats;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using Utils;
+
+public class StatItemInBattleStartPopupView : MonoBehaviour
+{
+    [Header("====== 데이터 ======")]
+    [SerializeField] private StatTypeEmblemSO statTypeEmblemTable;
+    
+    [Header("====== View ======")]
+    [SerializeField] public RectTransform rect;
+    [SerializeField] private Image imageStatIcon;
+    [SerializeField] private TextMeshProUGUI textStatName;
+    [SerializeField] private TextMeshProUGUI textStatValue;
+    [SerializeField] private Image imageIsActivate;
+    [SerializeField] private List<Graphic> graphics;
+    
+    private StatType statType;
+    public int statValue { get; private set; }
+    private bool isActivate;
+    
+    public void Activate(StatType statType, int statValue, bool isActivate)
+    {
+        this.statType = statType;
+        this.statValue = statValue;
+        this.isActivate = isActivate;
+        Invalidate();
+        gameObject.SetActive(true);
+    }
+
+    public void TriggerModifier(StatModifier modifier, bool isActivate)
+    {
+        this.isActivate = isActivate;
+        statValue = modifier.getNextValue(statValue);
+        Invalidate();
+    }
+
+    private void Invalidate()
+    {
+        imageStatIcon.sprite = GetStatTypeSprite(statType);
+        
+        textStatName.text = GetStatTypeName(statType);
+        textStatName.color = isActivate ? new Color(1, 1, 0.5f) : Color.white;
+        
+        textStatValue.text = statValue.ToString();
+        textStatValue.color = isActivate ? new Color(1, 1, 0.5f) : Color.white;
+        
+        imageIsActivate.gameObject.SetActive(isActivate);
+    }
+
+    private string GetStatTypeName(StatType statType)
+    {
+        return StatTypeTransformer.StatTypeToKorean(statType);
+    }
+
+    private Sprite GetStatTypeSprite(StatType statType)
+    {
+        return statTypeEmblemTable.GetEmblem(statType);
+    }
+
+    public Sequence CreateAlphaSequence(float duration, float targetAlpha)
+    {
+        var sequence = Sequence.Create();
+        foreach (var graphic in graphics)
+        {
+            sequence.Group(Tween.Alpha(graphic, targetAlpha, duration, Ease.Linear));
+        }
+
+        return sequence;
+    }
+
+    public void TriggerEnd()
+    {
+        isActivate = false;
+        Invalidate();
+    }
+}

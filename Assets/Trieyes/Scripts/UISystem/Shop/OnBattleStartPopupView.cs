@@ -105,14 +105,14 @@ namespace UISystem
             if (total == 1)
             {
                 var card = character.deck.Cards[0];
-                AddCard(card, 0.5f);
+                AttachCard(card, 0.5f);
                 return;
             }
             
             for (int i = 0; i < total; i++)
             {
                 var card = character.deck.Cards[i];
-                AddCard(card, (float)i / (total - 1));
+                AttachCard(card, (float)i / (total - 1));
             }
         }
 
@@ -170,7 +170,7 @@ namespace UISystem
             deckViewRect.sizeDelta = sizeDelta;
         }
 
-        private void AddCard(Card card, float position)
+        private void AttachCard(Card card, float position)
         {
             const int cardWidth = 590;
             const int cardHeight = 860;
@@ -207,10 +207,14 @@ namespace UISystem
                 nextRoundButton.interactable = true;
             });
         }
+        
+        private const float StartDuration = 0.5f;
+        private const float DurationScaleMultiplier = 0.98f;
+        private const float MinimumDuration = 0.05f;
 
         private float GetAnimationDuration(int triggerCount)
         {
-            return Mathf.Max(0.5f * Mathf.Pow(0.98f, triggerCount), 0.05f);
+            return Mathf.Max(StartDuration * Mathf.Pow(DurationScaleMultiplier, triggerCount), MinimumDuration);
         }
 
         private RectTransform rectLastTriggeredCard;

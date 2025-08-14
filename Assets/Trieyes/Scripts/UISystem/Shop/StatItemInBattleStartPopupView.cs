@@ -10,7 +10,6 @@ using Utils;
 
 public class StatItemInBattleStartPopupView : MonoBehaviour
 {
-
     [Header("====== 데이터 ======")]
     [SerializeField] private StatTypeEmblemSO statTypeEmblemTable;
     

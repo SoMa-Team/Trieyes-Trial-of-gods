@@ -29,6 +29,9 @@ namespace BattleSystem
                 // TODO: 추후에 Shop이 같은 Scene이 된다면, 오류 출력하도록 조정 필요.
                 Tween.Custom(0, 1, 1.0f, t =>
                 {
+                    if (BattleStage.now == null)
+                        return;
+                    
                     var character = BattleStage.now.mainCharacter;
                     transform.position = Vector3.Lerp(position, character.transform.position, t * t);  
                 }).OnComplete(() =>

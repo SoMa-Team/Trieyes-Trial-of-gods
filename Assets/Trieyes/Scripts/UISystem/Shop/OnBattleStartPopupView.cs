@@ -5,6 +5,7 @@ using CardViews;
 using PrimeTween;
 using Stats;
 using UnityEngine;
+using UnityEngine.UI;
 using Utils;
 
 namespace UISystem
@@ -39,6 +40,9 @@ namespace UISystem
         public void Activate()
         {
             gameObject.SetActive(true);
+
+            nextRoundButton.interactable = false;
+            
             OnResize();
             InitCards();
             InitStat();
@@ -73,7 +77,7 @@ namespace UISystem
             }
             particles.Clear();
         }
-
+        
         [Header("====== 상단 카드 ======")]
         [SerializeField] private CardTriggerSlot cardSlotPrefab;
         [SerializeField] private CardView cardViewPrefab;
@@ -91,10 +95,11 @@ namespace UISystem
         [Header("====== 하단 로그 ======")]
         [SerializeField] private RectTransform logListRect;
         [SerializeField] private StatChangeLogItem logItemPrefab;
+        [SerializeField] private Button nextRoundButton; 
 
         private void InitCards()
         {
-            var character = NewShopSceneManager.Instance.mainCharacter;
+            var character = ShopSceneManager.Instance.mainCharacter;
 
             var total = character.deck.Cards.Count;
             if (total == 1)
@@ -133,7 +138,7 @@ namespace UISystem
 
         private void InitStat()
         {
-            var character = NewShopSceneManager.Instance.mainCharacter;
+            var character = ShopSceneManager.Instance.mainCharacter;
 
             int index = 0;
             foreach (StatType statType in applyStatLists)
@@ -185,7 +190,7 @@ namespace UISystem
         
         private List<(Card, CardTriggerSlot)> cards = new List<(Card, CardTriggerSlot)>();
         
-        public void AnimateTriggerEvent(Queue<TriggerInfo> triggerQueue, Action onComplete)
+        public void AnimateTriggerEvent(Queue<TriggerInfo> triggerQueue)
         {
             var sequence = Sequence.Create();
             int triggerCount = 0;
@@ -199,14 +204,13 @@ namespace UISystem
             }
             sequence.OnComplete(() =>
             {
-                Deactivate();
-                onComplete?.Invoke();
+                nextRoundButton.interactable = true;
             });
         }
 
         private float GetAnimationDuration(int triggerCount)
         {
-            return Mathf.Max(0.8f * Mathf.Pow(0.98f, triggerCount), 0.05f); // TODO : 시간 되돌리기
+            return Mathf.Max(0.5f * Mathf.Pow(0.98f, triggerCount), 0.05f);
         }
 
         private RectTransform rectLastTriggeredCard;
@@ -274,6 +278,12 @@ namespace UISystem
             var particle = Instantiate(particlePrefab, transform);
             particles.Add(particle);
             particle.Activate(rectCard, rectStat, duration, scale);
+        }
+
+        public void OnClickNextRound()
+        {
+            Deactivate();
+            ShopSceneManager.Instance.StartNextBattleOnPopup();
         }
     }
 }

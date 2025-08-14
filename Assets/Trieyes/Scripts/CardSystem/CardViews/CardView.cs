@@ -15,6 +15,8 @@ namespace CardViews
     public class CardView : MonoBehaviour, IPointerClickHandler
     {
         // =================== [UI 참조] ===================
+        private bool canInteract;
+        
         [Header("카드 전체")]
         public RectTransform rectTransform;
         
@@ -157,9 +159,15 @@ namespace CardViews
         /// <summary>카드 설정 및 UI 갱신</summary>
         public virtual void SetCard(Card card)
         {
+            canInteract = false;
             this.card = card;
             SetSelected(false);
             UpdateView();
+        }
+
+        public void SetCanInteract(bool canInteract)
+        {
+            this.canInteract = canInteract;
         }
 
         /// <summary>현재 카드 반환</summary>
@@ -273,6 +281,9 @@ namespace CardViews
         /// </summary>
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (!canInteract)
+                return;
+            
             if (RectTransformUtility.RectangleContainsScreenPoint(
                     descriptionText.rectTransform, eventData.position, eventData.pressEventCamera))
             {
@@ -308,6 +319,9 @@ namespace CardViews
         /// </summary>
         public void SetSelected(bool selected)
         {
+            if (!canInteract)
+                return;
+            
             if (selectionOutline != null)
                 selectionOutline.color = selected ? Color.yellow : Color.black;
         }

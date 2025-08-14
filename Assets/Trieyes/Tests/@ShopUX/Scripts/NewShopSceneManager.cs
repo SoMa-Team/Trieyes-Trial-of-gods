@@ -322,26 +322,6 @@ public class NewShopSceneManager : MonoBehaviour
         mainCharacter.gold += 10000;
     }
 
-    public void OnClickNextRound()
-    {
-        // TODO : 씬 변화 동작 연출 필요
-        onBattleStartPopupView.Activate();
-
-        // StartCoroutine(BattleButtonRoutine());
-        // mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        // UpdatePlayerStat();
-        CardStatChangeRecorder.Instance.RecordStart();
-        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
-        
-        onBattleStartPopupView.AnimateTriggerEvent(triggerResult, () =>
-        {
-            UpdatePlayerStat();
-            Deactivate();
-            SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
-        });
-    }
-
     private IEnumerator BattleButtonRoutine()
     {
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);

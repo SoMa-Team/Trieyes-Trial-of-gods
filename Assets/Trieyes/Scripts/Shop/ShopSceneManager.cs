@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -10,7 +11,6 @@ using Stats;
 using StickerSystem;
 using Utils;
 using GameFramework;
-using System.Collections;
 using UISystem;
 
 /// <summary>
@@ -232,7 +232,9 @@ public class ShopSceneManager : MonoBehaviour
             var obj = Instantiate(deckCardView, DeckScaleRect);
             obj.transform.localScale = Vector3.one;
             var cardView = obj.GetComponent<CardView>();
+            
             cardView.SetCard(card);
+            cardView.SetCanInteract(true);
         }
         UpdateButtonState();
         UpdateDeckCountUI();
@@ -328,12 +330,7 @@ public class ShopSceneManager : MonoBehaviour
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
         var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
         
-        onBattleStartPopupView.AnimateTriggerEvent(triggerResult, () =>
-        {
-            UpdatePlayerStat();
-            Deactivate();
-            SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
-        });
+        onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
     }
 
     public void OnClickStatInfo()
@@ -344,5 +341,12 @@ public class ShopSceneManager : MonoBehaviour
     private void ToggleStatInfoPopup()
     {
         popupStatInfo.SetActive(!popupStatInfo.activeSelf);
+    }
+
+    public void StartNextBattleOnPopup()
+    {
+        UpdatePlayerStat();
+        Deactivate();
+        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using CardViews;
 using PrimeTween;
 using Stats;
 using TMPro;
@@ -9,6 +10,11 @@ using Utils;
 
 public class StatItemInBattleStartPopupView : MonoBehaviour
 {
+
+    [Header("====== 데이터 ======")]
+    [SerializeField] private StatTypeEmblemSO statTypeEmblemTable;
+    
+    [Header("====== View ======")]
     [SerializeField] public RectTransform rect;
     [SerializeField] private Image imageStatIcon;
     [SerializeField] private TextMeshProUGUI textStatName;
@@ -56,8 +62,7 @@ public class StatItemInBattleStartPopupView : MonoBehaviour
 
     private Sprite GetStatTypeSprite(StatType statType)
     {
-        // TODO : 스탯 이미지 연결하기 & 현재는 이미지가 변경되지 않음
-        return imageStatIcon.sprite;
+        return statTypeEmblemTable.GetEmblem(statType);
     }
 
     public Sequence CreateAlphaSequence(float duration, float targetAlpha)

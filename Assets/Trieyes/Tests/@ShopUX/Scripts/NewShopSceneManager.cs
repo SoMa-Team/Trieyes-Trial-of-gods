@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -11,16 +10,18 @@ using Stats;
 using StickerSystem;
 using Utils;
 using GameFramework;
+using System.Collections;
+using PrimeTween;
 using UISystem;
 
 /// <summary>
 /// 상점(Shop) 씬의 핵심 관리 매니저.  
 /// 카드/스티커 뽑기, 덱 관리, 골드/스탯/릴릭 UI, 슬롯 생성, 버튼 동작 등 통합 제어.
 /// </summary>
-public class ShopSceneManager : MonoBehaviour
+public class NewShopSceneManager : MonoBehaviour
 {
     // ========= [싱글턴 및 주요 필드] =========
-    public static ShopSceneManager Instance { get; private set; }
+    public static NewShopSceneManager Instance { get; private set; }
 
     [Header("상점 슬롯 프리팹/컨테이너")]
     public GameObject shopCardSlot;
@@ -52,7 +53,12 @@ public class ShopSceneManager : MonoBehaviour
     private int rerollPrice;
     private Difficulty difficulty;
 
+    // ====== [UI - 전체 레이아웃] ======
+    [Header("전체 레이아웃")]
+    [SerializeField] private RectTransform rectTransform;
+    
     // ====== [UI - 스탯/라운드/릴릭] ======
+    [Header("Top/Side Bar")]
     [SerializeField] private TextMeshProUGUI textRoundInfo;
     [SerializeField] private TextMeshProUGUI textGold;
     [SerializeField] private List<Image> imageRelics;
@@ -65,10 +71,6 @@ public class ShopSceneManager : MonoBehaviour
         public List<TextMeshProUGUI> text;
     }
     [SerializeField] private StatTypeTMPPair[] statTypeTMPPairs;
-
-    // ====== [UI - 전체 레이아웃] ======
-    [Header("전체 레이아웃")]
-    [SerializeField] private RectTransform rectTransform;
 
     // ====== [UI - 카드/상점 슬롯 컨테이너] ======
     [Header("Deck Auto Scaling")]
@@ -108,7 +110,7 @@ public class ShopSceneManager : MonoBehaviour
     // ================= [초기화 및 비활성화] =================
     public void Activate(Character mainCharacter, Difficulty difficulty)
     {
-        Debug.Log("ShopSceneManager: Activate");
+        Debug.Log("NewShopSceneManager: Activate");
         this.mainCharacter = mainCharacter;
         this.difficulty = difficulty;
         
@@ -230,11 +232,9 @@ public class ShopSceneManager : MonoBehaviour
         foreach (var card in deck.cards)
         {
             var obj = Instantiate(deckCardView, DeckScaleRect);
-            obj.transform.localScale = Vector3.one;
+            // obj.transform.localScale = Vector3.one;
             var cardView = obj.GetComponent<CardView>();
-            
             cardView.SetCard(card);
-            cardView.SetCanInteract(true);
         }
         UpdateButtonState();
         UpdateDeckCountUI();
@@ -322,15 +322,13 @@ public class ShopSceneManager : MonoBehaviour
         mainCharacter.gold += 10000;
     }
 
-    public void OnClickNextRound()
+    private IEnumerator BattleButtonRoutine()
     {
-        onBattleStartPopupView.Activate();
-
-        CardStatChangeRecorder.Instance.RecordStart();
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
-        
-        onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
+        UpdatePlayerStat();
+        yield return new WaitForSeconds(0.8f); // 연출 대기(필요시 조정)
+        this.Deactivate();
+        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
     }
 
     public void OnClickStatInfo()
@@ -341,12 +339,5 @@ public class ShopSceneManager : MonoBehaviour
     private void ToggleStatInfoPopup()
     {
         popupStatInfo.SetActive(!popupStatInfo.activeSelf);
-    }
-
-    public void StartNextBattleOnPopup()
-    {
-        UpdatePlayerStat();
-        Deactivate();
-        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
     }
 }

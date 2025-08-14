@@ -277,6 +277,8 @@ namespace CardSystem
             {
                 owner.statSheet.ClearBuffs();
                 foreach (Card card in cards){
+                    CardStatChangeRecorder.Instance.AddCardTrigger(0, card);
+                    
                     foreach (var statPair in card.cardStats.stats)
                     {
                         int value = statPair.value.Value;
@@ -367,6 +369,7 @@ namespace CardSystem
                 if (cardIndex < cards.Count)
                 {
                     Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardName}");
+                    CardStatChangeRecorder.Instance.AddCardTrigger(0, cards[cardIndex]);
                     cards[cardIndex]?.TriggerCardEvent(eventType, this, cards[cardIndex]);
                 }
             }

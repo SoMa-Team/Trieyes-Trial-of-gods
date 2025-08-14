@@ -56,19 +56,7 @@ namespace Stats
             foreach (var buff in modifiers)
             {
                 if(BattleStage.now is not null) Debug.Log($"currentTime: {BattleStage.now.GetTime()} | buff.endTime: {buff.endTime}");
-                if (buff.operationType == BuffOperationType.Additive)
-                {
-                    finalValue += buff.value;
-                }
-                else if (buff.operationType == BuffOperationType.Multiplicative)
-                {
-                    // 퍼센트 버프 누적
-                    finalValue = finalValue * (100 + buff.value) / 100;
-                }
-                else if (buff.operationType == BuffOperationType.Set)
-                {
-                    finalValue = buff.value;
-                }
+                finalValue = buff.getNextValue(finalValue);
             }
 
             return finalValue;

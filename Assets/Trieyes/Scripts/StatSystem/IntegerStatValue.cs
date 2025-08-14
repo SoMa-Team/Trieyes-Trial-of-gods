@@ -74,6 +74,7 @@ namespace Stats
             activeModifiers.Add(modifier);
             if(!modifier.isPermanent) modifierHeap.Push(modifier.endTime);
             modifierListChanged = true;
+            CardStatChangeRecorder.Instance.AddStatValueTrigger(modifier);
         }
         /// 모든 버프를 제거합니다.
         public void ClearBuffs()

@@ -253,12 +253,7 @@ namespace AttackComponents
         {
             base.Deactivate();
             
-            // AC109 Dash 정리
-            if (spawnedAC109 != null)
-            {
-                AttackFactory.Instance.Deactivate(spawnedAC109);
-                spawnedAC109 = null;
-            }
+            spawnedAC109 = null;
             
             StopAndDestroyVFX(spawnedVFX);
         }

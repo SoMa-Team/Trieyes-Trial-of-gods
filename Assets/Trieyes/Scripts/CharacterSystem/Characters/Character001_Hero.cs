@@ -72,6 +72,7 @@ namespace CharacterSystem
         public override void Deactivate()
         {
             base.Deactivate();
+            lockBasicAttack = false;
         }
 
         protected override void OnTriggerEnter2D(Collider2D other)
@@ -88,7 +89,7 @@ namespace CharacterSystem
             // lockBasicAttack이 true면 기본 공격 차단
             if (lockBasicAttack && attackType == PawnAttackType.BasicAttack)
             {
-                //Debug.Log("<color=red>[HERO] Basic attack blocked by lockBasicAttack!</color>");
+                Debug.Log("<color=red>[HERO] Basic attack blocked by lockBasicAttack!</color>");
                 return false;
             }
             

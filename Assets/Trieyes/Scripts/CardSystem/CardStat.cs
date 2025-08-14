@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Stats;
 using UnityEngine;
+using Utils;
 
 namespace CardSystem
 {
@@ -81,12 +82,13 @@ namespace CardSystem
         public void AddStat(Property property, int level)
         {
             Debug.Log($"Add Stat - Card Level: {level}");
-            StatType targetStat = GetStatType(property);
-            var statValue = new IntegerStatValue(level * 7);
-            
-            Debug.Log($"Stat Value: {statValue.Value}");
-            
-            stats.Add(new StatValuePair(targetStat, statValue));
+            List<StatType> statTypeList = GenerateStatTypeList(property);
+            var statValue = new IntegerStatValue(level * 4);
+            stats.Add(new StatValuePair(statTypeList[0], statValue));
+            if (Random.value > 0.85)
+            {
+                stats.Add(new StatValuePair(statTypeList[1], statValue));
+            }
         }
         
         /// <summary>
@@ -131,23 +133,54 @@ namespace CardSystem
         /// </summary>
         /// <param name="property">변환할 Property</param>
         /// <returns>대응하는 StatType</returns>
-        private StatType GetStatType(Property property)
+        private List<StatType> GenerateStatTypeList(Property property)
         {
+            List<StatType> types = new List<StatType>();
             switch (property)
             {
                 case Property.Fire:
-                    return StatType.AttackPower;
-                case Property.Steel:
-                    return StatType.Defense;
+                    types.Add(StatType.AttackPower);
+                    types.Add(StatType.HealthRegen);
+                    break;
+                case Property.Wind:
+                    types.Add(StatType.MoveSpeed);
+                    types.Add(StatType.AttackSpeed);
+                    types.Add(StatType.SkillCooldownReduction);
+                    types.Add(StatType.Evasion);
+                    break;
                 case Property.Light:
-                    return StatType.Health;
+                    types.Add(StatType.Health);
+                    types.Add(StatType.CriticalRate);
+                    types.Add(StatType.GoldDropRate);
+                    break;
                 case Property.Dark:
-                    return StatType.MoveSpeed;
-                case Property.Ice:
-                    return StatType.AttackSpeed;
+                    types = new List<StatType>{
+                        StatType.AttackPower,
+                        StatType.CriticalRate,
+                        StatType.CriticalDamage,
+                        StatType.AttackSpeed,
+                        StatType.SkillCooldownReduction,
+                        StatType.Reflect,
+                        StatType.Health,
+                        StatType.Defense,
+                        StatType.HealthRegen,
+                        StatType.LifeSteal,
+                        StatType.Evasion,
+                        StatType.MoveSpeed,
+                        StatType.ItemMagnet,
+                        StatType.GoldDropRate,
+                    };
+                    break;
+                case Property.Steel:
+                    types.Add(StatType.Defense);
+                    types.Add(StatType.Reflect);
+                    types.Add(StatType.ItemMagnet);
+                    break;
                 default:
-                    return StatType.CriticalRate;
+                    break;
             }
+            types.Shuffle();
+            return types;
         }
         
         public CardStat DeepCopy()

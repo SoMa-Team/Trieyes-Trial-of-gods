@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using CharacterSystem;
 using Utils;
 using RelicSystem;
+using Unity.VisualScripting;
 using GamePlayer;
 
 namespace GameFramework
@@ -55,11 +56,7 @@ namespace GameFramework
         /// </summary>
         public void ChangeBattleToShop(Character mainCharacter)
         {
-            PrepareCharacterForSceneTransition(mainCharacter);
-            LoadSceneWithCallback(ShopSceneName, scene =>
-            {
-                ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
-            });
+            ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
         }
 
         /// <summary>
@@ -68,11 +65,7 @@ namespace GameFramework
         public void ChangeShopToBattle(Character mainCharacter)
         {
             stageRound++;
-            PrepareCharacterForSceneTransition(mainCharacter);
-            LoadSceneWithCallback(BattleSceneName, scene =>
-            {
-                BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
-            });
+            BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
         }
 
         public void ChangeBattleToGameOver()
@@ -134,6 +127,7 @@ namespace GameFramework
 
             foreach (var relicId in player.selectedRelicIds)
             {
+                Debug.Log($"Relic ID: {relicId}");
                 mainCharacter.AddRelic(RelicFactory.Create(relicId));
             }
 
@@ -141,6 +135,7 @@ namespace GameFramework
 
             CharacterFactory.Instance.Deactivate(mainCharacter);
             BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+            ShopSceneManager.Instance.Deactivate();
         }
     }
     // 720004,RAC002,방패 밀쳐내기의 범위가 줄어들고 넉백이 사라집니다. 쿨타임이 [#]초로 감소합니다. 기본공격을 더 이상 사용할 수 없습니다,10002,10001,

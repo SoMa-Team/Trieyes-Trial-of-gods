@@ -10,7 +10,6 @@ public class AnimationController : MonoBehaviour
     {
         owner = gameObject.GetComponentInParent<Pawn>();
     }
-
     public void DestroyOnDeath()
     {
         if (!owner.isEnemy)

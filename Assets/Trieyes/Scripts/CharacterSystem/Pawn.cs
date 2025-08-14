@@ -248,7 +248,10 @@ namespace CharacterSystem
         /// </summary>
         protected virtual void ResetAnimator()
         {
-            Animator.Rebind();
+            if (Animator != null)
+            {
+                Animator.Rebind();
+            }
         }
 
         /// <summary>
@@ -370,8 +373,6 @@ namespace CharacterSystem
                 ChangeAnimationState("IDLE");
             }
         }
-
-        private float _animationTime = 0f;
 
         /// <summary>
         /// 애니메이션 상태를 변경합니다.
@@ -676,21 +677,6 @@ namespace CharacterSystem
         // ===== [기능 3] 이벤트 처리 =====
         public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
-            // Pawn 자체의 이벤트 처리
-            if (eventType == Utils.EventType.OnDamaged)
-            {
-                if (param is AttackResult result) 
-                {
-                    ApplyDamage(result);
-                }
-                
-            }
-
-            if (eventType == Utils.EventType.OnDeath)
-            {
-                HandleDeath();
-            }
-
             // 유물들의 이벤트 처리 (필터링 적용)
             if (relics != null && IsRelicEventAccepted(eventType))
             {
@@ -698,7 +684,7 @@ namespace CharacterSystem
                 {
                     if (relic != null)
                     {
-                        relic.OnEvent(eventType, param);
+                        var result = relic.OnEvent(eventType, param);
                     }
                 }
             }
@@ -706,10 +692,26 @@ namespace CharacterSystem
             if (deck != null && IsCardEventAccepted(eventType))
             {
                 Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
-                deck.OnEvent(eventType, param);
+                var result = deck.OnEvent(eventType, param);
             }
+            
+            // Pawn 자체의 이벤트 처리
+            switch (eventType)
+            {
+                case Utils.EventType.OnDamaged:
+                    if (param is AttackResult result) 
+                    {
+                        ApplyDamage(result);
+                    }
 
-            return true;
+                    return true;
+                case Utils.EventType.OnDeath:
+                    HandleDeath();
+                    return true;
+                
+                default:
+                    return false;
+            }
         }
 
         public void ApplyDamage(AttackResult result)
@@ -794,6 +796,11 @@ namespace CharacterSystem
                 default:
                     return false;
             }
+        }
+
+        public void SetLockMovement(bool lockMovement)
+        {
+            Controller.lockMovement = lockMovement;
         }
 
         public virtual void PerformAutoAttack()

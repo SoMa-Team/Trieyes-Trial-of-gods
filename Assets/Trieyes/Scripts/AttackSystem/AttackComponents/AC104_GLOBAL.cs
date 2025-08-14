@@ -49,18 +49,6 @@ namespace AttackComponents
             Finished
         }
 
-        private enum AdditionalDebuffState
-        {
-            None,
-            AdditionalDebuff,
-            AdditionalDebuffEnd
-        }
-
-        private const int AC100_SINGLE_AOE = 10;
-
-        // 재사용 가능한 콜라이더 리스트 (GC 최적화)
-        private List<Collider2D> reusableColliders = new List<Collider2D>(100);
-
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
@@ -109,7 +97,6 @@ namespace AttackComponents
                     {
                         globalDamageState = GlobalDamageState.Active;
                         globalDamageTimer = 0f;
-                        StartActiveGlobalDamage();
                     }
                     break;
 
@@ -130,7 +117,6 @@ namespace AttackComponents
                     {
                         globalDamageState = GlobalDamageState.Ending;
                         globalDamageTimer = 0f;
-                        EndGlobalDamage();
                     }
                     break;
 
@@ -148,14 +134,6 @@ namespace AttackComponents
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }
-        }
-
-        private void StartActiveGlobalDamage()
-        {
-            Debug.Log("<color=cyan>[GLOBAL_BLIZZARD] 공격 효과 활성화!</color>");
-            
-            // 맵 전체 범위에서 모든 적 탐지
-            DetectAllEnemies();
         }
 
         private void DetectAllEnemies()
@@ -215,14 +193,6 @@ namespace AttackComponents
             Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 데미지 적용</color>");
         }
 
-        private void EndGlobalDamage()
-        {
-            Debug.Log("<color=cyan>[GLOBAL_BLIZZARD] 공격 효과 종료!</color>");
-            
-            // 종료 VFX 생성
-            CreateEndGlobalDamageVFX();
-        }
-
         private void CreateGlobalDamageVFX()
         {
             // VFX 시스템을 통해 얼음 폭풍 VFX 생성
@@ -230,24 +200,6 @@ namespace AttackComponents
             PlayVFX(spawnedVFX);
             
             Debug.Log("<color=cyan>[GLOBAL_BLIZZARD] 얼음 폭풍 VFX 생성!</color>");
-        }
-
-        private void CreateEndGlobalDamageVFX()
-        {
-            if (globalVFXPrefab != null)
-            {
-                GameObject endVFX = Instantiate(globalVFXPrefab);
-                endVFX.transform.position = Vector3.zero;
-                
-                // 종료 VFX 설정
-                GlobalDamageEndVFX endComponent = endVFX.GetComponent<GlobalDamageEndVFX>();
-                if (endComponent != null)
-                {
-                    endComponent.Initialize(globalVFXDuration);
-                }
-                
-                Destroy(endVFX, globalVFXDuration + 0.1f);
-            }
         }
 
         /// <summary>
@@ -268,15 +220,23 @@ namespace AttackComponents
             // 기본 VFX 생성 (base 호출)
             GameObject vfx = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             
-            vfx.transform.position = position;
-            
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-            
-            // 기본 스케일 설정 (맵 전체 효과이므로 크게)
-            float baseScale = 1.0f;
-            float finalScale = baseScale * 3.0f; // 맵 전체 효과
-            vfx.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
+            vfx.transform.SetParent(attack.attacker.transform);
+            vfx.transform.localPosition = Vector3.zero;
+
+            // 프리팹 및 자식 ParticleSystem까지 포함하여, duration 시간을 공격 지속 시간으로 설정
+            var particleSystem = vfx.GetComponentInChildren<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                var main = particleSystem.main;
+                main.duration = globalDuration-0.5f;
+                main.loop = false;
+
+                foreach(var subVFX in vfx.transform.GetComponentsInChildren<ParticleSystem>())
+                {
+                    var subMain = subVFX.main;
+                    subMain.duration = globalDuration-0.5f;
+                }
+            }
             
             vfx.SetActive(true);
             return vfx;
@@ -289,93 +249,13 @@ namespace AttackComponents
             // VFX 정리
             if (spawnedVFX != null)
             {
-                StopAndDestroyVFX(spawnedVFX);
-                spawnedVFX = null;
+                Destroy(spawnedVFX);
             }
             
             globalDamageState = GlobalDamageState.None;
             globalDamageTimer = 0f;
             damageTimer = 0f;
             affectedEnemies.Clear();
-        }
-    }
-
-    /// <summary>
-    /// 눈보라 VFX 컴포넌트
-    /// </summary>
-    public class GlobalDamageVFX : MonoBehaviour
-    {
-        [Header("공격 효과 VFX 설정")]
-        public float globalDamageDuration = 6f;
-        public Color globalDamageColor = Color.cyan;
-
-        public ParticleSystem globalDamageParticles;
-
-        private float currentDuration = 0f;
-        private bool isActive = false;
-
-        public void Initialize(float duration)
-        {
-            globalDamageDuration = duration;
-            currentDuration = 0f;
-            isActive = true;
-            
-            // 파티클 시스템 설정
-            if (globalDamageParticles != null)
-            {
-                globalDamageParticles.Play();
-                var main = globalDamageParticles.main;
-                main.duration = duration;
-                main.startColor = globalDamageColor;
-            }
-        }
-
-        private void Update()
-        {
-            if (!isActive) return;
-            
-            currentDuration += Time.deltaTime;
-            
-            if (currentDuration >= globalDamageDuration)
-            {
-                isActive = false;
-                if (globalDamageParticles != null)
-                {
-                    globalDamageParticles.Stop();
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// 공격 효과 종료 VFX 컴포넌트
-    /// </summary>
-    public class GlobalDamageEndVFX : MonoBehaviour
-    {
-        [Header("공격 효과 종료 VFX 설정")]
-        public float endDuration = 0.3f;
-        public Color endColor = Color.white;
-
-        private float currentDuration = 0f;
-        private bool isActive = false;
-
-        public void Initialize(float duration)
-        {
-            endDuration = duration;
-            currentDuration = 0f;
-            isActive = true;
-        }
-
-        private void Update()
-        {
-            if (!isActive) return;
-            
-            currentDuration += Time.deltaTime;
-            
-            if (currentDuration >= endDuration)
-            {
-                isActive = false;
-            }
         }
     }
 } 

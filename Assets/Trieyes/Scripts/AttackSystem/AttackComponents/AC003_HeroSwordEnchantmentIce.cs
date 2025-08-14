@@ -24,6 +24,8 @@ namespace AttackComponents
         
         public float debuffDuration = 3f; // 둔화 지속 시간
 
+        public float debuffMultiplier = 10f;
+
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
 
         // FSM 상태 관리
@@ -34,6 +36,8 @@ namespace AttackComponents
         // VFX 설정
         [Header("VFX Settings")]
         [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
+
+        [SerializeField] private GameObject DebuffVFXPrefab; // DOT VFX 프리팹 (AC 전달용)
         private GameObject spawnedVFX;
 
         // 얼음 공격 상태 열거형
@@ -72,9 +76,10 @@ namespace AttackComponents
                 if (_attacker != null)
                 {
                     _attacker.killedDuringSkill001++;
+                    return true;
                 }
 
-                return true;
+                return false;
             }
 
             return false;
@@ -105,6 +110,7 @@ namespace AttackComponents
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
             
             // VFX 재생
+            spawnedVFX.SetActive(true);
             PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
@@ -154,7 +160,7 @@ namespace AttackComponents
                     debuffType = DEBUFFType.DecreaseDefense,
                     attack = attack,
                     target = targetPawn,
-                    debuffMultiplier = 50f,
+                    debuffMultiplier = debuffMultiplier,
                     debuffDuration = debuffDuration,
                 };
 
@@ -164,8 +170,6 @@ namespace AttackComponents
 
             targetPawn.AddStatus(PawnStatusType.Freeze, new PawnStatus 
             { duration = debuffDuration, lastTime = Time.time });
-
-            // ApplyBasicSlowEffect(targetPawn);
         }
 
         /// <summary>
@@ -180,8 +184,9 @@ namespace AttackComponents
                 debuffType = DEBUFFType.Slow,
                 attack = attack,
                 target = targetPawn,
-                debuffMultiplier = 10f,
+                debuffMultiplier = debuffMultiplier,
                 debuffDuration = debuffDuration,
+                debuffVFXPrefab = DebuffVFXPrefab,
             };
 
             var debuff = new DEBUFF();
@@ -262,30 +267,6 @@ namespace AttackComponents
             if (attackState == IceAttackState.Active && attack.attackCollider != null)
             {
                 ////DrawFanShapeDebug();
-            }
-        }
-
-        private void DrawFanShapeDebug()
-        {
-            if (attack.attackCollider is PolygonCollider2D collider)
-            {
-                Vector2[] points = collider.points;
-                
-                // 부채꼴 모양 그리기
-                for (int i = 0; i < points.Length - 1; i++)
-                {
-                    Vector3 startPos = attack.transform.position + new Vector3(points[i].x, points[i].y, 0);
-                    Vector3 endPos = attack.transform.position + new Vector3(points[i + 1].x, points[i + 1].y, 0);
-                    Debug.DrawLine(startPos, endPos, Color.yellow, 0.1f);
-                }
-                
-                // 마지막 점과 첫 번째 점을 연결 (폐곡선 만들기)
-                if (points.Length > 2)
-                {
-                    Vector3 lastPos = attack.transform.position + new Vector3(points[points.Length - 1].x, points[points.Length - 1].y, 0);
-                    Vector3 firstPos = attack.transform.position + new Vector3(points[1].x, points[1].y, 0);
-                    Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
-                }
             }
         }
 
@@ -397,9 +378,8 @@ namespace AttackComponents
             
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
-            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
-            
-            spawnedVFX.SetActive(true);
+            spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
+        
             return spawnedVFX;
         }
 

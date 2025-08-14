@@ -4,6 +4,7 @@ using Utils;
 using System.Linq;
 using BattleSystem;
 using Stats;
+using System.Collections.Generic;
 
 namespace CharacterSystem
 {
@@ -15,7 +16,8 @@ namespace CharacterSystem
         // ===== [기능 1] 적 기본 정보 =====
         [SerializeField] 
         protected int dropGold; // 드랍할 골드 양
-        
+        public Character playerTarget;
+   
         // ===== [기능 2] 초기화 =====
         protected override void Start()
         {
@@ -32,6 +34,7 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+            playerTarget = BattleStage.now.mainCharacter;
             // TODO: AttackComponent 할당
             ////Debug.Log("Enemy001 Activated.");
 
@@ -73,11 +76,53 @@ namespace CharacterSystem
                     Debug.Log("OnDeath Event Activated");
                     OnSelfDeath(param as AttackResult);
                     return true;
-                    break;
-                // 기타 이벤트별 동작 추가
-            }
 
-            return false;
+                // 기타 이벤트별 동작 추가
+                default:
+                    return false;
+            }
+        }
+        
+        // TODO
+        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        {
+            var direction = (playerTarget.transform.position - transform.position).normalized;
+            switch (attackType)
+            {
+                case PawnAttackType.BasicAttack:
+                    if (Time.time - lastAttackTime >= attackCooldown)
+                    {
+                        CalculateAttackCooldown();
+                        lastAttackTime = Time.time;
+                        AttackFactory.Instance.Create(basicAttack, this, null, direction); 
+                        return true;
+                    }
+                    return false;
+                case PawnAttackType.Skill1:
+                    if (CheckSkillCooldown(PawnAttackType.Skill1))
+                    {
+                        lastSkillAttack1Time = Time.time;
+                        Attack temp = AttackFactory.Instance.Create(skill1Attack, this, null, direction);
+                        Debug.Log($"<color=yellow>[SKILL1] {temp.gameObject.name} skill1Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
+                        return true;
+                    }
+                    Debug.Log($"<color=yellow>[SKILL1] {gameObject.name} skillAttack1Cooldown: {skillAttack1Cooldown}, lastSkillAttack1Time: {lastSkillAttack1Time}</color>");
+                    return false;
+
+                case PawnAttackType.Skill2:
+                    if (CheckSkillCooldown(PawnAttackType.Skill2))
+                    {
+                        lastSkillAttack2Time = Time.time;
+                        Attack temp = AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
+                        Debug.Log($"<color=yellow>[SKILL2] {temp.gameObject.name} skill2Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
+                        return true;
+                    }
+                    Debug.Log($"<color=yellow>[SKILL2] {gameObject.name} skillAttack2Cooldown: {skillAttack2Cooldown}, lastSkillAttack2Time: {lastSkillAttack2Time}</color>");
+                    return false;
+                    
+                default:
+                    return false;
+            }
         }
 
         // ===== [이벤트 처리 메서드] =====

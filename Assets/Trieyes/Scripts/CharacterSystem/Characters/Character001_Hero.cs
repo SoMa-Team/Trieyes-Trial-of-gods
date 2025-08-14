@@ -126,11 +126,11 @@ namespace CharacterSystem
                 {
                     killedDuringSkill001++;
                     killedDuringSkill002++;
+                    
+                    return true;
                 }
-
-                return true;
+                return false;
             }
-
             return false;
         }
 

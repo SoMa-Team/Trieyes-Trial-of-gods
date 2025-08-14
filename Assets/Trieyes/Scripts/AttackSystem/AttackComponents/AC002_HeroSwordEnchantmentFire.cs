@@ -2,10 +2,7 @@ using AttackSystem;
 using CharacterSystem;
 using Stats;
 using UnityEngine;
-using System.Threading;
 using BattleSystem;
-using System.Collections.Generic;
-using VFXSystem;
 
 namespace AttackComponents
 {
@@ -79,9 +76,10 @@ namespace AttackComponents
                 if (_attacker != null)
                 {
                     _attacker.killedDuringSkill001++;
+                    return true;
                 }
 
-                return true;
+                return false;
             }
 
             return false;
@@ -112,6 +110,7 @@ namespace AttackComponents
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
             
             // VFX 재생
+            spawnedVFX.SetActive(true);
             PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
@@ -153,7 +152,7 @@ namespace AttackComponents
                 dotComponent.dotDamage = dotDamage;
                 dotComponent.dotDuration = dotDuration;
                 dotComponent.dotInterval = dotInterval;
-                dotComponent.dotTargets.Add(targetPawn as Enemy);
+                dotComponent.dotTarget = targetPawn as Enemy;
                 dotComponent.dotStatusType = PawnStatusType.Burn;
                 
                 // VFX 프리팹 전달
@@ -319,8 +318,6 @@ namespace AttackComponents
                     collider.points = points;
                 }
             }
-            
-            //debug.log("<color=green>[AC003] 불꽃 강화 공격 활성화!</color>");
         }
 
         private void FinishFireAttack()
@@ -338,30 +335,6 @@ namespace AttackComponents
             }
             
             //debug.log("<color=orange>[AC003] 불꽃 강화 공격 종료!</color>");
-        }
-
-        private void DrawFanShapeDebug()
-        {
-            if (attack.attackCollider is PolygonCollider2D collider)
-            {
-                Vector2[] points = collider.points;
-                
-                // 부채꼴 모양 그리기
-                for (int i = 0; i < points.Length - 1; i++)
-                {
-                    Vector3 startPos = attack.transform.position + new Vector3(points[i].x, points[i].y, 0);
-                    Vector3 endPos = attack.transform.position + new Vector3(points[i + 1].x, points[i + 1].y, 0);
-                    Debug.DrawLine(startPos, endPos, Color.yellow, 0.1f);
-                }
-                
-                // 마지막 점과 첫 번째 점을 연결 (폐곡선 만들기)
-                if (points.Length > 2)
-                {
-                    Vector3 lastPos = attack.transform.position + new Vector3(points[points.Length - 1].x, points[points.Length - 1].y, 0);
-                    Vector3 firstPos = attack.transform.position + new Vector3(points[1].x, points[1].y, 0);
-                    Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
-                }
-            }
         }
 
         /// <summary>
@@ -383,9 +356,8 @@ namespace AttackComponents
             
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
-            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+            spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
             
-            spawnedVFX.SetActive(true);
             return spawnedVFX;
         }
 

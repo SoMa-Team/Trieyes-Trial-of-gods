@@ -1,5 +1,52 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5695625730912030462
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 372375073150493312}
+  - component: {fileID: 1621256399429780114}
+  m_Layer: 0
+  m_Name: AC2001
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &372375073150493312
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5695625730912030462}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3640248743062107299}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1621256399429780114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5695625730912030462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0174a58074ee3a4468ae2adfdb4c0cc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxList: []
+  projectileAttackData: {fileID: 11400000, guid: 6ac5354b1b21cc04db7d0188e2bab3f6, type: 2}
+  MagicBallVFX: {fileID: 4748681987041982144, guid: 8806937aed6d8f743b0f4d1257be977c, type: 3}
 --- !u!1 &8997702465246621854
 GameObject:
   m_ObjectHideFlags: 0
@@ -12,7 +59,7 @@ GameObject:
   - component: {fileID: 7350473350947833423}
   - component: {fileID: 4892780952004716894}
   m_Layer: 0
-  m_Name: EnemyDefault
+  m_Name: AC2001_EnemyMagicBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,7 +77,8 @@ Transform:
   m_LocalPosition: {x: 5.616083, y: 2.3460085, z: -0.028541125}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 372375073150493312}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7350473350947833423
@@ -45,11 +93,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
+  attackData: {fileID: 11400000, guid: 2a5459a399bd4d84f85bda78f3b0df40, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
-  components: []
+  components:
+  - {fileID: 0}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

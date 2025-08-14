@@ -72,7 +72,7 @@ namespace BattleSystem
         {
             // 메인 캐릭터 설정
             CharacterFactory.Instance.Activate(mainCharacter);
-            battleStage.mainCharacter = mainCharacter;
+            battleStage.mainCharacter = mainCharacter as Character;
             
             mainCharacter.transform.SetParent(battleStage.View.transform);
             

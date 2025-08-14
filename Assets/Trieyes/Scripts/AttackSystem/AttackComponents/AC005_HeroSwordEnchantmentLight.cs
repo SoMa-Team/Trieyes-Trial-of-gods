@@ -85,12 +85,13 @@ namespace AttackComponents
                 if (_attacker != null)
                 {
                     _attacker.killedDuringSkill001++;
+                    return true;
                 }
 
                 return false;
             }
 
-            return true;
+            return false;
         }
 
         private void StartHeavenAttack()
@@ -118,6 +119,7 @@ namespace AttackComponents
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
             
             // VFX 재생
+            spawnedVFX.SetActive(true);
             PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
@@ -406,9 +408,8 @@ namespace AttackComponents
             
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
-            spawnedVFX.transform.localScale = new Vector3(1.5f, 1.5f, 1f);
+            spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
             
-            spawnedVFX.SetActive(true);
             return spawnedVFX;
         }
     }

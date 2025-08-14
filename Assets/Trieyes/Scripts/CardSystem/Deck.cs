@@ -119,29 +119,22 @@ namespace CardSystem
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     return true;
-                    break;
                 case Utils.EventType.OnBattleEnd:
                     cardCallOrder.Clear();
                     cardCallCounts = new List<int>(new int[cards.Count]);
                     EventProcessor(eventType, param);
                     owner?.statSheet.ClearBuffs();
                     return true;
-                    break;
                 case Utils.EventType.OnCardPurchase:
                     if (param is Card newCard) AddCard(newCard);
                     return true;
-                    break;
                 case Utils.EventType.OnCardRemove:
                     if (param is Card removedCard) RemoveCard(removedCard);
                     return true;
-                    break;
                 default:
                     EventProcessor(eventType, param);
                     return true;
-                    break;
             }
-
-            return false;
         }
 
         public bool IsDeckFull()//ToDo: ShopSceneManager 이식 끝나면 없애기

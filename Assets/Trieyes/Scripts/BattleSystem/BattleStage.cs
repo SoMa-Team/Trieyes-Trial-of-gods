@@ -25,7 +25,7 @@ namespace BattleSystem
 
         // ===== 전투 스테이지 데이터 =====
         public Difficulty difficulty;
-        public Pawn mainCharacter;
+        public Character mainCharacter;
         public List<Pawn> characters = new ();
         public Dictionary<int, Enemy> enemies = new ();
         public Dictionary<int, Attack> attacks = new ();

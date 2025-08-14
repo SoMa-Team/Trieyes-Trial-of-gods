@@ -51,10 +51,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnPoints:
   - {fileID: 1889520451459638303}
-  - {fileID: 3459032553777549124}
-  - {fileID: 932680780800324751}
-  - {fileID: 4748503162553785672}
-  - {fileID: 1016674649476420771}
+  _elapsedTime: 0
+  minDistance: 10
+  maxDistance: 10
+  mapMin: {x: -45, y: -45}
+  mapMax: {x: 45, y: 45}
 --- !u!1 &932680780800324751
 GameObject:
   m_ObjectHideFlags: 0

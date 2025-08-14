@@ -82,6 +82,7 @@ namespace CharacterSystem
         /// <param name="enemy">비활성화할 적 Pawn</param>
         public void Deactivate(Enemy enemy)
         {
+            Debug.LogError($"Deactivate ({enemy.objectID})");
             enemy.Deactivate();
             enemy.gameObject.SetActive(false);
             BattleStage.now.RemoveEnemy(enemy);

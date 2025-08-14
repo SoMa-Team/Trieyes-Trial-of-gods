@@ -184,8 +184,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.06679149}
-  m_Size: {x: 0.31, y: 0.35641703}
+  m_Offset: {x: 0.020030983, y: -0.14}
+  m_Size: {x: 0.08, y: 0.08}
   m_Direction: 0
 --- !u!114 &-5832122986476030886
 MonoBehaviour:
@@ -215,6 +215,7 @@ MonoBehaviour:
   lastSkillAttack2Time: -999
   objectID: 0
   dropGold: 0
+  playerTarget: {fileID: 0}
   material: {fileID: 0}
   spriteRenderer: {fileID: 0}
 --- !u!114 &7116576973010013569
@@ -230,6 +231,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: -5832122986476030886}
+  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
   minFollowDistance: 0.1
+  minRunDistance: 1
+  enemyType: 0

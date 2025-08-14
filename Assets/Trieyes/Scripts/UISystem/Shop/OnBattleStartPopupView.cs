@@ -251,11 +251,11 @@ namespace UISystem
             
             sequence.Group(Tween.Delay(0).OnComplete(() =>
             {
-                statItem.TriggerModifier(modifier, true);
-                
                 var logItem = Instantiate(logItemPrefab, logListRect);
                 logItem.Activate(statType, statItem.statValue, modifier, 0);
                 logItems.Add(logItem);
+                
+                statItem.TriggerModifier(modifier, true);
 
                 for (int i = 0; i < logItems.Count; i++)
                 {

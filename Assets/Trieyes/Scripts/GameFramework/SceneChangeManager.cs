@@ -55,6 +55,7 @@ namespace GameFramework
         /// </summary>
         public void ChangeBattleToShop(Character mainCharacter)
         {
+            BattleStageFactory.Instance.Deactivate(BattleStage.now);
             ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
         }
 

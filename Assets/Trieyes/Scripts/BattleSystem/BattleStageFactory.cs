@@ -104,6 +104,9 @@ namespace BattleSystem
         public void Deactivate(BattleStage battleStage)
         {
             Debug.Log("BattleStageFactory Deactivate Called");
+            
+            battleStage.mainCharacter.transform.SetParent(null);
+            
             // 캐릭터 정리
             foreach (var character in battleStage.characters)
             {
@@ -140,7 +143,6 @@ namespace BattleSystem
             DamageNumberViewFactory.Instance.OnBattleEnded();
             
             Destroy(battleStage.View.gameObject);
-            battleStage.mainCharacter.transform.SetParent(null);
         }
     }
 }

@@ -110,9 +110,7 @@ namespace BattleSystem
         // 전투 클리어 시 호출
         public void OnBattleClear()
         {
-            BattleStageFactory.Instance.Deactivate(this);
             SceneChangeManager.Instance.ChangeBattleToShop((Character)this.mainCharacter);
-            // Todo: SceneChangeManager 호출
         }
         
         // 플레이어 사망 시 호출

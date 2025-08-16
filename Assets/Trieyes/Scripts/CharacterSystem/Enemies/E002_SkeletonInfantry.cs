@@ -35,7 +35,7 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
-            dropGold = 10;
+            dropGold = 1;
             // TODO: AttackComponent 할당
             ////Debug.Log("Enemy001 Activated.");
 

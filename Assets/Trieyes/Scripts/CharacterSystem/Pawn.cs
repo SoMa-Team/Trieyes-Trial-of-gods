@@ -49,7 +49,7 @@ namespace CharacterSystem
         public Rigidbody2D rb;
         public Collider2D Collider;
 
-        protected Controller Controller;
+        [SerializeField] protected Controller Controller;
         [SerializeField] protected Animator Animator;
         
         [Header("Stats")]

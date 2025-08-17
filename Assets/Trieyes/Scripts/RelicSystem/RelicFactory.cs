@@ -4,6 +4,7 @@ using System.Linq;
 using AttackComponents;
 using TagSystem;
 using Unity.VisualScripting;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 namespace RelicSystem
@@ -15,9 +16,14 @@ namespace RelicSystem
         public static Relic Create(RelicID relicID)
         {
             var relic = new Relic();
+            
+            Debug.Log($"Relic ID: {relicID}");
 
             RelicDataSO data = RelicDataBase.GetRelicDataSO(relicID);
-            
+            if (data == null)
+            {
+                Debug.LogError($"Relic ID: {relicID} not found");
+            }
             relic.relicID = relicID;
             relic.name = data.name;
             relic.description = data.description;

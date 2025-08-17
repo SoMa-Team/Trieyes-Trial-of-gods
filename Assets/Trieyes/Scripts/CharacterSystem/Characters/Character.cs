@@ -63,7 +63,6 @@ namespace CharacterSystem
         public override void Deactivate()
         {
             base.Deactivate();
-            //Debug.Log("Character001 Deactivated.");
         }
 
         public void OnTriggerEnter2D(Collider2D other)
@@ -83,15 +82,6 @@ namespace CharacterSystem
         /// <param name="param">이벤트 파라미터</param>
         public override bool OnEvent(Utils.EventType eventType, object param)
         {
-            // 이벤트 필터링: Character001이 받지 않는 이벤트는 무시
-            // if (!IsEventAccepted(eventType))
-            // {
-            //     Debug.Log($"<color=gray>[EVENT_FILTER] {gameObject.name} (Character001) ignoring event: {eventType} (not in accepted events: {string.Join(", ", GetAcceptedEvents())})</color>");
-            //     return;
-            // }
-
-            //Debug.Log($"<color=green>[EVENT_FILTER] {gameObject.name} (Character001) accepting event: {eventType}</color>");
-
             // 부모의 이벤트 전파 로직 호출 (필터링 적용됨)
             base.OnEvent(eventType, param);
 
@@ -99,18 +89,16 @@ namespace CharacterSystem
             switch (eventType)
             {
                 case Utils.EventType.OnLevelUp:
-                    //Debug.Log($"<color=yellow>{gameObject.name} (Character001) gained a level!</color>");
                     return true;
-                    break;
+                
                 case Utils.EventType.OnDeath:
                     // 죽고 나서 할 것
                     if(BattleStage.now.mainCharacter == this)
                     {
                         BattleStage.now.OnPlayerDeath();
+                        return true;
                     }
-
-                    return true;
-                    break;
+                    return false;
             }
             return false;
         }

@@ -40,12 +40,14 @@ namespace AttackComponents
         public float debuffInterval = 1f;
         public float debuffMultiplier = 1f;
         public float debuffDuration = 10f;
+
+        public GameObject debuffVFXPrefab;
     }
 
     /// <summary>
     /// 디버프 효과 적용
     /// </summary>
-    public class DEBUFF
+    public class DEBUFF : AttackComponent
     {   
         // 디버프 타입 ENUM
         public DEBUFFType debuffType;
@@ -57,12 +59,13 @@ namespace AttackComponents
 
         public float debuffInterval = 1f;
 
-        public Attack attack;
         public Pawn target;
+
+        public GameObject spawnedVFX;
 
         private const int AC101_SINGLE_DOT = 1;
 
-        public List<AttackData> attackDatas = new List<AttackData>();
+        public List<AttackData> attackDatas;
 
         public void Activate(DebuffInfo debuffInfo)
         {
@@ -73,6 +76,7 @@ namespace AttackComponents
             debuffInterval = debuffInfo.debuffInterval;
             target = debuffInfo.target;
             attack = debuffInfo.attack;
+            spawnedVFX = debuffInfo.debuffVFXPrefab;
 
             ApplyDebuffEffect();
         }
@@ -201,7 +205,7 @@ namespace AttackComponents
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval;
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
-            dotComponent.dotTargets.Add(target as Enemy);
+            dotComponent.dotTarget = target as Enemy;
         }
 
         private void ApplyPoisonEffect(Pawn target)
@@ -214,7 +218,7 @@ namespace AttackComponents
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval; 
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
-            dotComponent.dotTargets.Add(target as Enemy);
+            dotComponent.dotTarget = target as Enemy;
         }
 
         private void ApplyBleedEffect(Pawn target)
@@ -227,7 +231,7 @@ namespace AttackComponents
             dotComponent.dotDuration = debuffDuration;
             dotComponent.dotInterval = debuffInterval;
             dotComponent.dotTargetType = DOTTargetType.SingleTarget;
-            dotComponent.dotTargets.Add(target as Enemy);
+            dotComponent.dotTarget = target as Enemy;
 
         }
 

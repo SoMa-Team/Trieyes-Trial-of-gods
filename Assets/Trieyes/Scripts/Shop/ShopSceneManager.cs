@@ -1,259 +1,352 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections;
-using System.Collections.Generic;
 using CardSystem;
 using CardViews;
-using DeckViews;
 using CharacterSystem;
-using BattleSystem;
 using Stats;
 using StickerSystem;
-using GameFramework;
 using Utils;
+using GameFramework;
+using UISystem;
 
 /// <summary>
-/// 상점 씬의 UI와 게임 로직을 연결하는 핵심 매니저 클래스.
-/// - 카드/스티커 리롤, 구매, 덱 갱신, 전투 진입 등 상점에서의 모든 흐름을 관리한다.
+/// 상점(Shop) 씬의 핵심 관리 매니저.  
+/// 카드/스티커 뽑기, 덱 관리, 골드/스탯/릴릭 UI, 슬롯 생성, 버튼 동작 등 통합 제어.
 /// </summary>
 public class ShopSceneManager : MonoBehaviour
 {
-    // ========== [UI 연결] ==========
-    [Header("카드/스티커 슬롯 UI")]
-    public List<CardView> shopCardViews;        // 상점에 보여줄 카드뷰들 (Inspector에서 3개 할당)
-    public List<StickerView> shopStickerViews;  // 상점에 보여줄 스티커뷰들
-
-    [Header("구매 버튼")]
-    public List<Button> buyCardButtons;         // 카드 구매 버튼 (3개)
-    public List<Button> buyStickerButtons;      // 스티커 구매 버튼 (3개)
-
-    [Header("덱 및 액션 버튼")]
-    public DeckView deckView;                   // 플레이어의 덱 UI
-    public Button rerollButton;                 // 리롤 버튼
-    public Button battleButton;                 // 전투 시작 버튼
-    public Button showMeTheMoneyButton;         // 돈복사 버튼(테스트용)
-
-    [Header("플레이어 스탯 UI")]
-    public TMP_Text attackStatText;
-    public TMP_Text defenseStatText;
-    public TMP_Text healthStatText;
-    public TMP_Text moveSpeedStatText;
-    public TMP_Text goldStatText;
-
-    // ========== [상태 관리] ==========
-    [HideInInspector] public Pawn mainCharacter;
+    // ========= [싱글턴 및 주요 필드] =========
     public static ShopSceneManager Instance { get; private set; }
 
-    private List<Card> shopCards = new();
-    private List<Sticker> shopStickers = new();
-    private Sticker selectedSticker;
-    private StickerView selectedStickerView;
+    [Header("상점 슬롯 프리팹/컨테이너")]
+    public GameObject shopCardSlot;
+    public GameObject shopStickerSlot;
+    public GameObject deckCardView;
+    public GameObject shopScenePrefab;
+
+    [Header("버튼/텍스트 UI")]
+    public Button sellButton;
+    public Button rerollButton;
+    public Button nextBattleButton;
+    public TMP_Text sellPriceText;
+    public TMP_Text rerollPriceText;
+    public TMP_Text deckCountText;
+
+    [Header("플레이어/카드 선택 상태")]
+    [HideInInspector] public Character mainCharacter;
+    [HideInInspector] public CardView selectedCard1;
+    [HideInInspector] public CardView selectedCard2;
+    [HideInInspector] public Sticker selectedSticker;
+
+    // ======= [내부 정책 상수] =======
+    private const int CARD_SELL_PRICE = 30;         // TODO: 레어별 가격 반영
+    private const int INIT_REROLL_PRICE = 10;
+    private const int CARD_PROB = 85;               // 카드 등장 확률(%)
+    private const int STICKER_PROB = 15;
+    private const int SLOT_COUNT = 4;
+
+    private int rerollPrice;
     private Difficulty difficulty;
 
-    // ======================== [생명주기] ========================
+    // ====== [UI - 스탯/라운드/릴릭] ======
+    [SerializeField] private TextMeshProUGUI textRoundInfo;
+    [SerializeField] private TextMeshProUGUI textGold;
+    [SerializeField] private List<Image> imageRelics;
+    [SerializeField] private GameObject popupStatInfo;
+
+    [Serializable]
+    class StatTypeTMPPair
+    {
+        public StatType statType;
+        public List<TextMeshProUGUI> text;
+    }
+    [SerializeField] private StatTypeTMPPair[] statTypeTMPPairs;
+
+    // ====== [UI - 전체 레이아웃] ======
+    [Header("전체 레이아웃")]
+    [SerializeField] private RectTransform rectTransform;
+
+    // ====== [UI - 카드/상점 슬롯 컨테이너] ======
+    [Header("Deck Auto Scaling")]
+    [SerializeField] private RectTransform DeckScaleRect;
+    [SerializeField] private RectTransform ShopScaleRect;
+    
+    [SerializeField] private RectTransform DeckScaleRectParent;
+    [SerializeField] private RectTransform ShopScaleRectParent;
+    
+    [Header("전투 시작 애니메이션")]
+    [SerializeField] private RectTransform rectOnBattleStartPopup;
+    [SerializeField] private OnBattleStartPopupView onBattleStartPopupView;
+
+    // ====== [화면 사이즈 체크] ======
+    private int lastScreenWidth;
+    private int lastScreenHeight;
+
+    // ====== [라이프사이클] ======
     private void Awake()
     {
         if (Instance != null)
         {
-            Destroy(this);
+            Destroy(gameObject);
             return;
         }
         Instance = this;
     }
 
-    /// <summary>
-    /// 상점 씬 활성화 및 UI 초기화 (씬 진입 시 호출)
-    /// </summary>
+    private void Start()
+    {
+        rectTransform.anchoredPosition = Vector2.zero;
+        
+        rectOnBattleStartPopup.gameObject.SetActive(false);
+        rectOnBattleStartPopup.anchoredPosition = Vector2.zero;
+    }
+
+    // ================= [초기화 및 비활성화] =================
     public void Activate(Character mainCharacter, Difficulty difficulty)
     {
+        Debug.Log("ShopSceneManager: Activate");
         this.mainCharacter = mainCharacter;
         this.difficulty = difficulty;
+        
+        shopScenePrefab.SetActive(true);
 
-        // 부모 오브젝트 변경 (필요시)
-        mainCharacter.transform.SetParent(this.transform);
-
-        // 골드 보너스 (테스트용/개발용)
-        mainCharacter.gold += 10;
-
-        RefreshShopCards();         // 카드/스티커 리롤
-        deckView.SetDeck(mainCharacter.deck); // 덱 UI 동기화
-        HookButtonListeners();      // 버튼 리스너 연결
-        RefreshStatUI();            // 스탯 UI 갱신
+        rerollPrice = INIT_REROLL_PRICE;
+        sellPriceText.text = CARD_SELL_PRICE.ToString();
+        rerollPriceText.text = rerollPrice.ToString();
+        UpdateDeckCountUI();
+        UpdatePlayerRelics();
+        OnScreenResized();
+        RefreshShopSlots();
+        SyncWithDeck();
     }
 
-    /// <summary>
-    /// 상점 씬 비활성화 및 이벤트/참조 해제 (씬 종료/이동 시 호출)
-    /// </summary>
     public void Deactivate()
     {
-        UnhookButtonListeners();
-        selectedSticker = null;
-        selectedStickerView = null;
-        shopCards.Clear();
-        shopStickers.Clear();
-        // Instance = null; // 싱글턴 해제는 필요시 활성화
+        shopScenePrefab.SetActive(false);
     }
 
-    // ========== [버튼 리스너 연결/해제] ==========
-    private void HookButtonListeners()
+    // ============= [매 프레임 UI 상태 동기화] =============
+    private void Update()
     {
-        rerollButton?.onClick.AddListener(RefreshShopCards);
-        battleButton?.onClick.AddListener(OnBattleButtonPressed);
-        showMeTheMoneyButton?.onClick.AddListener(OnShowMeTheMoneyButtonPressed);
+        UpdateRoundInfo();
+        UpdatePlayerGold();
+        UpdatePlayerStat();
+    }
 
-        for (int i = 0; i < buyCardButtons.Count; i++)
+    private void LateUpdate()
+    {
+        CheckScreenResize();
+    }
+
+    // ============= [상점 UI/상태 갱신 함수] =============
+    private void UpdateRoundInfo()
+    {
+        // TODO: Stage, Round 구분 도입 필요
+        textRoundInfo.text = $"Stage {difficulty.stageNumber} - <color=#ff9>Shop</color> {1}";
+    }
+
+    private void UpdatePlayerGold()
+    {
+        // TODO: 골드 3자리마다 콤마 등 서식 적용 가능
+        textGold.text = $"{mainCharacter.gold}";
+    }
+
+    private void UpdatePlayerRelics()
+    {
+        for (int i = 0; i < mainCharacter.relics.Count; i++)
         {
-            int idx = i;
-            buyCardButtons[i].onClick.AddListener(() => OnCardBuyButtonPressed(idx));
+            if (i >= imageRelics.Count)
+                throw new Exception($"ShopSceneManager : Relic 아이콘 공간 부족.");
+            var relic = mainCharacter.relics[i];
+            var relicView = imageRelics[i];
+            if (relic.icon is null)
+                Debug.Log($"ShopSceneManager : Relic({relic.name})의 아이콘 없음.");
+            relicView.sprite = relic.icon;
         }
-        for (int i = 0; i < buyStickerButtons.Count; i++)
+    }
+
+    private void UpdatePlayerStat()
+    {
+        foreach (var pair in statTypeTMPPairs)
         {
-            int idx = i;
-            buyStickerButtons[i].onClick.AddListener(() => OnStickerBuyButtonPressed(idx));
+            var statValue = mainCharacter.statSheet[pair.statType].Value;
+            foreach (var tmp in pair.text)
+                tmp.text = statValue.ToString();
         }
     }
 
-    private void UnhookButtonListeners()
+    // ============= [화면 사이즈 동기화] =============
+    private void CheckScreenResize()
     {
-        rerollButton?.onClick.RemoveListener(RefreshShopCards);
-        battleButton?.onClick.RemoveListener(OnBattleButtonPressed);
-        showMeTheMoneyButton?.onClick.RemoveListener(OnShowMeTheMoneyButtonPressed);
-
-        foreach (var btn in buyCardButtons)
-            btn.onClick.RemoveAllListeners();
-        foreach (var btn in buyStickerButtons)
-            btn.onClick.RemoveAllListeners();
+        if (lastScreenWidth == Screen.width && lastScreenHeight == Screen.height)
+            return;
+        
+        OnScreenResized();
+        
+        lastScreenWidth = Screen.width;
+        lastScreenHeight = Screen.height;
     }
 
-    // ======================= [상점 카드/스티커 리롤] =======================
-    /// <summary>
-    /// 상점에 노출될 카드/스티커를 새로 뽑아 UI를 갱신한다. (골드 차감)
-    /// </summary>
-    private void RefreshShopCards()
+    private void OnScreenResized()
     {
-        if (mainCharacter.gold < 10)
+        Canvas.ForceUpdateCanvases();
+        AutoSizingOnScrollContent(DeckScaleRect, DeckScaleRectParent);
+        AutoSizingOnScrollContent(ShopScaleRect, ShopScaleRectParent);
+    }
+
+    private void AutoSizingOnScrollContent(RectTransform transform, RectTransform parentTransform)
+    {
+        var height = Vector2.Scale(transform.rect.size, transform.lossyScale).y;
+        var parentHeight = Vector2.Scale(parentTransform.rect.size, parentTransform.lossyScale).y;
+        transform.localScale *= parentHeight / height * Vector2.one;
+    }
+
+    // ============= [상점 슬롯 및 덱 동기화] =============
+    private void RefreshShopSlots()
+    {
+        foreach (Transform child in ShopScaleRect)
+            Destroy(child.gameObject);
+
+        for (int i = 0; i < SLOT_COUNT; i++)
         {
-            Debug.LogError("Not enough gold");
+            float rand = UnityEngine.Random.Range(0f, 100f);
+            if (rand <= CARD_PROB)
+                Instantiate(shopCardSlot, ShopScaleRect);
+            else
+                Instantiate(shopStickerSlot, ShopScaleRect);
+        }
+    }
+
+    public void SyncWithDeck()
+    {
+        foreach (Transform child in DeckScaleRect)
+            Destroy(child.gameObject);
+
+        Deck deck = mainCharacter.deck;
+        foreach (var card in deck.cards)
+        {
+            var obj = Instantiate(deckCardView, DeckScaleRect);
+            obj.transform.localScale = Vector3.one;
+            var cardView = obj.GetComponent<CardView>();
+            
+            cardView.SetCard(card);
+            cardView.SetCanInteract(true);
+        }
+        UpdateButtonState();
+        UpdateDeckCountUI();
+    }
+
+    private void UpdateButtonState()
+    {
+        bool isExceed = mainCharacter.deck.IsDeckExceed();
+        rerollButton.interactable = !isExceed;
+        nextBattleButton.interactable = !isExceed;
+        deckCountText.color = isExceed ? Color.red : Color.white;
+    }
+
+    private void UpdateDeckCountUI()
+    {
+        deckCountText.text = $"Cards : {mainCharacter.deck.cards.Count} / {mainCharacter.deck.maxCardCount}";
+    }
+
+    // ============= [카드 클릭/선택/병합/스왑/판매] =============
+    public void OnCardClicked(CardView cardView)
+    {
+        Deck deck = mainCharacter.deck;
+        if (selectedCard1 == null)
+        {
+            selectedCard1 = cardView;
+            selectedCard1.SetSelected(true);
+            sellButton.interactable = true;
+        }
+        else if (selectedCard1 == cardView)
+        {
+            selectedCard1.SetSelected(false);
+            selectedCard1 = null;
+            sellButton.interactable = false;
+        }
+        else
+        {
+            selectedCard2 = cardView;
+            selectedCard2.SetSelected(true);
+
+            var cardA = selectedCard1.GetCurrentCard();
+            var cardB = selectedCard2.GetCurrentCard();
+
+            if (cardA.cardName == cardB.cardName)
+                deck.MergeCards(cardA, cardB);
+            else
+                deck.SwapCards(cardA, cardB);
+
+            selectedCard1.SetSelected(false);
+            selectedCard2.SetSelected(false);
+            selectedCard1 = null;
+            selectedCard2 = null;
+            sellButton.interactable = false;
+            SyncWithDeck();
+        }
+    }
+
+    public void SellCard()
+    {
+        if (selectedCard1 == null) return;
+        Deck deck = mainCharacter.deck;
+        deck.RemoveCard(selectedCard1.GetCurrentCard());
+        selectedCard1.SetSelected(false);
+        selectedCard1 = null;
+        sellButton.interactable = false;
+        SyncWithDeck();
+        mainCharacter.gold += CARD_SELL_PRICE;
+    }
+
+    // ============= [상점 기능 버튼] =============
+    public void Reroll()
+    {
+        if (mainCharacter.gold < rerollPrice)
+        {
+            Debug.LogError("Not enough gold to reroll");
             return;
         }
-
-        mainCharacter.gold -= 10;
-        shopCards.Clear();
-        shopStickers.Clear();
-
-        for (int i = 0; i < shopCardViews.Count; i++)
-        {
-            var newCard = CardFactory.Instance.RandomCreate();
-            shopCards.Add(newCard);
-            shopCardViews[i].SetCard(newCard);
-        }
-        for (int i = 0; i < shopStickerViews.Count; i++)
-        {
-            var newSticker = StickerFactory.CreateRandomSticker();
-            shopStickers.Add(newSticker);
-            shopStickerViews[i].SetSticker(newSticker);
-        }
-
-        RefreshStatUI();
-        SyncPurchaseButtons();
+        mainCharacter.gold -= rerollPrice;
+        rerollPrice += 10;
+        rerollPriceText.text = rerollPrice.ToString();
+        RefreshShopSlots();
     }
 
-    // ======================= [구매 및 UI 동기화] =======================
-    /// <summary>
-    /// 카드 구매 버튼 클릭 시 호출
-    /// </summary>
-    private void OnCardBuyButtonPressed(int index)
-    {
-        if (index < 0 || index >= shopCards.Count) return;
-        if (mainCharacter.gold < 5)
-        {
-            Debug.LogError("Not enough gold");
-            return;
-        }
-
-        mainCharacter.gold -= 5;
-        var cardToBuy = shopCards[index];
-        if (cardToBuy == null) return;
-
-        mainCharacter.deck.AddCard(cardToBuy.DeepCopy()); // 덱에 추가(복사)
-        deckView.RefreshDeckUI();                         // 덱 UI 갱신
-        SyncPurchaseButtons();                            // 버튼 상태 갱신
-        RefreshStatUI();                                  // 스탯 UI 갱신
-    }
-
-    /// <summary>
-    /// 카드/스티커 구매 버튼 상태를 덱 상태에 맞춰 갱신
-    /// </summary>
-    public void SyncPurchaseButtons()
-    {
-        bool deckFull = mainCharacter.deck.IsDeckFull();
-        foreach (var btn in buyCardButtons)
-            btn.interactable = !deckFull;
-    }
-
-    /// <summary>
-    /// 스티커 구매 버튼 클릭 시 호출
-    /// </summary>
-    private void OnStickerBuyButtonPressed(int index)
-    {
-        if (index < 0 || index >= shopStickers.Count) return;
-        if (mainCharacter.gold < 5)
-        {
-            Debug.LogError("Not enough gold");
-            return;
-        }
-
-        mainCharacter.gold -= 5;
-        selectedSticker = shopStickers[index];
-        selectedStickerView = shopStickerViews[index];
-        // TODO: StickerView 하이라이트/모드 연동
-        RefreshStatUI();
-    }
-
-    /// <summary>
-    /// 테스트용: 골드 1만 지급
-    /// </summary>
-    private void OnShowMeTheMoneyButtonPressed()
+    public void ShowMeTheMoney()
     {
         mainCharacter.gold += 10000;
-        RefreshStatUI();
     }
 
-    // ======================= [전투 진입] =======================
-    /// <summary>
-    /// 전투 시작 버튼 클릭 시 호출 (비동기 루틴)
-    /// </summary>
-    private void OnBattleButtonPressed()
+    public void OnClickNextRound()
     {
-        Debug.Log("BattleSceneChangeTest");
-        if (mainCharacter == null)
-        {
-            Debug.LogError("캐릭터가 초기화되지 않았습니다.");
-            return;
-        }
-        StartCoroutine(BattleButtonRoutine());
-    }
+        onBattleStartPopupView.Activate();
 
-    private IEnumerator BattleButtonRoutine()
-    {
+        CardStatChangeRecorder.Instance.RecordStart();
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        RefreshStatUI();
-        yield return new WaitForSeconds(0.8f); // 연출 대기(필요시 조정)
-        this.Deactivate();
-        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
+        var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
+        
+        onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
     }
 
-    // ======================= [스탯 UI 갱신] =======================
-    /// <summary>
-    /// 플레이어의 스탯/골드 UI를 실시간으로 갱신한다.
-    /// </summary>
-    private void RefreshStatUI()
+    public void OnClickStatInfo()
     {
-        attackStatText.text     = mainCharacter.statSheet[StatType.AttackPower].Value.ToString();
-        defenseStatText.text    = mainCharacter.statSheet[StatType.Defense].Value.ToString();
-        healthStatText.text     = mainCharacter.statSheet[StatType.Health].Value.ToString();
-        moveSpeedStatText.text  = mainCharacter.statSheet[StatType.MoveSpeed].Value.ToString();
-        goldStatText.text       = mainCharacter.gold.ToString();
+        ToggleStatInfoPopup();
+    }
+
+    private void ToggleStatInfoPopup()
+    {
+        popupStatInfo.SetActive(!popupStatInfo.activeSelf);
+    }
+
+    public void StartNextBattleOnPopup()
+    {
+        UpdatePlayerStat();
+        Deactivate();
+        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
     }
 }

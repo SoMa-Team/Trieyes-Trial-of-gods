@@ -304,14 +304,8 @@ namespace AttackComponents
             // AC001 방식으로 VFX 생성
             spawnedFallingVFX = CreateAndSetupVFX(fallingVFXPrefab, position, direction);
             
-            // radius에 연동된 scaling 계산
-            if (spawnedFallingVFX != null)
-            {
-                float baseScale = 1.5f;
-                float finalScale = baseScale * fallRadius * 1.5f;
-                spawnedFallingVFX.transform.rotation = Quaternion.Euler(0, 0, 0);
-                spawnedFallingVFX.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
-            }
+
+            spawnedFallingVFX.transform.rotation = Quaternion.Euler(0, 0, 0);
 
             return spawnedFallingVFX;
         }
@@ -332,14 +326,6 @@ namespace AttackComponents
 
             // AC001 방식으로 VFX 생성
             spawnedExplosionVFX = CreateAndSetupVFX(explosionVFXPrefab, position, direction);
-            
-            // radius에 연동된 scaling 계산
-            if (spawnedExplosionVFX != null)
-            {
-                float baseScale = 1.5f;
-                float finalScale = baseScale * fallRadius * 1.25f;
-                spawnedExplosionVFX.transform.localScale = new Vector3(finalScale, finalScale, finalScale);
-            }
 
             return spawnedExplosionVFX;
         }

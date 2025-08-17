@@ -25,10 +25,11 @@ namespace BattleSystem
 
         // ===== 전투 스테이지 데이터 =====
         public Difficulty difficulty;
-        public Pawn mainCharacter;
+        public Character mainCharacter;
         public List<Pawn> characters = new ();
         public Dictionary<int, Enemy> enemies = new ();
         public Dictionary<int, Attack> attacks = new ();
+        public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
 
         public void Update()
@@ -96,12 +97,20 @@ namespace BattleSystem
             attacks.Remove(attack.objectID);
         }
 
+        public void AttachGold(Gold gold)
+        {
+            golds.Add(gold.objectID, gold);
+        }
+
+        public void RemoveGold(Gold gold)
+        {
+            golds.Remove(gold.objectID);
+        }
+
         // 전투 클리어 시 호출
         public void OnBattleClear()
         {
-            BattleStageFactory.Instance.Deactivate(this);
             SceneChangeManager.Instance.ChangeBattleToShop((Character)this.mainCharacter);
-            // Todo: SceneChangeManager 호출
         }
         
         // 플레이어 사망 시 호출

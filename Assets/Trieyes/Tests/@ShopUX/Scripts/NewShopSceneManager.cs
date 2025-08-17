@@ -9,6 +9,10 @@ using CharacterSystem;
 using Stats;
 using StickerSystem;
 using Utils;
+using GameFramework;
+using System.Collections;
+using PrimeTween;
+using UISystem;
 
 /// <summary>
 /// 상점(Shop) 씬의 핵심 관리 매니저.  
@@ -23,6 +27,7 @@ public class NewShopSceneManager : MonoBehaviour
     public GameObject shopCardSlot;
     public GameObject shopStickerSlot;
     public GameObject deckCardView;
+    public GameObject shopScenePrefab;
 
     [Header("버튼/텍스트 UI")]
     public Button sellButton;
@@ -48,7 +53,12 @@ public class NewShopSceneManager : MonoBehaviour
     private int rerollPrice;
     private Difficulty difficulty;
 
+    // ====== [UI - 전체 레이아웃] ======
+    [Header("전체 레이아웃")]
+    [SerializeField] private RectTransform rectTransform;
+    
     // ====== [UI - 스탯/라운드/릴릭] ======
+    [Header("Top/Side Bar")]
     [SerializeField] private TextMeshProUGUI textRoundInfo;
     [SerializeField] private TextMeshProUGUI textGold;
     [SerializeField] private List<Image> imageRelics;
@@ -63,11 +73,16 @@ public class NewShopSceneManager : MonoBehaviour
     [SerializeField] private StatTypeTMPPair[] statTypeTMPPairs;
 
     // ====== [UI - 카드/상점 슬롯 컨테이너] ======
+    [Header("Deck Auto Scaling")]
     [SerializeField] private RectTransform DeckScaleRect;
     [SerializeField] private RectTransform ShopScaleRect;
     
     [SerializeField] private RectTransform DeckScaleRectParent;
     [SerializeField] private RectTransform ShopScaleRectParent;
+    
+    [Header("전투 시작 애니메이션")]
+    [SerializeField] private RectTransform rectOnBattleStartPopup;
+    [SerializeField] private OnBattleStartPopupView onBattleStartPopupView;
 
     // ====== [화면 사이즈 체크] ======
     private int lastScreenWidth;
@@ -84,11 +99,22 @@ public class NewShopSceneManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        rectTransform.anchoredPosition = Vector2.zero;
+        
+        rectOnBattleStartPopup.gameObject.SetActive(false);
+        rectOnBattleStartPopup.anchoredPosition = Vector2.zero;
+    }
+
     // ================= [초기화 및 비활성화] =================
     public void Activate(Character mainCharacter, Difficulty difficulty)
     {
+        Debug.Log("NewShopSceneManager: Activate");
         this.mainCharacter = mainCharacter;
         this.difficulty = difficulty;
+        
+        shopScenePrefab.SetActive(true);
 
         rerollPrice = INIT_REROLL_PRICE;
         sellPriceText.text = CARD_SELL_PRICE.ToString();
@@ -102,7 +128,7 @@ public class NewShopSceneManager : MonoBehaviour
 
     public void Deactivate()
     {
-        // 필요시 리스너 해제, 상태/참조 정리 등 추가
+        shopScenePrefab.SetActive(false);
     }
 
     // ============= [매 프레임 UI 상태 동기화] =============
@@ -206,7 +232,7 @@ public class NewShopSceneManager : MonoBehaviour
         foreach (var card in deck.cards)
         {
             var obj = Instantiate(deckCardView, DeckScaleRect);
-            obj.transform.localScale = Vector3.one;
+            // obj.transform.localScale = Vector3.one;
             var cardView = obj.GetComponent<CardView>();
             cardView.SetCard(card);
         }
@@ -296,10 +322,13 @@ public class NewShopSceneManager : MonoBehaviour
         mainCharacter.gold += 10000;
     }
 
-    public void OnClickNextRound()
+    private IEnumerator BattleButtonRoutine()
     {
         mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
         UpdatePlayerStat();
+        yield return new WaitForSeconds(0.8f); // 연출 대기(필요시 조정)
+        this.Deactivate();
+        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
     }
 
     public void OnClickStatInfo()

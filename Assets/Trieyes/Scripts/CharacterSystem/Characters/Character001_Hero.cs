@@ -72,6 +72,7 @@ namespace CharacterSystem
         public override void Deactivate()
         {
             base.Deactivate();
+            lockBasicAttack = false;
         }
 
         // ===== [공격 처리 메서드] =====
@@ -83,7 +84,7 @@ namespace CharacterSystem
             // lockBasicAttack이 true면 기본 공격 차단
             if (lockBasicAttack && attackType == PawnAttackType.BasicAttack)
             {
-                //Debug.Log("<color=red>[HERO] Basic attack blocked by lockBasicAttack!</color>");
+                Debug.Log("<color=red>[HERO] Basic attack blocked by lockBasicAttack!</color>");
                 return false;
             }
             
@@ -120,11 +121,11 @@ namespace CharacterSystem
                 {
                     killedDuringSkill001++;
                     killedDuringSkill002++;
+                    
+                    return true;
                 }
-
-                return true;
+                return false;
             }
-
             return false;
         }
 

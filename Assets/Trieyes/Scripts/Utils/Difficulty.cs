@@ -23,7 +23,7 @@ namespace Utils
             var difficulty = new Difficulty();
             difficulty.stageNumber = stageRound;
             difficulty.spawnFrequency = stageRound;
-            difficulty.enemyHpMultiplier = (int)Mathf.Pow(5f, stageRound - 1);
+            difficulty.enemyHpMultiplier = (int)Mathf.Pow(5f, (stageRound - 1) / 3f);
             difficulty.enemyAttackMultiplier = stageRound;
             return difficulty;
         }

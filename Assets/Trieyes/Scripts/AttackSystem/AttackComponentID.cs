@@ -34,6 +34,7 @@ namespace AttackSystem
         AC105_FollowingField = 105,
         AC106_Projectile = 106,
         AC107_OrbitingElement = 107,
+        AC109_Dash = 109,
         
         // Relic Attack Components
         RAC006_ProjectileGenerator = 2006,

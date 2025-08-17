@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Utils;
 
 namespace Stats
 {
@@ -40,8 +41,14 @@ namespace Stats
         // --- 인덱서 ---
 
         /// StatType으로 해당 스탯 값을 조회합니다.
-        public IntegerStatValue this[StatType type] { 
-            get => stats[type];
+        public IntegerStatValue this[StatType type]
+        {
+            get
+            {
+                CardStatChangeRecorder.Instance.AddStatTrigger(type);
+                return stats[type];
+            }
+
             set => stats[type] = value;
         }
 

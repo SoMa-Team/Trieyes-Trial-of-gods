@@ -10,7 +10,6 @@ public class AnimationController : MonoBehaviour
     {
         owner = gameObject.GetComponentInParent<Pawn>();
     }
-
     public void DestroyOnDeath()
     {
         if (!owner.isEnemy)
@@ -25,6 +24,7 @@ public class AnimationController : MonoBehaviour
 
     public void AttackOnAnimationStart()
     {
+        
     }
 
     public void AttackOnAnimationEnd()

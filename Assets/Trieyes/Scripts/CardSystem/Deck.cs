@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Utils;
 using CharacterSystem;
-using DeckViews;
 using Stats;
 using UnityEngine;
 using System.Linq;
@@ -43,8 +42,6 @@ namespace CardSystem
         /// </summary>
         private Dictionary<Utils.EventType, int> eventTypeCount = new();
         public IReadOnlyDictionary<Utils.EventType, int> EventTypeCount => eventTypeCount;
-        
-        private DeckView deckView;
         
         public int maxCardCount = 5;
         
@@ -117,34 +114,27 @@ namespace CardSystem
             {
                 case Utils.EventType.OnBattleSceneChange:
                     DestoryCardsBeforeBattleStart();
-                    NewShopSceneManager.Instance.SyncWithDeck();
+                    ShopSceneManager.Instance.SyncWithDeck();
                     CalcBaseStat();
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     return true;
-                    break;
                 case Utils.EventType.OnBattleEnd:
                     cardCallOrder.Clear();
                     cardCallCounts = new List<int>(new int[cards.Count]);
                     EventProcessor(eventType, param);
                     owner?.statSheet.ClearBuffs();
                     return true;
-                    break;
                 case Utils.EventType.OnCardPurchase:
                     if (param is Card newCard) AddCard(newCard);
                     return true;
-                    break;
                 case Utils.EventType.OnCardRemove:
                     if (param is Card removedCard) RemoveCard(removedCard);
                     return true;
-                    break;
                 default:
                     EventProcessor(eventType, param);
                     return true;
-                    break;
             }
-
-            return false;
         }
 
         public bool IsDeckFull()//ToDo: ShopSceneManager 이식 끝나면 없애기
@@ -280,6 +270,8 @@ namespace CardSystem
             {
                 owner.statSheet.ClearBuffs();
                 foreach (Card card in cards){
+                    CardStatChangeRecorder.Instance.AddCardTrigger(0, card);
+                    
                     foreach (var statPair in card.cardStats.stats)
                     {
                         int value = statPair.value.Value;
@@ -370,6 +362,7 @@ namespace CardSystem
                 if (cardIndex < cards.Count)
                 {
                     Debug.Log($"CalcActionInitStat: {cards[cardIndex].cardName}");
+                    CardStatChangeRecorder.Instance.AddCardTrigger(0, cards[cardIndex]);
                     cards[cardIndex]?.TriggerCardEvent(eventType, this, cards[cardIndex]);
                 }
             }
@@ -417,16 +410,6 @@ namespace CardSystem
         {
             if (cardIndex >= 0 && cardIndex < cardCallCounts.Count)
                 cardCallCounts[cardIndex] += increment;
-        }
-
-        public void setDeckView(DeckView deckView)
-        {
-            this.deckView = deckView;
-        }
-
-        public DeckView GetDeckView()
-        {
-            return deckView;
         }
 
         /// <summary>

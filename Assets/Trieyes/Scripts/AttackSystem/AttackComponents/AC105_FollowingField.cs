@@ -15,18 +15,14 @@ namespace AttackComponents
     /// 플레이어가 이동하면 자기장도 함께 따라다닙니다.
     /// BattleStage 기반 적 감지로 최적화된 성능을 제공합니다.
     /// </summary>
-    public enum FieldShape { Circle, Rect }
 
     public class AC105_FollowingField : AttackComponent
     {
         [Header("필드 타입 및 크기 설정")]
-        public FieldShape fieldShape = FieldShape.Circle;
-        public float fieldRadius = 2.5f; // 원형일 때 반지름
-        public float fieldWidth = 3f;    // 네모일 때 가로
-        public float fieldHeight = 3f;   // 네모일 때 세로
-        public float fieldDamage = 30f;
-        public float fieldTickInterval = 0.5f;
-        public float fieldDuration = 5f;
+        public float fieldRadius; // 원형일 때 반지름
+        public float fieldDamage;
+        public float fieldTickInterval;
+        public float fieldDuration;
         
         [Header("따라다니기 설정")]
         public float followDistance = 0f; // 플레이어로부터의 거리 (0이면 플레이어 위치)
@@ -44,8 +40,7 @@ namespace AttackComponents
         private FollowingFieldState fieldState = FollowingFieldState.None;
         private float fieldTimer = 0f;
         private float damageTimer = 0f;
-        private List<Pawn> fieldTargets = new List<Pawn>(10); // 재사용 가능한 리스트
-        private GameObject activeFieldVFX;
+        private List<Enemy> fieldTargets = new List<Enemy>(10); // 재사용 가능한 리스트
         
         // 자기장 상태 열거형
         private enum FollowingFieldState
@@ -110,9 +105,6 @@ namespace AttackComponents
                     fieldTimer += Time.deltaTime;
                     damageTimer += Time.deltaTime;
                     
-                    // 플레이어 위치로 자기장 이동
-                    UpdateFieldPosition();
-                    
                     // 데미지 처리
                     if (damageTimer >= fieldTickInterval)
                     {
@@ -153,22 +145,6 @@ namespace AttackComponents
             }
         }
         
-        private void UpdateFieldPosition()
-        {
-            if (!followPlayer || attack.attacker == null) return;
-            
-            Vector2 playerPosition = attack.attacker.transform.position;
-            Vector2 fieldPosition = playerPosition + followOffset;
-            
-            // followDistance가 0이 아닌 경우 방향 벡터를 이용해 오프셋 계산
-            if (followDistance > 0f)
-            {
-                Vector2 direction = attack.attacker.transform.position - transform.position;
-                fieldPosition += direction * followDistance;
-            }
-            spawnedVFX.transform.position = fieldPosition + Vector2.up * 0.4f;
-        }
-        
         private void ActivateField()
         {
             // VFX 생성 (Active 상태에서 생성)
@@ -180,7 +156,10 @@ namespace AttackComponents
         private void ApplyFieldDamage()
         {
             // 자기장 범위 내 적 탐지 (BattleStage 기반)
-            DetectEnemiesInField();
+            fieldTargets.Clear();
+            fieldTargets = BattleStage.now.GetEnemiesInCircleRange(attack.attacker.transform.position, fieldRadius);
+            
+            Debug.Log($"<color=blue>[AC104] 자기장 범위 내 적 탐지: {fieldTargets.Count}명</color>");
             
             // 탐지된 적들에게 데미지 적용
             for (int i = 0; i < fieldTargets.Count; i++)
@@ -188,63 +167,17 @@ namespace AttackComponents
                 Pawn enemy = fieldTargets[i];
                 if (enemy != null && enemy.gameObject.activeInHierarchy)
                 {
-                    ApplyDamageToEnemy(enemy);
+                    attack.statSheet[StatType.AttackPower] = new IntegerStatValue((int)fieldDamage);
+                    DamageProcessor.ProcessHit(attack, enemy);
                 }
             }
-        }
-        
-        private void DetectEnemiesInField()
-        {
-            fieldTargets.Clear();
-            Vector2 fieldPosition = transform.position;
-            
-            if (BattleStage.now != null && BattleStage.now.enemies != null)
-            {
-                foreach (var enemy in BattleStage.now.enemies.Values)
-                {
-                    if (enemy == null || enemy.transform == null || !enemy.gameObject.activeInHierarchy)
-                        continue;
-
-                    bool inRange = false;
-                    if (fieldShape == FieldShape.Circle)
-                    {
-                        // 원형 범위
-                        float distance = Vector2.Distance(enemy.transform.position, fieldPosition);
-                        inRange = (distance <= fieldRadius);
-                    }
-                    else if (fieldShape == FieldShape.Rect)
-                    {
-                        // 네모 범위
-                        Vector2 min = fieldPosition - new Vector2(fieldWidth, fieldHeight) * 0.5f;
-                        Vector2 max = fieldPosition + new Vector2(fieldWidth, fieldHeight) * 0.5f;
-                        Vector2 pos = (Vector2)enemy.transform.position;
-                        inRange = (pos.x >= min.x && pos.x <= max.x && pos.y >= min.y && pos.y <= max.y);
-                    }
-
-                    if (inRange)
-                    {
-                        if (enemy.GetComponent<Controller>() is EnemyController)
-                        {
-                            fieldTargets.Add(enemy);
-                        }
-                    }
-                }
-            }
-            Debug.Log($"<color=blue>[AC104] 자기장 범위 내 적 탐지: {fieldTargets.Count}명</color>");
-        }
-        
-        private void ApplyDamageToEnemy(Pawn enemy)
-        {
-            attack.statSheet[StatType.AttackPower] = new IntegerStatValue((int)fieldDamage);
-            DamageProcessor.ProcessHit(attack, enemy);
-            
-            Debug.Log($"<color=yellow>[AC104] 자기장으로 {enemy.pawnName}에게 데미지 적용</color>");
         }
         
         private void CreateFieldVFX()
         {
             // VFX 시스템을 통해 번개 장판 VFX 생성
             spawnedVFX = CreateAndSetupVFX(fieldVFXPrefab, (Vector2)transform.position, Vector2.zero);
+            spawnedVFX.SetActive(true);
             PlayVFX(spawnedVFX);
             
             Debug.Log($"<color=blue>[AC105] 번개 장판 VFX 생성!</color>");
@@ -255,6 +188,7 @@ namespace AttackComponents
             // VFX 정리
             if (spawnedVFX != null)
             {
+                spawnedVFX.transform.SetParent(null);
                 StopAndDestroyVFX(spawnedVFX);
                 spawnedVFX = null;
             }
@@ -279,14 +213,10 @@ namespace AttackComponents
 
             // 기본 VFX 생성 (base 호출)
             GameObject vfx = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+            vfx.transform.SetParent(attack.attacker.transform);
+            vfx.transform.localPosition = new Vector3(0, 0, 0);
+            vfx.transform.localScale = new Vector3(0.36f * fieldRadius, 0.36f * fieldRadius, 1f);
             
-            vfx.transform.position = position;
-            
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            vfx.transform.rotation = Quaternion.Euler(0, 0, angle);
-            vfx.transform.localScale = new Vector3(1.0f, 1.0f, 1f);
-            
-            vfx.SetActive(true);
             return vfx;
         }
 
@@ -297,7 +227,7 @@ namespace AttackComponents
             // VFX 정리
             if (spawnedVFX != null)
             {
-                StopAndDestroyVFX(spawnedVFX);
+                Destroy(spawnedVFX);
                 spawnedVFX = null;
             }
             

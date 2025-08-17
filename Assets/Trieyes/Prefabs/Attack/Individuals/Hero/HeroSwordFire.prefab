@@ -48,7 +48,6 @@ MonoBehaviour:
   attackAngle: 90
   attackDuration: 0.3
   attackRadius: 1.5
-  direction: {x: 0, y: 0}
   segments: 8
   dotTargetType: 0
   dotDamage: 2
@@ -56,7 +55,7 @@ MonoBehaviour:
   dotInterval: 0.2
   dotAttackData: {fileID: 11400000, guid: eb8b651eb20254a94a00f59327c0e86c, type: 2}
   vfxPrefab: {fileID: 4748681987041982144, guid: 9a360c93ed1104d5c9039d27a08edcd7, type: 3}
-  dotVFXPrefab: {fileID: 0}
+  dotVFXPrefab: {fileID: 4748681987041982144, guid: e94f656c4c820664da8fa73d1ccf6d48, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0

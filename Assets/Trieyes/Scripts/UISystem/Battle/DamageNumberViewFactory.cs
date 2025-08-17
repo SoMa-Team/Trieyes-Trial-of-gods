@@ -65,7 +65,7 @@ namespace UISystem
 
         public void OnBattleEnded()
         {
-            Instance = null;
+            //Instance = null;
         }
     }
 }

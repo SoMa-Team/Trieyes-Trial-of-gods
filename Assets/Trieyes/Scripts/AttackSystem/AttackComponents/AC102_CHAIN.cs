@@ -5,13 +5,14 @@ using UnityEngine;
 using System.Collections.Generic;
 using BattleSystem;
 using CharacterSystem.Enemies;
+using PrimeTween;
 
 namespace AttackComponents
 {
     /// <summary>
     /// 번개 연쇄 효과
     /// 지정된 횟수만큼 주변 적을 찾아가면서 번개 데미지를 입힙니다.
-    /// GC 최적화를 위해 코루틴 대신 재귀적 처리를 사용합니다.
+    /// PrimeTween을 사용하여 VFX가 Pawn 사이를 이동하는 애니메이션을 구현합니다.
     /// </summary>
     public class AC102_CHAIN : AttackComponent
     {
@@ -19,16 +20,16 @@ namespace AttackComponents
         public int chainDamage;
         public float chainRadius; // 번개가 전염되는 최대 거리
         public int chainCount; // 번개 전염 횟수
-        public float chainDelay; // 연쇄 간격
+        public float chainDelay; // VFX 이동 시간
 
         [Header("VFX 설정")]
         [SerializeField] public GameObject chainVFXPrefab; // 번개 연쇄 VFX 프리팹 (외부에서 설정 가능)
         public float lightningDuration = 0.2f;
         private GameObject spawnedVFX;
+        private Tween lightningTween; // PrimeTween 트윈
 
         // 번개 연쇄 상태 관리
         private LightningChainState chainState = LightningChainState.None;
-        private float chainTimer = 0f;
 
         public PawnStatusType statusType;
         public float statusDuration;
@@ -59,7 +60,6 @@ namespace AttackComponents
             base.Activate(attack, direction);
             // 초기 상태 설정
             chainState = LightningChainState.None;
-            chainTimer = 0f;
             chainPositions.Clear();
             currentChainCount = 0;
         }
@@ -68,7 +68,6 @@ namespace AttackComponents
         {
             // 초기 상태 설정
             chainState = LightningChainState.Starting;
-            chainTimer = 0f;
             chainPositions.Clear();
             chainPositions.Add(startPosition);
             currentChainCount = 0;
@@ -86,7 +85,7 @@ namespace AttackComponents
         {
             base.Update();
 
-            // 번개 연쇄 처리
+            // 번개 연쇄 처리 (PrimeTween으로 대체되어 더 이상 타이머 기반이 아님)
             ProcessLightningChain();
         }
 
@@ -101,17 +100,10 @@ namespace AttackComponents
                 case LightningChainState.Starting:
                     // 연쇄 시작
                     chainState = LightningChainState.Chaining;
-                    chainTimer = 0f;
                     break;
 
                 case LightningChainState.Chaining:
-                    chainTimer += Time.deltaTime;
-
-                    if (chainTimer >= chainDelay)
-                    {
-                        ProcessNextChain();
-                        chainTimer = 0f;
-                    }
+                    // PrimeTween이 처리하므로 여기서는 상태만 관리
                     break;
 
                 case LightningChainState.Finished:
@@ -204,6 +196,35 @@ namespace AttackComponents
             PlayVFX(spawnedVFX);
         }
 
+        private void CreateMovingLightningVFX(Vector2 start, Vector2 end, System.Action onComplete = null)
+        {
+            // VFX 프리팹이 없으면 VFX 없이 진행
+            if (chainVFXPrefab == null)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            // VFX 생성
+            spawnedVFX = CreateAndSetupVFX(chainVFXPrefab, start, Vector2.zero);
+            
+            // LightningVFX 컴포넌트 찾아서 번개 효과 시작
+            LightningVFX lightningVFX = spawnedVFX.GetComponent<LightningVFX>();
+            if (lightningVFX != null)
+            {
+                lightningVFX.CreateLightningChain(start, end);
+            }
+            
+            PlayVFX(spawnedVFX);
+
+            // PrimeTween을 사용하여 VFX를 start에서 end로 이동
+            lightningTween = Tween.Position(spawnedVFX.transform, end, chainDelay, Ease.InOutQuad)
+                .OnComplete(() => {
+                    // 이동 완료 후 콜백 실행
+                    onComplete?.Invoke();
+                });
+        }
+
         private void ApplyLightningDamage()
         {
             // 큐가 비어있는지 체크
@@ -233,15 +254,15 @@ namespace AttackComponents
             ApplyStatus(targetEnemy);
             targetEnemy.ApplyDamage(result);
 
-            // 번개 VFX 생성
-            CreateLightningVFX(currentChainPosition, targetEnemy.transform.position);
-            
-            // 현재 위치 업데이트
-            currentChainPosition = targetEnemy.transform.position;
-            chainPositions.Add(currentChainPosition);
-            
-            // 큐에서 제거
-            targetQueue.Dequeue();
+            // 현재 위치에서 타겟 위치로 VFX 이동
+            Vector2 targetPosition = targetEnemy.transform.position;
+            CreateMovingLightningVFX(currentChainPosition, targetPosition, () => {
+                // VFX 이동 완료 후 다음 체인 처리
+                currentChainPosition = targetPosition;
+                chainPositions.Add(currentChainPosition);
+                targetQueue.Dequeue();
+                ProcessNextChain();
+            });
         }
 
         /// <summary>
@@ -278,6 +299,13 @@ namespace AttackComponents
         public override void Deactivate()
         {
             base.Deactivate();
+            
+            // PrimeTween 트윈 정리
+            if (lightningTween.isAlive)
+            {
+                lightningTween.Stop();
+            }
+            
             StopAndDestroyVFX(spawnedVFX);
         }
     }

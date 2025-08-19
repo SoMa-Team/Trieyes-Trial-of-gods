@@ -153,6 +153,7 @@ namespace CharacterSystem
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
+            statSheet.setOwner(this);
             
             deck.Activate(this, true);
             initBaseStat();

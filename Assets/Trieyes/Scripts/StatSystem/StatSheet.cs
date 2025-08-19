@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Utils;
+using CharacterSystem;
 
 namespace Stats
 {
@@ -15,6 +16,18 @@ namespace Stats
             = new Dictionary<StatType, IntegerStatValue>();
 
         const int DEFAULT_VALUE = 0;
+
+        private Pawn owner;
+
+        public void setOwner(Pawn owner)
+        {
+            this.owner = owner;
+        }
+
+        public Pawn getOwner()
+        {
+            return owner;
+        }
 
         // --- 생성자 ---
 

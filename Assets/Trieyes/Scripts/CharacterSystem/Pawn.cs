@@ -55,6 +55,7 @@ namespace CharacterSystem
         [Header("Stats")]
 
         public StatSheet statSheet = new();
+        public StatManager statManager { get; private set; }
         
         public StatPresetSO statPresetSO;
 
@@ -153,7 +154,7 @@ namespace CharacterSystem
             
             // 스탯 시트 초기화
             statSheet = new StatSheet();
-            statSheet.setOwner(this);
+            statManager = new StatManager(this, statSheet);
             
             deck.Activate(this, true);
             initBaseStat();

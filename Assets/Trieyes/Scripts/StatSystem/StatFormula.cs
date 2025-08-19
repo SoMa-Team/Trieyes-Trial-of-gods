@@ -63,9 +63,5 @@ namespace Stats
             // 등록되지 않은 스탯은 Raw 반환(안전장치)
             return ctx.Raw;
         }
-
-        // 필요하면 런타임에 덮어쓰기/추가 가능(밸런싱 핫스왑용)
-        public static void Register(StatType type, Func<StatEvalCtx, float> formula)
-            => statMap[type] = formula;
     }
 }

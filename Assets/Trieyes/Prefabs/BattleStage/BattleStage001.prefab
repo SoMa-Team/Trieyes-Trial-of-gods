@@ -46,15 +46,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ruleTiles:
-  - {fileID: 11400000, guid: 9b0d19d3cf337da4f866dae57254304b, type: 2}
-  gridSize: 35
-  boundaryThreshold: 0.4
-  cameraFollowSpeed: 5
+  - {fileID: 11400000, guid: dace6910cf5a0b046ab9d8827fbd8002, type: 2}
+  gridSizeX: 100
+  gridSizeY: 100
+  boundaryThickness: 1
   cameraOffset: {x: 0, y: 0, z: -7}
-  cameraSmoothTime: 0.1
-  minCameraDistance: 5
-  maxCameraDistance: 15
-  speedToDistanceMultiplier: 2
+  cameraFollowDistance: 10
+  cameraDamping: {x: 1, y: 1, z: 1}
+  cameraFieldOfView: 60
 --- !u!1001 &9051822390736683844
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -110,9 +110,7 @@ namespace BattleSystem
         // 전투 클리어 시 호출
         public void OnBattleClear()
         {
-            BattleStageFactory.Instance.Deactivate(this);
             SceneChangeManager.Instance.ChangeBattleToShop((Character)this.mainCharacter);
-            // Todo: SceneChangeManager 호출
         }
         
         // 플레이어 사망 시 호출
@@ -128,6 +126,11 @@ namespace BattleSystem
         public float GetTime()
         {
             return Time.time - startTime;
+        }
+
+        public void AddTime(float time)
+        {
+            difficulty.battleLength += time;
         }
 
         public List<Enemy> GetEnemiesInRectRange(Vector2 start, Vector2 end)
@@ -209,6 +212,5 @@ namespace BattleSystem
             enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, start).CompareTo(Vector2.Distance(b.transform.position, start)));
             return enemiesInRange;
         }
-
     }
 } 

@@ -4,7 +4,7 @@ namespace Utils
 {
     public class Difficulty
     {
-        public float battleLength => 10; // 초단위
+        public float battleLength = 1000; // 초단위
 
         public int EnemyID = 0;
         public int shopLevel = 1;
@@ -23,7 +23,7 @@ namespace Utils
             var difficulty = new Difficulty();
             difficulty.stageNumber = stageRound;
             difficulty.spawnFrequency = stageRound;
-            difficulty.enemyHpMultiplier = (int)Mathf.Pow(5f, stageRound - 1);
+            difficulty.enemyHpMultiplier = (int)Mathf.Pow(5f, (stageRound - 1) / 3f);
             difficulty.enemyAttackMultiplier = stageRound;
             return difficulty;
         }

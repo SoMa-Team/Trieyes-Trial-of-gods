@@ -104,6 +104,9 @@ namespace BattleSystem
         public void Deactivate(BattleStage battleStage)
         {
             Debug.Log("BattleStageFactory Deactivate Called");
+            
+            battleStage.mainCharacter.transform.SetParent(null);
+            
             // 캐릭터 정리
             foreach (var character in battleStage.characters)
             {
@@ -113,6 +116,7 @@ namespace BattleSystem
             // 적 정리
             foreach (var enemy in battleStage.enemies.Values.ToList())
             {
+                // TODO : Enemy가 관리되지 않는 오류
                 EnemyFactory.Instance.Deactivate(enemy);
             }
             
@@ -137,6 +141,8 @@ namespace BattleSystem
             BattleOverlayCanvasController.Instance.Deactivate();
             BattleWorldCanvasController.Instance.Deactivate();
             DamageNumberViewFactory.Instance.OnBattleEnded();
+            
+            Destroy(battleStage.View.gameObject);
         }
     }
 }

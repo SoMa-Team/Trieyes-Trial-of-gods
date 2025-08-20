@@ -75,6 +75,7 @@ namespace UISystem
             SetStageNumber();
             InitAutoAttackToggle();
             testPanel.gameObject.SetActive(false);
+            gameObject.SetActive(true);
         }
 
         private void InitAutoAttackToggle()
@@ -187,7 +188,7 @@ namespace UISystem
 
         public void Deactivate()
         {
-            //Instance = null;
+            gameObject.SetActive(false);
         }
         
         // ===== Test Panel Buttons =====
@@ -203,6 +204,11 @@ namespace UISystem
         public void Test_OnClickSkipStage()
         {
             BattleStage.now.OnBattleClear();
+        }
+
+        public void Test_OnClickAddTime()
+        {
+            BattleStage.now.AddTime(9999f);
         }
     }
 }

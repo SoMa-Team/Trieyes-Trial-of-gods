@@ -52,8 +52,9 @@ MonoBehaviour:
   currentHp: 100
   rb: {fileID: -7081958898591838822}
   Collider: {fileID: 9118692710769573021}
+  Controller: {fileID: 0}
   Animator: {fileID: 6833888907546521165}
-  statPresetSO: {fileID: 11400000, guid: afabde241ce254bb7bd5791b96f129fb, type: 2}
+  statPresetSO: {fileID: 11400000, guid: b8aef154bc76d407ea118a7e4f8cd11f, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: c80959e9e2a294ebba9106bad507c163, type: 2}
   skill1Attack: {fileID: 11400000, guid: c36be7ff14a6646f2b115832cbb39858, type: 2}
@@ -63,6 +64,7 @@ MonoBehaviour:
   skillAttack2Cooldown: 0
   lastSkillAttack2Time: -999
   objectID: 0
+  lastPosition: {x: 0, y: 0, z: 0}
   weaponElementState: 0
   activateLight: 0
   lockBasicAttack: 0
@@ -91,7 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
-  isAutoMovement: 0
+  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
   character: {fileID: 519565357092245493}

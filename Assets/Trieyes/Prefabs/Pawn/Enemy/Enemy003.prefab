@@ -203,8 +203,9 @@ MonoBehaviour:
   currentHp: 0
   rb: {fileID: 7661104193838161178}
   Collider: {fileID: 9097963647980026422}
+  Controller: {fileID: 0}
   Animator: {fileID: 0}
-  statPresetSO: {fileID: 11400000, guid: a96ec124bc83c644eb010693ef8e85b5, type: 2}
+  statPresetSO: {fileID: 11400000, guid: 50fadf630e2b541a38f1853cf9312e6d, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 2a5459a399bd4d84f85bda78f3b0df40, type: 2}
   skill1Attack: {fileID: 0}
@@ -231,6 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 5757735018499706438}
+  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
   minFollowDistance: 0.1

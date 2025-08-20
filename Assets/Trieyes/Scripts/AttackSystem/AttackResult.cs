@@ -73,7 +73,7 @@ namespace AttackSystem
             var attackDamageIncreasement = attackResult.attack?.getRelicStat(RelicStatType.DamageIncreasement) ?? 0;
             var pureDamage = attackStat[StatType.AttackPower] * (attackResult.attack?.attackData?.damageMultiplier ?? 1) *
                 (100 + attackDamageIncreasement) / 100;
-            var baseDamage = (int)(pureDamage) * 100 / (100 + targetStat[StatType.Defense]);
+            var baseDamage = (int)(pureDamage) * 1000 / (1000 + targetStat[StatType.Defense]);
             
             attackResult.totalDamage = attackResult.isCritical ? baseDamage * (100 + attackStat[StatType.CriticalDamage]) / 100 : baseDamage;
             attackResult.attackerHealed = attackResult.totalDamage * attackStat[StatType.LifeSteal] / 100;

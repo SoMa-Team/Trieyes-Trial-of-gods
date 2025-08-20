@@ -233,6 +233,8 @@ namespace CharacterSystem
             skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
 
             deck.Activate(this, true);
+            statSheet = new StatSheet();
+            statManager = new StatManager(this, statSheet);
             initBaseStat();
             
             SyncHP();
@@ -286,7 +288,7 @@ namespace CharacterSystem
         
         public void SyncHP()
         {
-            maxHp = Mathf.RoundToInt(statManager.Get(StatType.Health));
+            maxHp = Mathf.RoundToInt(GetStatValue(StatType.Health));
             currentHp = maxHp;
         }
 

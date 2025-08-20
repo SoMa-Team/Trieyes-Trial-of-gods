@@ -52,8 +52,9 @@ MonoBehaviour:
   currentHp: 100
   rb: {fileID: 7661104193838161178}
   Collider: {fileID: 9097963647980026422}
+  Controller: {fileID: 0}
   Animator: {fileID: 1138489585984773130}
-  statPresetSO: {fileID: 11400000, guid: f1d19ea4c070b4c4383b416bd94a26a7, type: 2}
+  statPresetSO: {fileID: 11400000, guid: e5c6097553aef4ff6aa735dd579b426b, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 0}
@@ -64,6 +65,7 @@ MonoBehaviour:
   lastSkillAttack2Time: -999
   objectID: 0
   dropGold: 0
+  playerTarget: {fileID: 0}
 --- !u!50 &7661104193838161178
 Rigidbody2D:
   serializedVersion: 5
@@ -141,8 +143,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
+  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
+  isAutoAttack: 0
   minFollowDistance: 0.1
+  minRunDistance: 1
+  enemyType: 0
 --- !u!1001 &1428105835955540023
 PrefabInstance:
   m_ObjectHideFlags: 0

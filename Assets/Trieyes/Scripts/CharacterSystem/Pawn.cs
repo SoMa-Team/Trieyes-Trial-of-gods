@@ -378,7 +378,7 @@ namespace CharacterSystem
         /// 애니메이션 상태를 변경합니다.
         /// </summary>
         /// <param name="newState">새로운 애니메이션 상태</param>
-        private void ChangeAnimationState(string newState)
+        protected virtual void ChangeAnimationState(string newState)
         {          
             if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
             {
@@ -394,6 +394,7 @@ namespace CharacterSystem
                         break;
                     case "ATTACK":
                         float attackSpeed = GetStatValue(StatType.AttackSpeed);
+                        // TODO: StatManager에서 공속 값 가져와서 연동하기
                         Animator.speed = Mathf.Max(0f, attackSpeed / 10f);
                         Animator.SetTrigger("2_Attack");
                         break;
@@ -402,6 +403,12 @@ namespace CharacterSystem
                         break;
                     case "DEATH":
                         Animator.SetBool("isDeath", true);
+                        break;
+                    case "SKILL001":
+                        Animator.SetTrigger("SKILL001");
+                        break;
+                    case "SKILL002":
+                        Animator.SetTrigger("SKILL002");
                         break;
                 }
                 

@@ -80,9 +80,6 @@ namespace AttackComponents
             
             // VFX 생성 및 설정
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
-            
-            // VFX 재생
-            PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
             if (attack.attackCollider == null)
@@ -93,14 +90,14 @@ namespace AttackComponents
             var collider = attack.attackCollider as PolygonCollider2D;
 
             // 부채꼴 모양의 콜라이더 포인트 생성
-            //Debug.Log($"<color=green>[AC002] attackRadius: {attackRadius}, attackAngle: {attackAngle}</color>");
             Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
 
             attack.attackCollider.isTrigger = true;
             attack.attackCollider.enabled = true;
-            
-            ////Debug.Log("<color=cyan>[AC002] 부채꼴 공격 시작!</color>");
+
+            // VFX 재생
+            PlayVFX(spawnedVFX);
         }
 
         /// <summary>

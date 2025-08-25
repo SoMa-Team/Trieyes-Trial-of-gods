@@ -102,5 +102,57 @@ namespace CharacterSystem
             }
             return false;
         }
+
+        public void CreateAttack(PawnAttackType attackType)
+        {
+            switch (attackType)
+            {
+                case PawnAttackType.BasicAttack:
+                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
+                    break;
+                case PawnAttackType.Skill1:
+                    AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
+                    break;
+                case PawnAttackType.Skill2:
+                    AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
+                    break;
+            }
+        }
+
+        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        {
+            switch (attackType)
+            {
+                case PawnAttackType.BasicAttack:
+                    if (Time.time - lastAttackTime >= attackCooldown)
+                    {
+                        CalculateAttackCooldown();
+                        lastAttackTime = Time.time;
+                        ChangeAnimationState("ATTACK");
+                        return true;
+                    }
+                    return false;
+                case PawnAttackType.Skill1:
+                    if (CheckSkillCooldown(PawnAttackType.Skill1))
+                    {
+                        lastSkillAttack1Time = Time.time;
+                        ChangeAnimationState("SKILL001");
+                        return true;
+                    }
+                    return false;
+
+                case PawnAttackType.Skill2:
+                    if (CheckSkillCooldown(PawnAttackType.Skill2))
+                    {
+                        lastSkillAttack2Time = Time.time;
+                        ChangeAnimationState("SKILL002");
+                        return true;
+                    }
+                    return false;
+                    
+                default:
+                    return false;
+            }
+        }
     }
 }

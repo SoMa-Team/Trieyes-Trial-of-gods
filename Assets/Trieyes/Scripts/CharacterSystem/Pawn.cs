@@ -7,8 +7,6 @@ using UnityEngine;
 using CardSystem;
 using System;
 using BattleSystem; 
-using UnityEngine.EventSystems;
-using CharacterSystem.Enemies;
 
 namespace CharacterSystem
 {
@@ -54,7 +52,7 @@ namespace CharacterSystem
         
         [Header("Stats")]
 
-        public StatSheet statSheet = new();
+        public StatSheet statSheet => statManager.statSheet;
         public StatManager statManager { get; private set; }
         
         public StatPresetSO statPresetSO;
@@ -153,8 +151,7 @@ namespace CharacterSystem
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
             // 스탯 시트 초기화
-            statSheet = new StatSheet();
-            statManager = new StatManager(this, statSheet);
+            statManager = new StatManager(new StatSheet());
             
             deck.Activate(this, true);
             initBaseStat();
@@ -233,8 +230,7 @@ namespace CharacterSystem
             skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
 
             deck.Activate(this, true);
-            statSheet = new StatSheet();
-            statManager = new StatManager(this, statSheet);
+            statManager = new StatManager(new StatSheet());
             initBaseStat();
             
             SyncHP();

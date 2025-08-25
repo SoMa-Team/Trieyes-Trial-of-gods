@@ -25,7 +25,8 @@ namespace AttackSystem
         // ===== [기능 1] 공격 데이터 및 컴포넌트 관리 =====
         public AttackData attackData;
         public Pawn attacker; // 공격자 (투사체를 발사한 Pawn)
-        public StatSheet statSheet;
+        public StatManager statManager;
+        public StatSheet statSheet => statManager.statSheet;
 
         [CanBeNull] public Attack parent; // 부모 Attack (null이면 관리자, 아니면 투사체)
         public List<Attack> children = new ();
@@ -168,9 +169,9 @@ namespace AttackSystem
             SetLock(false);
         }
 
-        public void ApplyStatSheet(StatSheet attackerStatSheet)
+        public void ApplyStatManager(StatManager statManager)
         {
-            statSheet = attackerStatSheet.DeepCopy();
+            this.statManager = statManager.DeepCopy();
         }
 
         /// <summary>

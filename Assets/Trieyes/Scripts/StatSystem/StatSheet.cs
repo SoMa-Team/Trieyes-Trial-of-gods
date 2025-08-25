@@ -19,16 +19,6 @@ namespace Stats
 
         private Pawn owner;
 
-        public void setOwner(Pawn owner)
-        {
-            this.owner = owner;
-        }
-
-        public Pawn getOwner()
-        {
-            return owner;
-        }
-
         // --- 생성자 ---
 
         /// StatSheet의 새 인스턴스를 초기화합니다.

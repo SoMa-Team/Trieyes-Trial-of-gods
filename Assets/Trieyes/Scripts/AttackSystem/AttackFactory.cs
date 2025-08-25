@@ -133,7 +133,7 @@ namespace AttackSystem
             attack.transform.rotation = Quaternion.Euler(new Vector3(0, 0, th));
             
             attack.attacker = attacker;
-            attack.ApplyStatSheet(parent is not null ? parent.statSheet : attacker.statSheet);
+            attack.ApplyStatManager(parent is not null ? parent.statManager : attacker.statManager);
             
             attack.Activate(attacker, direction.normalized);
             

@@ -35,8 +35,8 @@ namespace AttackSystem
                 target = target
             };
 
-            var attackStat = attack.statSheet;
-            var targetStat = target.statSheet;
+            var attackStat = attack.statManager;
+            var targetStat = target.statManager;
 
             var attackResult = calcAttackResultByStatSheet(initAttackResult, attackStat, targetStat);
             return attackResult;
@@ -52,32 +52,32 @@ namespace AttackSystem
                 target = target
             };
 
-            var attackStat = attacker.statSheet;
-            var targetStat = target.statSheet;
+            var attackStat = attacker.statManager;
+            var targetStat = target.statManager;
 
             var attackResult = calcAttackResultByStatSheet(initAttackResult, attackStat, targetStat);
 
             return attackResult;
         }
         
-        private static AttackResult calcAttackResultByStatSheet(AttackResult attackResult, StatSheet attackStat,
-            StatSheet targetStat)
+        private static AttackResult calcAttackResultByStatSheet(AttackResult attackResult, StatManager attackStat,
+            StatManager targetStat)
         {
-            attackResult.isEvaded = Random.Range(0f, 100f) < targetStat[StatType.Evasion];
+            attackResult.isEvaded = Random.Range(0f, 100f) < targetStat.Get(StatType.Evasion);
 
             if (attackResult.isEvaded)
                 return attackResult;
             
-            attackResult.isCritical = Random.Range(0f, 100f) < attackStat[StatType.CriticalRate];
+            attackResult.isCritical = Random.Range(0f, 100f) < attackStat.Get(StatType.CriticalRate);
             
             var attackDamageIncreasement = attackResult.attack?.getRelicStat(RelicStatType.DamageIncreasement) ?? 0;
-            var pureDamage = attackStat[StatType.AttackPower] * (attackResult.attack?.attackData?.damageMultiplier ?? 1) *
+            var pureDamage = attackStat.Get(StatType.AttackPower) * (attackResult.attack?.attackData?.damageMultiplier ?? 1) *
                 (100 + attackDamageIncreasement) / 100;
-            var baseDamage = (int)(pureDamage) * 1000 / (1000 + targetStat[StatType.Defense]);
+            var baseDamage = (int)(pureDamage / (1 + 8.9e-6 * targetStat.Get(StatType.Defense)));
             
-            attackResult.totalDamage = attackResult.isCritical ? baseDamage * (100 + attackStat[StatType.CriticalDamage]) / 100 : baseDamage;
-            attackResult.attackerHealed = attackResult.totalDamage * attackStat[StatType.LifeSteal] / 100;
-            attackResult.attackerReflectDamage = attackResult.totalDamage * targetStat[StatType.Reflect] / 100;
+            attackResult.totalDamage = attackResult.isCritical ? baseDamage * (100 + (int)attackStat.Get(StatType.CriticalRate)) / 100 : baseDamage;
+            attackResult.attackerHealed = (int)(attackResult.totalDamage * attackStat.Get(StatType.LifeSteal) / 100);
+            attackResult.attackerReflectDamage = (int)(attackResult.totalDamage * targetStat.Get(StatType.Reflect) / 100);
             return attackResult;
         }
     }

@@ -37,7 +37,6 @@ namespace CharacterSystem
             {
                 // 경계선 밖으로 나가려 하면 이전 위치로 되돌림
                 transform.position = transform.position;
-                Debug.Log("Character001 OnTriggerExit2D");
             }
         }
 
@@ -53,11 +52,7 @@ namespace CharacterSystem
         {
             base.Activate();
 
-            var capsuleCollider = Collider as CapsuleCollider2D;
-            capsuleCollider.isTrigger = false;
-            this.transform.position = Vector3.zero;
-
-            //Debug.Log("Character001 Activated.");
+            transform.position = Vector3.zero;
         }
 
         public override void Deactivate()

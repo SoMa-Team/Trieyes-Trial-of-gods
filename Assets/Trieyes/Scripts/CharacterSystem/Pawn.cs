@@ -47,7 +47,6 @@ namespace CharacterSystem
 
         [Header("Components")]
         public Rigidbody2D rb;
-        public Collider2D Collider;
 
         [SerializeField] protected Controller Controller;
         [SerializeField] protected Animator Animator;
@@ -146,7 +145,6 @@ namespace CharacterSystem
         protected virtual void Start()
         {
             if(rb is null) rb = GetComponent<Rigidbody2D>();
-            if (Collider is null) Collider = GetComponent<Collider2D>();
             
             pawnPrefab = transform.GetChild(0).gameObject;
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
@@ -186,10 +184,6 @@ namespace CharacterSystem
         /// </summary>
         public virtual void Activate()
         {
-            if (Collider is not null)
-            {
-                Collider.enabled = true;
-            }
             if (rb is not null)
             {
                 rb.linearVelocity = Vector2.zero;
@@ -198,9 +192,7 @@ namespace CharacterSystem
             {
                 Controller.Activate(this);
             }
-
             isDead = false;
-            Collider.enabled = true;
             
             // PlayerController를 동적으로 붙이거나, 인스펙터에서 할당
             if (Controller is null)
@@ -763,9 +755,6 @@ namespace CharacterSystem
 
         private void HandleDeath()
         {
-            ////Debug.Log($"<color=red>[EVENT] {gameObject.name} - OnDeath triggered</color>");
-            // TO-DO : 이부분을 죽을 때 해야 하는가?
-            Collider.enabled = false;
             rb.linearVelocity = Vector3.zero;
 
             isDead = true;

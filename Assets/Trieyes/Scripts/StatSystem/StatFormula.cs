@@ -8,19 +8,18 @@ namespace Stats
     // 정규화 계산에 필요한 컨텍스트
     public readonly struct StatEvalCtx
     {
-        public readonly Pawn Pawn;          // 필요 시 참조용
         public readonly int Raw;            // 이 스탯의 Raw 최종값 (버프 적용 후 정수)
         public readonly Func<StatType,int> GetRaw; // 다른 스탯 Raw 참조가 필요하면 사용
-        public StatEvalCtx(Pawn pawn, int raw, Func<StatType,int> getRaw)
-        { Pawn = pawn; Raw = raw; GetRaw = getRaw; }
+        public StatEvalCtx(int raw, Func<StatType,int> getRaw)
+        { Raw = raw; GetRaw = getRaw; }
     }
 
     public static class StatFormulas
     {
         // 최종값 계산 함수 맵
         private static readonly Dictionary<StatType, Func<StatEvalCtx, float>> statMap
-            = new Dictionary<StatType, Func<StatEvalCtx, float>>
-        {
+            = new()
+            {
             // 1) 그대로 쓰는 항목은 통일된 람다
             { StatType.AttackPower, ctx => ctx.Raw },
             { StatType.CriticalRate, ctx => ctx.Raw },
@@ -29,7 +28,8 @@ namespace Stats
             { StatType.Health, ctx => ctx.Raw },
             { StatType.Evasion, ctx => ctx.Raw },
             { StatType.ItemMagnet, ctx => ctx.Raw },
-            { StatType.Defense, ctx => ctx.Raw},
+            { StatType.Defense, ctx => ctx.Raw },
+            { StatType.GoldDropRate, ctx => ctx.Raw },
 
             // 2) 정규화/비선형 공식
             { StatType.AttackSpeed, ctx =>
@@ -51,9 +51,6 @@ namespace Stats
             },
             { StatType.LifeSteal, ctx =>
                 Mathf.Clamp(ctx.Raw * (1f/100f), 0f, 10f)
-            },
-            { StatType.GoldDropRate, ctx =>
-                Mathf.Clamp(ctx.Raw, 0f, 100f)
             },
         };
 

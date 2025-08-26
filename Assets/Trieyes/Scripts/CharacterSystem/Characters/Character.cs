@@ -20,10 +20,6 @@ namespace CharacterSystem
             
             // Collision Layer를 Character로 설정
             gameObject.layer = LayerMask.NameToLayer("Character");
-            
-            RegisterAcceptedEvents(
-                Utils.EventType.OnLevelUp
-            );
         }
 
         protected override void OnDestroy()
@@ -52,9 +48,7 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
-
-            var capsuleCollider = Collider as CapsuleCollider2D;
-            capsuleCollider.isTrigger = false;
+            
             this.transform.position = Vector3.zero;
 
             //Debug.Log("Character001 Activated.");

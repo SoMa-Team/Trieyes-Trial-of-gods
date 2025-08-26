@@ -49,7 +49,7 @@ public class CSVToStatPresetSO : EditorWindow
             // 4. 스탯 데이터 처리 (두 번째 컬럼부터)
             for (int j = 1; j < cells.Length; j++)
             {
-                if (int.TryParse(cells[j], out int value) && value != 0)
+                if (int.TryParse(cells[j], out int value))
                 {
                     StatType type = (StatType)(j - 1);
                     

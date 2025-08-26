@@ -234,7 +234,7 @@ namespace CardSystem
                 return false;
 
             // 적용
-            stickerOverrides[baseParamIdx] = sticker;
+            stickerOverrides[baseParamIdx] = sticker.DeepCopy();
             RefreshParamCharRanges();
             return true;
         }
@@ -246,18 +246,25 @@ namespace CardSystem
         {
             var clone = new Card
             {
-                properties = (Property[])this.properties.Clone(),
-                rarity = this.rarity,
-                cardName = this.cardName,
-                illustration = this.illustration,
+                properties      = (Property[])this.properties?.Clone(),
+                rarity          = this.rarity,
+                cardName        = this.cardName,
+                illustration    = this.illustration,
                 cardDescription = this.cardDescription,
-                eventTypes = new List<Utils.EventType>(this.eventTypes),
-                baseParams = this.baseParams,
-                paramCharRanges = this.paramCharRanges != null ? new List<ParamCharRange>(this.paramCharRanges) : new List<ParamCharRange>(),
-                cardAction = this.cardAction?.DeepCopy(),
-                cardStats = this.cardStats?.DeepCopy(),
-                cardEnhancement = this.cardEnhancement?.DeepCopy()
+                eventTypes      = this.eventTypes != null ? new List<Utils.EventType>(this.eventTypes) : new List<Utils.EventType>(),
+                baseParams      = this.baseParams   != null ? new List<string>(this.baseParams)       : new List<string>(),
+                paramCharRanges = this.paramCharRanges != null
+                    ? this.paramCharRanges.Select(r => new ParamCharRange { start = r.start, end = r.end }).ToList()
+                    : new List<ParamCharRange>(),
+                cardAction      = this.cardAction?.DeepCopy(),
+                cardStats       = this.cardStats?.DeepCopy(),
+                cardEnhancement = this.cardEnhancement?.DeepCopy(),
+                
+                stickerOverrides = this.stickerOverrides != null
+                    ? this.stickerOverrides.ToDictionary(kv => kv.Key, kv => kv.Value?.DeepCopy())
+                    : new Dictionary<int, Sticker>()
             };
+
             if (clone.cardAction != null) clone.cardAction.SetCard(clone);
             return clone;
         }

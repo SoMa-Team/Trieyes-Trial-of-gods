@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -54,6 +55,24 @@ namespace CardViews
         private const float BG_Y_OFFSET                      = 0f;
         private const float STICKER_OVERLAY_FIXED_HEIGHT     = 58.28125f;
         private const float NUMBER_STICKER_OVERLAY_Y_OFFSET  = -5.1719f;
+        
+        private bool paramPickMode = false;
+        private Action<int> onParamPicked;     // 선택된 파라미터 idx 콜백
+        private StickerSystem.Sticker pickModeSticker;
+
+        public void EnableParamPickMode(StickerSystem.Sticker sticker, Action<int> onPicked)
+        {
+            paramPickMode = true;
+            pickModeSticker = sticker;
+            onParamPicked = onPicked;
+        }
+
+        public void DisableParamPickMode()
+        {
+            paramPickMode = false;
+            pickModeSticker = null;
+            onParamPicked = null;
+        }
 
         // =============== [오버레이 생성/관리] ===============
         #region Overlay 생성 및 관리
@@ -251,7 +270,7 @@ namespace CardViews
             Dictionary<int, List<int>> res = new();
             for (int i = start; i <= end; i++)
             {
-                if (i <= 0 || i >= textInfo.characterCount) continue;
+                if (i < 0 || i >= textInfo.characterCount) continue;
                 int lineNum = textInfo.characterInfo[i].lineNumber;
                 if (!res.ContainsKey(lineNum))
                     res[lineNum] = new List<int>();
@@ -294,14 +313,19 @@ namespace CardViews
 
                 if (charIndex != -1)
                 {
-                    var sticker = ShopSceneManager.Instance.selectedSticker;
+                    var sticker = paramPickMode ? pickModeSticker : null;
                     if (sticker != null)
                     {
                         bool applied = card.TryApplyStickerOverride(charIndex, sticker);
                         if (applied)
                         {
                             UpdateView();
-                            Debug.Log($"[CardView] 스티커가 char {charIndex}번째 파라미터에 적용됨");
+                            // 파라미터 idx 찾아 콜백(팝업에서 Confirm 버튼 활성화 용)
+                            if (paramPickMode && card.paramCharRanges != null)
+                            {
+                                int paramIdx = card.paramCharRanges.FindIndex(r => r.start <= charIndex && charIndex <= r.end);
+                                if (paramIdx >= 0) onParamPicked?.Invoke(paramIdx);
+                            }
                         }
                         else
                         {

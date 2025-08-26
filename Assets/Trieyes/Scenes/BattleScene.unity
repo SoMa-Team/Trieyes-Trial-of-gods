@@ -232,6 +232,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2497211228870442499, guid: 0644b12cf91bb43e9b9e49455b1f6be3, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2497211228870442499, guid: 0644b12cf91bb43e9b9e49455b1f6be3, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2497211228870442499, guid: 0644b12cf91bb43e9b9e49455b1f6be3, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6502515921653105136, guid: 0644b12cf91bb43e9b9e49455b1f6be3, type: 3}
       propertyPath: m_Name
       value: Edge (3)
@@ -2260,7 +2272,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1237659255298755275, guid: 724d472b5130bf849a166d1055f91149, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

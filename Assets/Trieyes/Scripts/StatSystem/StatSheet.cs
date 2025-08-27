@@ -17,8 +17,6 @@ namespace Stats
 
         const int DEFAULT_VALUE = 0;
 
-        private Pawn owner;
-
         // --- 생성자 ---
 
         /// StatSheet의 새 인스턴스를 초기화합니다.

@@ -51,7 +51,7 @@ namespace AttackComponents
             attackDirection = direction.normalized;
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
-            attackRadius = attack.attacker.statManager.Get(StatType.AttackRange) / 10f;
+            attackRadius = attack.attacker.statSheet.Get(StatType.AttackRange) / 10f;
             
             // 공격 시작
             StartAttack();

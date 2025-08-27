@@ -136,7 +136,7 @@ namespace CharacterSystem
             
             Debug.Log("OnSelfDeath Called");
             Debug.Log($"{result.attacker}");
-            if (result.attacker != null && Random.Range(0, 100f) < result.attacker.statManager.Get(StatType.GoldDropRate))
+            if (result.attacker != null && Random.Range(0, 100f) < result.attacker.statSheet.Get(StatType.GoldDropRate))
             {
                 Gold gold = DropFactory.Instance.CreateGold(transform.position, dropGold);
                 BattleStage.now.AttachGold(gold);

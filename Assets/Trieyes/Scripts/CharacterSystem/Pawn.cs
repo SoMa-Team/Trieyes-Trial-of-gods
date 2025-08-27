@@ -52,8 +52,7 @@ namespace CharacterSystem
         
         [Header("Stats")]
 
-        public StatSheet statSheet => statManager.statSheet;
-        public StatManager statManager { get; private set; }
+        public StatSheet statSheet { get; private set; }
         
         public StatPresetSO statPresetSO;
 
@@ -150,8 +149,7 @@ namespace CharacterSystem
             pawnPrefab = transform.GetChild(0).gameObject;
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
-            // 스탯 시트 초기화
-            statManager = new StatManager(new StatSheet());
+            statSheet = new StatSheet();
             
             deck.Activate(this, true);
             initBaseStat();
@@ -230,7 +228,7 @@ namespace CharacterSystem
             skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
 
             deck.Activate(this, true);
-            statManager = new StatManager(new StatSheet());
+            statSheet = new StatSheet();
             initBaseStat();
             
             SyncHP();
@@ -417,12 +415,12 @@ namespace CharacterSystem
         /// <returns>스탯 값</returns>
         public float GetStatValue(StatType statType)
         {
-            return statManager.Get(statType);
+            return statSheet.Get(statType);
         }
 
         public int GetRawStatValue(StatType statType)
         {
-            return statManager.GetRaw(statType);
+            return statSheet.GetRaw(statType);
         }
         
         /// <summary>

@@ -35,8 +35,8 @@ namespace AttackSystem
                 target = target
             };
 
-            var attackStat = attack.statManager;
-            var targetStat = target.statManager;
+            var attackStat = attack.statSheet;
+            var targetStat = target.statSheet;
 
             var attackResult = calcAttackResultByStatSheet(initAttackResult, attackStat, targetStat);
             return attackResult;
@@ -52,16 +52,16 @@ namespace AttackSystem
                 target = target
             };
 
-            var attackStat = attacker.statManager;
-            var targetStat = target.statManager;
+            var attackStat = attacker.statSheet;
+            var targetStat = target.statSheet;
 
             var attackResult = calcAttackResultByStatSheet(initAttackResult, attackStat, targetStat);
 
             return attackResult;
         }
         
-        private static AttackResult calcAttackResultByStatSheet(AttackResult attackResult, StatManager attackStat,
-            StatManager targetStat)
+        private static AttackResult calcAttackResultByStatSheet(AttackResult attackResult, StatSheet attackStat,
+            StatSheet targetStat)
         {
             attackResult.isEvaded = Random.Range(0f, 100f) < targetStat.Get(StatType.Evasion);
 

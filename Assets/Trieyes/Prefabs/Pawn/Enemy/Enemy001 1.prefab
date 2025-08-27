@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &373576148167022596
 Transform:
   m_ObjectHideFlags: 0
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 9048457892950683038}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.1796867, y: 0.48511913, z: -0.015129979}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -52,6 +52,7 @@ MonoBehaviour:
   currentHp: 100
   rb: {fileID: 7661104193838161178}
   Collider: {fileID: 9097963647980026422}
+  Controller: {fileID: 0}
   Animator: {fileID: 1138489585984773130}
   statPresetSO: {fileID: 11400000, guid: f1d19ea4c070b4c4383b416bd94a26a7, type: 2}
   lastestDirection: {x: 0, y: 0}
@@ -64,6 +65,7 @@ MonoBehaviour:
   lastSkillAttack2Time: -999
   objectID: 0
   dropGold: 0
+  playerTarget: {fileID: 0}
 --- !u!50 &7661104193838161178
 Rigidbody2D:
   serializedVersion: 5
@@ -125,8 +127,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.5, y: 1}
+  m_Offset: {x: 0, y: 0.1}
+  m_Size: {x: 0.18, y: 0.18}
   m_Direction: 0
 --- !u!114 &3409926898952419185
 MonoBehaviour:
@@ -141,8 +143,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
+  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
+  isAutoAttack: 0
   minFollowDistance: 0.1
+  minRunDistance: 1
+  enemyType: 0
 --- !u!1001 &1428105835955540023
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -925,7 +931,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8852155101928985641, guid: 4bb672e58a2b5ae498d4a03d46222643, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8852155101928985641, guid: 4bb672e58a2b5ae498d4a03d46222643, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

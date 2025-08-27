@@ -37,7 +37,6 @@ namespace CharacterSystem
             {
                 // 경계선 밖으로 나가려 하면 이전 위치로 되돌림
                 transform.position = transform.position;
-                Debug.Log("Character001 OnTriggerExit2D");
             }
         }
 
@@ -53,11 +52,7 @@ namespace CharacterSystem
         {
             base.Activate();
 
-            var capsuleCollider = Collider as CapsuleCollider2D;
-            capsuleCollider.isTrigger = false;
-            this.transform.position = Vector3.zero;
-
-            //Debug.Log("Character001 Activated.");
+            transform.position = Vector3.zero;
         }
 
         public override void Deactivate()
@@ -101,6 +96,58 @@ namespace CharacterSystem
                     return false;
             }
             return false;
+        }
+
+        public void CreateAttack(PawnAttackType attackType)
+        {
+            switch (attackType)
+            {
+                case PawnAttackType.BasicAttack:
+                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
+                    break;
+                case PawnAttackType.Skill1:
+                    AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
+                    break;
+                case PawnAttackType.Skill2:
+                    AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
+                    break;
+            }
+        }
+
+        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        {
+            switch (attackType)
+            {
+                case PawnAttackType.BasicAttack:
+                    if (Time.time - lastAttackTime >= attackCooldown)
+                    {
+                        CalculateAttackCooldown();
+                        lastAttackTime = Time.time;
+                        ChangeAnimationState("ATTACK");
+                        return true;
+                    }
+                    return false;
+                case PawnAttackType.Skill1:
+                    if (CheckSkillCooldown(PawnAttackType.Skill1))
+                    {
+                        lastSkillAttack1Time = Time.time;
+                        ChangeAnimationState("SKILL001");
+                        return true;
+                    }
+                    return false;
+
+                case PawnAttackType.Skill2:
+                    if (CheckSkillCooldown(PawnAttackType.Skill2))
+                    {
+                        lastSkillAttack2Time = Time.time;
+                        ChangeAnimationState("SKILL002");
+                        return true;
+                    }
+                    return false;
+                    
+                default:
+                    return false;
+            }
         }
     }
 }

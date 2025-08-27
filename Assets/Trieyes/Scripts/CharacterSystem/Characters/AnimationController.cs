@@ -22,9 +22,28 @@ public class AnimationController : MonoBehaviour
         }
     }
 
-    public void AttackOnAnimationStart()
+    public void BasicAttackOnAnimationStart()
     {
-        
+        if (owner is Character character)
+        {
+            character.CreateAttack(PawnAttackType.BasicAttack);
+        }
+    }
+
+    public void Skill1OnAnimationStart()
+    {
+        if (owner is Character character)
+        {
+            character.CreateAttack(PawnAttackType.Skill1);
+        }
+    }
+
+    public void Skill2OnAnimationStart()
+    {
+        if (owner is Character character)
+        {
+            character.CreateAttack(PawnAttackType.Skill2);
+        }
     }
 
     public void AttackOnAnimationEnd()

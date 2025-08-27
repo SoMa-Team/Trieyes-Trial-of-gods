@@ -29,7 +29,6 @@ public class ShopSceneManager : MonoBehaviour
     public Button sellButton;
     public Button rerollButton;
     public Button nextBattleButton;
-    public Button stickerFlowCancelButton;
     public TMP_Text sellPriceText;
     public TMP_Text rerollPriceText;
     public TMP_Text deckCountText;
@@ -82,9 +81,7 @@ public class ShopSceneManager : MonoBehaviour
 
     // ========= [영역별 비활성 패널] =========
     [Header("Inactive Panel")]
-    [SerializeField] private Image shopAreaInactivePanel;
-    [SerializeField] private Image sidebarInactivePanel;
-    [SerializeField] private Image topbarInactivePanel;
+    [SerializeField] private Image stickerFlowPanel;
 
     // ========= [스티커 팝업] =========
     [SerializeField] private StickerApplyPopup stickerApplyPopup;
@@ -183,27 +180,22 @@ public class ShopSceneManager : MonoBehaviour
         mode = newMode;
 
         bool inactive = (mode != ShopMode.Normal);
-        if (shopAreaInactivePanel) { shopAreaInactivePanel.gameObject.SetActive(inactive); shopAreaInactivePanel.raycastTarget = inactive; }
-        if (sidebarInactivePanel)  { sidebarInactivePanel.gameObject.SetActive(inactive);  sidebarInactivePanel.raycastTarget  = inactive; }
-        if (topbarInactivePanel)   { topbarInactivePanel.gameObject.SetActive(inactive);   topbarInactivePanel.raycastTarget   = inactive; }
+        if (stickerFlowPanel) { stickerFlowPanel.gameObject.SetActive(inactive); }
 
         switch (mode)
         {
             case ShopMode.Normal:
                 SetGlobalUIInteractable(true);
-                stickerFlowCancelButton.gameObject.SetActive(false);
                 stickerApplyPopup.Deactivate();
                 break;
             case ShopMode.AwaitCardPick:
                 DeselectAllCards();
                 SetGlobalUIInteractable(false);
-                stickerFlowCancelButton.gameObject.SetActive(true);
                 stickerApplyPopup.Deactivate();
                 break;
             case ShopMode.StickerPopup:
                 DeselectAllCards();
                 SetGlobalUIInteractable(false);
-                stickerFlowCancelButton.gameObject.SetActive(false);
                 break;
         }
     }
@@ -435,7 +427,7 @@ public class ShopSceneManager : MonoBehaviour
 
         // 2) 원본 카드에 최종 적용
         int charIndex = targetCard.paramCharRanges[paramIdx].start;
-        bool ok = targetCard.TryApplyStickerOverride(charIndex, pendingSticker);
+        bool ok = targetCard.TryApplyStickerOverrideAtCharIndex(charIndex, pendingSticker);
         if (!ok)
         {
             Debug.LogWarning("Sticker apply failed on original card.");

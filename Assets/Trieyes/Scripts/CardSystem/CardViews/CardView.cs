@@ -316,7 +316,7 @@ namespace CardViews
                     var sticker = paramPickMode ? pickModeSticker : null;
                     if (sticker != null)
                     {
-                        bool applied = card.TryApplyStickerOverride(charIndex, sticker);
+                        bool applied = card.TryApplyStickerOverrideAtCharIndex(charIndex, sticker);
                         if (applied)
                         {
                             UpdateView();

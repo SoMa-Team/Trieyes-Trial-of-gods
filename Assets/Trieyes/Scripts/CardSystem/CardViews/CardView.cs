@@ -45,6 +45,9 @@ namespace CardViews
         // =================== [내부 상태] ===================
         private Card card;
         private readonly List<GameObject> activeStickerOverlays = new();
+        
+        private int appliedParamIdxForPickMode = -1;
+        private readonly Dictionary<int, StickerSystem.Sticker> previewReplacedBackup = new();
 
         // =================== [상수/옵션] ===================
         private static readonly Vector2 OVERLAY_PADDING      = new(15f, 15f);
@@ -65,6 +68,8 @@ namespace CardViews
             paramPickMode = true;
             pickModeSticker = sticker;
             onParamPicked = onPicked;
+            appliedParamIdxForPickMode = -1;
+            previewReplacedBackup.Clear();
         }
 
         public void DisableParamPickMode()
@@ -72,6 +77,8 @@ namespace CardViews
             paramPickMode = false;
             pickModeSticker = null;
             onParamPicked = null;
+            appliedParamIdxForPickMode = -1;
+            previewReplacedBackup.Clear();
         }
 
         // =============== [오버레이 생성/관리] ===============
@@ -316,16 +323,41 @@ namespace CardViews
                     var sticker = paramPickMode ? pickModeSticker : null;
                     if (sticker != null)
                     {
-                        bool applied = card.TryApplyStickerOverrideAtCharIndex(charIndex, sticker);
+                        int newParamIdx = card.FindParamIndexByCharIndex(charIndex);
+                        if (newParamIdx < 0)
+                        {
+                            Debug.LogWarning("[CardView] 파라미터 범위 밖 클릭");
+                            return;
+                        }
+
+                        if (appliedParamIdxForPickMode >= 0 && appliedParamIdxForPickMode != newParamIdx)
+                        {
+                            card.RemoveStickerOverridesByInstance(sticker);
+                            
+                            if (previewReplacedBackup.TryGetValue(appliedParamIdxForPickMode, out var prev))
+                            {
+                                card.TryApplyStickerOverrideAtParamIndex(appliedParamIdxForPickMode, prev);
+                                previewReplacedBackup.Remove(appliedParamIdxForPickMode);
+                            }
+                        }
+                        //붙이기 전에 백업
+                        if (card.stickerOverrides != null &&
+                            card.stickerOverrides.TryGetValue(newParamIdx, out var existingAtNew) &&
+                            existingAtNew != null &&
+                            existingAtNew.instanceId != sticker.instanceId &&
+                            !previewReplacedBackup.ContainsKey(newParamIdx))
+                        {
+                            previewReplacedBackup[newParamIdx] = existingAtNew;
+                        }
+                        
+                        bool applied = card.TryApplyStickerOverrideAtParamIndex(newParamIdx, sticker);
                         if (applied)
                         {
+                            appliedParamIdxForPickMode = newParamIdx;
                             UpdateView();
-                            // 파라미터 idx 찾아 콜백(팝업에서 Confirm 버튼 활성화 용)
-                            if (paramPickMode && card.paramCharRanges != null)
-                            {
-                                int paramIdx = card.paramCharRanges.FindIndex(r => r.start <= charIndex && charIndex <= r.end);
-                                if (paramIdx >= 0) onParamPicked?.Invoke(paramIdx);
-                            }
+
+                            // Confirm 버튼 활성화를 위해 파라미터 idx 콜백
+                            onParamPicked?.Invoke(newParamIdx);
                         }
                         else
                         {

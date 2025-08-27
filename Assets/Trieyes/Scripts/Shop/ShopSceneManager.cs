@@ -424,18 +424,14 @@ public class ShopSceneManager : MonoBehaviour
             Debug.LogWarning("Purchase commit failed (not enough gold or slot invalid).");
             return; // 팝업 유지
         }
-
-        // 2) 원본 카드에 최종 적용
-        int charIndex = targetCard.paramCharRanges[paramIdx].start;
-        bool ok = targetCard.TryApplyStickerOverrideAtCharIndex(charIndex, pendingSticker);
+        targetCard.RemoveStickerOverridesByInstance(pendingSticker);
+        bool ok = targetCard.TryApplyStickerOverrideAtParamIndex(paramIdx, pendingSticker);
         if (!ok)
         {
             Debug.LogWarning("Sticker apply failed on original card.");
-            // (정책에 따라 환불/롤백이 필요하면 commit을 validate/commit 두 단계로 분리)
             return;
         }
 
-        // 3) 마무리
         if (stickerApplyPopup != null) stickerApplyPopup.Deactivate();
         pendingTargetCardView?.UpdateView();
         SyncWithDeck();

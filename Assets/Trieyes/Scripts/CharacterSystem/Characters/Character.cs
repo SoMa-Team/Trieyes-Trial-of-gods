@@ -30,15 +30,6 @@ namespace CharacterSystem
         {
             base.OnDestroy();
         }
-        
-        void OnTriggerExit2D(Collider2D other)
-        {
-            if (other.CompareTag("Boundary"))
-            {
-                // 경계선 밖으로 나가려 하면 이전 위치로 되돌림
-                transform.position = transform.position;
-            }
-        }
 
         public override void Update()
         {
@@ -58,15 +49,6 @@ namespace CharacterSystem
         public override void Deactivate()
         {
             base.Deactivate();
-        }
-
-        public void OnTriggerEnter2D(Collider2D other)
-        {
-            if (other.CompareTag("Boundary"))
-            {
-                Debug.Log("Character001 OnTriggerEnter2D");
-                transform.position = lastPosition;
-            }
         }
 
         // ===== [이벤트 처리 메서드] =====

@@ -17,6 +17,10 @@ namespace CharacterSystem
         [SerializeField] 
         protected int dropGold; // 드랍할 골드 양
         public Character playerTarget;
+
+        protected float lastTriggerEnterTime = 0f;
+        protected float lastTriggerStayTime = 0f;
+        public float collisionDamageInterval = 0.5f;
    
         // ===== [기능 2] 초기화 =====
         protected override void Start()
@@ -35,11 +39,6 @@ namespace CharacterSystem
         {
             base.Activate();
             playerTarget = BattleStage.now.mainCharacter;
-            // TODO: AttackComponent 할당
-            ////Debug.Log("Enemy001 Activated.");
-
-            // 이런 느낌으로 각 적마다 커스터마이징 
-            // boxCollider = Collider as BoxCollider2D;
         }
 
         /// <summary>
@@ -51,14 +50,41 @@ namespace CharacterSystem
             ////Debug.Log("Enemy001 Deactivated.");
         }
 
-        protected override void OnTriggerEnter2D(Collider2D other)
+        protected override void OnTriggerStay2D(Collider2D other)
         {
-            base.OnTriggerEnter2D(other);
+            base.OnTriggerStay2D(other);
 
-            if(other.gameObject.CompareTag("Player"))
+            if(!other.gameObject.CompareTag("Player"))
+            {
+                return;
+            }
+            if(Time.time - lastTriggerStayTime >= collisionDamageInterval)
             {
                 var character = other.gameObject.GetComponent<Character>();
                 DamageProcessor.ProcessHit(this, character);
+                lastTriggerStayTime = Time.time;
+            }
+            else
+            {
+                lastTriggerStayTime = Time.time;
+            }
+        }
+
+        protected override void OnTriggerEnter2D(Collider2D other)
+        {
+            base.OnTriggerEnter2D(other);
+            if(other.gameObject.CompareTag("Player"))
+            {
+                lastTriggerEnterTime = Time.time;
+            }
+        }
+
+        protected override void OnTriggerExit2D(Collider2D other)
+        {
+            base.OnTriggerExit2D(other);
+            if(other.gameObject.CompareTag("Player"))
+            {
+                lastTriggerEnterTime = 0f;
             }
         }
 

@@ -43,6 +43,8 @@ public class StickerApplyPopup : MonoBehaviour
 
         // 초기는 확정 비활성
         confirmButton.interactable = false;
+        
+        OnResize();
     }
 
     public void Deactivate()
@@ -59,6 +61,25 @@ public class StickerApplyPopup : MonoBehaviour
 
         // 닫기
         gameObject.SetActive(false);
+    }
+
+    public void OnResize()
+    {
+        Canvas.ForceUpdateCanvases();
+        RectTransform target = (RectTransform)transform;
+        RectTransform view   = CardView.rectTransform;
+        
+        Vector2 viewWorldSize   = Vector2.Scale(view.rect.size,   view.lossyScale);
+        Vector2 targetWorldSize = Vector2.Scale(target.rect.size, target.lossyScale);
+        
+        float desiredHeight = Mathf.Max(1f, targetWorldSize.y) * 0.6f;
+        float scaleByHeight = desiredHeight / Mathf.Max(1f, viewWorldSize.y);
+        
+        view.localScale = new Vector3(
+            view.localScale.x * scaleByHeight,
+            view.localScale.y * scaleByHeight,
+            1f
+        );
     }
 
     private void Awake()

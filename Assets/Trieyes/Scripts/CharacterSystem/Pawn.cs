@@ -64,7 +64,6 @@ namespace CharacterSystem
 
         protected float attackCooldown = 0f;
         
-        public Vector2 lastestDirection;
         // ===== [프로퍼티] =====
         public int? enemyID;
         public bool isEnemy => enemyID is not null; 

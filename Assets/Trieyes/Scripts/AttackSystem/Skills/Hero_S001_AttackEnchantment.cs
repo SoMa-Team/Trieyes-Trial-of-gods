@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using AttackSystem;
 using CharacterSystem;
 using UnityEngine;
-using BattleSystem;
 using Stats;
 
 namespace AttackComponents
@@ -20,7 +19,6 @@ namespace AttackComponents
         public float generationInterval = 1f; // 강화 효과 생성 간격
 
         private Character001_Hero character;
-        private float lastEnchantmentTime = 0f;
 
         // FSM 상태 관리
         private EnchantmentState enchantmentState = EnchantmentState.None;
@@ -67,24 +65,11 @@ namespace AttackComponents
             // 초기 상태 설정
             enchantmentState = EnchantmentState.Preparing;
             enchantmentTimer = 0f;
-            lastEnchantmentTime = 0f;
-            
-            character.lockBasicAttack = true;
         }
 
         public override void OnLockActivate()
         {
             base.OnLockActivate();
-            character.activeSkill001Count++;
-        }
-
-        private void DetermineAndSetEnchantment()
-        {
-            // 랜덤 강화 효과 선택
-            randomEnchantmentID = GetRandomEnchantmentID();
-            SetHeroWeaponElementState(randomEnchantmentID);
-            
-            Debug.Log($"[S001] {randomEnchantmentID}번 속성 결정됨!");
         }
 
         protected override void Update()
@@ -126,23 +111,15 @@ namespace AttackComponents
                     // 공격속도에 맞춰 강화 효과 생성 간격 설정
                     float attackSpeed = character.GetStatValue(StatType.AttackSpeed);
                     generationInterval = Mathf.Max(0.0001f, 1f / (attackSpeed / 10f));
-                                        
-                    if (Time.time - lastEnchantmentTime >= generationInterval)
+                    if (character.RAC008Trigger)
                     {
-                        if (character.RAC008Trigger)
-                        {
-                            UpdateEnchantmentDuration();
-                        }
-                        TriggerRandomEnchantment();
-                        lastEnchantmentTime = Time.time;
+                        UpdateEnchantmentDuration();
                     }
                     
                     if (enchantmentTimer >= enchantmentDuration)
                     {
                         enchantmentState = EnchantmentState.Finishing;
                         enchantmentTimer = 0f;
-                        character.activeSkill001Count -= 1;
-                        FinishEnchantment();
                     }
                     break;
 
@@ -161,43 +138,21 @@ namespace AttackComponents
                     break;
             }
         }
-
-        private void FinishEnchantment()
+        
+        private void DetermineAndSetEnchantment()
         {
-            character.weaponElementState = HeroWeaponElementState.None;
-            if (character.activeSkill001Count == 0)
-            {
-                character.lockBasicAttack = false;
-            }
+            // 랜덤 강화 효과 선택
+            randomEnchantmentID = GetRandomEnchantmentID();
+            SetHeroWeaponElementState(randomEnchantmentID);
+            SwapBasicAttackToSkill001(randomEnchantmentID);
             
-            Debug.Log("<color=yellow>[S001] 영웅 소드 강화 효과 종료!</color>");
+            Debug.Log($"[S001] {randomEnchantmentID}번 속성 결정됨!");
         }
 
-        public override void Deactivate()
+        private void SwapBasicAttackToSkill001(int randomEnchantmentID)
         {
-            base.Deactivate();
-            
-            character.weaponElementState = HeroWeaponElementState.None;
-
-            enchantmentTimer = 0f;
-            lastEnchantmentTime = 0f;
-            character.killedDuringSkill001 = 0;
-            character.killedDuringSkill002 = 0;
-        }
-
-        private void TriggerRandomEnchantment()
-        {
-            // 강화 효과 Attack 생성
-            AttackFactory.Instance.Create(attackDatas[randomEnchantmentID], character, null, character.LastMoveDirection);
-            Debug.Log($"<color=yellow>[S001] Random enchantment generated: ID {randomEnchantmentID}</color>");
-            Debug.Log($"<color=yellow>[S001] {attack.gameObject.name} attackDatas: {attackDatas[randomEnchantmentID].attackId}, attacker: {character.gameObject.name}</color>");
-        }
-
-        private void UpdateEnchantmentDuration()
-        {
-            var killCountDiff = character.killedDuringSkill001 - currentKilledCount;
-            currentKilledCount = character.killedDuringSkill001;
-            enchantmentDuration += killCountDiff * 0.1f;
+            character.Skill001Attack = attackDatas[randomEnchantmentID];
+            character.basicAttack = character.Skill001Attack;
         }
 
         private int GetRandomEnchantmentID()
@@ -243,6 +198,13 @@ namespace AttackComponents
                     character.weaponElementState = HeroWeaponElementState.None;
                     break;
             }
+        }
+
+        private void UpdateEnchantmentDuration()
+        {
+            var killCountDiff = character.killedDuringSkill001 - currentKilledCount;
+            currentKilledCount = character.killedDuringSkill001;
+            enchantmentDuration += killCountDiff * 0.1f;
         }
 
         /// <summary>
@@ -312,6 +274,19 @@ namespace AttackComponents
                 var buff = new BUFF();
                 buff.Activate(buffInfo);
             }
+        }
+
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            
+            character.basicAttack = character._basicAttack;
+            character.Skill001Attack = null;
+            character.weaponElementState = HeroWeaponElementState.None;
+
+            enchantmentTimer = 0f;
+            character.killedDuringSkill001 = 0;
+            character.killedDuringSkill002 = 0;
         }
     }
 } 

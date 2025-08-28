@@ -26,9 +26,13 @@ namespace CharacterSystem.Enemies
         public EnemyType enemyType;
         private Transform playerTarget;
 
+        private Enemy enemy;
+
+        private Vector3 targetCollisionOffset = new Vector3(0, 0.4f, 0);
+
         private void Update()
         {
-            if (owner == null || playerTarget == null || owner.isDead)
+            if (owner == null || playerTarget == null || enemy.isDead)
             {
                 return;
             }
@@ -36,9 +40,22 @@ namespace CharacterSystem.Enemies
             Behaviour();
         }
 
+        public override void Activate(Pawn pawn)
+        {
+            base.Activate(pawn);
+
+            var playerObj = BattleStage.now.mainCharacter.gameObject;
+            if (playerObj != null)
+            {
+                playerTarget = playerObj.transform;
+            }
+            
+            enemy = pawn as Enemy;
+        }
+
         private void Behaviour()
         {
-            var attackRange = owner.statSheet[StatType.AttackRange];
+            var attackRange = enemy.statSheet[StatType.AttackRange];
             var playerPos = playerTarget.position;
             var enemyPos = transform.position;
             if (!lockMovement)
@@ -47,15 +64,15 @@ namespace CharacterSystem.Enemies
                 {
                     default:
                     case EnemyType.Follow:
-                        Vector2 toPlayer = (playerTarget.position - transform.position);
+                        Vector2 toPlayer = (playerTarget.position - transform.position + (Vector3)targetCollisionOffset);
                         float dist = toPlayer.magnitude;
                         if (dist > minFollowDistance)
                         {
-                            owner.Move(toPlayer.normalized);
+                            enemy.Move(toPlayer.normalized);
                         }
                         else
                         {
-                            owner.Move(Vector2.zero); // 너무 가까우면 멈춤
+                            enemy.Move(Vector2.zero); // 너무 가까우면 멈춤
                         }
                         break;
                     case EnemyType.RangeAttackRun:
@@ -66,48 +83,36 @@ namespace CharacterSystem.Enemies
                         {
                             // 플레이어 방향 벡터의 반대 방향으로 도망침
                             Vector2 runDirection = (enemyPos - playerPos).normalized;
-                            owner.Move(runDirection);
+                            enemy.Move(runDirection);
                         }
                         // 2. 공격 사거리 내에 있는 경우 공격
                         else if (distanceToPlayer <= attackRange)
                         {
-                            owner.Move(Vector2.zero);
-                            owner.ExecuteAttack();
+                            enemy.Move(Vector2.zero);
+                            enemy.ExecuteAttack();
                         }
                         // 3. 기본적으로 공격 사거리 내로 이동
                         else
                         {
                             Vector2 moveDirection = (playerPos - enemyPos).normalized;
-                            owner.Move(moveDirection);
+                            enemy.Move(moveDirection);
                         }
                         break;
                     case EnemyType.RangeAttackOnly:
                         // owner 사정거리 정보 가져옴
                         if (Vector2.Distance(playerPos, enemyPos) <= attackRange)
                         {
-                            owner.Move(Vector2.zero);
-                            owner.ExecuteAttack();
+                            enemy.Move(Vector2.zero);
+                            enemy.ExecuteAttack();
                         }
                         else
                         {
-                            owner.Move(playerPos - enemyPos);
+                            enemy.Move(playerPos - enemyPos);
                         }
                         break;
                     case EnemyType.Boss:
                         break;
                 }
-            }
-        }
-
-        public override void Activate(Pawn pawn)
-        {
-            base.Activate(pawn);
-
-            var playerObj = BattleStage.now.mainCharacter.gameObject;
-
-            if (playerObj != null)
-            {
-                playerTarget = playerObj.transform;
             }
         }
     }

@@ -30,6 +30,8 @@ namespace CharacterSystem
 
         public AttackData _basicAttack;
         public AttackData Skill001Attack;
+
+        public Hero_S001_AttackEnchantment currentEnchantment;
         
         // RAC 관련 트리거 변수들
         public bool RAC006Trigger = false; // 속성 검기 발사용

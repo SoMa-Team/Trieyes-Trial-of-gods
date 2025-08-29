@@ -14,14 +14,13 @@ namespace AttackComponents
     public class Hero_S001_AttackEnchantment : AttackComponent
     {
         [Header("강화 설정")]
-        public int randomEnchantmentID = 1;
-        public float enchantmentDuration = 7f; // 강화 지속 시간
-        public float generationInterval = 1f; // 강화 효과 생성 간격
-
+        public int randomEnchantmentID = -1;
         private Character001_Hero character;
 
         // FSM 상태 관리
         private EnchantmentState enchantmentState = EnchantmentState.None;
+
+        public float enchantmentDuration = 7f; // 강화 지속 시간
         private float enchantmentTimer = 0f;
 
         // 강화 효과 상태 열거형
@@ -56,13 +55,6 @@ namespace AttackComponents
                 return;
             }
             
-            // 공격속도에 맞춰 강화 효과 생성 간격 설정
-            float attackSpeed = character.GetStatValue(StatType.AttackSpeed);
-            generationInterval = Mathf.Max(0.0001f, 1f / (attackSpeed / 10f));
-            
-            Debug.Log($"[S001] 공격속도 기반 생성 간격 설정: AttackSpeed={attackSpeed}, GenerationInterval={generationInterval:F2}s");
-            
-            // 초기 상태 설정
             enchantmentState = EnchantmentState.Preparing;
             enchantmentTimer = 0f;
         }
@@ -70,6 +62,11 @@ namespace AttackComponents
         public override void OnLockActivate()
         {
             base.OnLockActivate();
+            if(character.currentEnchantment is not null)
+            {
+                character.currentEnchantment.StopEnchantment();
+            }
+            character.currentEnchantment = this;
         }
 
         protected override void Update()
@@ -110,7 +107,6 @@ namespace AttackComponents
 
                     // 공격속도에 맞춰 강화 효과 생성 간격 설정
                     float attackSpeed = character.GetStatValue(StatType.AttackSpeed);
-                    generationInterval = Mathf.Max(0.0001f, 1f / (attackSpeed / 10f));
                     if (character.RAC008Trigger)
                     {
                         UpdateEnchantmentDuration();
@@ -137,6 +133,12 @@ namespace AttackComponents
                     AttackFactory.Instance.Deactivate(attack);
                     break;
             }
+        }
+
+        private void StopEnchantment()
+        {
+            Debug.LogError("[S001] 강화 효과 종료");
+            enchantmentState = EnchantmentState.Finished;
         }
         
         private void DetermineAndSetEnchantment()

@@ -19,7 +19,6 @@ namespace CharacterSystem
         public Character playerTarget;
 
         protected float lastTriggerEnterTime = 0f;
-        protected float lastTriggerStayTime = 0f;
         public float collisionDamageInterval = 0.5f;
    
         // ===== [기능 2] 초기화 =====
@@ -50,6 +49,15 @@ namespace CharacterSystem
             ////Debug.Log("Enemy001 Deactivated.");
         }
 
+        protected override void OnTriggerEnter2D(Collider2D other)
+        {
+            base.OnTriggerEnter2D(other);
+            if(other.gameObject.CompareTag("Player"))
+            {
+                lastTriggerEnterTime = Time.time;
+            }
+        }
+
         protected override void OnTriggerStay2D(Collider2D other)
         {
             base.OnTriggerStay2D(other);
@@ -58,24 +66,13 @@ namespace CharacterSystem
             {
                 return;
             }
-            if(Time.time - lastTriggerStayTime >= collisionDamageInterval)
+
+            var currentTime = Time.time;
+            if(currentTime - lastTriggerEnterTime >= collisionDamageInterval)
             {
                 var character = other.gameObject.GetComponent<Character>();
                 DamageProcessor.ProcessHit(this, character);
-                lastTriggerStayTime = Time.time;
-            }
-            else
-            {
-                lastTriggerStayTime = Time.time;
-            }
-        }
-
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            base.OnTriggerEnter2D(other);
-            if(other.gameObject.CompareTag("Player"))
-            {
-                lastTriggerEnterTime = Time.time;
+                lastTriggerEnterTime = currentTime;
             }
         }
 

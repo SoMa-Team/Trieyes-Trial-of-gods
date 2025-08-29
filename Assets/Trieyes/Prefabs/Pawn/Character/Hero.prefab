@@ -67,13 +67,13 @@ MonoBehaviour:
   lastPosition: {x: 0, y: 0, z: 0}
   weaponElementState: 0
   activateLight: 0
-  lockBasicAttack: 0
   minRandomEnchantmentID: 1
   maxRandomEnchantmentID: 4
-  activeSkill001Count: 0
-  activeSkill002Count: 0
   killedDuringSkill001: 0
   killedDuringSkill002: 0
+  _basicAttack: {fileID: 0}
+  Skill001Attack: {fileID: 0}
+  currentEnchantment: {fileID: 0}
   RAC006Trigger: 0
   RAC008Trigger: 0
   RAC010Trigger: 0
@@ -162,7 +162,7 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0.37}
-  m_Size: {x: 0.43, y: 0.72}
+  m_Size: {x: 0.73, y: 0.94}
   m_Direction: 0
 --- !u!70 &2775514416352229891
 CapsuleCollider2D:

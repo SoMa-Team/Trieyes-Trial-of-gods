@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4be2a8a3b5bfe4599a838d4cdb81929d, type: 3}
+  m_Name: Card0602_Berserker
+  m_EditorClassIdentifier: 
+  Id: 602
+  properties: 00000000
+  rarity: 2
+  cardName: "\uAD11\uC804\uC0AC\uC758 \uBD84\uB178"
+  illustration: {fileID: 8703389998563471379, guid: 8230accc3c9ce4afa801c71e3695fffb, type: 3}
+  cardDescription: "<size=35><b>\uD53C\uD574\uB97C \uBC1B\uC744 \uC2DC</b></size>\n{0}   
+    {1} \uC99D\uAC00"
+  eventTypes: 0300000009000000
+  baseParams:
+  - "\uACF5\uACA9\uB825"
+  - 1
+  paramCharRanges:
+  - start: 9
+    end: 11
+  - start: 16
+    end: 16

@@ -63,7 +63,7 @@ namespace AttackComponents
         // VFX 설정
         [Header("VFX 설정")]
         [SerializeField] public GameObject projectileVFXPrefab; // 발사체 VFX 프리팹
-        private GameObject spawnedVFX;
+        
 
         // 디버그 설정
         [Header("디버그 설정")]

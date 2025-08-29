@@ -63,7 +63,7 @@ namespace AttackComponents
         // DOT VFX 설정
         [Header("DOT VFX 설정")]
         [SerializeField] public GameObject dotVFXPrefab; // DOT VFX 프리팹 (외부에서 설정 가능)
-        private GameObject spawnedVFX; // 단일 VFX 관리
+         // 단일 VFX 관리
         public float dotVFXDuration = 0.3f;
 
         // FSM 상태 관리

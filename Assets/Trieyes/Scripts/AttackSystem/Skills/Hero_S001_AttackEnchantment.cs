@@ -45,6 +45,7 @@ namespace AttackComponents
         
         public override void Activate(Attack attack, Vector2 direction)
         {
+            Debug.LogError("Activate Hero_S001_AttackEnchantment");
             base.Activate(attack, direction);
             
             character = attack.attacker as Character001_Hero;
@@ -137,7 +138,6 @@ namespace AttackComponents
 
         private void StopEnchantment()
         {
-            Debug.LogError("[S001] 강화 효과 종료");
             enchantmentState = EnchantmentState.Finished;
         }
         

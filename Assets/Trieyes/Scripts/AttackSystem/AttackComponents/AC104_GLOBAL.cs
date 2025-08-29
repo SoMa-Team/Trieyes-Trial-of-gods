@@ -29,7 +29,7 @@ namespace AttackComponents
         [Header("VFX 설정")]
         [SerializeField] public GameObject globalVFXPrefab; // GLOBAL VFX 프리팹 (외부에서 설정 가능)
         public float globalVFXDuration = 0.3f;
-        private GameObject spawnedVFX;
+        
 
         // 공격 효과 상태 관리
         private GlobalDamageState globalDamageState = GlobalDamageState.None;

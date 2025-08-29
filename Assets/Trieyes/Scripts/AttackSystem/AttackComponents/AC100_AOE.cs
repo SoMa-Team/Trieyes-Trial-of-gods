@@ -58,7 +58,6 @@ namespace AttackComponents
         [Header("AOE VFX 설정")]
         [SerializeField] public GameObject aoeVFXPrefab; // AOE VFX 프리팹 (외부에서 설정 가능)
         public float aoeVFXDuration = 0.3f;
-        private GameObject spawnedVFX;
 
         // FSM 상태 관리
         private AOEAttackState attackState = AOEAttackState.None;

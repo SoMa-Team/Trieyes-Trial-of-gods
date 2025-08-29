@@ -38,7 +38,6 @@ namespace AttackComponents
         [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
 
         [SerializeField] private GameObject DebuffVFXPrefab; // DOT VFX 프리팹 (AC 전달용)
-        private GameObject spawnedVFX;
 
         // 얼음 공격 상태 열거형
         private enum IceAttackState
@@ -108,10 +107,6 @@ namespace AttackComponents
             
             // VFX 생성 및 설정
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
-            
-            // VFX 재생
-            spawnedVFX.SetActive(true);
-            PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
             if (attack.attackCollider == null)
@@ -124,11 +119,6 @@ namespace AttackComponents
             // 부채꼴 모양의 콜라이더 포인트 생성
             Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
-
-            attack.attackCollider.isTrigger = true;
-            attack.attackCollider.enabled = true;
-            
-            //debug.log("<color=cyan>[AC004] 얼음 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
@@ -284,23 +274,19 @@ namespace AttackComponents
                     {
                         attackState = IceAttackState.Active;
                         attackTimer = 0f;
-                        ActivateIceAttack();
+                        
                     }
                     break;
 
                 case IceAttackState.Active:
-                    attackTimer += Time.deltaTime;
-                    
-                    // 위치 업데이트
-                    attack.transform.position = attack.attacker.transform.position;
-                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
-                    
-                    if (attackTimer >= attackDuration)
-                    {
-                        attackState = IceAttackState.Finished;
-                        attackTimer = 0f;
-                        FinishIceAttack();
-                    }
+                    ActivateIceAttack();
+                    attackState = IceAttackState.Finishing;
+                    attackTimer = 0f;
+                    break;
+
+                case IceAttackState.Finishing:
+                    FinishIceAttack();
+                    attackState = IceAttackState.Finished;
                     break;
 
                 case IceAttackState.Finished:
@@ -314,9 +300,7 @@ namespace AttackComponents
         {
             // 콜라이더 활성화 및 방향 업데이트
             if (attack.attackCollider != null)
-            {
-                attack.attackCollider.enabled = true;
-                
+            {                
                 // 플레이어의 현재 방향으로 콜라이더 포인트 재계산
                 var collider = attack.attackCollider as PolygonCollider2D;
                 if (collider != null)
@@ -337,26 +321,14 @@ namespace AttackComponents
                     Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
                     collider.points = points;
                 }
+
+                StartAttack(spawnedVFX, collider);
             }
-            
-            //debug.log("<color=green>[AC004] 얼음 강화 공격 활성화!</color>");
         }
 
         private void FinishIceAttack()
         {
-            // 콜라이더 비활성화 (삭제하지 않고)
-            if (attack.attackCollider != null)
-            {
-                attack.attackCollider.enabled = false;
-            }
-            
-            // VFX 정리
-            if (spawnedVFX != null)
-            {
-                StopAndDestroyVFX(spawnedVFX);
-            }
-            
-            //debug.log("<color=cyan>[AC004] 얼음 강화 공격 종료!</color>");
+            attack.attackCollider.enabled = false;
         }
 
         /// <summary>
@@ -374,12 +346,14 @@ namespace AttackComponents
                 spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             }
             
+            spawnedVFX.transform.SetParent(attack.attacker.transform);
             spawnedVFX.transform.position = position;
             
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
             spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
-        
+            
+            spawnedVFX.SetActive(true);
             return spawnedVFX;
         }
 

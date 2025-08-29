@@ -1,8 +1,6 @@
 using AttackSystem;
-using CharacterSystem;
 using Stats;
 using UnityEngine;
-using System.Threading;
 
 namespace AttackComponents
 {
@@ -16,7 +14,6 @@ namespace AttackComponents
     public class AC001_HeroSwordRadius : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
-        public float attackDuration = 1f;
         public float attackRadius = 1f; // 회전 반지름
         public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
         
@@ -29,7 +26,6 @@ namespace AttackComponents
         // VFX 설정
         [Header("VFX Settings")]
         [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
-        private GameObject spawnedVFX;
 
         // 공격 상태 열거형
         private enum AttackState
@@ -92,12 +88,6 @@ namespace AttackComponents
             // 부채꼴 모양의 콜라이더 포인트 생성
             Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
-
-            attack.attackCollider.isTrigger = true;
-            attack.attackCollider.enabled = true;
-
-            // VFX 재생
-            PlayVFX(spawnedVFX);
         }
 
         /// <summary>
@@ -168,12 +158,6 @@ namespace AttackComponents
             
             // 공격 상태 처리
             ProcessAttackState();
-            
-            // Active 상태일 때 부채꼴 모양을 지속적으로 그리기
-            if (attackState == AttackState.Active && attack.attackCollider != null)
-            {
-                ////DrawFanShapeDebug();
-            }
         }
 
         private void ProcessAttackState()
@@ -190,32 +174,19 @@ namespace AttackComponents
                     {
                         attackState = AttackState.Active;
                         attackTimer = 0f;
-                        ActivateAttack();
+                        
                     }
                     break;
 
                 case AttackState.Active:
-                    attackTimer += Time.deltaTime;
-                    
-                    // 위치 업데이트
-                    attack.transform.position = attack.attacker.transform.position;
-                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
-                    
-                    if (attackTimer >= attackDuration)
-                    {
-                        attackState = AttackState.Finishing;
-                        attackTimer = 0f;
-                        FinishAttack();
-                    }
+                    ActivateAttack();
+                    attackState = AttackState.Finishing;
+                    attackTimer = 0f;
                     break;
 
                 case AttackState.Finishing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 종료 시간
-                    {
-                        attackState = AttackState.Finished;
-                    }
+                    FinishAttack();
+                    attackState = AttackState.Finished;
                     break;
 
                 case AttackState.Finished:
@@ -229,9 +200,7 @@ namespace AttackComponents
         {
             // 콜라이더 활성화 및 방향 업데이트
             if (attack.attackCollider != null)
-            {
-                attack.attackCollider.enabled = true;
-                
+            {                
                 // 플레이어의 현재 방향으로 콜라이더 포인트 재계산
                 var collider = attack.attackCollider as PolygonCollider2D;
                 if (collider != null)
@@ -252,53 +221,14 @@ namespace AttackComponents
                     Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
                     collider.points = points;
                 }
+
+                StartAttack(spawnedVFX, collider);
             }
-            
-            ////Debug.Log("<color=green>[AC002] 부채꼴 공격 활성화!</color>");
         }
 
         private void FinishAttack()
         {
-            // 콜라이더 비활성화 (삭제하지 않고)
-            if (attack.attackCollider != null)
-            {
-                attack.attackCollider.enabled = false;
-            }
-            
-            // VFX 정리
-            if (spawnedVFX != null)
-            {
-                StopAndDestroyVFX(spawnedVFX);
-            }
-            
-            ////Debug.Log("<color=cyan>[AC002] 부채꼴 공격 종료!</color>");
-        }
-
-        /// <summary>
-        /// 부채꼴 모양을 Scene 뷰에 디버그 라인으로 그립니다.
-        /// </summary>
-        private void DrawFanShapeDebug()
-        {
-            if (attack.attackCollider is PolygonCollider2D collider)
-            {
-                Vector2[] points = collider.points;
-                
-                // 부채꼴 모양 그리기
-                for (int i = 0; i < points.Length - 1; i++)
-                {
-                    Vector3 startPos = attack.transform.position + new Vector3(points[i].x, points[i].y, 0);
-                    Vector3 endPos = attack.transform.position + new Vector3(points[i + 1].x, points[i + 1].y, 0);
-                    Debug.DrawLine(startPos, endPos, Color.yellow, 0.1f);
-                }
-                
-                // 마지막 점과 첫 번째 점을 연결 (폐곡선 만들기)
-                if (points.Length > 2)
-                {
-                    Vector3 lastPos = attack.transform.position + new Vector3(points[points.Length - 1].x, points[points.Length - 1].y, 0);
-                    Vector3 firstPos = attack.transform.position + new Vector3(points[1].x, points[1].y, 0);
-                    Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
-                }
-            }
+            attack.attackCollider.enabled = false;
         }
 
         /// <summary>
@@ -316,6 +246,7 @@ namespace AttackComponents
                 spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             }
             
+            spawnedVFX.transform.SetParent(attack.attacker.transform);
             spawnedVFX.transform.position = position;
             
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

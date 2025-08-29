@@ -38,7 +38,7 @@ namespace AttackComponents
         // VFX 설정
         [Header("VFX 설정")]
         [SerializeField] public GameObject orbitVFXPrefab; // 공전 VFX 프리팹
-        private GameObject spawnedVFX; // 단일 VFX
+         // 단일 VFX
 
         // 공격 관련
         private AttackData attackData;

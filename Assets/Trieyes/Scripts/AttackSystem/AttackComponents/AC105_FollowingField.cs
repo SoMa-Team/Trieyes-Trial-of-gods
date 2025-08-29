@@ -34,7 +34,7 @@ namespace AttackComponents
         [Header("VFX 설정")]
         [SerializeField] public GameObject fieldVFXPrefab; // 필드 VFX 프리팹 (외부에서 설정 가능)
         public float fieldVFXDuration = 0.3f;
-        private GameObject spawnedVFX;
+        
 
         // 자기장 상태 관리
         private FollowingFieldState fieldState = FollowingFieldState.None;

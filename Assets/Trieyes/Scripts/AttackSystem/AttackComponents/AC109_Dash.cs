@@ -57,7 +57,7 @@ namespace AttackComponents
         [Header("Dash VFX 설정")]
         [SerializeField] public GameObject dashVFXPrefab; // Dash VFX 프리팹
         public float dashVFXDuration = 0.3f;
-        private GameObject spawnedVFX;
+        
 
         // FSM 상태 관리
         private DashAttackState attackState = DashAttackState.None;

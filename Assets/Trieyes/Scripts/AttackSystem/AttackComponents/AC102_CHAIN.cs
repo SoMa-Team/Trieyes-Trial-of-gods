@@ -25,7 +25,7 @@ namespace AttackComponents
         [Header("VFX 설정")]
         [SerializeField] public GameObject chainVFXPrefab; // 번개 연쇄 VFX 프리팹 (외부에서 설정 가능)
         public float lightningDuration = 0.2f;
-        private GameObject spawnedVFX;
+        
         private Tween lightningTween; // PrimeTween 트윈
 
         // 번개 연쇄 상태 관리

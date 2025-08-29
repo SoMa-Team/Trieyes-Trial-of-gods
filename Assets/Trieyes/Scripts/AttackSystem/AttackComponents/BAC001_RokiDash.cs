@@ -37,7 +37,7 @@ namespace AttackComponents
         [Header("BAC VFX 설정")]
         [SerializeField] public GameObject bacVFXPrefab; // BAC VFX 프리팹
         public float bacVFXDuration = 0.3f;
-        private GameObject spawnedVFX;
+        
 
         // BAC 공격 상태 열거형
         private enum BACAttackState

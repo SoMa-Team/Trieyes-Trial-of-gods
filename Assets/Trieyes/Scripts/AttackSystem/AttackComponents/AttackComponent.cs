@@ -22,6 +22,7 @@ namespace AttackComponents
 
         // VFX GameObject 구현하는 방향으로 변경
         [SerializeField] protected List<GameObject> vfxList = new List<GameObject>();
+        protected GameObject spawnedVFX;
 
         // ===== [Lock 메커니즘] =====
         protected bool isLocked = false; // Lock 상태 관리
@@ -173,6 +174,10 @@ namespace AttackComponents
             }
         }
 
+        public virtual void PlayVFX()
+        {
+        }
+
         /// <summary>
         /// VFX를 정지하고 반환합니다.
         /// </summary>
@@ -206,12 +211,21 @@ namespace AttackComponents
             vfx.SetActive(false);
         }
 
+        protected void StartAttack(GameObject vfx, Collider2D collider)
+        {
+            collider.isTrigger = true;
+            collider.enabled = true;
+            
+            vfx.SetActive(true);
+            PlayVFX(vfx);
+        }
+
         // ===== [기능 4] 이벤트 처리 =====
         public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
-            return false;
+            return true;
         }
 
         public void SetLevel(int level)

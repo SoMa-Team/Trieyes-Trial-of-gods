@@ -43,7 +43,6 @@ namespace AttackComponents
         // 생성된 VFX 인스턴스
         [Header("VFX Settings")]
         [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
-        private GameObject spawnedVFX;
 
         // AC100 AOE VFX 설정
         [Header("AC100 AOE VFX Settings")]
@@ -117,10 +116,6 @@ namespace AttackComponents
             
             // VFX 생성 및 설정
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
-            
-            // VFX 재생
-            spawnedVFX.SetActive(true);
-            PlayVFX(spawnedVFX);
 
             // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
             if (attack.attackCollider == null)
@@ -133,11 +128,6 @@ namespace AttackComponents
             // 부채꼴 모양의 콜라이더 포인트 생성
             Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
             collider.points = points;
-
-            attack.attackCollider.isTrigger = true;
-            attack.attackCollider.enabled = true;
-            
-            //debug.log("<color=white>[AC006] 천상 강화 공격 시작!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
@@ -251,40 +241,11 @@ namespace AttackComponents
             #endif
         }
 
-        /// <summary>
-        /// 부채꼴 모양을 Scene 뷰에 디버그 라인으로 그립니다.
-        /// </summary>
-        private void DrawFanShapeDebug()
-        {
-            if (attack.attackCollider is PolygonCollider2D collider)
-            {
-                Vector2[] points = collider.points;
-                
-                // 부채꼴 모양 그리기
-                for (int i = 0; i < points.Length - 1; i++)
-                {
-                    Vector3 startPos = attack.transform.position + new Vector3(points[i].x, points[i].y, 0);
-                    Vector3 endPos = attack.transform.position + new Vector3(points[i + 1].x, points[i + 1].y, 0);
-                    Debug.DrawLine(startPos, endPos, Color.yellow, 0.1f);
-                }
-                
-                // 마지막 점과 첫 번째 점을 연결 (폐곡선 만들기)
-                if (points.Length > 2)
-                {
-                    Vector3 lastPos = attack.transform.position + new Vector3(points[points.Length - 1].x, points[points.Length - 1].y, 0);
-                    Vector3 firstPos = attack.transform.position + new Vector3(points[1].x, points[1].y, 0);
-                    Debug.DrawLine(lastPos, firstPos, Color.yellow, 0.1f);
-                }
-            }
-        }
-
         private void ActivateHeavenAttack()
         {
             // 콜라이더 활성화 및 방향 업데이트
             if (attack.attackCollider != null)
-            {
-                attack.attackCollider.enabled = true;
-                
+            {                
                 // 플레이어의 현재 방향으로 콜라이더 포인트 재계산
                 var collider = attack.attackCollider as PolygonCollider2D;
                 if (collider != null)
@@ -305,27 +266,14 @@ namespace AttackComponents
                     Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
                     collider.points = points;
                 }
+
+                StartAttack(spawnedVFX, collider);
             }
-            
-            //debug.log("<color=green>[AC006] 천상 강화 공격 활성화!</color>");
         }
 
         private void FinishHeavenAttack()
         {
-            // 콜라이더 비활성화 (삭제하지 않고)
-            if (attack.attackCollider != null)
-            {
-                attack.attackCollider.enabled = false;
-            }
-            
-            // VFX 정리
-            if (spawnedVFX != null)
-            {
-                StopAndDestroyVFX(spawnedVFX);
-                spawnedVFX = null;
-            }
-            
-            //debug.log("<color=white>[AC006] 천상 강화 공격 종료!</color>");
+            attack.attackCollider.enabled = false;
         }
 
         public override void Deactivate()
@@ -357,23 +305,19 @@ namespace AttackComponents
                     {
                         attackState = HeavenAttackState.Active;
                         attackTimer = 0f;
-                        ActivateHeavenAttack();
+                        
                     }
                     break;
 
                 case HeavenAttackState.Active:
-                    attackTimer += Time.deltaTime;
-                    
-                    // 위치 업데이트
-                    attack.transform.position = attack.attacker.transform.position;
-                    attack.transform.rotation = Quaternion.Euler(0, 0, 0);
-                    
-                    if (attackTimer >= attackDuration)
-                    {
-                        attackState = HeavenAttackState.Finished;
-                        attackTimer = 0f;
-                        FinishHeavenAttack();
-                    }
+                    ActivateHeavenAttack();
+                    attackState = HeavenAttackState.Finishing;
+                    attackTimer = 0f;
+                    break;
+
+                case HeavenAttackState.Finishing:
+                    FinishHeavenAttack();
+                    attackState = HeavenAttackState.Finished;
                     break;
 
                 case HeavenAttackState.Finished:
@@ -404,12 +348,14 @@ namespace AttackComponents
                 spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             }
             
+            spawnedVFX.transform.SetParent(attack.attacker.transform);
             spawnedVFX.transform.position = position;
             
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
             spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
             
+            spawnedVFX.SetActive(true);
             return spawnedVFX;
         }
     }

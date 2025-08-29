@@ -19,7 +19,7 @@ namespace AttackComponents
     public class AC003_HeroSwordEnchantmentIce : AttackComponent
     {
         public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
-        public float attackDuration = 1f;
+        public float attackSpeed = 1f;
         public float attackRadius = 1f; // 회전 반지름
         
         public float debuffDuration = 3f; // 둔화 지속 시간
@@ -60,7 +60,6 @@ namespace AttackComponents
 
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
-            attackDuration = Mathf.Max(0.1f, 1f / (attack.attacker.statSheet[StatType.AttackSpeed] / 10f));
             
             // 얼음 공격 시작
             StartIceAttack();
@@ -353,6 +352,8 @@ namespace AttackComponents
             spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
             spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
             
+            SetVFXSpeed(spawnedVFX, attackSpeed);
+
             spawnedVFX.SetActive(true);
             return spawnedVFX;
         }

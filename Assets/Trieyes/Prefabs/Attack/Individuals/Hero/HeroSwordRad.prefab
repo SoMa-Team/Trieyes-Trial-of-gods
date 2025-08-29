@@ -45,11 +45,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  attackAngle: 90
-  attackDuration: 0.3
+  aoeWidth: 0.5
+  aoeHeight: 0.5
+  aoeDuration: 0.2
+  aoeInterval: 0.2
   attackRadius: 1.5
-  segments: 8
+  attackSpeed: 1
   vfxPrefab: {fileID: 4748681987041982144, guid: 5d980b4774a8ec943a952cd7a59c97b6, type: 3}
+  aoeAttackData: {fileID: 11400000, guid: ab99c9f503ae744a6893a923c9d737e4, type: 2}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0

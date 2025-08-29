@@ -162,6 +162,17 @@ namespace AttackComponents
             return _vfxPrefab;
         }
 
+        protected virtual void SetVFXSpeed(GameObject vfx, float speed)
+        {
+            // ParticleSystem의 Simulation Speed 설정
+            ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
+            foreach (var ps in particleSystems)
+            {
+                var main = ps.main;
+                main.simulationSpeed = speed;
+            }
+        }
+
         /// <summary>
         /// VFX를 재생합니다.
         /// </summary>
@@ -216,7 +227,6 @@ namespace AttackComponents
             collider.isTrigger = true;
             collider.enabled = true;
             
-            vfx.SetActive(true);
             PlayVFX(vfx);
         }
 

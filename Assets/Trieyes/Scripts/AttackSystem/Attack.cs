@@ -196,6 +196,10 @@ namespace AttackSystem
                 rb.angularVelocity = 0f;
             }
             
+            // 위치 및 회전 초기화
+            transform.position = Vector3.zero;
+            transform.rotation = Quaternion.identity;
+            
             // 참조 정리
             attacker = null;
             parent = null;

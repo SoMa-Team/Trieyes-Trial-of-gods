@@ -1,4 +1,5 @@
 using AttackSystem;
+using CharacterSystem;
 using Stats;
 using UnityEngine;
 
@@ -6,26 +7,30 @@ namespace AttackComponents
 {
     /// <summary>
     /// 캐릭터 소드 공격
-    /// 캐릭터 소드 공격은 캐릭터 소드 공격 로직을 만듭니다.
+    /// 캐릭터 소드 공격은 AC100 AOE 컴포넌트를 사용하여 구현합니다.
     /// 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-    /// 2. 애니메이션이 종료될 때 까지 Collider를 만들어줍니다. 이 Collider는 각도, 반지름을 가지고 있습니다. 이 값은 여기에 존재합니다.
-    /// 3. 애니메이션이 종료되면 콜라이더를 삭제합니다. 이것은 애니메이션 이벤트에서 처리합니다.
+    /// 2. AC100 AOE 컴포넌트를 생성하여 Rect 형태의 공격을 수행합니다.
+    /// 3. 0.2초 동안 지속되는 짧은 AOE 공격을 실행합니다.
     /// </summary>
     public class AC001_HeroSwordRadius : AttackComponent
     {
-        public float attackAngle = 90f; // 이거 절반으로 시계 방향, 시계 반대 방향으로 회전
-        public float attackRadius = 1f; // 회전 반지름
-        public int segments = 8; // 부채꼴 세그먼트 수 (높을수록 부드러움)
-        
-
         // FSM 상태 관리
         private AttackState attackState = AttackState.None;
+
+        private bool bIsColliderCreated = false;
         private float attackTimer = 0f;
+
+        private float vfxDuration = 0.6f;
         private Vector2 attackDirection;
 
         // VFX 설정
         [Header("VFX Settings")]
+
+        public float attackRadius = 1f;
+        public float attackSpeed = 1f;
+
         [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
+
 
         // 공격 상태 열거형
         private enum AttackState
@@ -45,10 +50,9 @@ namespace AttackComponents
             attackState = AttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
-
-            // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
+            attackSpeed = attack.attacker.statSheet[StatType.AttackSpeed] / 10f * 1.5f;
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
-            
+
             // 공격 시작
             StartAttack();
         }
@@ -67,86 +71,27 @@ namespace AttackComponents
                 return;
             }
 
-            attack.transform.SetParent(weaponGameObject.transform);
-            attack.transform.localPosition = Vector3.zero;
-            attack.transform.localRotation = Quaternion.Euler(0, 0, 0);
-
-            // 부채꼴 중심점 계산 (공격 방향으로 반지름의 절반만큼 이동)
             Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
-            
-            // VFX 생성 및 설정
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
 
-            // 콜라이더가 이미 존재하면 재사용, 없으면 새로 생성
-            if (attack.attackCollider == null)
+            if (!bIsColliderCreated)
             {
-                attack.attackCollider = attack.gameObject.AddComponent<PolygonCollider2D>();
+                attack.gameObject.AddComponent<BoxCollider2D>();
+                bIsColliderCreated = true;
             }
-            
-            var collider = attack.attackCollider as PolygonCollider2D;
 
-            // 부채꼴 모양의 콜라이더 포인트 생성
-            Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
-            collider.points = points;
+            CreateBoxColliderComponent();
+            attack.attackCollider = attack.gameObject.GetComponent<BoxCollider2D>();
         }
 
-        /// <summary>
-        /// 방향 벡터를 기준으로 부채꼴 모양의 콜라이더 포인트를 생성합니다.
-        /// </summary>
-        /// <param name="direction">기준 방향 벡터</param>
-        /// <param name="totalAngle">전체 각도 (이 값의 절반씩 양쪽으로 회전)</param>
-        /// <param name="radius">부채꼴 반지름</param>
-        /// <returns>PolygonCollider2D에 사용할 포인트 배열</returns>
-        private Vector2[] CreateFanShapePoints(Vector2 direction, float totalAngle, float radius)
+        private void CreateBoxColliderComponent()
         {
-            // 중심점 + 호를 따라 생성되는 점들
-            Vector2[] points = new Vector2[segments + 2];
-            
-            // 첫 번째 점은 중심점 (0, 0)
-            points[0] = Vector2.zero;
-            
-            // 절반 각도로 시계 방향과 시계 반대 방향 계산
-            float halfAngle = totalAngle * 0.5f;
-            
-            // 시계 방향과 시계 반대 방향 벡터 계산
-            Vector2 clockwiseDirection = RotateVector2D(direction, -halfAngle);
-            Vector2 counterClockwiseDirection = RotateVector2D(direction, halfAngle);
+            var boxCollider = attack.gameObject.GetComponent<BoxCollider2D>();
+            boxCollider.size = new Vector2(attackRadius * 1.5f, attackRadius * 1.5f);
+            boxCollider.offset = new Vector2(attackRadius * 1f, 0);
 
-            //Debug.Log($"<color=cyan>[AC002] radius: {radius}, halfAngle: {halfAngle}</color>");
-            
-            // 부채꼴 호를 따라 점들 생성
-            for (int i = 0; i <= segments; i++)
-            {
-                float t = (float)i / segments; // 0부터 1까지
-                
-                // 시계 방향에서 시계 반대 방향으로 보간
-                Vector2 currentDirection = Vector2.Lerp(clockwiseDirection, counterClockwiseDirection, t).normalized;
-                points[i + 1] = currentDirection * radius;
-                
-                if (i == 0 || i == segments)
-                {
-                    //Debug.Log($"<color=yellow>[AC002] Point {i + 1}: {points[i + 1]}, radius: {radius}</color>");
-                }
-            }
-            return points;
-        }
-
-        /// <summary>
-        /// 2D 벡터를 주어진 각도만큼 회전시킵니다.
-        /// </summary>
-        /// <param name="vector">회전시킬 벡터</param>
-        /// <param name="degrees">회전 각도 (도 단위)</param>
-        /// <returns>회전된 벡터</returns>
-        private Vector2 RotateVector2D(Vector2 vector, float degrees)
-        {
-            float radians = degrees * Mathf.Deg2Rad;
-            float cos = Mathf.Cos(radians);
-            float sin = Mathf.Sin(radians);
-            
-            return new Vector2(
-                vector.x * cos - vector.y * sin,
-                vector.x * sin + vector.y * cos
-            );
+            boxCollider.isTrigger = true;
+            boxCollider.enabled = true;
         }
 
         protected override void Update()
@@ -168,20 +113,24 @@ namespace AttackComponents
                     break;
 
                 case AttackState.Preparing:
-                    attackTimer += Time.deltaTime;
-                    
-                    if (attackTimer >= 0.1f) // 준비 시간
-                    {
-                        attackState = AttackState.Active;
-                        attackTimer = 0f;
-                        
-                    }
+                    StartAttack(spawnedVFX, attack.attackCollider);
+                    attackState = AttackState.Active;
+                    attackTimer = 0f;
                     break;
 
                 case AttackState.Active:
-                    ActivateAttack();
-                    attackState = AttackState.Finishing;
-                    attackTimer = 0f;
+                    // VFX가 완료될 때까지 대기
+                    if (attackTimer >= vfxDuration)
+                    {
+                        attackState = AttackState.Finishing;
+                        attackTimer = 0f;
+                    }
+                    else
+                    {
+                        attack.attackCollider.enabled = false;
+                        attackTimer += Time.deltaTime;
+                    }
+
                     break;
 
                 case AttackState.Finishing:
@@ -196,48 +145,6 @@ namespace AttackComponents
             }
         }
 
-        private void ActivateAttack()
-        {
-            // 콜라이더 활성화 및 방향 업데이트
-            if (attack.attackCollider != null)
-            {                
-                // 플레이어의 현재 방향으로 콜라이더 포인트 재계산
-                var collider = attack.attackCollider as PolygonCollider2D;
-                if (collider != null)
-                {
-                    // 현재 플레이어의 이동 방향 가져오기
-                    Vector2 currentDirection = attack.attacker.LastMoveDirection;
-                    if (currentDirection.magnitude < 0.1f)
-                    {
-                        // 이동하지 않을 때는 이전 방향 유지
-                        currentDirection = attackDirection;
-                    }
-                    else
-                    {
-                        attackDirection = currentDirection.normalized;
-                    }
-                    
-                    // 새로운 방향으로 콜라이더 포인트 재계산
-                    Vector2[] points = CreateFanShapePoints(attackDirection, attackAngle, attackRadius);
-                    collider.points = points;
-                }
-
-                StartAttack(spawnedVFX, collider);
-            }
-        }
-
-        private void FinishAttack()
-        {
-            attack.attackCollider.enabled = false;
-        }
-
-        /// <summary>
-        /// VFX를 생성하고 설정합니다.
-        /// </summary>
-        /// <param name="vfxPrefab">VFX 프리팹</param>
-        /// <param name="position">VFX 생성 위치</param>
-        /// <param name="direction">VFX 방향</param>
-        /// <returns>생성된 VFX 게임오브젝트</returns>
         protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
         {
             // 기본 VFX 생성 (base 호출)
@@ -253,14 +160,25 @@ namespace AttackComponents
             spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
             spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
             
+            SetVFXSpeed(spawnedVFX, attackSpeed);
+
             spawnedVFX.SetActive(true);
             return spawnedVFX;
+        }
+
+        private void FinishAttack()
+        {
+            // AOE 컴포넌트 정리
+            if (attack.attackCollider != null)
+            {
+                attack.attackCollider.enabled = false;
+                attack.attackCollider = null;
+            }
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
-            StopAndDestroyVFX(spawnedVFX);
         }
     }
 }

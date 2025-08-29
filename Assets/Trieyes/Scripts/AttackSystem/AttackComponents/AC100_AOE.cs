@@ -282,7 +282,6 @@ namespace AttackComponents
         public override void Deactivate()
         {
             base.Deactivate();
-            StopAndDestroyVFX(spawnedVFX);
         }
     }
 }

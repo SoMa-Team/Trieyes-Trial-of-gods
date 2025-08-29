@@ -51,9 +51,6 @@ namespace AttackSystem
         public HashSet<AttackID> registeredAttackIDs = new();
         public AttackData RegisterRelicAppliedAttack(AttackData attackData, Pawn owner)
         {
-            // attackData 변조를 막기 위한 Copy 생성
-            attackData = attackData.Copy();
-            
             var attack = ClonePrefab(attackData.attackId);
 
             // 유물 메인 옵션 적용
@@ -65,6 +62,9 @@ namespace AttackSystem
                     continue;
                 
                 // relic의 mainOption의 attackTag 혹은 attackID가 일치하는 상황
+                if (relic.attackComponentIDs is null)
+                    continue;
+                
                 foreach (var attackComponentID in relic.attackComponentIDs)
                 {
                     var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, relic.level, attack, Vector2.zero);

@@ -263,11 +263,12 @@ namespace CharacterSystem
                 AttackFactory.Instance.DeregisterAttack(basicAttack);
                 AttackFactory.Instance.DeregisterAttack(skill1Attack);
                 AttackFactory.Instance.DeregisterAttack(skill2Attack);
+                
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
             }   
-
+            
             Controller.Deactivate();
             statuses.Clear();
             ClearStatModifier();
@@ -285,15 +286,19 @@ namespace CharacterSystem
         
         public void ApplyRelic()
         {
+            backupBasicAttack = basicAttack;
+            backupSkill1Attack = skill1Attack;
+            backupSkill2Attack = skill2Attack;
+            
             if (relics.Count > 0)
             {
-                backupBasicAttack = basicAttack.Copy();
+                basicAttack = basicAttack.Copy();
                 basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
                 
-                backupSkill1Attack = skill1Attack.Copy();
+                skill1Attack = skill1Attack.Copy();
                 skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
                 
-                backupSkill2Attack = skill2Attack.Copy();
+                skill2Attack = skill2Attack.Copy();
                 skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
             }
         }

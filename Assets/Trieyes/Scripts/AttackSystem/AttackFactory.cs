@@ -86,6 +86,7 @@ namespace AttackSystem
             }
 
             var id = RegisterAttack(attack);
+            attack.gameObject.SetActive(false);
             var newAttackData = attackData.Copy();
             newAttackData.attackId = id;
             return newAttackData;

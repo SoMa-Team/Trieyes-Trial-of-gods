@@ -10,10 +10,10 @@ public class BAC00201_Default : AttackComponent
     [SerializeField] private ParticleSystem particle;
 
     [Header("======= 유물 스탯 적용 부분 =======")]
-    private int projectileCount => attack.getRelicStat(RelicStatType.ProjectileCount); // 투사체 개수 (근딜 의미 X)
-    private float skillDistance => attack.getRelicStat(RelicStatType.Range); // 스킬 사거리 (원딜 의미 낮음)
-    private float aoeSize => attack.getRelicStat(RelicStatType.AOE); // AOE 크기(공격 범위의 크기)
-    private float pierceCount => attack.getRelicStat(RelicStatType.ProjectilePierce); // 관통 개수 (근딜 의미 X)
+    private int relicProjectileCount => attack.getRelicStat(RelicStatType.ProjectileCount); // 투사체 개수 (근딜 의미 X)
+    private float relicSkillDistance => attack.getRelicStat(RelicStatType.Range); // 스킬 사거리 (원딜 의미 낮음)
+    private float relicAOE => attack.getRelicStat(RelicStatType.AOE); // AOE 크기(공격 범위의 크기)
+    private float relicPierceCount => attack.getRelicStat(RelicStatType.ProjectilePierce); // 관통 개수 (근딜 의미 X)
     
     // 공격 Default 상수
     private float projectileSpeed = 6;
@@ -31,8 +31,8 @@ public class BAC00201_Default : AttackComponent
         particle.Play();
         startTime = Time.time; 
         
-        attack.transform.localScale = aoeSize * Vector3.one;
-        remainPierce = pierceCount;
+        attack.transform.localScale = (100f + relicAOE) / 100 * Vector3.one;
+        remainPierce = relicPierceCount;
         
         ApplyProjectileCount();
     }
@@ -49,7 +49,7 @@ public class BAC00201_Default : AttackComponent
     {
         base.Update();
 
-        if (Time.time - startTime > defaultSkillDuration * skillDistance)
+        if (Time.time - startTime > defaultSkillDuration * (100 + relicSkillDistance) / 100)
         {
             AttackFactory.Instance.Deactivate(attack);
             return;
@@ -72,8 +72,10 @@ public class BAC00201_Default : AttackComponent
         if (attack.parent is not null)
             return;
 
+        var cnt = relicProjectileCount + 1;
+
         // 자신을 제외한 나머지 공격 생성 및 위치 조정
-        for (int i = 1; i < projectileCount; i++)
+        for (int i = 1; i < cnt; i++)
         {
             var childAttack = AttackFactory.Instance.Create(attack.attackData, attack.attacker, attack, attack.transform.right);
             
@@ -84,12 +86,12 @@ public class BAC00201_Default : AttackComponent
                 if (attackComponent is null)
                     continue;
                 
-                attackComponent.SetRotate(i, projectileCount);
+                attackComponent.SetRotate(i, cnt);
             }
         }
         
         // 자신도 올바른 위치로 수정
-        SetRotate(0, projectileCount);
+        SetRotate(0, cnt);
     }
 
     private void SetRotate(int index, int total)

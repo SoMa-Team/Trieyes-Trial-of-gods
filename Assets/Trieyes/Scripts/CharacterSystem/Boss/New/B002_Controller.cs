@@ -61,6 +61,11 @@ namespace CharacterSystem
                 boss.ExecuteBossAttack(B002AttackType.SpawnSlowField);
                 return;
             }
+            if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                boss.ExecuteBossAttack(B002AttackType.CircularSector);
+                return;
+            }
         }
     }
 }

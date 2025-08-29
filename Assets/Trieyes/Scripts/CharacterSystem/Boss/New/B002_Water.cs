@@ -13,6 +13,7 @@ namespace CharacterSystem
         StoneExplode,
         FireDischarge,
         SpawnSlowField,
+        CircularSector
     }
     
     public class B002_Water : Enemy
@@ -39,6 +40,7 @@ namespace CharacterSystem
         [SerializeField] private AttackData attackFireDischarge;
         [SerializeField] private AttackData attackSpawnSlowField;
         [SerializeField] private AttackData attackMoveCenter;
+        [SerializeField] private AttackData attackCircularSector;
         
         public bool ExecuteBossAttack(B002AttackType attackType)
         {
@@ -54,6 +56,7 @@ namespace CharacterSystem
                 B002AttackType.StoneExplode => attackStoneExplode,
                 B002AttackType.FireDischarge => attackFireDischarge,
                 B002AttackType.SpawnSlowField => attackSpawnSlowField,
+                B002AttackType.CircularSector => attackCircularSector,
                 _ => throw new Exception($"B002.ExecuteBossAttack: Attack {attackType} is not exist."),
             }, this, null, LastMoveDirection);
 

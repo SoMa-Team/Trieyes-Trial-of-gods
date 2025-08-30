@@ -5,6 +5,7 @@ using AttackComponents;
 using BattleSystem;
 using CharacterSystem;
 using JetBrains.Annotations;
+using RelicSystem;
 using UnityEngine;
 
 namespace AttackSystem
@@ -107,7 +108,7 @@ namespace AttackSystem
         }
         
         // ===== 공격 생성 =====
-        public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
+        public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction, [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat = null)
         {
             // attackData 변조를 막기 위한 Copy 생성
             attackData = attackData.Copy();
@@ -116,11 +117,11 @@ namespace AttackSystem
             if (attack is null)
                 attack = ClonePrefab(attackData.attackId);
             attack.attackData = attackData;
-            Activate(attack, attacker, parent, direction);
+            Activate(attack, attacker, parent, direction, baseRelicStat);
             return attack;
         }
 
-        public void Activate(Attack attack, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
+        public void Activate(Attack attack, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction, [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat = null)
         {
             if (direction.magnitude < 1e-8)
             {
@@ -135,6 +136,11 @@ namespace AttackSystem
             
             attack.attacker = attacker;
             attack.ApplyStatSheet(parent is not null ? parent.statSheet : attacker.statSheet);
+            
+            if (baseRelicStat is not null)
+            {
+                attack.relicStats = new Dictionary<RelicStatType, int>(baseRelicStat);
+            }
             
             attack.Activate(attacker, direction.normalized);
             

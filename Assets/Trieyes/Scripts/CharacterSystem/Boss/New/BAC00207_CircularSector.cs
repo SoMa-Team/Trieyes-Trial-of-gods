@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using AttackComponents;
 using AttackSystem;
 using BattleSystem;
 using CharacterSystem;
+using RelicSystem;
 using UnityEngine;
 
 public class BAC00207_CircularSector : AttackComponent
@@ -12,24 +14,30 @@ public class BAC00207_CircularSector : AttackComponent
         Telegraph,
         Attack
     };
-    
-    [SerializeField] private LineRenderer lineRenderer;
 
-    [Header("======= @@@@@ Test @@@@@ =======")] // TODO : 삭제 필요
-    [SerializeField] private float centralAngle;
-    [SerializeField] private float TelegraphSize;
-    [SerializeField] private float attackDelay;
+    [SerializeField] private AttackData childAttackData;
+    [SerializeField] private LineRenderer lineRenderer;
+    
+    // Constants
+    private float centralAngle = 40f;
+    private float TelegraphSize = 10f;
+    private float attackDelay = 1f;
+    private float minimumAngle = 5f;
+    private int childScale = 200;
     
     private AttackMode mode;
     private float startTime;
+    
+    private Vector2 startDirection;
 
     public override void Activate(Attack attack, Vector2 direction)
     {
         mode = AttackMode.Telegraph;
+        startTime = Time.time;
+        this.startDirection = direction;
         
         base.Activate(attack, direction);
         DrawLine();
-        startTime = Time.time;
     }
 
     public override void Deactivate()
@@ -58,6 +66,7 @@ public class BAC00207_CircularSector : AttackComponent
                 break;
             
             case AttackMode.Attack:
+                makeChildAttacks();
                 AttackFactory.Instance.Deactivate(attack);
                 break;
         }
@@ -72,5 +81,22 @@ public class BAC00207_CircularSector : AttackComponent
         lineRenderer.SetPosition(0, transform.position + transform.TransformVector(TelegraphSize * new Vector3(cx, cy, 0)));
         lineRenderer.SetPosition(1, transform.position);
         lineRenderer.SetPosition(2, transform.position + transform.TransformVector(TelegraphSize * new Vector3(cx, -cy, 0)));
+    }
+
+    private void makeChildAttacks()
+    {
+        var count = Mathf.Ceil(centralAngle / minimumAngle) + 1;
+
+        var baseAngle = Mathf.Atan2(startDirection.y, startDirection.x) * Mathf.Rad2Deg;
+        for (int i = 0; i < count; i++)
+        {
+            var angle = (centralAngle * i / (count - 1)) + baseAngle - centralAngle / 2;
+            var direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)); 
+            var child = AttackFactory.Instance.Create(childAttackData, attack.attacker, attack, direction, new Dictionary<RelicStatType, int>
+            {
+                {RelicStatType.AOE, 100},
+                {RelicStatType.Range, 25},
+            });
+        }
     }
 }

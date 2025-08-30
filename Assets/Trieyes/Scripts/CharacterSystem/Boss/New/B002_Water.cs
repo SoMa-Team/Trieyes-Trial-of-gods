@@ -18,18 +18,18 @@ namespace CharacterSystem
     
     public class B002_Water : Enemy
     {
-        public bool isAnimated { get; private set; }
+        private float availableAttackTime;
+        public bool isDoAttack => Time.time < availableAttackTime;
 
         public override void Activate()
         {
             base.Activate();
-            isAnimated = false;
+            availableAttackTime = Time.time;
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
-            isAnimated = false;
         }
 
         [Header("====== Boss 공격 종류 ======")]
@@ -44,11 +44,10 @@ namespace CharacterSystem
         
         public bool ExecuteBossAttack(B002AttackType attackType)
         {
-            // if (isAnimated)
-            //     return false;
-            // isAnimated = true;
+            if (Time.time < availableAttackTime)
+                return false;
             
-            AttackFactory.Instance.Create(attackType switch
+            var attackData = attackType switch
             {
                 B002AttackType.Default => attackDefault,
                 B002AttackType.StoneSummon => attackStoneSummon,
@@ -58,8 +57,10 @@ namespace CharacterSystem
                 B002AttackType.SpawnSlowField => attackSpawnSlowField,
                 B002AttackType.CircularSector => attackCircularSector,
                 _ => throw new Exception($"B002.ExecuteBossAttack: Attack {attackType} is not exist."),
-            }, this, null, LastMoveDirection);
-
+            };
+            
+            AttackFactory.Instance.Create(attackData, this, null, LastMoveDirection);
+            availableAttackTime = Time.time + attackData.cooldown;
             return true;
         }
     }

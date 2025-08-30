@@ -2244,6 +2244,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9008b24e5e56b4c0d9ea53d85b6426c9, type: 3}
+--- !u!114 &4597061330156520349 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7202174345159294495, guid: 9008b24e5e56b4c0d9ea53d85b6426c9, type: 3}
+  m_PrefabInstance: {fileID: 4597061330156520348}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5775970366020511338
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2355,7 +2366,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: rawAttackPrefab.Array.size
-      value: 27
+      value: 28
       objectReference: {fileID: 0}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: rawAttackPrefab.Array.data[25].id
@@ -2363,6 +2374,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: rawAttackPrefab.Array.data[26].id
+      value: 20202
+      objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[27].id
       value: 20207
       objectReference: {fileID: 0}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
@@ -2371,6 +2386,10 @@ PrefabInstance:
       objectReference: {fileID: 1184910887}
     - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
       propertyPath: rawAttackPrefab.Array.data[26].attackPrefab
+      value: 
+      objectReference: {fileID: 4597061330156520349}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[27].attackPrefab
       value: 
       objectReference: {fileID: 1815305507}
     m_RemovedComponents: []

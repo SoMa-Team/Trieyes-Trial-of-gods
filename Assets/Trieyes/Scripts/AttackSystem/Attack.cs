@@ -32,7 +32,7 @@ namespace AttackSystem
         public List<AttackComponent> components = new ();
         
         public Rigidbody2D rb;
-        public  Collider2D attackCollider;
+        public Collider2D attackCollider;
         public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
         public int objectID; // 공격 조회를 위한 ID
 
@@ -66,7 +66,7 @@ namespace AttackSystem
             rb = GetComponent<Rigidbody2D>();
             attackCollider = GetComponent<Collider2D>();
             
-            if (rb is not null)
+            if (rb != null)
             {
                 rb.gravityScale = 0f; // 중력 비활성화
             }

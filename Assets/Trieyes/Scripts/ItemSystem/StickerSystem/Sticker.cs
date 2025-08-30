@@ -8,8 +8,8 @@ namespace StickerSystem
         public string instanceId { get; private set; } = System.Guid.NewGuid().ToString("N");
         
         public StickerType type;
-        public int numberValue;          // type==Number일 때만 사용
-        public StatType statTypeValue;   // type==StatType일 때만 사용
+        public int numberValue;
+        public StatType statTypeValue;
         public int lifeTime;
         
         public Sticker DeepCopy()

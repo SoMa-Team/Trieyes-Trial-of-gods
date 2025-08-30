@@ -20,9 +20,23 @@ namespace StickerSystem
             return sticker;
         }
 
+        public static Sticker CreateProbabilitySticker(int probability, int lifeTime = 1)
+        {   
+            var sticker = new Sticker();
+            ActivateProbabilitySticker(sticker, probability, lifeTime);
+            return sticker;
+        }
+
         private static void ActivateNumberSticker(Sticker sticker, int value, int lifeTime)
         {
             sticker.type = StickerType.Number;
+            sticker.numberValue = value;
+            sticker.lifeTime = lifeTime;
+        }
+
+        private static void ActivateProbabilitySticker(Sticker sticker, int value, int lifeTime)
+        {
+            StickerType type = sticker.type;
             sticker.numberValue = value;
             sticker.lifeTime = lifeTime;
         }
@@ -34,7 +48,7 @@ namespace StickerSystem
             sticker.lifeTime = lifeTime;
         }
 
-        public static Sticker CreateRandomSticker(int minVal = 1, int maxVal = 101, int minLifeTime = 1, int maxLifeTime = 10)
+        public static Sticker CreateRandomSticker(int minVal = 1, int maxVal = 101, int minLifeTime = 1, int maxLifeTime = 10, int minProb = 1, int maxProb = 40)
         {
             var types = System.Enum.GetValues(typeof(StickerType));
             var type = (StickerType)types.GetValue(Random.Range(1, types.Length));
@@ -42,6 +56,8 @@ namespace StickerSystem
             {
                 case StickerType.Number:
                     return CreateNumberSticker(Random.Range(minVal, maxVal), Random.Range(minLifeTime, maxLifeTime));
+                case StickerType.Probability:
+                    return CreateProbabilitySticker(Random.Range(minProb, maxProb), Random.Range(minLifeTime, maxLifeTime));
                 case StickerType.StatType:
                     var statValues = System.Enum.GetValues(typeof(StatType));
                     var stat = (StatType)statValues.GetValue(Random.Range(0, statValues.Length));

@@ -61,6 +61,10 @@ namespace CharacterSystem
         }
 
         // ===== [커스텀 메서드] =====
+        public override void Activate()
+        {
+            base.Activate();
+        }
 
         public override void Deactivate()
         {

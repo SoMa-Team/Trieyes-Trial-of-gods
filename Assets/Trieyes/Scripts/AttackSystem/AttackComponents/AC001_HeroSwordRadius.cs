@@ -18,6 +18,8 @@ namespace AttackComponents
         private AttackState attackState = AttackState.None;
 
         private bool bIsColliderCreated = false;
+
+        private float vfxSize = 0f;
         private float attackTimer = 0f;
 
         private float vfxDuration = 0.6f;
@@ -64,14 +66,8 @@ namespace AttackComponents
             
             // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
             var pawnPrefab = attack.attacker.PawnPrefab;
-            var weaponGameObject = pawnPrefab.transform.Find("UnitRoot/Root/BodySet/P_Body/ArmSet/ArmR/P_RArm/P_Weapon/R_Weapon")?.gameObject;
-            if (weaponGameObject == null)
-            {
-                //Debug.LogError("R_Weapon을 찾지 못했습니다!");
-                return;
-            }
 
-            Vector2 vfxPosition = (Vector2)weaponGameObject.transform.position + (attackDirection * (attackRadius * 0.5f));
+            Vector2 vfxPosition = (Vector2)pawnPrefab.transform.position;
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
 
             if (!bIsColliderCreated)
@@ -88,7 +84,7 @@ namespace AttackComponents
         {
             var boxCollider = attack.gameObject.GetComponent<BoxCollider2D>();
             boxCollider.size = new Vector2(attackRadius * 1.5f, attackRadius * 1.5f);
-            boxCollider.offset = new Vector2(attackRadius * 1f, 0);
+            boxCollider.offset = new Vector2(vfxSize / 2 * (attackDirection.x > 0 ? 1 : -1), 0);
 
             boxCollider.isTrigger = true;
             boxCollider.enabled = true;
@@ -152,13 +148,27 @@ namespace AttackComponents
             {
                 spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             }
+
+            // vfx의 가로 세로 길이 구하기
+            var psr = spawnedVFX.transform.GetChild(0).GetComponent<ParticleSystemRenderer>();
+            
+            if(direction.x <= 0)
+            {
+                psr.flip = new Vector3(1, 0, 0);
+            }
+            else
+            {
+                psr.flip = new Vector3(0, 0, 0);
+            }
+
+            spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
+
+            vfxSize = psr.bounds.size.x;
             
             spawnedVFX.transform.SetParent(attack.attacker.transform);
-            spawnedVFX.transform.position = position;
-            
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            spawnedVFX.transform.rotation = Quaternion.Euler(0, 0, angle);
-            spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
+
+            var offsetX = direction.x > 0 ? vfxSize / 2 : -vfxSize / 2;
+            spawnedVFX.transform.localPosition = new Vector3(offsetX, 0, 0);
             
             SetVFXSpeed(spawnedVFX, attackSpeed);
 
@@ -179,6 +189,7 @@ namespace AttackComponents
         public override void Deactivate()
         {
             base.Deactivate();
+            StopAndDestroyVFX(spawnedVFX);
         }
     }
 }

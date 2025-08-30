@@ -157,8 +157,7 @@ namespace AttackComponents
             }
             GameObject _vfxPrefab = Instantiate(vfxPrefab);
             _vfxPrefab.SetActive(false);
-            _vfxPrefab.transform.position = position;
-            
+
             return _vfxPrefab;
         }
 

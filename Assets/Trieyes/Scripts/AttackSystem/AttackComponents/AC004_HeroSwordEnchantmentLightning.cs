@@ -64,8 +64,6 @@ namespace AttackComponents
             // Radius를 공격자의 스탯 값으로 할당, Range / 10 = Radius
             attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
             
-            attackSpeed = attack.attacker.statSheet[StatType.AttackSpeed] / 10f * 1.5f;
-            
             // 번개 공격 시작
             StartLightningAttack();
         }
@@ -317,6 +315,8 @@ namespace AttackComponents
             spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
             
             SetVFXSpeed(spawnedVFX, attackSpeed);
+
+            spawnedVFX.SetActive(true);
             return spawnedVFX;
         }
 

@@ -26,6 +26,7 @@ public class ShopStickerSlot : MonoBehaviour
     private static readonly Color NUMBER_STICKER_COLOR    = new Color(171f / 255, 205f / 255, 239f / 255, 1f);
 
     private Sticker sticker;
+    private bool isReserved = false;
 
     private void Awake()
     {
@@ -40,7 +41,8 @@ public class ShopStickerSlot : MonoBehaviour
     public void SetSticker()
     {
         sticker = StickerFactory.CreateRandomSticker();
-
+        isReserved = false;
+        disableOverlay.SetActive(false);
         switch (sticker.type)
         {
             case StickerType.Number:
@@ -69,6 +71,27 @@ public class ShopStickerSlot : MonoBehaviour
     /// </summary>
     public Sticker GetCurrentSticker() => sticker;
 
+    private void Reserve()
+    {
+        isReserved = true;
+        disableOverlay.SetActive(true);
+    }
+
+    private void ReleaseReservation()
+    {
+        isReserved = false;
+        disableOverlay.SetActive(false);
+    }
+
+    private bool TryCommitPurchase(Pawn buyer)
+    {
+        if (!isReserved) return false;
+        if(buyer is null || buyer.gold < STICKER_PRICE) return false;
+        buyer.gold-=STICKER_PRICE;
+        isReserved = false;
+        return true;
+    }
+
     /// <summary>
     /// 스티커 구매 버튼 클릭 시 실행. 골드 차감 및 스티커 선택 반영
     /// </summary>
@@ -77,14 +100,20 @@ public class ShopStickerSlot : MonoBehaviour
         var shopManager = ShopSceneManager.Instance;
         Pawn mainCharacter = shopManager.mainCharacter;
 
+        if (shopManager.CurrentMode != ShopSceneManager.ShopMode.Normal) return;
+
         if (mainCharacter.gold < STICKER_PRICE)
         {
             Debug.LogError("Not enough gold");
             return;
         }
+        
+        Reserve();
 
-        mainCharacter.gold -= STICKER_PRICE;
-        shopManager.selectedSticker = sticker;
-        // TODO: 실제로 덱/카드에 부착 처리 등 추가 필요시 확장
+        shopManager.BeginStickerAttachFlow(
+            sticker,
+            commitPurchase: () => TryCommitPurchase(mainCharacter),
+            cancelReservation: ReleaseReservation
+        );
     }
 }

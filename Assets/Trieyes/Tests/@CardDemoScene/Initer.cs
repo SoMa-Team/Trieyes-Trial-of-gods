@@ -19,6 +19,5 @@ public class Initer : MonoBehaviour
         Sticker sticker = new Sticker();
         sticker.type = StickerType.Number;
         sticker.numberValue = 67;
-        ShopSceneManager.Instance.selectedSticker = sticker;
     }
 }

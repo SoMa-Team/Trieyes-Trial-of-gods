@@ -52,8 +52,10 @@ namespace CardActions
             {
                 if (sticker.type == StickerType.Number)
                     return sticker.numberValue;
-                if (sticker.type == StickerType.StatType)
+                else if (sticker.type == StickerType.StatType)
                     return sticker.statTypeValue;
+                else if (sticker.type == StickerType.Probability)
+                    return sticker.numberValue;
             }
             // 2. 오버라이드 없으면 원래 값 반환
             return GetBaseParam(index);

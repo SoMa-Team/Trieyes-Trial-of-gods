@@ -393,7 +393,7 @@ namespace CardViews
                 return;
             
             if (selectionOutline != null)
-                selectionOutline.color = selected ? Color.yellow : Color.black;
+                selectionOutline.color = selected ? Color.yellow : new Color(246f/255f, 220f/255f, 168f/255f, 1f);
         }
 
         #endregion

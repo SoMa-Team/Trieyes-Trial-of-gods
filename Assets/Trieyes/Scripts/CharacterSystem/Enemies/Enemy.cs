@@ -17,9 +17,6 @@ namespace CharacterSystem
         [SerializeField] 
         protected int dropGold; // 드랍할 골드 양
         public Character playerTarget;
-
-        protected float lastTriggerEnterTime = 0f;
-        public float collisionDamageInterval = 0.5f;
    
         // ===== [기능 2] 초기화 =====
         protected override void Start()
@@ -47,42 +44,6 @@ namespace CharacterSystem
         {        
             base.Deactivate();
             ////Debug.Log("Enemy001 Deactivated.");
-        }
-
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            base.OnTriggerEnter2D(other);
-            if(other.gameObject.CompareTag("Player"))
-            {
-                lastTriggerEnterTime = Time.time;
-            }
-        }
-
-        protected override void OnTriggerStay2D(Collider2D other)
-        {
-            base.OnTriggerStay2D(other);
-
-            if(!other.gameObject.CompareTag("Player"))
-            {
-                return;
-            }
-
-            var currentTime = Time.time;
-            if(currentTime - lastTriggerEnterTime >= collisionDamageInterval)
-            {
-                var character = other.gameObject.GetComponent<Character>();
-                DamageProcessor.ProcessHit(this, character);
-                lastTriggerEnterTime = currentTime;
-            }
-        }
-
-        protected override void OnTriggerExit2D(Collider2D other)
-        {
-            base.OnTriggerExit2D(other);
-            if(other.gameObject.CompareTag("Player"))
-            {
-                lastTriggerEnterTime = 0f;
-            }
         }
 
         /// <summary>

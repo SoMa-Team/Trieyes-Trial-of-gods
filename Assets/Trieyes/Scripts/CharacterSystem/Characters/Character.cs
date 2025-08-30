@@ -13,6 +13,9 @@ namespace CharacterSystem
         // Pawn의 추상 멤버 구현
         public Vector3 lastPosition;
         
+        protected float lastTriggerEnterTime = 0f;
+        public float collisionDamageInterval = 0.5f;
+        
         // ===== [Unity 생명주기] =====
         protected override void Start()
         {
@@ -78,6 +81,42 @@ namespace CharacterSystem
                     return false;
             }
             return false;
+        }
+
+        protected override void OnTriggerEnter2D(Collider2D other)
+        {
+            base.OnTriggerEnter2D(other);
+            if(other.gameObject.CompareTag("Enemy"))
+            {
+                lastTriggerEnterTime = Time.time;
+            }
+        }
+
+        protected override void OnTriggerStay2D(Collider2D other)
+        {
+            base.OnTriggerStay2D(other);
+
+            if(!other.gameObject.CompareTag("Enemy"))
+            {
+                return;
+            }
+
+            var currentTime = Time.time;
+            if(currentTime - lastTriggerEnterTime >= collisionDamageInterval)
+            {
+                var enemy = other.gameObject.GetComponent<Enemy>();
+                DamageProcessor.ProcessHit(enemy, this);
+                lastTriggerEnterTime = currentTime;
+            }
+        }
+
+        protected override void OnTriggerExit2D(Collider2D other)
+        {
+            base.OnTriggerExit2D(other);
+            if(other.gameObject.CompareTag("Enemy"))
+            {
+                lastTriggerEnterTime = 0f;
+            }
         }
 
         public void CreateAttack(PawnAttackType attackType)

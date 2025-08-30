@@ -17,18 +17,6 @@ namespace Stats
 
         const int DEFAULT_VALUE = 0;
 
-        private Pawn owner;
-
-        public void setOwner(Pawn owner)
-        {
-            this.owner = owner;
-        }
-
-        public Pawn getOwner()
-        {
-            return owner;
-        }
-
         // --- 생성자 ---
 
         /// StatSheet의 새 인스턴스를 초기화합니다.
@@ -49,6 +37,21 @@ namespace Stats
             {
                 stat.Value.ClearBuffs();
             }
+        }
+        
+        public int GetRaw(StatType type)
+        {
+            return stats[type].Value;
+        }
+        
+        public float Get(StatType type)
+        {
+            int raw = stats[type].Value;
+            var ctx = new StatEvalCtx(
+                raw,
+                t => GetRaw(t)
+            );
+            return StatFormulas.Eval(type, ctx);
         }
 
         // --- 인덱서 ---

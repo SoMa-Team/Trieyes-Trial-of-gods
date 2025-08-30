@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Utils;
+using CharacterSystem;
 
 namespace Stats
 {
@@ -36,6 +37,21 @@ namespace Stats
             {
                 stat.Value.ClearBuffs();
             }
+        }
+        
+        public int GetRaw(StatType type)
+        {
+            return stats[type].Value;
+        }
+        
+        public float Get(StatType type)
+        {
+            int raw = stats[type].Value;
+            var ctx = new StatEvalCtx(
+                raw,
+                t => GetRaw(t)
+            );
+            return StatFormulas.Eval(type, ctx);
         }
 
         // --- 인덱서 ---

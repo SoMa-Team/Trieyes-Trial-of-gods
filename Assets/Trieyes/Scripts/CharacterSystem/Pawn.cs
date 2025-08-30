@@ -7,8 +7,6 @@ using UnityEngine;
 using CardSystem;
 using System;
 using BattleSystem; 
-using UnityEngine.EventSystems;
-using CharacterSystem.Enemies;
 
 namespace CharacterSystem
 {
@@ -53,7 +51,7 @@ namespace CharacterSystem
         
         [Header("Stats")]
 
-        public StatSheet statSheet = new();
+        public StatSheet statSheet { get; private set; }
         
         public StatPresetSO statPresetSO;
 
@@ -149,7 +147,6 @@ namespace CharacterSystem
             pawnPrefab = transform.GetChild(0).gameObject;
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
-            // 스탯 시트 초기화
             statSheet = new StatSheet();
             
             deck.Activate(this, true);
@@ -223,6 +220,7 @@ namespace CharacterSystem
             skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
 
             deck.Activate(this, true);
+            statSheet = new StatSheet();
             initBaseStat();
             
             SyncHP();
@@ -276,7 +274,7 @@ namespace CharacterSystem
         
         public void SyncHP()
         {
-            maxHp = statSheet[StatType.Health].Value;
+            maxHp = Mathf.RoundToInt(GetStatValue(StatType.Health));
             currentHp = maxHp;
         }
 
@@ -414,9 +412,14 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="statType">스탯 타입</param>
         /// <returns>스탯 값</returns>
-        public int GetStatValue(StatType statType)
+        public float GetStatValue(StatType statType)
         {
-            return statSheet[statType].Value;
+            return statSheet.Get(statType);
+        }
+
+        public int GetRawStatValue(StatType statType)
+        {
+            return statSheet.GetRaw(statType);
         }
         
         /// <summary>
@@ -442,7 +445,7 @@ namespace CharacterSystem
             // Pawn의 모든 스탯을 복사
             foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
             {
-                int statValue = GetStatValue(statType);
+                float statValue = GetStatValue(statType);
                 attackStats[statType].SetBasicValue(statValue);
             }
             
@@ -768,7 +771,7 @@ namespace CharacterSystem
         /// </summary>
         protected virtual void CalculateAttackCooldown()
         {
-            int attackSpeed = GetStatValue(StatType.AttackSpeed);
+            float attackSpeed = GetStatValue(StatType.AttackSpeed);
             // 공격속도 10을 기준으로 1초에 1개 발사
             // 공격속도가 높을수록 쿨다운이 짧아짐
             attackCooldown = 1f / (attackSpeed / 10f);

@@ -55,7 +55,7 @@ namespace AttackComponents
             attackState = FireMeteorState.Preparing;
             attackTimer = 0f;
             
-            Debug.Log("<color=red>[AC007] 파이어 메테오 공격 시작!</color>");
+            //Debug.Log("<color=red>[AC007] 파이어 메테오 공격 시작!</color>");
         }
 
         protected override void Update()
@@ -136,7 +136,7 @@ namespace AttackComponents
                 fallComponent.explosionVFXPrefab = explosionVFXPrefab;
             }
             
-            Debug.Log("<color=red>[AC007] AC103_FALL 파이어 메테오 소환 완료!</color>");
+            //Debug.Log("<color=red>[AC007] AC103_FALL 파이어 메테오 소환 완료!</color>");
         }
 
         public override void Deactivate()

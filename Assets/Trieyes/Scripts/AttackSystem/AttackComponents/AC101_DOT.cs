@@ -99,7 +99,7 @@ namespace AttackComponents
             dotTimer = 0f;
             dotDurationTimer = 0f;
             
-            Debug.Log("<color=orange>[AC101] 대상 기반 DOT 공격 시작!</color>");
+            //Debug.Log("<color=orange>[AC101] 대상 기반 DOT 공격 시작!</color>");
         }
 
         protected override void Update()
@@ -225,7 +225,7 @@ namespace AttackComponents
             spawnedVFX.SetActive(true);
             PlayVFX(spawnedVFX);
 
-            Debug.Log($"<color=yellow>[AC101] 단일 대상 {dotTarget.pawnName}에게 {dotDamage} 데미지 적용</color>");
+            //Debug.Log($"<color=yellow>[AC101] 단일 대상 {dotTarget.pawnName}에게 {dotDamage} 데미지 적용</color>");
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace AttackComponents
             // 대상이 유효한지 추가 체크
             if (!target.gameObject.activeInHierarchy)
             {
-                Debug.LogWarning($"[AC101] 대상 {target.pawnName}이 비활성화되어 VFX 생성 취소");
+                //Debug.LogWarning($"[AC101] 대상 {target.pawnName}이 비활성화되어 VFX 생성 취소");
                 return;
             }
 
@@ -260,7 +260,7 @@ namespace AttackComponents
                 spawnedVFX.transform.localPosition = Vector3.zero; // 대상 중심에 위치
                 spawnedVFX.transform.localRotation = Quaternion.identity;
                 
-                Debug.Log($"<color=green>[AC101] {target.pawnName}에게 DOT VFX 생성 및 부착</color>");
+                //Debug.Log($"<color=green>[AC101] {target.pawnName}에게 DOT VFX 생성 및 부착</color>");
             }
         }
 
@@ -272,7 +272,7 @@ namespace AttackComponents
 
         private void ActivateAC101Attack()
         {
-            Debug.Log("<color=green>[AC101] 대상 기반 DOT 공격 활성화!</color>");
+            //Debug.Log("<color=green>[AC101] 대상 기반 DOT 공격 활성화!</color>");
         }
 
         private void FinishAC101Attack()
@@ -280,7 +280,7 @@ namespace AttackComponents
             // VFX 해제 작업 (Object Pooling 문제 해결 포함)
             CleanupVFX();
             
-            Debug.Log("<color=orange>[AC101] 대상 기반 DOT 공격 종료!</color>");
+            //Debug.Log("<color=orange>[AC101] 대상 기반 DOT 공격 종료!</color>");
         }
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace AttackComponents
 
             var buff = new BUFF();
             buff.Activate(buffInfo);
-            Debug.Log($"<color=green>[AC101] {target.pawnName}에게 속도 증가 버프 적용</color>");
+            //Debug.Log($"<color=green>[AC101] {target.pawnName}에게 속도 증가 버프 적용</color>");
         }
 
         private void ApplyMoveSpeedBoost(Pawn target)
@@ -390,7 +390,7 @@ namespace AttackComponents
 
             var buff = new BUFF();
             buff.Activate(buffInfo);
-            Debug.Log($"<color=green>[AC101] {target.pawnName}에게 이동속도 증가 버프 적용</color>");
+            //Debug.Log($"<color=green>[AC101] {target.pawnName}에게 이동속도 증가 버프 적용</color>");
         }
 
         private void ApplyAttackSpeedBoost(Pawn target)
@@ -408,7 +408,7 @@ namespace AttackComponents
 
             var buff = new BUFF();
             buff.Activate(buffInfo);
-            Debug.Log($"<color=green>[AC101] {target.pawnName}에게 공격속도 증가 버프 적용</color>");
+            //Debug.Log($"<color=green>[AC101] {target.pawnName}에게 공격속도 증가 버프 적용</color>");
         }
 
         private void ApplyAttackPowerBoost(Pawn target)
@@ -426,7 +426,7 @@ namespace AttackComponents
 
             var buff = new BUFF();
             buff.Activate(buffInfo);
-            Debug.Log($"<color=green>[AC101] {target.pawnName}에게 공격력 증가 버프 적용</color>");
+            //Debug.Log($"<color=green>[AC101] {target.pawnName}에게 공격력 증가 버프 적용</color>");
         }
 
         private void ApplyDefenseBoost(Pawn target)
@@ -444,7 +444,7 @@ namespace AttackComponents
 
             var buff = new BUFF();
             buff.Activate(buffInfo);
-            Debug.Log($"<color=green>[AC101] {target.pawnName}에게 방어력 증가 버프 적용</color>");
+            //Debug.Log($"<color=green>[AC101] {target.pawnName}에게 방어력 증가 버프 적용</color>");
         }
 
         private void ApplyCriticalChanceBoost(Pawn target)
@@ -462,7 +462,7 @@ namespace AttackComponents
 
             var buff = new BUFF();
             buff.Activate(buffInfo);
-            Debug.Log($"<color=green>[AC101] {target.pawnName}에게 치명타 확률 증가 버프 적용</color>");
+            //Debug.Log($"<color=green>[AC101] {target.pawnName}에게 치명타 확률 증가 버프 적용</color>");
         }
 
         private void ApplyCriticalDamageBoost(Pawn target)
@@ -480,7 +480,7 @@ namespace AttackComponents
 
             var buff = new BUFF();
             buff.Activate(buffInfo);
-            Debug.Log($"<color=green>[AC101] {target.pawnName}에게 치명타 데미지 증가 버프 적용</color>");
+            //Debug.Log($"<color=green>[AC101] {target.pawnName}에게 치명타 데미지 증가 버프 적용</color>");
         }
     }
 } 

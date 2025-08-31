@@ -170,7 +170,6 @@ namespace AttackComponents
             foreach (Pawn enemy in enemiesInRange)
             {
                 targetQueue.Enqueue(enemy);
-                Debug.Log($"targetQueue: {enemy.pawnName}, Position: {enemy.transform.position}");
             }
         }
 
@@ -230,7 +229,6 @@ namespace AttackComponents
             // 큐가 비어있는지 체크
             if (targetQueue.Count == 0)
             {
-                Debug.LogWarning("targetQueue가 비어있습니다. 번개 연쇄를 종료합니다.");
                 chainState = LightningChainState.Finished;
                 return;
             }
@@ -241,7 +239,6 @@ namespace AttackComponents
             // 파괴된 객체 체크
             if (targetEnemy is null || targetEnemy.transform == null)
             {
-                Debug.LogWarning("타겟 Enemy가 파괴되었습니다. 큐에서 제거합니다.");
                 targetQueue.Dequeue(); // 파괴된 객체 제거
                 ApplyLightningDamage(); // 재귀적으로 다음 타겟 처리
                 return;

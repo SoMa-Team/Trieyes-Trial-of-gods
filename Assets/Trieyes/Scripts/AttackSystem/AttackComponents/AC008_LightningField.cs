@@ -65,7 +65,7 @@ namespace AttackComponents
             fieldState = LightningFieldState.Preparing;
             fieldTimer = 0f;
             
-            Debug.Log("<color=cyan>[AC009] 번개 자기장 시작!</color>");
+            //Debug.Log("<color=cyan>[AC009] 번개 자기장 시작!</color>");
         }
 
         protected override void Update()
@@ -147,7 +147,7 @@ namespace AttackComponents
 
         private void SummonAC104()
         {
-            Debug.Log("<color=yellow>[AC009] AC105 소환하여 따라다니는 자기장 생성!</color>");
+            //Debug.Log("<color=yellow>[AC009] AC105 소환하여 따라다니는 자기장 생성!</color>");
             
             // 기존 AC105가 있다면 정리
             if (summonedAC104 != null)
@@ -175,7 +175,7 @@ namespace AttackComponents
                 ac105Component.fieldVFXPrefab = fieldVFXPrefab;
             }
             
-            Debug.Log("<color=green>[AC009] AC104 따라다니는 자기장 활성화 완료!</color>");
+            //Debug.Log("<color=green>[AC009] AC104 따라다니는 자기장 활성화 완료!</color>");
         }
 
         private void DeactivateField()
@@ -187,7 +187,7 @@ namespace AttackComponents
                 summonedAC104 = null;
             }
             
-            Debug.Log("<color=cyan>[AC009] AC104 따라다니는 자기장 종료!</color>");
+            //Debug.Log("<color=cyan>[AC009] AC104 따라다니는 자기장 종료!</color>");
         }
 
         public override void Deactivate()

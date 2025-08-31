@@ -72,7 +72,7 @@ namespace AttackComponents
             fieldTimer = 0f;
             damageTimer = 0f;
             
-            Debug.Log("<color=cyan>[AC104] 따라다니는 자기장 시작!</color>");
+            //Debug.Log("<color=cyan>[AC104] 따라다니는 자기장 시작!</color>");
         }
         
         protected override void Update()
@@ -150,7 +150,7 @@ namespace AttackComponents
             // VFX 생성 (Active 상태에서 생성)
             CreateFieldVFX();
             
-            Debug.Log("<color=green>[AC104] 자기장 활성화!</color>");
+            //Debug.Log("<color=green>[AC104] 자기장 활성화!</color>");
         }
         
         private void ApplyFieldDamage()
@@ -159,7 +159,7 @@ namespace AttackComponents
             fieldTargets.Clear();
             fieldTargets = BattleStage.now.GetEnemiesInCircleRange(attack.attacker.transform.position, fieldRadius);
             
-            Debug.Log($"<color=blue>[AC104] 자기장 범위 내 적 탐지: {fieldTargets.Count}명</color>");
+            //Debug.Log($"<color=blue>[AC104] 자기장 범위 내 적 탐지: {fieldTargets.Count}명</color>");
             
             // 탐지된 적들에게 데미지 적용
             for (int i = 0; i < fieldTargets.Count; i++)
@@ -180,7 +180,7 @@ namespace AttackComponents
             spawnedVFX.SetActive(true);
             PlayVFX(spawnedVFX);
             
-            Debug.Log($"<color=blue>[AC105] 번개 장판 VFX 생성!</color>");
+            //Debug.Log($"<color=blue>[AC105] 번개 장판 VFX 생성!</color>");
         }
         
         private void DeactivateField()
@@ -193,7 +193,7 @@ namespace AttackComponents
                 spawnedVFX = null;
             }
             
-            Debug.Log("<color=cyan>[AC105] 따라다니는 자기장 종료!</color>");
+            //Debug.Log("<color=cyan>[AC105] 따라다니는 자기장 종료!</color>");
         }
         
         /// <summary>

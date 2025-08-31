@@ -733,7 +733,7 @@ namespace CharacterSystem
             ChangeHP(-result.totalDamage);
             ChangeAnimationState("DAMAGED");
 
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {result.totalDamage} damage from {result.attacker.gameObject.name}</color>");
+            //Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {result.totalDamage} damage from {result.attacker.gameObject.name}</color>");
             // TODO : 넉백 확률 스탯 부분 추가 필요
             // ApplyKnockback(damageInfo.attacker);
             
@@ -754,13 +754,13 @@ namespace CharacterSystem
 
         public void ApplyStealHealth(AttackResult result)
         {
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} steal {result.attackerHealed} HP from {result.target.gameObject.name}</color>");
+            //Debug.Log($"<color=red>[DAMAGE] {gameObject.name} steal {result.attackerHealed} HP from {result.target.gameObject.name}</color>");
             ChangeHP(result.attackerHealed);
         }
 
         public void ApplyReflectDamage(AttackResult result)
         {
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took reflect damage {result.attackerReflectDamage} from {result.target.gameObject.name}</color>");
+            //Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took reflect damage {result.attackerReflectDamage} from {result.target.gameObject.name}</color>");
             ChangeHP(-result.attackerReflectDamage);
         }
 

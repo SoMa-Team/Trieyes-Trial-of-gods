@@ -137,7 +137,6 @@ namespace AttackComponents
 
         private void StopEnchantment()
         {
-            Debug.LogError("[S001] 강화 효과 종료");
             enchantmentState = EnchantmentState.Finished;
         }
         

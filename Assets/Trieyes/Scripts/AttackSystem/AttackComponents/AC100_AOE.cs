@@ -101,7 +101,7 @@ namespace AttackComponents
             aoeTimer = 0f;
             aoeDurationTimer = 0f;
             
-            Debug.Log("<color=orange>[AC100] 좌표 기반 AOE 공격 시작!</color>");
+            //Debug.Log("<color=orange>[AC100] 좌표 기반 AOE 공격 시작!</color>");
         }
 
         protected override void Update()
@@ -201,7 +201,7 @@ namespace AttackComponents
                 }
             }
 
-            Debug.Log($"<color=yellow>[AC100] 좌표 기반 AOE 공격으로 {aoeTargets.Count}명에게 {aoeDamage} 데미지 적용</color>");
+            //Debug.Log($"<color=yellow>[AC100] 좌표 기반 AOE 공격으로 {aoeTargets.Count}명에게 {aoeDamage} 데미지 적용</color>");
         }
 
         private void DetectEnemiesInAOE(Vector2 aoePosition)
@@ -236,7 +236,7 @@ namespace AttackComponents
             spawnedVFX = CreateAndSetupVFX(aoeVFXPrefab, aoePosition, Vector2.zero);
             PlayVFX(spawnedVFX);
             
-            Debug.Log("<color=green>[AC100] 좌표 기반 AOE 공격 활성화!</color>");
+            //Debug.Log("<color=green>[AC100] 좌표 기반 AOE 공격 활성화!</color>");
         }
 
         private void FinishAC100Attack()
@@ -248,7 +248,7 @@ namespace AttackComponents
                 spawnedVFX = null;
             }
             
-            Debug.Log("<color=orange>[AC100] 좌표 기반 AOE 공격 종료!</color>");
+            //Debug.Log("<color=orange>[AC100] 좌표 기반 AOE 공격 종료!</color>");
         }
 
         /// <summary>

@@ -103,7 +103,7 @@ namespace AttackComponents
             dashTimer = 0f;
             isDashActive = false;
             
-            Debug.Log("<color=orange>[AC109] Dash 공격 시작!</color>");
+            //Debug.Log("<color=orange>[AC109] Dash 공격 시작!</color>");
         }
 
         protected override void Update()
@@ -195,7 +195,7 @@ namespace AttackComponents
         {
             if (dashOwner == null)
             {
-                Debug.LogError("<color=red>[AC109] Dash owner가 null입니다!</color>");
+                //Debug.LogError("<color=red>[AC109] Dash owner가 null입니다!</color>");
                 return;
             }
 
@@ -213,7 +213,7 @@ namespace AttackComponents
             spawnedVFX = CreateAndSetupVFX(dashVFXPrefab, dashStartPosition, dashDirection);
             PlayVFX(spawnedVFX);
             
-            Debug.Log("<color=green>[AC109] Dash 공격 활성화!</color>");
+            //Debug.Log("<color=green>[AC109] Dash 공격 활성화!</color>");
         }
 
         private void FinishAC109Attack()
@@ -231,7 +231,7 @@ namespace AttackComponents
                 spawnedVFX = null;
             }
             
-            Debug.Log("<color=orange>[AC109] Dash 공격 종료!</color>");
+            //Debug.Log("<color=orange>[AC109] Dash 공격 종료!</color>");
         }
 
         /// <summary>

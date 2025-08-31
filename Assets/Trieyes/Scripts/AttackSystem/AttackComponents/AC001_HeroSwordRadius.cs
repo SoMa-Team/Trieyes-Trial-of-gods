@@ -2,22 +2,22 @@ using AttackSystem;
 using CharacterSystem;
 using Stats;
 using UnityEngine;
+using System.Collections.Generic;
+using BattleSystem;
 
 namespace AttackComponents
 {
     /// <summary>
     /// 캐릭터 소드 공격
-    /// 캐릭터 소드 공격은 AC100 AOE 컴포넌트를 사용하여 구현합니다.
-    /// 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
-    /// 2. AC100 AOE 컴포넌트를 생성하여 Rect 형태의 공격을 수행합니다.
-    /// 3. 0.2초 동안 지속되는 짧은 AOE 공격을 실행합니다.
+    /// 캐릭터 소드 공격은 Physics.OverlapBox을 사용하여 구현합니다.
+    /// 1. 캐릭터의 위치를 기준으로 Physics.OverlapBox을 사용하여 충돌을 감지합니다.
+    /// 2. 콜라이더 없이 물리 오버랩을 통해 효율적인 충돌 감지를 수행합니다.
+    /// 3. 0.6초 동안 지속되는 공격을 실행합니다.
     /// </summary>
     public class AC001_HeroSwordRadius : AttackComponent
     {
         // FSM 상태 관리
         private AttackState attackState = AttackState.None;
-
-        private bool bIsColliderCreated = false;
 
         private float vfxSize = 0f;
         private float attackTimer = 0f;
@@ -25,24 +25,22 @@ namespace AttackComponents
         private float vfxDuration = 0.6f;
         private Vector2 attackDirection;
 
-        // VFX 설정
-        [Header("VFX Settings")]
-
+        // Physics.OverlapBox 설정
+        [Header("Physics Overlap Settings")]
         public float attackRadius = 1f;
         public float attackSpeed = 1f;
+        public LayerMask targetLayerMask = -1; // 기본적으로 모든 레이어
 
+        // 충돌 감지 설정
+        private Vector2 attackCenter;
+        private Vector2 attackSize;
+
+        // VFX 설정
+        [Header("VFX Settings")]
         [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
 
-
         // 공격 상태 열거형
-        private enum AttackState
-        {
-            None,
-            Preparing,
-            Active,
-            Finishing,
-            Finished
-        }
+        private enum AttackState { None, Preparing, Active, Finishing, Finished }
 
         public override void Activate(Attack attack, Vector2 direction)
         {
@@ -59,35 +57,26 @@ namespace AttackComponents
             StartAttack();
         }
 
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            StopAndDestroyVFX(spawnedVFX);
+        }
+
         private void StartAttack()
         {
             attackState = AttackState.Preparing;
             attackTimer = 0f;
             
-            // 1. 캐릭터의 R_Weapon 게임 오브젝트를 가져옵니다. 여기가 공격 기준 좌표 입니다.
+            // 1. 캐릭터의 위치를 기준으로 공격 영역 설정
             var pawnPrefab = attack.attacker.PawnPrefab;
-
             Vector2 vfxPosition = (Vector2)pawnPrefab.transform.position;
+
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
 
-            if (!bIsColliderCreated)
-            {
-                attack.gameObject.AddComponent<BoxCollider2D>();
-                bIsColliderCreated = true;
-            }
-
-            CreateBoxColliderComponent();
-            attack.attackCollider = attack.gameObject.GetComponent<BoxCollider2D>();
-        }
-
-        private void CreateBoxColliderComponent()
-        {
-            var boxCollider = attack.gameObject.GetComponent<BoxCollider2D>();
-            boxCollider.size = new Vector2(attackRadius * 1.5f, attackRadius * 1.5f);
-            boxCollider.offset = new Vector2(vfxSize / 2 * (attackDirection.x > 0 ? 1 : -1), 0);
-
-            boxCollider.isTrigger = true;
-            boxCollider.enabled = true;
+            // 공격 중심점과 크기 계산
+            attackCenter = spawnedVFX.transform.position;
+            attackSize = new Vector2(attackRadius * 2f, attackRadius * 2f);
         }
 
         protected override void Update()
@@ -109,7 +98,8 @@ namespace AttackComponents
                     break;
 
                 case AttackState.Preparing:
-                    StartAttack(spawnedVFX, attack.attackCollider);
+                    // 공격 활성화
+                    DetectCollisions();
                     attackState = AttackState.Active;
                     attackTimer = 0f;
                     break;
@@ -123,14 +113,12 @@ namespace AttackComponents
                     }
                     else
                     {
-                        attack.attackCollider.enabled = false;
                         attackTimer += Time.deltaTime;
                     }
 
                     break;
 
                 case AttackState.Finishing:
-                    FinishAttack();
                     attackState = AttackState.Finished;
                     break;
 
@@ -138,6 +126,24 @@ namespace AttackComponents
                     attackState = AttackState.None;
                     AttackFactory.Instance.Deactivate(attack);
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Physics.OverlapBox을 사용하여 충돌을 감지합니다.
+        /// </summary>
+        private void DetectCollisions()
+        {
+            // Physics.OverlapBox을 사용하여 충돌 감지
+            Collider2D[] hitColliders = Physics2D.OverlapBoxAll(attackCenter, attackSize, 0f, targetLayerMask);
+
+            foreach (Collider2D hitCollider in hitColliders)
+            {
+                // 공격자 자신은 제외
+                if (hitCollider.TryGetComponent(out Enemy targetPawn))
+                {
+                    DamageProcessor.ProcessHit(attack, targetPawn);
+                }
             }
         }
 
@@ -168,7 +174,7 @@ namespace AttackComponents
             spawnedVFX.transform.SetParent(attack.attacker.transform);
 
             var offsetX = direction.x > 0 ? vfxSize / 2 : -vfxSize / 2;
-            spawnedVFX.transform.localPosition = new Vector3(offsetX, 0, 0);
+            spawnedVFX.transform.localPosition = new Vector3(offsetX, Character.vfxYOffset, 0);
             
             SetVFXSpeed(spawnedVFX, attackSpeed);
 
@@ -176,20 +182,12 @@ namespace AttackComponents
             return spawnedVFX;
         }
 
-        private void FinishAttack()
+        void OnDrawGizmos()
         {
-            // AOE 컴포넌트 정리
-            if (attack.attackCollider != null)
-            {
-                attack.attackCollider.enabled = false;
-                attack.attackCollider = null;
-            }
-        }
-
-        public override void Deactivate()
-        {
-            base.Deactivate();
-            StopAndDestroyVFX(spawnedVFX);
+            #if UNITY_EDITOR
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(attackCenter, attackSize);
+            #endif
         }
     }
 }

@@ -24,6 +24,7 @@ public class ShopStickerSlot : MonoBehaviour
     private static readonly int STICKER_PRICE = 50;
     private static readonly Color STAT_TYPE_STICKER_COLOR = new Color(239f / 255, 171f / 255, 205f / 255, 1f);
     private static readonly Color NUMBER_STICKER_COLOR    = new Color(171f / 255, 205f / 255, 239f / 255, 1f);
+    private static readonly Color PROB_STICKER_COLOR    = new Color(171f / 255, 239f / 255, 198f / 255, 1f);
 
     private Sticker sticker;
     private bool isReserved = false;
@@ -57,7 +58,12 @@ public class ShopStickerSlot : MonoBehaviour
                 titleText.text = $"{statKorean} 스티커";
                 backGround.color = STAT_TYPE_STICKER_COLOR;
                 break;
-
+            
+            case StickerType.Probability:
+                valueText.text = $"{sticker.numberValue.ToString()} %";
+                titleText.text = $"{sticker.numberValue}% 스티커";
+                backGround.color = PROB_STICKER_COLOR;
+                break;
             default:
                 valueText.text = string.Empty;
                 titleText.text = "알 수 없음";

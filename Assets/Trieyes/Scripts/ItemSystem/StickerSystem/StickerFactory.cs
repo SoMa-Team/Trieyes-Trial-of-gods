@@ -36,7 +36,7 @@ namespace StickerSystem
 
         private static void ActivateProbabilitySticker(Sticker sticker, int value, int lifeTime)
         {
-            StickerType type = sticker.type;
+            sticker.type = StickerType.Probability;
             sticker.numberValue = value;
             sticker.lifeTime = lifeTime;
         }

@@ -79,8 +79,10 @@ namespace AttackComponents
             spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
 
             // 공격 중심점과 크기 계산
-            attackCenter = spawnedVFX.transform.position;
-            attackSize = new Vector2(attackRadius * 3f, attackRadius * 2f);
+            // TODO : 공통적으로 적용되도록 수정
+            float characterXLength = 1f;
+            attackCenter = spawnedVFX.transform.position + (attackDirection.x >= 0 ? -new Vector3(characterXLength * 0.5f, 0, 0) : new Vector3(characterXLength * 0.5f, 0, 0));
+            attackSize = new Vector2(attackRadius * 2f + 0.5f * characterXLength, attackRadius * 2f);
         }
 
         protected override void Update()

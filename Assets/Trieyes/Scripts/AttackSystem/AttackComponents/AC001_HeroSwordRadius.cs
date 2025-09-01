@@ -4,6 +4,7 @@ using Stats;
 using UnityEngine;
 using System.Collections.Generic;
 using BattleSystem;
+using Utils;
 
 namespace AttackComponents
 {
@@ -18,6 +19,8 @@ namespace AttackComponents
     {
         // FSM 상태 관리
         private AttackState attackState = AttackState.None;
+
+        private List<Enemy> target = new List<Enemy>();
 
         private float vfxSize = 0f;
         private float attackTimer = 0f;
@@ -60,6 +63,7 @@ namespace AttackComponents
         public override void Deactivate()
         {
             base.Deactivate();
+            target.Clear();
             StopAndDestroyVFX(spawnedVFX);
         }
 
@@ -108,6 +112,11 @@ namespace AttackComponents
                     // VFX가 완료될 때까지 대기
                     if (attackTimer >= vfxDuration)
                     {
+                        Debug.Log("Off");
+                        foreach (var targetPawn in target)
+                        {
+                            targetPawn.allIn1SpriteShaderHandler.SetShaderAllObjects(AllIn1SpriteShaderType.Off);
+                        }
                         attackState = AttackState.Finishing;
                         attackTimer = 0f;
                     }
@@ -142,6 +151,9 @@ namespace AttackComponents
                 // 공격자 자신은 제외
                 if (hitCollider.TryGetComponent(out Enemy targetPawn))
                 {
+                    target.Add(targetPawn);
+                    targetPawn.allIn1SpriteShaderHandler.SetObject(targetPawn.gameObject);
+                    targetPawn.allIn1SpriteShaderHandler.SetShaderAllObjects(AllIn1SpriteShaderType.DamageNormal);
                     DamageProcessor.ProcessHit(attack, targetPawn);
                 }
             }

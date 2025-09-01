@@ -17,6 +17,8 @@ namespace CharacterSystem
         [SerializeField] 
         protected int dropGold; // 드랍할 골드 양
         public Character playerTarget;
+
+        public override float vfxYOffset { get { return 0f; } }
    
         // ===== [기능 2] 초기화 =====
         protected override void Start()

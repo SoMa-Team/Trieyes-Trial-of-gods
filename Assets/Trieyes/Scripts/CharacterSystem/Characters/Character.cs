@@ -16,7 +16,7 @@ namespace CharacterSystem
         protected float lastTriggerEnterTime = 0f;
         public float collisionDamageInterval = 0.5f;
 
-        public const float vfxYOffset = 0.4f;
+        public override float vfxYOffset { get { return 0.4f; } }
         
         // ===== [Unity 생명주기] =====
         protected override void Start()

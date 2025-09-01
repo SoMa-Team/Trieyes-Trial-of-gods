@@ -50,6 +50,8 @@ namespace CharacterSystem
 
         [SerializeField] protected Controller Controller;
         [SerializeField] protected Animator Animator;
+
+        public abstract float vfxYOffset { get; }
         
         [Header("Stats")]
 

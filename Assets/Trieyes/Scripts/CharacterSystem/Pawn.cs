@@ -52,6 +52,8 @@ namespace CharacterSystem
         [SerializeField] protected Animator Animator;
 
         public abstract float vfxYOffset { get; }
+
+        public AllIn1SpriteShaderHandler allIn1SpriteShaderHandler = new AllIn1SpriteShaderHandler();
         
         [Header("Stats")]
 
@@ -147,6 +149,7 @@ namespace CharacterSystem
         protected virtual void Start()
         {
             if(rb is null) rb = GetComponent<Rigidbody2D>();
+            allIn1SpriteShaderHandler.SetObject(gameObject);
             
             pawnPrefab = transform.GetChild(0).gameObject;
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
@@ -269,7 +272,12 @@ namespace CharacterSystem
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
-            }   
+            }
+
+            if (allIn1SpriteShaderHandler.mat is not null)   
+            {
+                allIn1SpriteShaderHandler.Deactivate();
+            }
 
             Controller.Deactivate();
             statuses.Clear();

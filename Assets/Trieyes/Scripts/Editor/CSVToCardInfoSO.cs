@@ -91,7 +91,15 @@ public static class CSVToCardInfoSOImporter
                 .ToList();
             
             if (idx_baseParams >= 0 && !string.IsNullOrWhiteSpace(values[idx_baseParams]))
-                card.baseParams = values[idx_baseParams].Split('|').Select(x => x.Trim()).ToList();
+            card.baseParams = values[idx_baseParams]
+                .Split('|')
+                .Select(x => {
+                    var s = x.Trim();
+                    if (s.Length > 0 && s[^1] == '%') // 마지막이 %면 제거
+                        s = s.Substring(0, s.Length - 1).Trim();
+                    return s;
+                })
+                .ToList();
             else
                 card.baseParams = new List<string>();
             

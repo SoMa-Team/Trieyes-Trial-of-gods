@@ -244,13 +244,10 @@ namespace AttackComponents
                 return;
             }
             
-            AttackResult result = new AttackResult();
-            result.attack = attack;
-            result.attacker = attack.attacker;
-            result.totalDamage = chainDamage;
             ApplyStatus(targetEnemy);
-            targetEnemy.ApplyDamage(result);
-
+            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(chainDamage);
+            DamageProcessor.ProcessHit(attack, targetEnemy);
+            
             // 현재 위치에서 타겟 위치로 VFX 이동
             Vector2 targetPosition = targetEnemy.transform.position;
             CreateMovingLightningVFX(currentChainPosition, targetPosition, () => {

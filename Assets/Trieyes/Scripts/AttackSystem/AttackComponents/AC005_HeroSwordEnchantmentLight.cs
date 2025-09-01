@@ -264,7 +264,7 @@ namespace AttackComponents
             spawnedVFX.transform.SetParent(attack.attacker.transform);
 
             var offsetX = direction.x > 0 ? vfxSize / 2 : -vfxSize / 2;
-            spawnedVFX.transform.localPosition = new Vector3(offsetX, Character.vfxYOffset, 0);
+            spawnedVFX.transform.localPosition = new Vector3(offsetX, attack.attacker.vfxYOffset, 0);
             
             SetVFXSpeed(spawnedVFX, attackSpeed);
 

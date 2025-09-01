@@ -29,6 +29,8 @@ namespace AttackComponents
         [Header("공전 대상 설정")]
         public Pawn orbitOwner;
 
+        public int orbitDamage = 10;
+
         // 콜라이더 설정
         [Header("콜라이더 설정")]
         public float colliderWidth = 0.5f; // 콜라이더 가로 크기
@@ -119,7 +121,7 @@ namespace AttackComponents
             {
                 // Attack 객체 생성 및 데미지 처리
                 Attack attack = AttackFactory.Instance.Create(attackData, orbitOwner, null, Vector2.zero);
-                attack.statSheet[StatType.AttackPower] = new IntegerStatValue(20);
+                attack.statSheet[StatType.AttackPower] = new IntegerStatValue(orbitDamage);
                 DamageProcessor.ProcessHit(attack, targetPawn);
 
                 // 충돌 후 처리

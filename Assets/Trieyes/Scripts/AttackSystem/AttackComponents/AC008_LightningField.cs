@@ -27,14 +27,14 @@ namespace AttackComponents
         // 버프 설정
         [Header("버프 설정")]
         public float moveSpeedBoostMultiplier; // 이동속도 증가 배율
-        public float moveSpeedBoostDuration; // 이동속도 증가 지속시간
+        private float moveSpeedBoostDuration; // 이동속도 증가 지속시간
 
         // 번개 장판 상태 관리
         private LightningFieldState fieldState = LightningFieldState.None;
         private float fieldTimer = 0f;
 
         // AC104 인스턴스 관리
-        private Attack summonedAC104;
+        private Attack summonedAC105;
 
         // 번개 장판 상태 열거형
         private enum LightningFieldState
@@ -54,6 +54,7 @@ namespace AttackComponents
             
             // 초기 상태 설정
             fieldState = LightningFieldState.None;
+            moveSpeedBoostDuration = lightningFieldDuration;
             fieldTimer = 0f;
             
             // 번개 장판 시작
@@ -138,7 +139,6 @@ namespace AttackComponents
                 target = attack.attacker,
                 buffMultiplier = moveSpeedBoostMultiplier,
                 buffDuration = moveSpeedBoostDuration,
-                buffInterval = 1f,
             };
 
             var speedBuff = new BUFF();
@@ -150,26 +150,25 @@ namespace AttackComponents
             //Debug.Log("<color=yellow>[AC009] AC105 소환하여 따라다니는 자기장 생성!</color>");
             
             // 기존 AC105가 있다면 정리
-            if (summonedAC104 != null)
+            if (summonedAC105 != null)
             {
-                AttackFactory.Instance.Deactivate(summonedAC104);
-                summonedAC104 = null;
+                AttackFactory.Instance.Deactivate(summonedAC105);
+                summonedAC105 = null;
             }
             
             // AC105 생성
-            summonedAC104 = AttackFactory.Instance.Create(followingFieldData, attack.attacker, null, Vector2.zero);
+            summonedAC105 = AttackFactory.Instance.Create(followingFieldData, attack.attacker, null, Vector2.zero);
             
             // AC105 설정 (하드코딩)
-            var ac105Component = summonedAC104.components[0] as AC105_FollowingField;
+            var ac105Component = summonedAC105.components[0] as AC105_FollowingField;
             if (ac105Component != null)
             {
                 ac105Component.fieldRadius = lightningFieldRadius;
                 ac105Component.fieldDamage = lightningFieldDamage;
-                ac105Component.fieldTickInterval = 0.5f;
                 ac105Component.fieldDuration = lightningFieldDuration;
+                ac105Component.fieldTickInterval = 0.5f;
                 ac105Component.followPlayer = true;
                 ac105Component.followDistance = 0f;
-                ac105Component.followOffset = Vector2.zero;
                 
                 // 필드 VFX 프리팹 전달
                 ac105Component.fieldVFXPrefab = fieldVFXPrefab;
@@ -181,10 +180,10 @@ namespace AttackComponents
         private void DeactivateField()
         {
             // AC104 비활성화
-            if (summonedAC104 != null)
+            if (summonedAC105 != null)
             {
-                AttackFactory.Instance.Deactivate(summonedAC104);
-                summonedAC104 = null;
+                AttackFactory.Instance.Deactivate(summonedAC105);
+                summonedAC105 = null;
             }
             
             //Debug.Log("<color=cyan>[AC009] AC104 따라다니는 자기장 종료!</color>");
@@ -195,10 +194,10 @@ namespace AttackComponents
             base.Deactivate();
             
             // AC105 정리
-            if (summonedAC104 != null)
+            if (summonedAC105 != null)
             {
-                AttackFactory.Instance.Deactivate(summonedAC104);
-                summonedAC104 = null;
+                AttackFactory.Instance.Deactivate(summonedAC105);
+                summonedAC105 = null;
             }
             
             fieldState = LightningFieldState.None;

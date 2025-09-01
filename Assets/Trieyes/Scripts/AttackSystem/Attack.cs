@@ -126,7 +126,7 @@ namespace AttackSystem
         /// 공격 성공 시 충돌을 처리합니다. (투사체 전용)
         /// </summary>
         /// <param name="targetPawn">피격 대상</param>
-        protected virtual void ProcessAttackCollision(Pawn targetPawn)
+        public virtual void ProcessAttackCollision(Pawn targetPawn)
         {
             DamageProcessor.ProcessHit(this, targetPawn);
             

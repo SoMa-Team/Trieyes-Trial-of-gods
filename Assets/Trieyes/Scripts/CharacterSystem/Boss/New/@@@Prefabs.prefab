@@ -107,12 +107,6 @@ MonoBehaviour:
   stoneSpriteTransform: {fileID: 4489612583784843459}
   stoneSprite: {fileID: 4843918889571638997}
   stoneParticle: {fileID: 5106387799735592627}
-  stoneCount: 10
-  stoneDropBaseRadius: 3
-  stoneDropNoiseRadius: 0
-  stoneDropNoiseAngle: 0
-  stoneDropHeight: 1
-  stoneDropDuration: 0.2
 --- !u!70 &4960135439607789811
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -143,7 +137,7 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -10898,10 +10892,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 311414132886130414}
-  - component: {fileID: 6032594178651233699}
-  - component: {fileID: 1346689420786867170}
   - component: {fileID: 3985554379372133976}
   - component: {fileID: 7380468595167903281}
+  - component: {fileID: 6032594178651233699}
+  - component: {fileID: 1346689420786867170}
   m_Layer: 7
   m_Name: Boss_Water
   m_TagString: Enemy
@@ -10925,6 +10919,59 @@ Transform:
   - {fileID: 1649256052111538303}
   m_Father: {fileID: 6372749499814429590}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3985554379372133976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8999871071348980945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 029fb60f63ad64b6980bc408067de38a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 0
+  currentHp: 0
+  rb: {fileID: 6032594178651233699}
+  Controller: {fileID: 7380468595167903281}
+  Animator: {fileID: 0}
+  statPresetSO: {fileID: 11400000, guid: 2e6a074a25f194ef7b1ec86363ccd257, type: 2}
+  basicAttack: {fileID: 0}
+  skill1Attack: {fileID: 0}
+  skillAttack1Cooldown: 0
+  lastSkillAttack1Time: -999
+  skill2Attack: {fileID: 0}
+  skillAttack2Cooldown: 0
+  lastSkillAttack2Time: -999
+  objectID: 0
+  dropGold: 0
+  playerTarget: {fileID: 0}
+  attackDefault: {fileID: 11400000, guid: e3f8f43aa657a467c9f9ddf99deb3389, type: 2}
+  attackStoneSummon: {fileID: 11400000, guid: a3fa5b0f1a5f94770ad71365b560b45e, type: 2}
+  attackRush: {fileID: 0}
+  attackStoneExplode: {fileID: 0}
+  attackFireDischarge: {fileID: 0}
+  attackSpawnSlowField: {fileID: 0}
+  attackMoveCenter: {fileID: 0}
+  attackCircularSector: {fileID: 11400000, guid: 678194c66b41749828f918aaaec2852e, type: 2}
+--- !u!114 &7380468595167903281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8999871071348980945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f81c3c9dd1b5f4b809aa34a61e1645cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 0}
+  lockMovement: 0
+  lastMoveDir: {x: 0, y: 0}
+  isAutoAttack: 0
+  moveTime: 1
 --- !u!50 &6032594178651233699
 Rigidbody2D:
   serializedVersion: 5
@@ -10989,59 +11036,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0.01112407, y: -0.348876}
   m_Size: {x: 0.45133016, y: 0.26589492}
   m_Direction: 1
---- !u!114 &3985554379372133976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8999871071348980945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 029fb60f63ad64b6980bc408067de38a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHp: 0
-  currentHp: 0
-  rb: {fileID: 6032594178651233699}
-  Controller: {fileID: 7380468595167903281}
-  Animator: {fileID: 0}
-  statPresetSO: {fileID: 11400000, guid: 2e6a074a25f194ef7b1ec86363ccd257, type: 2}
-  basicAttack: {fileID: 0}
-  skill1Attack: {fileID: 0}
-  skillAttack1Cooldown: 0
-  lastSkillAttack1Time: -999
-  skill2Attack: {fileID: 0}
-  skillAttack2Cooldown: 0
-  lastSkillAttack2Time: -999
-  objectID: 0
-  dropGold: 0
-  playerTarget: {fileID: 0}
-  attackDefault: {fileID: 11400000, guid: e3f8f43aa657a467c9f9ddf99deb3389, type: 2}
-  attackStoneSummon: {fileID: 11400000, guid: a3fa5b0f1a5f94770ad71365b560b45e, type: 2}
-  attackRush: {fileID: 0}
-  attackStoneExplode: {fileID: 0}
-  attackFireDischarge: {fileID: 0}
-  attackSpawnSlowField: {fileID: 0}
-  attackMoveCenter: {fileID: 0}
-  attackCircularSector: {fileID: 11400000, guid: 678194c66b41749828f918aaaec2852e, type: 2}
---- !u!114 &7380468595167903281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8999871071348980945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f81c3c9dd1b5f4b809aa34a61e1645cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  owner: {fileID: 0}
-  lockMovement: 0
-  lastMoveDir: {x: 0, y: 0}
-  isAutoAttack: 0
-  moveTime: 1
 --- !u!1 &9146615455978291613
 GameObject:
   m_ObjectHideFlags: 0

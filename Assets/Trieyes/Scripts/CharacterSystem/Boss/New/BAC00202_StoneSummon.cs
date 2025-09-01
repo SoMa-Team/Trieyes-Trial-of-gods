@@ -1,9 +1,12 @@
+using System;
 using AttackComponents;
 using AttackSystem;
 using CharacterSystem;
+using GamePlayer;
 using PrimeTween;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class BAC00202_StoneSummon : AttackComponent
 {
@@ -12,12 +15,12 @@ public class BAC00202_StoneSummon : AttackComponent
     [SerializeField] private SpriteRenderer stoneSprite;
     [SerializeField] private ParticleSystem stoneParticle;
     
-    [SerializeField] private int stoneCount = 10;
-    [SerializeField] private float stoneDropBaseRadius = 3f;
-    [SerializeField] private float stoneDropNoiseRadius = 0.5f;
-    [SerializeField] private float stoneDropNoiseAngle = 5f;
-    [SerializeField] private float stoneDropHeight = 1f;
-    [SerializeField] private float stoneDropDuration = 0.2f;
+    private int stoneCount = 18;
+    private float stoneDropBaseRadius = 5f;
+    private float stoneDropNoiseRadius = 3f;
+    private float stoneDropNoiseAngle = 20f;
+    private float stoneDropHeight = 1f;
+    private float stoneDropDuration = 0.5f;
     
     public override void Activate(Attack attack, Vector2 direction)
     {
@@ -28,12 +31,12 @@ public class BAC00202_StoneSummon : AttackComponent
             stoneCollider.enabled = false;
             stoneSprite.enabled = false;
             SummonStone();
+            Destroy(attack.gameObject);
             return;
         }
 
-        stoneCollider.enabled = false;
+        stoneCollider.enabled = true;
         stoneSprite.enabled = true;
-        DoSummonAnimation();
     }
 
     public override void Deactivate()
@@ -44,6 +47,17 @@ public class BAC00202_StoneSummon : AttackComponent
     protected override void Update()
     {
         base.Update();
+    }
+
+    public override void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") || other.CompareTag("Enemy"))
+        {
+            var pawn = other.GetComponent<Pawn>();
+            attack.ProcessAttackCollision(pawn);
+            
+            Destroy(attack); // TODO: 폭발
+        }
     }
 
     public override void ProcessComponentCollision(Pawn targetPawn)
@@ -62,18 +76,23 @@ public class BAC00202_StoneSummon : AttackComponent
             var targetPosition = transform.position + new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * radius, Mathf.Sin(angle * Mathf.Deg2Rad) * radius, 0);
             var childAttack = AttackFactory.Instance.Create(attack.attackData, attack.attacker, attack, Vector2.zero);
             childAttack.transform.position = targetPosition;
+            
+            (childAttack.components[0] as BAC00202_StoneSummon)?.DoSummonAnimation();
         }
     }
 
     private void DoSummonAnimation()
     {
         var targetY = stoneSpriteTransform.position.y;
-        stoneSpriteTransform.position -= new Vector3(0, stoneDropHeight, 0);
-
+        
+        stoneSpriteTransform.position += new Vector3(0, stoneDropHeight, 0);
+        var color = stoneSprite.color;
+        color.a = 0;
+        stoneSprite.color = color;
+        
         var sequence = Sequence.Create();
-        sequence.Chain(Tween.Alpha(stoneSprite, 0f, 0));
         sequence.Chain(Tween.PositionY(stoneSpriteTransform.transform, targetY, stoneDropDuration, Ease.Linear));
-        sequence.Group(Tween.Alpha(stoneSprite, 1f, stoneDropDuration));
+        sequence.Group(Tween.Alpha(stoneSprite, 0.5f, stoneDropDuration, Ease.Linear));
         sequence.Group(Tween.Delay(stoneParticle, 0, particle =>
         {
             particle.Emit(1);

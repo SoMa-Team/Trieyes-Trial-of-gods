@@ -183,8 +183,7 @@ namespace AttackSystem
 
             var attack = pool[id].Dequeue();
             var originalAttack = GetPrefabById(id);
-            foreach (var key in originalAttack.relicStats.Keys)
-                attack.relicStats[key] = originalAttack.relicStats[key];
+            attack.relicStats = new Dictionary<RelicStatType, int>(originalAttack.relicStats);
             return attack;
         }
         

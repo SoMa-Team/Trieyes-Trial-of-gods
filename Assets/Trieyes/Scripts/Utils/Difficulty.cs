@@ -33,7 +33,7 @@ namespace Utils
             difficulty.enemyHpMultiplier = (int)Mathf.Pow(5f, (stageRound - 1) / 3f);
             difficulty.enemyAttackMultiplier = stageRound;
             
-            difficulty.EnemyID = 4; // TODO : Boss 설계 이후 삭제해야함. PR 리뷰시 보이면 말해주세요.!!!!!!!
+            difficulty.EnemyID = 5; // TODO : Boss 설계 이후 삭제해야함. PR 리뷰시 보이면 말해주세요.!!!!!!!
             difficulty.spawnFrequency = 0;
             difficulty.spawnMode = SpawnMode.Once;
             

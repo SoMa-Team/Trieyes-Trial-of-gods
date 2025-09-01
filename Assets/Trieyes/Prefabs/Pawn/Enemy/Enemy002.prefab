@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: c351391a5530c8d479d6bdffcd3fdede, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -86,7 +86,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!1 &9048457892950683038
 GameObject:
   m_ObjectHideFlags: 0
@@ -184,8 +184,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.02, y: -0.12}
-  m_Size: {x: 0.06, y: 0.06}
+  m_Offset: {x: 0.020030983, y: 0.03}
+  m_Size: {x: 0.08, y: 0.08}
   m_Direction: 0
 --- !u!114 &-5832122986476030886
 MonoBehaviour:
@@ -205,7 +205,7 @@ MonoBehaviour:
   Collider: {fileID: 9097963647980026422}
   Controller: {fileID: 0}
   Animator: {fileID: 0}
-  statPresetSO: {fileID: 11400000, guid: facda9dd98e37dd4ea94eca2ebb9fb66, type: 2}
+  statPresetSO: {fileID: 11400000, guid: 3eef8c216c47346f8883e83d964d4294, type: 2}
   lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 0}

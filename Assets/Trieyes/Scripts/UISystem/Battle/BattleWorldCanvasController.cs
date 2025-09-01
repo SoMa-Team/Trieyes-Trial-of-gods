@@ -36,7 +36,7 @@ public class BattleWorldCanvasController : MonoBehaviour
 
     private void UpdateHPBar()
     {
-        var offset = new Vector3(0, -0.8f, 0);
+        var offset = new Vector3(0, -0.3f, 0);
         var character = BattleStage.now.mainCharacter;
         hpBarSliderView.value = character.HpRate;
         

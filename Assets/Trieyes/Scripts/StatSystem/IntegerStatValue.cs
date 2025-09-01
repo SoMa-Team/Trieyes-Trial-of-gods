@@ -63,9 +63,9 @@ namespace Stats
             basicValueChanged = true;
         }
         /// 스탯 값을 직접 설정합니다.
-        public void SetBasicValue(int newValue)
+        public void SetBasicValue(float newValue)
         {
-            basicValue = newValue;
+            basicValue = (int)newValue;
             basicValueChanged = true;
         }
          /// 새로운 버프를 추가합니다.

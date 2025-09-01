@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -44,6 +45,9 @@ namespace CardViews
         // =================== [내부 상태] ===================
         private Card card;
         private readonly List<GameObject> activeStickerOverlays = new();
+        
+        private int appliedParamIdxForPickMode = -1;
+        private readonly Dictionary<int, StickerSystem.Sticker> previewReplacedBackup = new();
 
         // =================== [상수/옵션] ===================
         private static readonly Vector2 OVERLAY_PADDING      = new(15f, 15f);
@@ -54,6 +58,28 @@ namespace CardViews
         private const float BG_Y_OFFSET                      = 0f;
         private const float STICKER_OVERLAY_FIXED_HEIGHT     = 58.28125f;
         private const float NUMBER_STICKER_OVERLAY_Y_OFFSET  = -5.1719f;
+        
+        private bool paramPickMode = false;
+        private Action<int> onParamPicked;     // 선택된 파라미터 idx 콜백
+        private StickerSystem.Sticker pickModeSticker;
+
+        public void EnableParamPickMode(StickerSystem.Sticker sticker, Action<int> onPicked)
+        {
+            paramPickMode = true;
+            pickModeSticker = sticker;
+            onParamPicked = onPicked;
+            appliedParamIdxForPickMode = -1;
+            previewReplacedBackup.Clear();
+        }
+
+        public void DisableParamPickMode()
+        {
+            paramPickMode = false;
+            pickModeSticker = null;
+            onParamPicked = null;
+            appliedParamIdxForPickMode = -1;
+            previewReplacedBackup.Clear();
+        }
 
         // =============== [오버레이 생성/관리] ===============
         #region Overlay 생성 및 관리
@@ -251,7 +277,7 @@ namespace CardViews
             Dictionary<int, List<int>> res = new();
             for (int i = start; i <= end; i++)
             {
-                if (i <= 0 || i >= textInfo.characterCount) continue;
+                if (i < 0 || i >= textInfo.characterCount) continue;
                 int lineNum = textInfo.characterInfo[i].lineNumber;
                 if (!res.ContainsKey(lineNum))
                     res[lineNum] = new List<int>();
@@ -279,40 +305,84 @@ namespace CardViews
         /// <summary>
         /// 카드 설명 클릭 이벤트 (스티커 적용 및 카드 선택)
         /// </summary>
-        public void OnPointerClick(PointerEventData eventData)
+        public void OnPointerClick(PointerEventData eventData) // Todo: 깔끔하게 바꾸기
         {
-            if (!canInteract)
-                return;
-            
-            if (RectTransformUtility.RectangleContainsScreenPoint(
-                    descriptionText.rectTransform, eventData.position, eventData.pressEventCamera))
+            if (!canInteract) return;
+
+            // 설명 영역 안을 눌렀는지 먼저 판정
+            bool inDescription = RectTransformUtility.RectangleContainsScreenPoint(
+                descriptionText.rectTransform, eventData.position, eventData.pressEventCamera);
+
+            if (!inDescription)
             {
-                int charIndex = TMP_TextUtilities.FindIntersectingCharacter(
-                    descriptionText, eventData.position, eventData.pressEventCamera, true);
+                ShopSceneManager.Instance.OnCardClicked(this);
+                return;
+            }
 
-                Debug.Log($"[CardView] 클릭 글자 인덱스: {charIndex}");
+            int charIndex = TMP_TextUtilities.FindIntersectingCharacter(
+                descriptionText, eventData.position, eventData.pressEventCamera, true);
 
-                if (charIndex != -1)
+            Debug.Log($"[CardView] 클릭 글자 인덱스: {charIndex}");
+
+            // 글자에 히트하지 못했으면 카드 클릭 처리
+            if (charIndex == -1)
+            {
+                ShopSceneManager.Instance.OnCardClicked(this);
+                return;
+            }
+
+            // 픽 모드가 아니거나, 붙일 스티커가 없으면 카드 클릭 처리
+            var sticker = paramPickMode ? pickModeSticker : null;
+            if (sticker == null)
+            {
+                ShopSceneManager.Instance.OnCardClicked(this);
+                return;
+            }
+
+            // 글자 인덱스 → 파라미터 인덱스
+            int newParamIdx = card.FindParamIndexByCharIndex(charIndex);
+            if (newParamIdx < 0)
+            {
+                Debug.LogWarning("[CardView] 파라미터 범위 밖 클릭");
+                return;
+            }
+
+            // 다른 칸으로 이동하는 경우: 이전 칸 복원
+            if (appliedParamIdxForPickMode >= 0 && appliedParamIdxForPickMode != newParamIdx)
+            {
+                card.RemoveStickerOverridesByInstance(sticker);
+
+                if (previewReplacedBackup.TryGetValue(appliedParamIdxForPickMode, out var prev))
                 {
-                    var sticker = ShopSceneManager.Instance.selectedSticker;
-                    if (sticker != null)
-                    {
-                        bool applied = card.TryApplyStickerOverride(charIndex, sticker);
-                        if (applied)
-                        {
-                            UpdateView();
-                            Debug.Log($"[CardView] 스티커가 char {charIndex}번째 파라미터에 적용됨");
-                        }
-                        else
-                        {
-                            Debug.LogWarning("[CardView] 스티커 적용 실패: 타입 불일치 또는 불가");
-                        }
-                        return;
-                    }
+                    card.TryApplyStickerOverrideAtParamIndex(appliedParamIdxForPickMode, prev);
+                    previewReplacedBackup.Remove(appliedParamIdxForPickMode);
                 }
             }
-            ShopSceneManager.Instance.OnCardClicked(this);
+
+            // 새 칸 덮어쓰기 전에 기존 스티커 백업(같은 인스턴스가 아니면)
+            if (card.stickerOverrides != null &&
+                card.stickerOverrides.TryGetValue(newParamIdx, out var existingAtNew) &&
+                existingAtNew != null &&
+                existingAtNew.instanceId != sticker.instanceId &&
+                !previewReplacedBackup.ContainsKey(newParamIdx))
+            {
+                previewReplacedBackup[newParamIdx] = existingAtNew;
+            }
+
+            // 새 칸에 이번 스티커 인스턴스 적용
+            bool applied = card.TryApplyStickerOverrideAtParamIndex(newParamIdx, sticker);
+            if (applied)
+            {
+                appliedParamIdxForPickMode = newParamIdx;
+                UpdateView();
+                onParamPicked?.Invoke(newParamIdx); // Confirm 버튼 활성화
+            }
+            else
+            {
+                Debug.LogWarning("[CardView] 스티커 적용 실패: 타입 불일치 또는 불가");
+            }
         }
+
 
         /// <summary>
         /// 카드가 선택되었는지 시각적 강조
@@ -323,7 +393,7 @@ namespace CardViews
                 return;
             
             if (selectionOutline != null)
-                selectionOutline.color = selected ? Color.yellow : Color.black;
+                selectionOutline.color = selected ? Color.yellow : new Color(246f/255f, 220f/255f, 168f/255f, 1f);
         }
 
         #endregion

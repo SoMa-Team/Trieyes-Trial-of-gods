@@ -1,4 +1,5 @@
 using System;
+using Stats;
 using UnityEngine;
 
 namespace CharacterSystem
@@ -46,7 +47,10 @@ namespace CharacterSystem
         public Pawn Create(CharacterID id)
         {
             var pawn = ClonePrefab(id);
+            pawn.initBaseStat();
             Activate(pawn);
+            Debug.Log($"Created pawn: {pawn.name}");
+            Debug.Log($"moveSpeed: {pawn.statSheet.Get(StatType.MoveSpeed)}");
             return pawn;
         }
         

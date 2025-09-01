@@ -34,7 +34,8 @@ namespace CardActions
                 // [1] 수치(레벨 곱 적용)
                 actionParams.Add(ActionParamFactory.Create(ParamKind.Probability, card =>
                 {
-                    int baseValue = Parser.ParseStrToInt(card.baseParams[valueIdx]);
+                    string valueStr = card.baseParams[valueIdx].Substring(0, card.baseParams[valueIdx].Length - 1);
+                    int baseValue = Parser.ParseStrToInt(valueStr);
                     return baseValue * card.cardEnhancement.level.Value;
                 }));
             }

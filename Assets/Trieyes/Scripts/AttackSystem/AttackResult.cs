@@ -64,6 +64,8 @@ namespace AttackSystem
             StatSheet targetStat)
         {
             attackResult.isEvaded = Random.Range(0f, 100f) < targetStat.Get(StatType.Evasion);
+            
+            //Debug.Log(targetStat.Get(StatType.Evasion));
 
             if (attackResult.isEvaded)
                 return attackResult;

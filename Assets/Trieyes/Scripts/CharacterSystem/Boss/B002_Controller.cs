@@ -13,7 +13,7 @@ namespace CharacterSystem
     {
         private B002_Water boss;
         private Character target;
-        private bool autoMode = false;
+        private bool autoMode = true;
         
         public override void Activate(Pawn pawn)
         {
@@ -43,29 +43,29 @@ namespace CharacterSystem
             
             var direction = new Vector2(0, 0);
             
-            if (Input.GetKey(KeyCode.W))
+            if (Input.GetKey(KeyCode.I))
                 direction.y++;
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKey(KeyCode.J))
                 direction.x--;
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKey(KeyCode.K))
                 direction.y--;
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.L))
                 direction.x++;
             
             boss.Move(direction.normalized);
             moveDir = direction;
             
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (Input.GetKeyDown(KeyCode.Alpha7))
             {
                 boss.ExecuteBossAttack(B002AttackType.Default);
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
+            if (Input.GetKeyDown(KeyCode.Alpha8))
             {
                 boss.ExecuteBossAttack(B002AttackType.CircularSector);
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
+            if (Input.GetKeyDown(KeyCode.Alpha9))
             {
                 boss.ExecuteBossAttack(B002AttackType.StoneSummon);
                 return;

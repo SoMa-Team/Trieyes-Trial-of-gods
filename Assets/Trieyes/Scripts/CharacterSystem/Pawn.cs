@@ -46,7 +46,7 @@ namespace CharacterSystem
         [Header("Components")]
         public Rigidbody2D rb;
 
-        [SerializeField] protected Controller Controller;
+        [SerializeField] public Controller Controller; // TODO : 테스트 컨트롤러를 위한 임시 접근데어자 변경
         [SerializeField] protected Animator Animator;
         
         [Header("Stats")]

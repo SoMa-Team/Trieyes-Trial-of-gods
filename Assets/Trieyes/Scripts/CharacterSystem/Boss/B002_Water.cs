@@ -30,13 +30,8 @@ namespace CharacterSystem
 
         [Header("====== Boss 공격 종류 ======")]
         [SerializeField] private AttackData attackDefault;
-        [SerializeField] private AttackData attackStoneSummon;
-        [SerializeField] private AttackData attackRush;
-        [SerializeField] private AttackData attackStoneExplode;
-        [SerializeField] private AttackData attackFireDischarge;
-        [SerializeField] private AttackData attackSpawnSlowField;
-        [SerializeField] private AttackData attackMoveCenter;
         [SerializeField] private AttackData attackCircularSector;
+        [SerializeField] private AttackData attackStoneSummon;
         
         public bool ExecuteBossAttack(B002AttackType attackType)
         {

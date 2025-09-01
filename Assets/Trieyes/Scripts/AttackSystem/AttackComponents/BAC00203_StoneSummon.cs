@@ -31,7 +31,7 @@ public class BAC00203_StoneSummon : AttackComponent
             stoneCollider.enabled = false;
             stoneSprite.enabled = false;
             SummonStone();
-            Destroy(attack.gameObject);
+            AttackFactory.Instance.Deactivate(attack);
             return;
         }
         
@@ -70,7 +70,7 @@ public class BAC00203_StoneSummon : AttackComponent
         stoneSprite.enabled = false;
         Tween.Delay(2f, () =>
         {
-            Destroy(attack);
+            AttackFactory.Instance.Deactivate(attack);
         });
     }
 

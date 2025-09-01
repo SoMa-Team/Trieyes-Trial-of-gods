@@ -16,7 +16,7 @@ namespace CharacterSystem
         protected float lastTriggerEnterTime = 0f;
         public float collisionDamageInterval = 0.5f;
 
-        public override float vfxYOffset { get { return 0.4f; } }
+        public override Vector2 CenterOffset { get { return Vector2.zero; } }
         
         // ===== [Unity 생명주기] =====
         protected override void Start()
@@ -94,10 +94,8 @@ namespace CharacterSystem
             }
         }
 
-        protected override void OnTriggerStay2D(Collider2D other)
+        protected virtual void OnTriggerStay2D(Collider2D other)
         {
-            base.OnTriggerStay2D(other);
-
             if(!other.gameObject.CompareTag("Enemy"))
             {
                 return;

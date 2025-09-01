@@ -80,7 +80,7 @@ namespace AttackComponents
 
             // 공격 중심점과 크기 계산
             attackCenter = spawnedVFX.transform.position;
-            attackSize = new Vector2(attackRadius * 2f, attackRadius * 2f);
+            attackSize = new Vector2(attackRadius * 3f, attackRadius * 2f);
         }
 
         protected override void Update()
@@ -186,7 +186,7 @@ namespace AttackComponents
             spawnedVFX.transform.SetParent(attack.attacker.transform);
 
             var offsetX = direction.x > 0 ? vfxSize / 2 : -vfxSize / 2;
-            spawnedVFX.transform.localPosition = new Vector3(offsetX, attack.attacker.vfxYOffset, 0);
+            spawnedVFX.transform.localPosition = new Vector3(offsetX, attack.attacker.CenterOffset.y, 0);
             
             SetVFXSpeed(spawnedVFX, attackSpeed);
 

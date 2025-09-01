@@ -203,7 +203,7 @@ namespace AttackComponents
             // 기본 VFX 생성 (base 호출)
             GameObject vfx = base.CreateAndSetupVFX(vfxPrefab, position, direction);
             vfx.transform.SetParent(attack.attacker.transform);
-            vfx.transform.localPosition = new Vector3(0, attack.attacker.vfxYOffset, 0);
+            vfx.transform.localPosition = new Vector3(0, attack.attacker.CenterOffset.y, 0);
             vfx.transform.localScale = new Vector3(0.36f * fieldRadius, 0.36f * fieldRadius, 1f);
             
             return vfx;

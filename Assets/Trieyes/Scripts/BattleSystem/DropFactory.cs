@@ -47,9 +47,15 @@ namespace BattleSystem
         private void Activate(Gold gold, int goldAmount, bool isSetActive)
         {
             gold.Activate(goldAmount);
-            
+
             if (isSetActive)
+            {
                 gold.gameObject.SetActive(true);
+                gold.isActive = true;
+            }
+            else {
+                gold.isActive = false;
+            }
         }
 
         public void Deactivate(Gold gold)
@@ -104,6 +110,9 @@ namespace BattleSystem
                 position.y = Mathf.Lerp(startPosition.y, targetPosition.y, t);
                 position.y += 5 * t * (1 - t);
                 gold.transform.position = position;
+            }).OnComplete(() =>
+            {
+                gold.isActive = true;
             });
         }
     }

@@ -1,7 +1,12 @@
 using System;
 using AttackSystem;
+using BattleSystem;
 using CharacterSystem;
+using PrimeTween;
+using Stats;
 using UnityEngine;
+using EventType = Utils.EventType;
+using Random = UnityEngine.Random;
 
 namespace CharacterSystem
 {
@@ -49,6 +54,27 @@ namespace CharacterSystem
             AttackFactory.Instance.Create(attackData, this, null, LastMoveDirection);
             availableAttackTime = Time.time + attackData.cooldown;
             return true;
+        }
+
+        protected override void OnSelfDeath(AttackResult result)
+        {
+            var sequence = Sequence.Create();
+            Controller.lockMovement = true;
+            
+            for (int i = 0; i < dropGold; i++)
+            {
+                var realDropGold = 1;
+                if (Random.Range(0, 100f) < result.attacker.statSheet.Get(StatType.GoldDropRate))
+                    realDropGold = 2;
+                Gold gold = DropFactory.Instance.CreateGold(transform.position, realDropGold, false);
+                sequence.Insert(0.01f * i, DropFactory.Instance.AnimationDrop(gold));
+                BattleStage.now.AttachGold(gold);
+            }
+            
+            sequence.OnComplete(() =>
+            {
+                EnemyFactory.Instance.Deactivate(this);
+            });
         }
     }
 }

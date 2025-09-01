@@ -136,9 +136,12 @@ namespace CharacterSystem
             
             Debug.Log("OnSelfDeath Called");
             Debug.Log($"{result.attacker}");
-            if (result.attacker != null && Random.Range(0, 100f) < result.attacker.statSheet.Get(StatType.GoldDropRate))
+            if (result.attacker != null)
             {
-                Gold gold = DropFactory.Instance.CreateGold(transform.position, dropGold);
+                var realDropGold = dropGold;
+                if (Random.Range(0, 100f) < result.attacker.statSheet.Get(StatType.GoldDropRate))
+                    realDropGold += dropGold;
+                Gold gold = DropFactory.Instance.CreateGold(transform.position, realDropGold);
                 BattleStage.now.AttachGold(gold);
                 
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");

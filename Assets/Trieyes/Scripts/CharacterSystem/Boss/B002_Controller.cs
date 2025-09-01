@@ -37,6 +37,8 @@ namespace CharacterSystem
 
             if (autoMode)
             {
+                if (lockMovement)
+                    return;
                 Behavior();
                 return;
             }

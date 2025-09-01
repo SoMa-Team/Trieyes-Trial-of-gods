@@ -51,6 +51,9 @@ namespace AttackSystem
         private void Update()
         {
             // TODO : 공격의 거리 제한에 대한 임시 코드
+            if (attacker == null)
+                return;
+            
             float distance = Vector2.Distance(transform.position, attacker.transform.position);
             var maxDistance = 100f;
             if (distance > maxDistance)

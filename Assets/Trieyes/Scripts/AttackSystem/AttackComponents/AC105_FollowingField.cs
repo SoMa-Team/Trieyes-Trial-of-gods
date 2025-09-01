@@ -27,7 +27,6 @@ namespace AttackComponents
         [Header("따라다니기 설정")]
         public float followDistance = 0f; // 플레이어로부터의 거리 (0이면 플레이어 위치)
         public bool followPlayer = true;
-        public Vector2 followOffset = Vector2.zero; // 추가 오프셋
         
         [Header("버프 설정")]
         

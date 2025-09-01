@@ -65,7 +65,7 @@ namespace AttackSystem
             // 컴포넌트 초기화
             rb = GetComponent<Rigidbody2D>();
             attackCollider = GetComponent<Collider2D>();
-            
+
             if (rb is not null)
             {
                 rb.gravityScale = 0f; // 중력 비활성화

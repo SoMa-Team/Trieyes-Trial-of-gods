@@ -7,7 +7,7 @@ using CharacterSystem;
 using RelicSystem;
 using UnityEngine;
 
-public class BAC00207_CircularSector : AttackComponent
+public class BAC00202_CircularSector : AttackComponent
 {
     enum AttackMode
     {

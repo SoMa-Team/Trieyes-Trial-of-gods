@@ -8,12 +8,12 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class BAC00202_StoneSummon : AttackComponent
+public class BAC00203_StoneSummon : AttackComponent
 {
     [SerializeField] private Collider2D stoneCollider;
     [SerializeField] private Transform stoneSpriteTransform;
     [SerializeField] private SpriteRenderer stoneSprite;
-    [SerializeField] private ParticleSystem stoneParticle;
+    [SerializeField] private ParticleSystem explodeParticle;
     
     private int stoneCount = 18;
     private float stoneDropBaseRadius = 5f;
@@ -34,7 +34,7 @@ public class BAC00202_StoneSummon : AttackComponent
             Destroy(attack.gameObject);
             return;
         }
-
+        
         stoneCollider.enabled = true;
         stoneSprite.enabled = true;
     }
@@ -55,9 +55,23 @@ public class BAC00202_StoneSummon : AttackComponent
         {
             var pawn = other.GetComponent<Pawn>();
             attack.ProcessAttackCollision(pawn);
-            
-            Destroy(attack); // TODO: 폭발
+            PlayExplodeVFX();
         }
+
+        if (other.CompareTag("Attack"))
+        {
+            PlayExplodeVFX();
+        }
+    }
+
+    private void PlayExplodeVFX()
+    {
+        explodeParticle.Play(true);
+        stoneSprite.enabled = false;
+        Tween.Delay(2f, () =>
+        {
+            Destroy(attack);
+        });
     }
 
     public override void ProcessComponentCollision(Pawn targetPawn)
@@ -77,7 +91,7 @@ public class BAC00202_StoneSummon : AttackComponent
             var childAttack = AttackFactory.Instance.Create(attack.attackData, attack.attacker, attack, Vector2.zero);
             childAttack.transform.position = targetPosition;
             
-            (childAttack.components[0] as BAC00202_StoneSummon)?.DoSummonAnimation();
+            (childAttack.components[0] as BAC00203_StoneSummon)?.DoSummonAnimation();
         }
     }
 
@@ -92,11 +106,7 @@ public class BAC00202_StoneSummon : AttackComponent
         
         var sequence = Sequence.Create();
         sequence.Chain(Tween.PositionY(stoneSpriteTransform.transform, targetY, stoneDropDuration, Ease.Linear));
-        sequence.Group(Tween.Alpha(stoneSprite, 0.5f, stoneDropDuration, Ease.Linear));
-        sequence.Group(Tween.Delay(stoneParticle, 0, particle =>
-        {
-            particle.Emit(1);
-        }));
+        sequence.Group(Tween.Alpha(stoneSprite, 1f, stoneDropDuration, Ease.Linear));
         sequence.Chain(Tween.Delay(stoneCollider, 0, stoneCollider =>
         {
             stoneCollider.enabled = true;

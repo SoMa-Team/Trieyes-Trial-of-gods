@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BattleSystem;
@@ -19,8 +20,9 @@ namespace CharacterSystem
             base.Activate(pawn);
             boss = pawn as B002_Water;
             target = BattleStage.now.mainCharacter;
-            attackQueue = new Queue<B002AttackType>();
-            targetMoveTime = Time.time;
+            attackQueue = new Queue<(float, B002AttackType)>();
+            targetTime = Time.time;
+            stoneSummonAvailableTime = Time.time + stoneSummonDuration;
             state = B002BehaviorState.Move;
         }
 
@@ -60,32 +62,12 @@ namespace CharacterSystem
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                boss.ExecuteBossAttack(B002AttackType.StoneSummon);
+                boss.ExecuteBossAttack(B002AttackType.CircularSector);
                 return;
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                boss.ExecuteBossAttack(B002AttackType.Rush);
-                return;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                boss.ExecuteBossAttack(B002AttackType.StoneExplode);
-                return;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                boss.ExecuteBossAttack(B002AttackType.FireDischarge);
-                return;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha6))
-            {
-                boss.ExecuteBossAttack(B002AttackType.SpawnSlowField);
-                return;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha7))
-            {
-                boss.ExecuteBossAttack(B002AttackType.CircularSector);
+                boss.ExecuteBossAttack(B002AttackType.StoneSummon);
                 return;
             }
         }
@@ -98,16 +80,19 @@ namespace CharacterSystem
         }
         
         private B002BehaviorState state;
-        private Queue<B002AttackType> attackQueue;
+        private Queue<(float, B002AttackType)> attackQueue;
         private readonly List<(float, B002AttackType)> pool = new()
         {
-            (0.5f, B002AttackType.Default),
+            (1f, B002AttackType.Default),
             (0f, B002AttackType.CircularSector),
         };
 
-        float targetMoveTime;
+        float targetTime;
+        private float stoneSummonAvailableTime;
         
         [SerializeField] float moveTime = 1f;
+        [SerializeField] float minimumDistanceWithTarget = 1f;
+        [SerializeField] float stoneSummonDuration = 20f;
         
         private void Behavior()
         {
@@ -116,19 +101,28 @@ namespace CharacterSystem
             {
                 var poolCopy = pool.ToList();
                 poolCopy.Shuffle();
-                foreach (var type in poolCopy)
+                foreach (var attackInfo in poolCopy)
                 {
-                    attackQueue.Enqueue(type.Item2);   
+                    attackQueue.Enqueue(attackInfo);   
                 }
+            }
+
+            if (Time.time >= stoneSummonAvailableTime)
+            {
+                attackQueue.Enqueue((0f, B002AttackType.StoneSummon));
+                stoneSummonAvailableTime = Time.time + stoneSummonDuration;
             }
             
             // Queue Resolve
             switch (state)
             {
                 case B002BehaviorState.Ready:
-                    var attackType = attackQueue.Dequeue();
                     boss.Move(Vector2.zero);
-                    boss.ExecuteBossAttack(attackType);
+                    if (Time.time < targetTime)
+                        break;
+                    
+                    var attackInfo = attackQueue.Dequeue();
+                    boss.ExecuteBossAttack(attackInfo.Item2);
                     state = B002BehaviorState.Attack;
                     break;
                 
@@ -136,13 +130,21 @@ namespace CharacterSystem
                     if (boss.isDoAttack)
                         break;
                     state = B002BehaviorState.Move;
-                    targetMoveTime = Time.time + moveTime;
+                    targetTime = Time.time + moveTime;
                     break;
                 
                 case B002BehaviorState.Move:
-                    if (Time.time >= targetMoveTime)
+                    var distance = Vector2.Distance(boss.transform.position, target.transform.position);
+                    
+                    if (Time.time >= targetTime)
                     {
                         state = B002BehaviorState.Ready;
+                        targetTime = Time.time + attackQueue.First().Item1;
+                    }
+
+                    if (distance < minimumDistanceWithTarget)
+                    {
+                        targetTime -= Time.deltaTime;
                     }
                     
                     var direction = target.transform.position - boss.transform.position;

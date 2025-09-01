@@ -8,12 +8,8 @@ namespace CharacterSystem
     public enum B002AttackType
     {
         Default,
-        StoneSummon,
-        Rush,
-        StoneExplode,
-        FireDischarge,
-        SpawnSlowField,
-        CircularSector
+        CircularSector,
+        StoneSummon
     }
     
     public class B002_Water : Enemy
@@ -50,12 +46,8 @@ namespace CharacterSystem
             var attackData = attackType switch
             {
                 B002AttackType.Default => attackDefault,
-                B002AttackType.StoneSummon => attackStoneSummon,
-                B002AttackType.Rush => attackRush,
-                B002AttackType.StoneExplode => attackStoneExplode,
-                B002AttackType.FireDischarge => attackFireDischarge,
-                B002AttackType.SpawnSlowField => attackSpawnSlowField,
                 B002AttackType.CircularSector => attackCircularSector,
+                B002AttackType.StoneSummon => attackStoneSummon,
                 _ => throw new Exception($"B002.ExecuteBossAttack: Attack {attackType} is not exist."),
             };
             

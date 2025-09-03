@@ -15,7 +15,7 @@ namespace AttackComponents
     public class AC008_LightningField : AttackComponent
     {
         [Header("번개 장판 설정")]
-        public float lightningFieldDamage = 30f;
+        public int lightningFieldDamage = 30;
         public float lightningFieldRadius = 2.5f;
         public float lightningFieldDuration = 3f;
         public float lightningFieldDelay = 0.1f;  

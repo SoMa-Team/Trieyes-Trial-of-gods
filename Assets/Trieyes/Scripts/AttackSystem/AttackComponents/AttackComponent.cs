@@ -183,24 +183,6 @@ namespace AttackComponents
                 VFXFactory.Instance.PlayVFX(vfx);
             }
         }
-
-        public virtual void PlayVFX()
-        {
-        }
-
-        /// <summary>
-        /// VFX를 정지하고 반환합니다.
-        /// </summary>
-        /// <param name="vfx">정지할 VFX</param>
-        /// <param name="vfxId">VFX ID</param>
-        protected virtual void StopAndReturnVFX(GameObject vfx, int vfxId)
-        {
-            if (vfx != null && VFXFactory.Instance != null)
-            {
-                VFXFactory.Instance.StopVFX(vfx);
-                VFXFactory.Instance.ReturnVFX(vfx, vfxId);
-            }
-        }
         
         /// <summary>
         /// VFX를 정지하고 비활성화합니다.

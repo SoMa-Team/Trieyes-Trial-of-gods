@@ -200,6 +200,7 @@ namespace AttackComponents
         {
             // Impact 순간에 범위 내 적들을 다시 탐지
             DetectTargetsInRange();
+            attack.statSheet[StatType.AttackPower].AddBuff(new StatModifier(fallDamage, BuffOperationType.Set));
             
             // 탐지된 모든 적에게 데미지 적용
             for (int i = hitTargets.Count - 1; i >= 0; i--)
@@ -237,7 +238,6 @@ namespace AttackComponents
 
         private void ApplyDamageToTarget(Enemy target)
         {
-            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(fallDamage);
             DamageProcessor.ProcessHit(attack, target);
         }
 

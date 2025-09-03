@@ -153,6 +153,8 @@ namespace AttackComponents
 
         private void ApplyGlobalDamage()
         {
+            attack.statSheet[StatType.AttackPower].AddBuff(new StatModifier(globalDamage, BuffOperationType.Set));
+            
             // 현재 활성화된 모든 적에게 데미지 적용
             for (int i = affectedEnemies.Count - 1; i >= 0; i--)
             {
@@ -171,7 +173,6 @@ namespace AttackComponents
 
         private void ApplyDamageToEnemy(Enemy enemy)
         {
-            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(globalDamage);
             DamageProcessor.ProcessHit(attack, enemy);
             
             // 슬로우 효과 적용

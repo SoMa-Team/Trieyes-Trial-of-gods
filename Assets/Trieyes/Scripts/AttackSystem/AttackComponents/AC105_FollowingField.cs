@@ -20,7 +20,7 @@ namespace AttackComponents
     {
         [Header("필드 타입 및 크기 설정")]
         public float fieldRadius; // 원형일 때 반지름
-        public float fieldDamage;
+        public int fieldDamage;
         public float fieldTickInterval;
         public float fieldDuration;
         
@@ -154,13 +154,14 @@ namespace AttackComponents
             fieldTargets.Clear();
             fieldTargets = BattleStage.now.GetEnemiesInCircleRange(attack.attacker.transform.position, fieldRadius);
 
+            attack.statSheet[StatType.AttackPower].AddBuff(new StatModifier(fieldDamage, BuffOperationType.Set));
+
             // 탐지된 적들에게 데미지 적용
             for (int i = 0; i < fieldTargets.Count; i++)
             {
                 Pawn enemy = fieldTargets[i];
                 if (enemy != null && enemy.gameObject.activeInHierarchy)
                 {
-                    attack.statSheet[StatType.AttackPower] = new IntegerStatValue((int)fieldDamage);
                     DamageProcessor.ProcessHit(attack, enemy);
                 }
             }

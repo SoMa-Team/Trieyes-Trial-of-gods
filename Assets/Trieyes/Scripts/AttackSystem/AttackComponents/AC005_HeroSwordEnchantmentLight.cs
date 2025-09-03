@@ -74,8 +74,8 @@ namespace AttackComponents
             attackState = AttackState.Preparing;
             attackTimer = 0f;
             attackDirection = direction.normalized;
-            attackSpeed = attack.attacker.statSheet[StatType.AttackSpeed] / 10f * 1.5f;
-            attackRadius = attack.attacker.statSheet[StatType.AttackRange] / 10f;
+            attackSpeed = attack.attacker.statSheet.Get(StatType.AttackSpeed) / 10f * 1.5f;
+            attackRadius = attack.attacker.statSheet.Get(StatType.AttackRange) / 10f;
 
             // 공격 시작
             StartAttack();
@@ -152,6 +152,7 @@ namespace AttackComponents
 
                 case AttackState.Preparing:
                     // 공격 활성화
+                    PlayVFX(spawnedVFX);
                     DetectCollisions();
                     attackState = AttackState.Active;
                     attackTimer = 0f;

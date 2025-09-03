@@ -9,7 +9,7 @@ namespace BattleSystem
 {
     public class Gold : MonoBehaviour
     {
-        private bool isActive = false;
+        public bool isActive = false;
         [SerializeField] private int goldAmount;
         [HideInInspector] public int objectID;
 
@@ -26,8 +26,7 @@ namespace BattleSystem
             if (distance < GetGoldCollisionDistance(BattleStage.now.mainCharacter))
             {
                 isActive = false;
-                // TODO: 추후에 Shop이 같은 Scene이 된다면, 오류 출력하도록 조정 필요.
-                Tween.Custom(0, 1, 1.0f, t =>
+                Tween.Custom(0, 1, 0.4f, t =>
                 {
                     if (BattleStage.now == null)
                         return;
@@ -38,14 +37,16 @@ namespace BattleSystem
                 {
                     character.ChangeGold(goldAmount);
                     DropFactory.Instance.Deactivate(this);
-                }, warnIfTargetDestroyed: false);
+                });
             }
         }
 
         private float GetGoldCollisionDistance(Pawn pawn)
         {
-            var magnet = pawn.statSheet[StatType.ItemMagnet].Value;
-            var resultDistance = 0.2f + MathF.Log(magnet + 1);
+            var magnetScale = 1.7f;
+            
+            var magnet = pawn.statSheet.Get(StatType.ItemMagnet);
+            var resultDistance = (1 + magnet) * magnetScale;
             return resultDistance;
         }
 

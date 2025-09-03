@@ -5,6 +5,7 @@ using AttackComponents;
 using BattleSystem;
 using CharacterSystem;
 using JetBrains.Annotations;
+using RelicSystem;
 using UnityEngine;
 
 namespace AttackSystem
@@ -51,9 +52,6 @@ namespace AttackSystem
         public HashSet<AttackID> registeredAttackIDs = new();
         public AttackData RegisterRelicAppliedAttack(AttackData attackData, Pawn owner)
         {
-            // attackData 변조를 막기 위한 Copy 생성
-            attackData = attackData.Copy();
-            
             var attack = ClonePrefab(attackData.attackId);
 
             // 유물 메인 옵션 적용
@@ -65,6 +63,9 @@ namespace AttackSystem
                     continue;
                 
                 // relic의 mainOption의 attackTag 혹은 attackID가 일치하는 상황
+                if (relic.attackComponentIDs is null)
+                    continue;
+                
                 foreach (var attackComponentID in relic.attackComponentIDs)
                 {
                     var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, relic.level, attack, Vector2.zero);
@@ -86,6 +87,7 @@ namespace AttackSystem
             }
 
             var id = RegisterAttack(attack);
+            attack.gameObject.SetActive(false);
             var newAttackData = attackData.Copy();
             newAttackData.attackId = id;
             return newAttackData;
@@ -106,7 +108,10 @@ namespace AttackSystem
         }
         
         // ===== 공격 생성 =====
-        public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
+        public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction,
+            [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat = null,
+            bool autoDirectional = false
+            )
         {
             // attackData 변조를 막기 위한 Copy 생성
             attackData = attackData.Copy();
@@ -115,11 +120,14 @@ namespace AttackSystem
             if (attack is null)
                 attack = ClonePrefab(attackData.attackId);
             attack.attackData = attackData;
-            Activate(attack, attacker, parent, direction);
+            Activate(attack, attacker, parent, direction, baseRelicStat, autoDirectional);
             return attack;
         }
 
-        public void Activate(Attack attack, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction)
+        public void Activate(Attack attack, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction,
+            [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat,
+            bool autoDirectional
+            )
         {
             if (direction.magnitude < 1e-8)
             {
@@ -129,10 +137,23 @@ namespace AttackSystem
             attack.parent = parent;
             
             attack.transform.position = parent is not null ? parent.transform.position : attacker.transform.position;
-            attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+            if (autoDirectional)
+            {
+                var th = Mathf.Atan2(direction.y, direction.x) *  Mathf.Rad2Deg;
+                attack.transform.rotation = Quaternion.Euler(new Vector3(0, 0, th));
+            }
+            else
+            {
+                attack.transform.rotation = Quaternion.Euler(0, 0, 0);   
+            }
             
             attack.attacker = attacker;
             attack.ApplyStatSheet(parent is not null ? parent.statSheet : attacker.statSheet);
+            
+            if (baseRelicStat is not null)
+            {
+                attack.relicStats = new Dictionary<RelicStatType, int>(baseRelicStat);
+            }
             
             attack.Activate(attacker, direction.normalized);
             
@@ -175,8 +196,7 @@ namespace AttackSystem
 
             var attack = pool[id].Dequeue();
             var originalAttack = GetPrefabById(id);
-            foreach (var key in originalAttack.relicStats.Keys)
-                attack.relicStats[key] = originalAttack.relicStats[key];
+            attack.relicStats = new Dictionary<RelicStatType, int>(originalAttack.relicStats);
             return attack;
         }
         

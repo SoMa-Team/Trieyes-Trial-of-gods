@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using BattleSystem;
+using PrimeTween;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BattleSystem
 {
@@ -28,7 +30,7 @@ namespace BattleSystem
 
         [SerializeField] private Gold goldPrefab;
 
-        public Gold CreateGold(Vector3 position, int goldAmount)
+        public Gold CreateGold(Vector3 position, int goldAmount, bool isSetActive = true)
         {
             var goldDrop = popGold();
             if (goldDrop is null)
@@ -38,14 +40,22 @@ namespace BattleSystem
             }
             goldDrop.transform.position = position;
             goldDrop.transform.SetParent(BattleStage.now.View.transform);
-            Activate(goldDrop, goldAmount);
+            Activate(goldDrop, goldAmount, isSetActive);
             return goldDrop;
         }
 
-        private void Activate(Gold gold, int goldAmount)
+        private void Activate(Gold gold, int goldAmount, bool isSetActive)
         {
             gold.Activate(goldAmount);
-            gold.gameObject.SetActive(true);
+
+            if (isSetActive)
+            {
+                gold.gameObject.SetActive(true);
+                gold.isActive = true;
+            }
+            else {
+                gold.isActive = false;
+            }
         }
 
         public void Deactivate(Gold gold)
@@ -78,6 +88,32 @@ namespace BattleSystem
         private int getObjectID()
         {
             return _goldObjectID++;
+        }
+
+        public Tween AnimationDrop(Gold gold)
+        {
+            float radiusBase = 2f;
+            float radiusNoise = 2f;
+            float duration = 1f;
+            
+            var radius = Random.Range(radiusBase - radiusNoise, radiusBase + radiusNoise);
+            var angleRad = Random.Range(0, 360) * Mathf.Deg2Rad;
+            var position = new Vector3(radius * Mathf.Cos(angleRad), radius * Mathf.Sin(angleRad), 0);
+
+            var startPosition = gold.transform.position;
+            var targetPosition = gold.transform.position + position;
+            
+            return Tween.Custom(0f, 1f, duration, t =>
+            {
+                var position = new Vector3(0, 0, 0);
+                position.x = Mathf.Lerp(startPosition.x, targetPosition.x, t);
+                position.y = Mathf.Lerp(startPosition.y, targetPosition.y, t);
+                position.y += 5 * t * (1 - t);
+                gold.transform.position = position;
+            }).OnComplete(() =>
+            {
+                gold.isActive = true;
+            });
         }
     }
 }

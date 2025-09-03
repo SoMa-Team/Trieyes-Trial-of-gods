@@ -46,7 +46,7 @@ namespace CharacterSystem
         [Header("Components")]
         public Rigidbody2D rb;
 
-        [SerializeField] protected Controller Controller;
+        [SerializeField] public Controller Controller; // TODO : 테스트 컨트롤러를 위한 임시 접근데어자 변경
         [SerializeField] protected Animator Animator;
 
         public abstract Vector2 CenterOffset { get; }
@@ -66,7 +66,6 @@ namespace CharacterSystem
 
         protected float attackCooldown = 0f;
         
-        public Vector2 lastestDirection;
         // ===== [프로퍼티] =====
         public int? enemyID;
         public bool isEnemy => enemyID is not null; 
@@ -262,6 +261,7 @@ namespace CharacterSystem
                 AttackFactory.Instance.DeregisterAttack(basicAttack);
                 AttackFactory.Instance.DeregisterAttack(skill1Attack);
                 AttackFactory.Instance.DeregisterAttack(skill2Attack);
+                
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
@@ -293,15 +293,19 @@ namespace CharacterSystem
         
         public void ApplyRelic()
         {
+            backupBasicAttack = basicAttack;
+            backupSkill1Attack = skill1Attack;
+            backupSkill2Attack = skill2Attack;
+            
             if (relics.Count > 0)
             {
-                backupBasicAttack = basicAttack.Copy();
+                basicAttack = basicAttack.Copy();
                 basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
                 
-                backupSkill1Attack = skill1Attack.Copy();
+                skill1Attack = skill1Attack.Copy();
                 skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
                 
-                backupSkill2Attack = skill2Attack.Copy();
+                skill2Attack = skill2Attack.Copy();
                 skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
             }
         }

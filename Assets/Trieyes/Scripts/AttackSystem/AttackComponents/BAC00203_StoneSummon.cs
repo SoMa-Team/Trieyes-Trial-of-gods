@@ -1,0 +1,129 @@
+using System;
+using AttackComponents;
+using AttackSystem;
+using CharacterSystem;
+using GamePlayer;
+using PrimeTween;
+using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
+
+public class BAC00203_StoneSummon : AttackComponent
+{
+    [SerializeField] private Collider2D stoneCollider;
+    [SerializeField] private Transform stoneSpriteTransform;
+    [SerializeField] private SpriteRenderer stoneSprite;
+    [SerializeField] private ParticleSystem explodeParticle;
+    
+    private int stoneCount = 18;
+    private float stoneDropBaseRadius = 5f;
+    private float stoneDropNoiseRadius = 3f;
+    private float stoneDropNoiseAngle = 20f;
+    private float stoneDropHeight = 1f;
+    private float stoneDropDuration = 0.5f;
+    private float deactivateDelay = 0.1f;
+    
+    private float deactivateCounter;
+    
+    public override void Activate(Attack attack, Vector2 direction)
+    {
+        base.Activate(attack, direction);
+
+        if (attack.parent is null)
+        {
+            stoneCollider.enabled = false;
+            stoneSprite.enabled = false;
+            SummonStone();
+            AttackFactory.Instance.Deactivate(attack);
+            return;
+        }
+        
+        stoneCollider.enabled = true;
+        stoneSprite.enabled = true;
+        deactivateCounter = -1;
+    }
+
+    public override void Deactivate()
+    {
+        base.Deactivate();
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        if (deactivateCounter >= 0 && Time.time > deactivateCounter)
+        {
+            AttackFactory.Instance.Deactivate(attack);
+        }
+    }
+
+    public override void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") || other.CompareTag("Enemy"))
+        {
+            var pawn = other.GetComponent<Pawn>();
+            attack.ProcessAttackCollision(pawn);
+            PlayExplodeVFX();
+        }
+
+        if (other.CompareTag("Attack"))
+        {
+            PlayExplodeVFX();
+            var otherAttack = other.GetComponent<Attack>();
+            AttackFactory.Instance.Deactivate(otherAttack);
+
+            if (deactivateCounter < 0)
+                deactivateCounter = Time.time + deactivateDelay;
+        }
+    }
+
+    private void PlayExplodeVFX()
+    {
+        explodeParticle.Play(true);
+        stoneSprite.enabled = false;
+        Tween.Delay(2f, () =>
+        {
+            AttackFactory.Instance.Deactivate(attack);
+        });
+    }
+
+    public override void ProcessComponentCollision(Pawn targetPawn)
+    {
+        base.ProcessComponentCollision(targetPawn);
+    }
+
+    public void SummonStone()
+    {
+        for (int i = 0; i < stoneCount; i++)
+        {
+            var baseAngle = 360 * i / stoneCount;
+            var angle = baseAngle + Random.Range(-stoneDropNoiseAngle, stoneDropNoiseAngle);
+            var radius = stoneDropBaseRadius + Random.Range(-stoneDropNoiseRadius, stoneDropNoiseRadius);
+            
+            var targetPosition = transform.position + new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * radius, Mathf.Sin(angle * Mathf.Deg2Rad) * radius, 0);
+            var childAttack = AttackFactory.Instance.Create(attack.attackData, attack.attacker, attack, Vector2.zero);
+            childAttack.transform.position = targetPosition;
+            
+            (childAttack.components[0] as BAC00203_StoneSummon)?.DoSummonAnimation();
+        }
+    }
+
+    private void DoSummonAnimation()
+    {
+        var targetY = stoneSpriteTransform.position.y;
+        
+        stoneSpriteTransform.position += new Vector3(0, stoneDropHeight, 0);
+        var color = stoneSprite.color;
+        color.a = 0;
+        stoneSprite.color = color;
+        
+        var sequence = Sequence.Create();
+        sequence.Chain(Tween.PositionY(stoneSpriteTransform.transform, targetY, stoneDropDuration, Ease.Linear));
+        sequence.Group(Tween.Alpha(stoneSprite, 1f, stoneDropDuration, Ease.Linear));
+        sequence.Chain(Tween.Delay(stoneCollider, 0, stoneCollider =>
+        {
+            stoneCollider.enabled = true;
+        }));
+    }
+}

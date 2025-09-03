@@ -32,7 +32,7 @@ namespace AttackSystem
         public List<AttackComponent> components = new ();
         
         public Rigidbody2D rb;
-        public  Collider2D attackCollider;
+        public Collider2D attackCollider;
         public Dictionary<RelicStatType, int> relicStats = new Dictionary<RelicStatType, int>();
         public int objectID; // 공격 조회를 위한 ID
 
@@ -51,6 +51,9 @@ namespace AttackSystem
         private void Update()
         {
             // TODO : 공격의 거리 제한에 대한 임시 코드
+            if (attacker == null)
+                return;
+            
             float distance = Vector2.Distance(transform.position, attacker.transform.position);
             var maxDistance = 100f;
             if (distance > maxDistance)
@@ -65,8 +68,8 @@ namespace AttackSystem
             // 컴포넌트 초기화
             rb = GetComponent<Rigidbody2D>();
             attackCollider = GetComponent<Collider2D>();
-
-            if (rb is not null)
+            
+            if (rb != null)
             {
                 rb.gravityScale = 0f; // 중력 비활성화
             }
@@ -126,7 +129,7 @@ namespace AttackSystem
         /// 공격 성공 시 충돌을 처리합니다. (투사체 전용)
         /// </summary>
         /// <param name="targetPawn">피격 대상</param>
-        protected virtual void ProcessAttackCollision(Pawn targetPawn)
+        public virtual void ProcessAttackCollision(Pawn targetPawn)
         {
             DamageProcessor.ProcessHit(this, targetPawn);
             

@@ -970,6 +970,50 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 772e6f2bb285e49c4b004d1a696214e7, type: 3}
+--- !u!1 &1321644379
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1321644381}
+  - component: {fileID: 1321644380}
+  m_Layer: 0
+  m_Name: '@@@TestKeyboardController'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1321644380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321644379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29fe4c7bcdf234b95919257f24d43dc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1321644381
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321644379}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10.741259, y: 2.0984766, z: -0.083110675}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1381705232
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -980,7 +1024,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2826276107497940061, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
       propertyPath: enemyPrefabs.Array.size
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2826276107497940061, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
       propertyPath: 'enemyPrefabs.Array.data[0]'
@@ -1002,6 +1046,10 @@ PrefabInstance:
       propertyPath: 'enemyPrefabs.Array.data[4]'
       value: 
       objectReference: {fileID: 9048457892950683038, guid: 33be74df552434940a8cc89f88552819, type: 3}
+    - target: {fileID: 2826276107497940061, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
+      propertyPath: 'enemyPrefabs.Array.data[5]'
+      value: 
+      objectReference: {fileID: 2417287793062799489, guid: 0e7496452523741ae9e568b15afea7b5, type: 3}
     - target: {fileID: 8034793351879866816, guid: 814733a7fe7add84fb7aaea99491e38c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 100
@@ -2356,6 +2404,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: AttackFactory
       objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.size
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[25].id
+      value: 20201
+      objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[26].id
+      value: 20202
+      objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[27].id
+      value: 20203
+      objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[25].attackPrefab
+      value: 
+      objectReference: {fileID: 8370495658189656413, guid: 4ab42c32027674be79a375bb47e36e7a, type: 3}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[26].attackPrefab
+      value: 
+      objectReference: {fileID: 6928014335700804484, guid: fcbc1a956c3984476a8930207ca8dbbe, type: 3}
+    - target: {fileID: 4922532762382342664, guid: 1ee9c77c3c607bf45a173e5445171e50, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[27].attackPrefab
+      value: 
+      objectReference: {fileID: 5095496770729422420, guid: 3b0328f675b7d42a38ba7566a81eedaa, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2440,3 +2516,8 @@ SceneRoots:
   - {fileID: 2119943541}
   - {fileID: 5775970366020511338}
   - {fileID: 2130030187}
+  - {fileID: 1448670555}
+  - {fileID: 1443033326}
+  - {fileID: 2078383176}
+  - {fileID: 794906570}
+  - {fileID: 1321644381}

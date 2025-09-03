@@ -21,6 +21,8 @@ namespace BattleSystem
         // ===== 내부 상태 =====
         private bool _isActivate = false;
         private Difficulty _difficulty;
+        private bool isBossSpawned = false;
+        
         private List<float> validAngles = new();
         [SerializeField] private float _elapsedTime;
         [SerializeField] private float minDistance;
@@ -58,6 +60,7 @@ namespace BattleSystem
             _isActivate = true;
             this._difficulty = difficulty;
             _elapsedTime = 0f;
+            isBossSpawned = false;
         }
         
         /// <summary>
@@ -66,16 +69,27 @@ namespace BattleSystem
         {
             _isActivate = false;
             _difficulty = null;
+            isBossSpawned = false;
         }
         
         // ===== 스폰 로직 =====
-        
         /// <summary>
         /// 매 프레임마다 스폰 조건을 확인하고 적을 생성합니다.</summary>
         private void Update()
         {
             if (!_isActivate)
                 return;
+
+            if (_difficulty.spawnMode == SpawnMode.Once)
+            {
+                if (isBossSpawned)
+                    return;
+                
+                isBossSpawned = true;
+                var enemy = SpawnEnemy();
+                BattleStage.now.AttachEnemy(enemy, GetRandomSpawnPoint());
+                return;
+            }
             
             _elapsedTime += Time.deltaTime;
 

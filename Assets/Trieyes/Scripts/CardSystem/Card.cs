@@ -214,29 +214,72 @@ namespace CardSystem
                 offset += newCount - oldCount;
             }
         }
+        
+        public int FindParamIndexByCharIndex(int charIndex)
+        {
+            if (paramCharRanges == null || paramCharRanges.Count == 0) return -1;
+            for (int i = 0; i < paramCharRanges.Count; i++)
+            {
+                var r = paramCharRanges[i];
+                if (r.start <= charIndex && charIndex <= r.end) return i;
+            }
+            return -1;
+        }
+        public bool TryApplyStickerOverrideAtParamIndex(int paramIdx, Sticker sticker)
+        {
+            if (paramIdx < 0 || paramIdx >= (paramCharRanges?.Count ?? 0)) return false;
+            if (cardAction == null) return false;
+            if (sticker == null) return false;
+
+            var paramKind = cardAction.GetParamDef(paramIdx).kind;
+            if ((paramKind == ParamKind.Number   && sticker.type != StickerType.Number) ||
+                (paramKind == ParamKind.StatType && sticker.type != StickerType.StatType))
+                return false;
+
+            // 같은 "한 장"(instanceId 유지)으로 오버라이드
+            stickerOverrides[paramIdx] = sticker.DeepCopy();
+            RefreshParamCharRanges();
+            return true;
+        }
 
         /// <summary>
         /// descriptionText의 특정 글자 인덱스에 스티커를 적용
         /// </summary>
-        public bool TryApplyStickerOverride(int paramCharIndex, Sticker sticker)
+        public bool TryApplyStickerOverrideAtCharIndex(int paramCharIndex, Sticker sticker)
         {
             if (paramCharRanges == null || paramCharRanges.Count == 0)
                 return false;
             // paramCharIndex(글자 인덱스)가 어느 파라미터 범위에 속하는지 탐색
-            int baseParamIdx = paramCharRanges.FindIndex(r => r.start <= paramCharIndex && paramCharIndex <= r.end);
-            if (baseParamIdx == -1)
-                return false;
+            int baseParamIdx = FindParamIndexByCharIndex(paramCharIndex);
+            if (baseParamIdx == -1) return false;
 
-            // 스티커 타입과 파라미터 타입 일치 여부 확인
-            var paramKind = cardAction.GetParamDef(baseParamIdx).kind;
-            if ((paramKind == ParamKind.Number && sticker.type != StickerType.Number) ||
-                (paramKind == ParamKind.StatType && sticker.type != StickerType.StatType))
-                return false;
+            return TryApplyStickerOverrideAtParamIndex(baseParamIdx, sticker);
+        }
+        
+        public bool RemoveStickerOverrideAtParamIndex(int paramIdx)
+        {
+            if (stickerOverrides == null) return false;
+            if (stickerOverrides.Remove(paramIdx))
+            {
+                RefreshParamCharRanges();
+                return true;
+            }
+            return false;
+        }
+        
+        public int RemoveStickerOverridesByInstance(Sticker sticker)
+        {
+            if (stickerOverrides == null) return 0;
+            var toRemove = new List<int>();
+            foreach (var kv in stickerOverrides)
+                if (kv.Value != null && kv.Value.instanceId == sticker.instanceId)
+                    toRemove.Add(kv.Key);
 
-            // 적용
-            stickerOverrides[baseParamIdx] = sticker;
-            RefreshParamCharRanges();
-            return true;
+            foreach (var idx in toRemove)
+                stickerOverrides.Remove(idx);
+
+            if (toRemove.Count > 0) RefreshParamCharRanges();
+            return toRemove.Count;
         }
 
         /// <summary>
@@ -246,18 +289,25 @@ namespace CardSystem
         {
             var clone = new Card
             {
-                properties = (Property[])this.properties.Clone(),
-                rarity = this.rarity,
-                cardName = this.cardName,
-                illustration = this.illustration,
+                properties      = (Property[])this.properties?.Clone(),
+                rarity          = this.rarity,
+                cardName        = this.cardName,
+                illustration    = this.illustration,
                 cardDescription = this.cardDescription,
-                eventTypes = new List<Utils.EventType>(this.eventTypes),
-                baseParams = this.baseParams,
-                paramCharRanges = this.paramCharRanges != null ? new List<ParamCharRange>(this.paramCharRanges) : new List<ParamCharRange>(),
-                cardAction = this.cardAction?.DeepCopy(),
-                cardStats = this.cardStats?.DeepCopy(),
-                cardEnhancement = this.cardEnhancement?.DeepCopy()
+                eventTypes      = this.eventTypes != null ? new List<Utils.EventType>(this.eventTypes) : new List<Utils.EventType>(),
+                baseParams      = this.baseParams   != null ? new List<string>(this.baseParams)       : new List<string>(),
+                paramCharRanges = this.paramCharRanges != null
+                    ? this.paramCharRanges.Select(r => new ParamCharRange { start = r.start, end = r.end }).ToList()
+                    : new List<ParamCharRange>(),
+                cardAction      = this.cardAction?.DeepCopy(),
+                cardStats       = this.cardStats?.DeepCopy(),
+                cardEnhancement = this.cardEnhancement?.DeepCopy(),
+                
+                stickerOverrides = this.stickerOverrides != null
+                    ? this.stickerOverrides.ToDictionary(kv => kv.Key, kv => kv.Value?.DeepCopy())
+                    : new Dictionary<int, Sticker>()
             };
+
             if (clone.cardAction != null) clone.cardAction.SetCard(clone);
             return clone;
         }

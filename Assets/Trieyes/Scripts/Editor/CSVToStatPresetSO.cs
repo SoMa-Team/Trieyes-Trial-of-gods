@@ -2,74 +2,83 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
-using Stats;
+using Stats; // StatType, StatValuePair가 포함된 네임스페이스
 
 public class CSVToStatPresetSO : EditorWindow
 {
-    [MenuItem("Tools/CSVToStatPreset")]
-    static void ImportMultipleCSVs()
+    [MenuItem("Tools/CSV to StatPreset")]
+    static void ConvertCSVToStatPresets()
     {
-        // 다중 파일 선택
-        string folderPath = "Assets/Trieyes/Data/StatPresetsData";
-        if (string.IsNullOrEmpty(folderPath)) return;
+        // 1. 읽어올 CSV 파일 경로를 직접 지정합니다.
+        // 이 경로와 파일명을 실제 파일에 맞게 수정해야 합니다.
+        string filePath = "Assets/Trieyes/Data/StatPresetsData/StatPresets.csv";
 
-        string[] csvPaths = Directory.GetFiles(folderPath, "*.csv");
-        if (csvPaths.Length == 0)
+        // 지정된 경로에 파일이 있는지 확인
+        if (!File.Exists(filePath))
         {
-            Debug.LogWarning("선택한 폴더에 csv 파일이 없습니다.");
+            Debug.LogError($"[StatImporter] CSV 파일을 찾을 수 없습니다. 경로를 확인하세요: {filePath}");
             return;
         }
 
-        // 캐릭터별 통합 StatInfo 저장소
-        Dictionary<string, List<StatValuePair>> charStatDict = new();
-
-        foreach (string csvPath in csvPaths)
+        // 2. 파일의 모든 라인 읽기
+        string[] lines = File.ReadAllLines(filePath);
+        if (lines.Length == 0)
         {
-            string[] lines = File.ReadAllLines(csvPath);
-            if (lines.Length < 2) continue;
+            Debug.LogWarning($"[StatImporter] CSV 파일이 비어있습니다: {filePath}");
+            return;
+        }
 
-            string[] headers = lines[0].Split(',');
+        // 캐릭터별 StatInfo를 저장할 Dictionary
+        Dictionary<string, List<StatValuePair>> charStatDict = new Dictionary<string, List<StatValuePair>>();
+        
+        // 3. 각 라인을 순회하며 데이터 파싱
+        foreach (string line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line)) continue;
 
-            for (int i = 1; i < lines.Length; i++)
+            string[] cells = line.Split(',');
+            if (cells.Length < 2) continue;
+
+            string charName = cells[0].Trim();
+
+            if (!charStatDict.ContainsKey(charName))
             {
-                string[] cells = lines[i].Split(',');
-                if (cells.Length == 0 || string.IsNullOrWhiteSpace(cells[0])) continue;
+                charStatDict[charName] = new List<StatValuePair>();
+            }
 
-                string charName = cells[0].Trim();
-
-                if (!charStatDict.ContainsKey(charName))
-                    charStatDict[charName] = new List<StatValuePair>();
-
-                // 1번째 컬럼(이름) 제외
-                for (int j = 1; j < cells.Length; j++)
+            // 4. 스탯 데이터 처리 (두 번째 컬럼부터)
+            for (int j = 1; j < cells.Length; j++)
+            {
+                if (int.TryParse(cells[j], out int value))
                 {
-                    if (int.TryParse(cells[j], out int value) && value != 0)
+                    StatType type = (StatType)(j - 1);
+                    
+                    if (System.Enum.IsDefined(typeof(StatType), type))
                     {
-                        string statName = headers[j].Trim();
-                        if (System.Enum.TryParse<StatType>(statName, out var type))
+                        charStatDict[charName].Add(new StatValuePair
                         {
-                            charStatDict[charName].Add(new StatValuePair
-                            {
-                                type = type,
-                                value = value
-                            });
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"{statName} : StatType 파싱 실패 ({csvPath})");
-                        }
+                            type = type,
+                            value = value
+                        });
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Invalid StatType index {j - 1} at column {j} for '{charName}'.");
                     }
                 }
             }
         }
 
-        // ScriptableObject 생성
+        // 5. ScriptableObject 생성
         string outDir = "Assets/Trieyes/ScriptableObjects/StatsPresets/";
-        if (!Directory.Exists(outDir)) Directory.CreateDirectory(outDir);
+        if (!Directory.Exists(outDir))
+        {
+            Directory.CreateDirectory(outDir);
+        }
 
         foreach (var pair in charStatDict)
         {
-            var asset = ScriptableObject.CreateInstance<StatPresetSO>();
+            StatPresetSO asset = ScriptableObject.CreateInstance<StatPresetSO>();
             asset.characterName = pair.Key;
             asset.stats = pair.Value;
 
@@ -79,6 +88,6 @@ public class CSVToStatPresetSO : EditorWindow
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log($"[StatImporter] 모든 CSV 임포트/통합 완료! ({charStatDict.Count}명)");
+        Debug.Log($"[StatImporter] CSV import complete! Created {charStatDict.Count} presets from {Path.GetFileName(filePath)}.");
     }
 }

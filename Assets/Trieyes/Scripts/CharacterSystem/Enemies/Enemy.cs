@@ -120,15 +120,13 @@ namespace CharacterSystem
         {
             ////Debug.Log($"<color=green>{gameObject.name} (Enemy001) is performing its unique death action: Exploding!</color>");
             
-            // 골드 드랍 로직 (임시로 플레이어에게 직접 전달)
-            // TODO: 실제로는 드롭 아이템 시스템을 통해 구현해야 함
             Debug.Log("OnSelfDeath Called");
             Debug.Log($"{result.attacker}");
-            if (result.attacker != null)
+            if (result.attacker != null && Random.Range(0, 100f) < result.attacker.statSheet.Get(StatType.GoldDropRate))
             {
                 Gold gold = DropFactory.Instance.CreateGold(transform.position, dropGold);
                 BattleStage.now.AttachGold(gold);
-                // result.attacker.ChangeGold(dropGold);
+                
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");
                 Debug.Log($"Player Gold: {result.attacker.gold}");
             }

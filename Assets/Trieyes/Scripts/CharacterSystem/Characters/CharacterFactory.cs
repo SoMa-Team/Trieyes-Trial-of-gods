@@ -49,8 +49,6 @@ namespace CharacterSystem
             var pawn = ClonePrefab(id);
             pawn.initBaseStat();
             Activate(pawn);
-            Debug.Log($"Created pawn: {pawn.name}");
-            Debug.Log($"moveSpeed: {pawn.statSheet.Get(StatType.MoveSpeed)}");
             return pawn;
         }
         

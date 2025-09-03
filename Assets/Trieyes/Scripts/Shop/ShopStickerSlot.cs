@@ -22,9 +22,9 @@ public class ShopStickerSlot : MonoBehaviour
 
     // ====== 가격 및 색상 상수 ======
     private static readonly int STICKER_PRICE = 50;
-    private static readonly Color STAT_TYPE_STICKER_COLOR = new Color(239f / 255, 171f / 255, 205f / 255, 1f);
-    private static readonly Color NUMBER_STICKER_COLOR    = new Color(171f / 255, 205f / 255, 239f / 255, 1f);
-    private static readonly Color PROB_STICKER_COLOR    = new Color(171f / 255, 239f / 255, 198f / 255, 1f);
+    [SerializeField] private readonly Color STAT_TYPE_STICKER_COLOR = new Color(239f / 255, 171f / 255, 205f / 255, 1f);
+    [SerializeField] private readonly Color NUMBER_STICKER_COLOR    = new Color(171f / 255, 205f / 255, 239f / 255, 1f);
+    [SerializeField] private readonly Color PROB_STICKER_COLOR    = new Color(171f / 255, 239f / 255, 198f / 255, 1f);
 
     private Sticker sticker;
     private bool isReserved = false;

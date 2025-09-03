@@ -136,6 +136,7 @@ namespace CardSystem
                 case 2: return new Card0002_Crouch();
                 case 3: return new Card0003_Haste();
                 case 4: return new Card0004_WeightReduction();
+                case 5: return new Card0005_Roll();
                 case 201: return new Card0201_ImmatureSparring();
                 case 202: return new Card0202_WeaponEnlargement();
                 case 401: return new Card0401_Shadow();

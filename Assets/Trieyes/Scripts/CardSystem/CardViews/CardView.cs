@@ -110,7 +110,7 @@ namespace CardViews
                     (stickerType == StickerType.None) ? Mathf.Abs(height) + padding.y : STICKER_OVERLAY_FIXED_HEIGHT
                 );
                 Vector2 overlayPos = bl + new Vector3(-padding.x * 0.5f, -padding.y * 0.5f, 0);
-                if (stickerType == StickerType.Number)
+                if (stickerType == StickerType.Number || stickerType == StickerType.Probability)
                     overlayPos.y += NUMBER_STICKER_OVERLAY_Y_OFFSET;
                 overlayPos += overlayOffset;
 

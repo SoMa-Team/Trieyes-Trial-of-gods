@@ -8,18 +8,10 @@ using UnityEngine;
 
 namespace CardActions
 {
-    /// <summary>
-    /// 전투 시작 시, 여러 스탯에 원하는 방식(합/곱)으로 버프를 부여하는 범용 액션.
-    /// baseParams 예시: [스탯1, 값1, 타입1, 스탯2, 값2, 타입2, ...]
-    /// 타입: "Additive", "Multiplicative" (대소문자 구분 X)
-    /// </summary>
     public class Card1002_StatBuffPositiveAndNegative : CardAction
     {
         private readonly bool isMultiplicative;
         private readonly int pairCount;
-
-        /// <param name="numPairs">몇 쌍의 (스탯, 값) 세트인지 (ex. 1, 2, 3, ...)</param>
-        /// <param name="isMultiplicative">곱연산 여부(기본 true, false면 합연산)</param>
         public Card1002_StatBuffPositiveAndNegative(bool isMultiplicative = false)
         {
             this.isMultiplicative = isMultiplicative;

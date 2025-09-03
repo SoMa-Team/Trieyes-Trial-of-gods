@@ -139,13 +139,13 @@ namespace AttackComponents
         {
             // 기존 큐 클리어
             targetQueue.Clear();
+            reusableColliders.Clear();
 
             // 범위 내 모든 적 찾기
             Collider2D[] colliders = Physics2D.OverlapCircleAll(startPosition, chainRadius);
-            reusableColliders.Clear();
             reusableColliders.AddRange(colliders);
 
-            // 적들만 필터링하고 거리 순으로 정렬
+            // 적들만 필터링
             List<Pawn> enemiesInRange = new List<Pawn>();
 
             foreach (Collider2D collider in reusableColliders)
@@ -245,7 +245,7 @@ namespace AttackComponents
             }
             
             ApplyStatus(targetEnemy);
-            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(chainDamage);
+            attack.statSheet[StatType.AttackPower].AddBuff(new StatModifier(chainDamage, BuffOperationType.Set));
             DamageProcessor.ProcessHit(attack, targetEnemy);
             
             // 현재 위치에서 타겟 위치로 VFX 이동

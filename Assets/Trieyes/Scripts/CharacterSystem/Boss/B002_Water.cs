@@ -51,7 +51,7 @@ namespace CharacterSystem
                 _ => throw new Exception($"B002.ExecuteBossAttack: Attack {attackType} is not exist."),
             };
             
-            AttackFactory.Instance.Create(attackData, this, null, LastMoveDirection);
+            AttackFactory.Instance.Create(attackData, this, null, LastMoveDirection, null, true);
             availableAttackTime = Time.time + attackData.cooldown;
             return true;
         }

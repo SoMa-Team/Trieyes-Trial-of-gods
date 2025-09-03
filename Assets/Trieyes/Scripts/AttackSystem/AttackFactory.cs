@@ -108,7 +108,10 @@ namespace AttackSystem
         }
         
         // ===== 공격 생성 =====
-        public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction, [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat = null)
+        public Attack Create(AttackData attackData, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction,
+            [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat = null,
+            bool autoDirectional = false
+            )
         {
             // attackData 변조를 막기 위한 Copy 생성
             attackData = attackData.Copy();
@@ -117,11 +120,14 @@ namespace AttackSystem
             if (attack is null)
                 attack = ClonePrefab(attackData.attackId);
             attack.attackData = attackData;
-            Activate(attack, attacker, parent, direction, baseRelicStat);
+            Activate(attack, attacker, parent, direction, baseRelicStat, autoDirectional);
             return attack;
         }
 
-        public void Activate(Attack attack, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction, [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat = null)
+        public void Activate(Attack attack, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction,
+            [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat,
+            bool autoDirectional
+            )
         {
             if (direction.magnitude < 1e-8)
             {
@@ -131,7 +137,15 @@ namespace AttackSystem
             attack.parent = parent;
             
             attack.transform.position = parent is not null ? parent.transform.position : attacker.transform.position;
-            attack.transform.rotation = Quaternion.Euler(0, 0, 0);
+            if (autoDirectional)
+            {
+                var th = Mathf.Atan2(direction.y, direction.x) *  Mathf.Rad2Deg;
+                attack.transform.rotation = Quaternion.Euler(new Vector3(0, 0, th));
+            }
+            else
+            {
+                attack.transform.rotation = Quaternion.Euler(0, 0, 0);   
+            }
             
             attack.attacker = attacker;
             attack.ApplyStatSheet(parent is not null ? parent.statSheet : attacker.statSheet);

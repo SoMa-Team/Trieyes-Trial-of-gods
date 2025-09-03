@@ -96,7 +96,7 @@ public class BAC00202_CircularSector : AttackComponent
             {
                 {RelicStatType.AOE, 100},
                 {RelicStatType.Range, 25},
-            });
+            }, true);
         }
     }
 }

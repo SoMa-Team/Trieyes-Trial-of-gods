@@ -16,6 +16,7 @@ namespace StickerSystem
         [Header("Backgrounds")]
         public Sprite numberStickerBackground;
         public Sprite statTypeStickerBackground;
+        public Sprite probabilityStickerBackground;
 
         private Sticker sticker;
 
@@ -47,6 +48,12 @@ namespace StickerSystem
                 valueText.text = StatTypeTransformer.StatTypeToKorean(sticker.statTypeValue);
                 typeText.text = "스탯 스티커";
                 background.sprite = statTypeStickerBackground;
+            }
+            else if (sticker.type == StickerType.Probability)
+            {
+                valueText.text = sticker.numberValue.ToString();
+                typeText.text = "확률 스티커";
+                background.sprite = probabilityStickerBackground;
             }
 
             lifeText.text = $"남은 수명 : {sticker.lifeTime}";

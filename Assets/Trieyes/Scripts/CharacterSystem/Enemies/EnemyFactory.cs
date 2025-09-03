@@ -60,7 +60,7 @@ namespace CharacterSystem
                 enemy = ClonePrefab(enemyId);
             
             enemy.enemyID = enemyId;
-            
+            enemy.initBaseStat();
             Activate(enemy);
             
             return enemy;

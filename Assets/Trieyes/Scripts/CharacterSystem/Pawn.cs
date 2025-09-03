@@ -152,10 +152,7 @@ namespace CharacterSystem
             pawnPrefab = transform.GetChild(0).gameObject;
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
-            statSheet = new StatSheet();
-            
             deck.Activate(this, true);
-            initBaseStat();
 
             if (rb != null)
             {
@@ -225,8 +222,6 @@ namespace CharacterSystem
             skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
 
             deck.Activate(this, true);
-            statSheet = new StatSheet();
-            initBaseStat();
             
             SyncHP();
             
@@ -318,7 +313,7 @@ namespace CharacterSystem
         {
             if(statSheet == null)
             {
-                throw new Exception("statSheet is null");
+                statSheet = new StatSheet();
             }
             if(statPresetSO != null)
             {

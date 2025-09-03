@@ -138,6 +138,11 @@ namespace CardSystem
             cardStats = new CardStat(properties, cardEnhancement.level.Value);
         }
 
+        private static string FormatProbability(object probability)
+        {
+            return probability + "%";
+        }
+
         // ==== [파라미터-스티커 시스템] ====
 
         /// <summary>
@@ -159,6 +164,9 @@ namespace CardSystem
                         case StickerType.Number:
                             result.Add(sticker.numberValue.ToString());
                             break;
+                        case StickerType.Probability:
+                            result.Add(FormatProbability(sticker.numberValue));
+                            break;
                         default:
                             result.Add(""); // 예외 대응
                             break;
@@ -172,12 +180,21 @@ namespace CardSystem
                     }
                     else
                     {
-                        var kind = cardAction.GetParamDef(i).kind;
+                        var def = cardAction.GetParamDef(i);
                         var value = cardAction.GetBaseParam(i);
-                        if (kind == ParamKind.StatType)
-                            result.Add(StatTypeTransformer.StatTypeToKorean((StatType)value));
-                        else
-                            result.Add(value.ToString());
+                        
+                        switch (def.kind)
+                        {
+                            case ParamKind.StatType:
+                                result.Add(StatTypeTransformer.StatTypeToKorean((StatType)value));
+                                break;
+                            case ParamKind.Number:
+                                result.Add(value.ToString());
+                                break;
+                            case ParamKind.Probability:
+                                result.Add(FormatProbability(value));
+                                break;
+                        }
                     }
                 }
             }
@@ -231,12 +248,17 @@ namespace CardSystem
             if (cardAction == null) return false;
             if (sticker == null) return false;
 
-            var paramKind = cardAction.GetParamDef(paramIdx).kind;
-            if ((paramKind == ParamKind.Number   && sticker.type != StickerType.Number) ||
-                (paramKind == ParamKind.StatType && sticker.type != StickerType.StatType))
-                return false;
 
-            // 같은 "한 장"(instanceId 유지)으로 오버라이드
+            var paramKind = cardAction.GetParamDef(paramIdx).kind;
+            bool typeMatch =
+                (paramKind == ParamKind.Number && sticker.type == StickerType.Number) ||
+                (paramKind == ParamKind.StatType && sticker.type == StickerType.StatType) ||
+                (paramKind == ParamKind.Probability && sticker.type == StickerType.Probability);
+
+
+            if (!typeMatch) return false;
+
+
             stickerOverrides[paramIdx] = sticker.DeepCopy();
             RefreshParamCharRanges();
             return true;

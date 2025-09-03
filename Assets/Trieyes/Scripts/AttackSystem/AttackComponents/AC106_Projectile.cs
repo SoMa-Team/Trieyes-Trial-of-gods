@@ -63,7 +63,7 @@ namespace AttackComponents
         // VFX 설정
         [Header("VFX 설정")]
         [SerializeField] public GameObject projectileVFXPrefab; // 발사체 VFX 프리팹
-        private GameObject spawnedVFX;
+        
 
         // 디버그 설정
         [Header("디버그 설정")]
@@ -96,8 +96,6 @@ namespace AttackComponents
             currentPierceCount = 0;
             isDestroyed = false;
             hitTargets.Clear(); // AC100~105 패턴: 리스트 초기화
-            
-            Debug.Log("<color=orange>[AC106] 발사체 초기화 완료! (Preparing 상태)</color>");
         }
 
         /// <summary>
@@ -109,11 +107,6 @@ namespace AttackComponents
             {
                 projectileState = ProjectileState.Active;
                 StartProjectile();
-                Debug.Log("<color=green>[AC106] 외부에서 발사체 Active 상태로 전환!</color>");
-            }
-            else
-            {
-                Debug.LogWarning($"[AC106] 현재 상태({projectileState})에서는 Active로 전환할 수 없습니다!");
             }
         }
 
@@ -126,7 +119,6 @@ namespace AttackComponents
             {
                 projectileState = ProjectileState.Destroying;
                 DestroyProjectile();
-                Debug.Log("<color=red>[AC106] 외부에서 발사체 강제 파괴!</color>");
             }
         }
 
@@ -203,8 +195,6 @@ namespace AttackComponents
                     var main = ps.main;
                     main.simulationSpeed = (projectileSpeed/10) - vfxLifetime; // 속도 조정
                 }
-                
-                Debug.Log($"<color=cyan>[AC106] VFX Velocity over Lifetime 설정: {velocity} (속도: {projectileSpeed})</color>");
             }
         }
 
@@ -222,8 +212,6 @@ namespace AttackComponents
                 PlayVFX(spawnedVFX);
                 ForceStartParticleSystems(spawnedVFX);
             }
-            
-            Debug.Log("<color=orange>[AC106] 발사체 시작!</color>");
         }
 
         /// <summary>
@@ -251,8 +239,6 @@ namespace AttackComponents
                     ps.Play(true);
                 }
             }
-            
-            Debug.Log($"<color=cyan>[AC106] VFX ParticleSystem 강제 시작: {vfx.name}</color>");
         }
 
         private void SetupProjectileCollider()
@@ -295,7 +281,6 @@ namespace AttackComponents
             // 프리팹이 없으면 VFX 없이 진행
             if (vfxPrefab == null)
             {
-                Debug.LogWarning("[AC106] VFX 프리팹이 설정되지 않았습니다!");
                 return null;
             }
 
@@ -318,8 +303,6 @@ namespace AttackComponents
                 
                 // VFX 즉시 활성화
                 spawnedVFX.SetActive(true);
-                
-                Debug.Log($"<color=green>[AC106] VFX 생성 완료: {spawnedVFX.name} at {position}</color>");
             }
             
             return spawnedVFX;
@@ -433,8 +416,6 @@ namespace AttackComponents
             {
                 attack.attackCollider.enabled = false;
             }
-            
-            Debug.Log("<color=orange>[AC106] 발사체 파괴!</color>");
         }
 
         public override void ProcessComponentCollision(Pawn targetPawn)
@@ -451,20 +432,15 @@ namespace AttackComponents
                     hitTargets.Add(enemy);
                 }
                 
-                Debug.Log($"<color=yellow>[AC106] 발사체가 {targetPawn.name}에게 충돌! (관통: {currentPierceCount}/{pierceCount})</color>");
-                
                 // 관통 로직 처리
                 if (pierceCount == 0)
                 {
-                    // 무한 관통: 데미지만 주고 계속 진행
-                    Debug.Log("<color=green>[AC106] 무한 관통으로 계속 진행!</color>");
+
                 }
                 else
                 {
                     // 제한된 관통: 횟수 증가
                     currentPierceCount++;
-                    Debug.Log($"<color=orange>[AC106] 관통 횟수 증가: {currentPierceCount}/{pierceCount}</color>");
-                    
                     // 관통 횟수 초과 시 파괴
                     if (currentPierceCount >= pierceCount)
                     {

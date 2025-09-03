@@ -47,7 +47,7 @@ namespace AttackComponents
     /// <summary>
     /// 디버프 효과 적용
     /// </summary>
-    public class DEBUFF : AttackComponent
+    public class DEBUFF
     {   
         // 디버프 타입 ENUM
         public DEBUFFType debuffType;
@@ -59,6 +59,7 @@ namespace AttackComponents
 
         public float debuffInterval = 1f;
 
+        public Pawn origin;
         public Pawn target;
 
         public GameObject spawnedVFX;
@@ -75,7 +76,7 @@ namespace AttackComponents
             debuffDuration = debuffInfo.debuffDuration;
             debuffInterval = debuffInfo.debuffInterval;
             target = debuffInfo.target;
-            attack = debuffInfo.attack;
+            origin = debuffInfo.attack.attacker;
             spawnedVFX = debuffInfo.debuffVFXPrefab;
 
             ApplyDebuffEffect();
@@ -198,7 +199,7 @@ namespace AttackComponents
         private void ApplyBurnEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], origin, null, Vector2.zero);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = debuffValue; // 디버프 값 사용
@@ -211,7 +212,7 @@ namespace AttackComponents
         private void ApplyPoisonEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], origin, null, Vector2.zero);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = debuffValue; // 디버프 값 사용
@@ -224,7 +225,7 @@ namespace AttackComponents
         private void ApplyBleedEffect(Pawn target)
         {
             // AC101의 단일 DOT 효과 적용하면 됨
-            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], attack.attacker, null, Vector2.zero);
+            var burnAttack = AttackFactory.Instance.Create(attackDatas[AC101_SINGLE_DOT], origin, null, Vector2.zero);
 
             var dotComponent = burnAttack.components[0] as AC101_DOT;
             dotComponent.dotDamage = debuffValue; // 디버프 값 사용

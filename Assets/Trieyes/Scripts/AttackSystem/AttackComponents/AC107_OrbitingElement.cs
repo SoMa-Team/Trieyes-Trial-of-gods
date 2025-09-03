@@ -3,7 +3,6 @@ using UnityEngine;
 using CharacterSystem;
 using Stats;
 using BattleSystem;
-using PrimeTween;
 
 namespace AttackComponents
 {
@@ -29,6 +28,8 @@ namespace AttackComponents
         [Header("공전 대상 설정")]
         public Pawn orbitOwner;
 
+        public readonly int orbitDamageMultiplier = 10;
+
         // 콜라이더 설정
         [Header("콜라이더 설정")]
         public float colliderWidth = 0.5f; // 콜라이더 가로 크기
@@ -38,7 +39,7 @@ namespace AttackComponents
         // VFX 설정
         [Header("VFX 설정")]
         [SerializeField] public GameObject orbitVFXPrefab; // 공전 VFX 프리팹
-        private GameObject spawnedVFX; // 단일 VFX
+         // 단일 VFX
 
         // 공격 관련
         private AttackData attackData;
@@ -68,8 +69,6 @@ namespace AttackComponents
             
             // VFX 생성
             CreateVFX();
-            
-            Debug.Log($"[AC107] 공전 객체 설정 완료! (위치: {transform.position}, 소유자: {orbitOwner.name})");
         }
 
         /// <summary>
@@ -108,8 +107,6 @@ namespace AttackComponents
                 {
                     particleSystem.Play();
                 }
-                
-                Debug.Log($"[AC107] VFX 생성 완료! (위치: {transform.position})");
             }
         }
 
@@ -123,11 +120,9 @@ namespace AttackComponents
             {
                 // Attack 객체 생성 및 데미지 처리
                 Attack attack = AttackFactory.Instance.Create(attackData, orbitOwner, null, Vector2.zero);
-                attack.statSheet[StatType.AttackPower] = new IntegerStatValue(20);
+                attack.statSheet[StatType.AttackPower].AddBuff(new StatModifier(orbitDamageMultiplier, BuffOperationType.Multiplicative));
                 DamageProcessor.ProcessHit(attack, targetPawn);
-                
-                Debug.Log($"<color=yellow>[AC107] 공전 객체가 {targetPawn.name}에게 충돌! (소유자: {orbitOwner.name})</color>");
-                
+
                 // 충돌 후 처리
                 if (collisionBehavior == CollisionBehavior.Destroy)
                 {
@@ -138,7 +133,6 @@ namespace AttackComponents
                         manager.RemoveOrbitingObject(this.attack);
                     }
                     
-                    Debug.Log($"<color=orange>[AC107] 충돌로 인한 제거!</color>");
                 }
                 
                 // Attack 객체 정리
@@ -156,8 +150,6 @@ namespace AttackComponents
             // orbitIndex = index; // 사용되지 않는 변수
             baseAngle = (360f / totalCount) * index;
             // currentAngle = baseAngle; // 사용되지 않는 변수
-            
-            Debug.Log($"[AC107] 궤도 인덱스 설정: {index}/{totalCount} (각도: {baseAngle}°)");
         }
     }
 

@@ -201,7 +201,7 @@ namespace AttackSystem
             
             // 위치 및 회전 초기화
             transform.position = Vector3.zero;
-            transform.rotation = Quaternion.identity;
+            transform.rotation = Quaternion.Euler(0, 0, 0);
             
             // 참조 정리
             attacker = null;

@@ -50,10 +50,15 @@ namespace CardActions
             if (card.stickerOverrides != null &&
                 card.stickerOverrides.TryGetValue(index, out Sticker sticker))
             {
-                if (sticker.type == StickerType.Number)
-                    return sticker.numberValue;
-                if (sticker.type == StickerType.StatType)
-                    return sticker.statTypeValue;
+                switch (sticker.type)
+                {
+                    case StickerType.Number:
+                        return sticker.numberValue;
+                    case StickerType.StatType:
+                        return sticker.statTypeValue;
+                    case StickerType.Probability:
+                        return sticker.numberValue;
+                }
             }
             // 2. 오버라이드 없으면 원래 값 반환
             return GetBaseParam(index);

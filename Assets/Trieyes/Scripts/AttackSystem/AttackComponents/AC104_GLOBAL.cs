@@ -29,7 +29,7 @@ namespace AttackComponents
         [Header("VFX 설정")]
         [SerializeField] public GameObject globalVFXPrefab; // GLOBAL VFX 프리팹 (외부에서 설정 가능)
         public float globalVFXDuration = 0.3f;
-        private GameObject spawnedVFX;
+        
 
         // 공격 효과 상태 관리
         private GlobalDamageState globalDamageState = GlobalDamageState.None;
@@ -71,8 +71,6 @@ namespace AttackComponents
             
             // VFX 생성
             CreateGlobalDamageVFX();
-            
-            Debug.Log("<color=cyan>[GLOBAL_BLIZZARD] 공격 효과 시작!</color>");
         }
 
         protected override void Update()
@@ -151,12 +149,12 @@ namespace AttackComponents
                     affectedEnemies.Add(enemy.Value as Enemy);
                 }
             }
-            
-            Debug.Log($"<color=cyan>[GLOBAL_BLIZZARD] 영향받는 적 수: {affectedEnemies.Count}명</color>");
         }
 
         private void ApplyGlobalDamage()
         {
+            attack.statSheet[StatType.AttackPower].AddBuff(new StatModifier(globalDamage, BuffOperationType.Set));
+            
             // 현재 활성화된 모든 적에게 데미지 적용
             for (int i = affectedEnemies.Count - 1; i >= 0; i--)
             {
@@ -175,7 +173,6 @@ namespace AttackComponents
 
         private void ApplyDamageToEnemy(Enemy enemy)
         {
-            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(globalDamage);
             DamageProcessor.ProcessHit(attack, enemy);
             
             // 슬로우 효과 적용
@@ -189,8 +186,6 @@ namespace AttackComponents
             
             var debuff = new DEBUFF();
             debuff.Activate(debuffInfo);
-
-            Debug.Log($"<color=blue>[GLOBAL_BLIZZARD] {enemy.pawnName}에게 데미지 적용</color>");
         }
 
         private void CreateGlobalDamageVFX()
@@ -198,8 +193,6 @@ namespace AttackComponents
             // VFX 시스템을 통해 얼음 폭풍 VFX 생성
             spawnedVFX = CreateAndSetupVFX(globalVFXPrefab, Vector2.zero, Vector2.zero);
             PlayVFX(spawnedVFX);
-            
-            Debug.Log("<color=cyan>[GLOBAL_BLIZZARD] 얼음 폭풍 VFX 생성!</color>");
         }
 
         /// <summary>

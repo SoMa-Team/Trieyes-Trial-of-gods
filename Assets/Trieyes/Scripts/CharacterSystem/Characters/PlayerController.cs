@@ -52,17 +52,17 @@ namespace CharacterSystem
 
             if (!lockMovement && isJoystickActive)
             {
-                owner.Move(moveDir);
+                character.Move(moveDir);
             }
 
             // 스킬 확인
             if (skillAction001.action.triggered)
             {
-                owner.ExecuteAttack(PawnAttackType.Skill1);
+                character.ExecuteAttack(PawnAttackType.Skill1);
             }
             if (skillAction002.action.triggered)
             {
-                owner.ExecuteAttack(PawnAttackType.Skill2);
+                character.ExecuteAttack(PawnAttackType.Skill2);
             }
         }
 
@@ -70,7 +70,7 @@ namespace CharacterSystem
         {
             if (character is not null && isAutoAttack)
             {
-                character.PerformAutoAttack();
+                character.ExecuteAttack(PawnAttackType.BasicAttack);
             }
         }
 

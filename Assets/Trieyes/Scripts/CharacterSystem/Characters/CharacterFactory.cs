@@ -1,4 +1,5 @@
 using System;
+using Stats;
 using UnityEngine;
 
 namespace CharacterSystem
@@ -46,6 +47,7 @@ namespace CharacterSystem
         public Pawn Create(CharacterID id)
         {
             var pawn = ClonePrefab(id);
+            pawn.initBaseStat();
             Activate(pawn);
             return pawn;
         }

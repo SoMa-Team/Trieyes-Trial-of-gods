@@ -45,11 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  attackAngle: 90
-  attackDuration: 0.3
   attackRadius: 1.5
-  segments: 8
-  chainDamage: 1
+  attackSpeed: 1
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  chainDamage: 10
   chainRadius: 3.5
   chainCount: 3
   chainDelay: 0.4

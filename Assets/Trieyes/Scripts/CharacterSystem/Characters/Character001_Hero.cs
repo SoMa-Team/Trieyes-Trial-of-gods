@@ -22,15 +22,16 @@ namespace CharacterSystem
         public HeroWeaponElementState weaponElementState = HeroWeaponElementState.None;
         public bool activateLight = false;
 
-        public bool lockBasicAttack = false;
-
         public int minRandomEnchantmentID = 1;
         public int maxRandomEnchantmentID = 4;
 
-        public int activeSkill001Count = 0;
-        public int activeSkill002Count = 0;
         public int killedDuringSkill001 = 0;
         public int killedDuringSkill002 = 0;
+
+        public AttackData _basicAttack;
+        public AttackData Skill001Attack;
+
+        public Hero_S001_AttackEnchantment currentEnchantment;
         
         // RAC 관련 트리거 변수들
         public bool RAC006Trigger = false; // 속성 검기 발사용
@@ -64,43 +65,12 @@ namespace CharacterSystem
         public override void Activate()
         {
             base.Activate();
+            _basicAttack = basicAttack;
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
-            lockBasicAttack = false;
-        }
-
-        // ===== [공격 처리 메서드] =====
-        /// <summary>
-        /// 공격을 실행합니다. lockBasicAttack이 true면 기본 공격을 차단합니다.
-        /// </summary>
-        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
-        {
-            // lockBasicAttack이 true면 기본 공격 차단
-            if (lockBasicAttack && attackType == PawnAttackType.BasicAttack)
-            {
-                Debug.Log("<color=red>[HERO] Basic attack blocked by lockBasicAttack!</color>");
-                return false;
-            }
-            
-            return base.ExecuteAttack(attackType);
-        }
-
-        /// <summary>
-        /// 자동 공격을 수행합니다. lockBasicAttack이 true면 자동 공격을 차단합니다.
-        /// </summary>
-        public override void PerformAutoAttack()
-        {
-            // lockBasicAttack이 true면 자동 공격 차단
-            if (lockBasicAttack)
-            {
-                //Debug.Log("<color=red>[HERO] Auto attack blocked by lockBasicAttack!</color>");
-                return;
-            }
-            
-            base.PerformAutoAttack();
         }
 
         // ===== [이벤트 처리 메서드] =====

@@ -17,6 +17,8 @@ namespace CharacterSystem
         [SerializeField] 
         protected int dropGold; // 드랍할 골드 양
         public Character playerTarget;
+
+        public override Vector2 CenterOffset { get { return Vector2.zero; } }
    
         // ===== [기능 2] 초기화 =====
         protected override void Start()
@@ -35,11 +37,6 @@ namespace CharacterSystem
         {
             base.Activate();
             playerTarget = BattleStage.now.mainCharacter;
-            // TODO: AttackComponent 할당
-            ////Debug.Log("Enemy001 Activated.");
-
-            // 이런 느낌으로 각 적마다 커스터마이징 
-            // boxCollider = Collider as BoxCollider2D;
         }
 
         /// <summary>
@@ -49,17 +46,6 @@ namespace CharacterSystem
         {        
             base.Deactivate();
             ////Debug.Log("Enemy001 Deactivated.");
-        }
-
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            base.OnTriggerEnter2D(other);
-
-            if(other.gameObject.CompareTag("Player"))
-            {
-                var character = other.gameObject.GetComponent<Character>();
-                DamageProcessor.ProcessHit(this, character);
-            }
         }
 
         /// <summary>

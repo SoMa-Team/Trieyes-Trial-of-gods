@@ -48,6 +48,10 @@ namespace CharacterSystem
 
         [SerializeField] protected Controller Controller;
         [SerializeField] protected Animator Animator;
+
+        public abstract Vector2 CenterOffset { get; }
+
+        public AllIn1SpriteShaderHandler allIn1SpriteShaderHandler = new AllIn1SpriteShaderHandler();
         
         [Header("Stats")]
 
@@ -143,6 +147,7 @@ namespace CharacterSystem
         protected virtual void Start()
         {
             if(rb is null) rb = GetComponent<Rigidbody2D>();
+            allIn1SpriteShaderHandler.SetObject(gameObject);
             
             pawnPrefab = transform.GetChild(0).gameObject;
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
@@ -260,7 +265,12 @@ namespace CharacterSystem
                 basicAttack = backupBasicAttack;
                 skill1Attack = backupSkill1Attack;
                 skill2Attack = backupSkill2Attack;
-            }   
+            }
+
+            if (allIn1SpriteShaderHandler.mat is not null)   
+            {
+                allIn1SpriteShaderHandler.Deactivate();
+            }
 
             Controller.Deactivate();
             statuses.Clear();
@@ -274,6 +284,10 @@ namespace CharacterSystem
         }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)
+        {
+        }
+
+        protected virtual void OnTriggerExit2D(Collider2D other)
         {
         }
         
@@ -711,6 +725,8 @@ namespace CharacterSystem
             }
         }
 
+        public abstract bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack);
+
         public void ApplyDamage(AttackResult result)
         {
             // 여러번 OnDeath 이벤트가 발생되지 않기 위한 예외문
@@ -720,7 +736,7 @@ namespace CharacterSystem
             ChangeHP(-result.totalDamage);
             ChangeAnimationState("DAMAGED");
 
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {result.totalDamage} damage from {result.attacker.gameObject.name}</color>");
+            //Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took {result.totalDamage} damage from {result.attacker.gameObject.name}</color>");
             // TODO : 넉백 확률 스탯 부분 추가 필요
             // ApplyKnockback(damageInfo.attacker);
             
@@ -741,13 +757,13 @@ namespace CharacterSystem
 
         public void ApplyStealHealth(AttackResult result)
         {
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} steal {result.attackerHealed} HP from {result.target.gameObject.name}</color>");
+            //Debug.Log($"<color=red>[DAMAGE] {gameObject.name} steal {result.attackerHealed} HP from {result.target.gameObject.name}</color>");
             ChangeHP(result.attackerHealed);
         }
 
         public void ApplyReflectDamage(AttackResult result)
         {
-            Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took reflect damage {result.attackerReflectDamage} from {result.target.gameObject.name}</color>");
+            //Debug.Log($"<color=red>[DAMAGE] {gameObject.name} took reflect damage {result.attackerReflectDamage} from {result.target.gameObject.name}</color>");
             ChangeHP(-result.attackerReflectDamage);
         }
 
@@ -795,59 +811,6 @@ namespace CharacterSystem
         public void SetLockMovement(bool lockMovement)
         {
             Controller.lockMovement = lockMovement;
-        }
-
-        public virtual void PerformAutoAttack()
-        {
-            // 공격 수행
-            var res = ExecuteAttack();
-        }
-
-        /// <summary>
-        /// 공격을 실행합니다. 스탯 정보를 수집하여 Attack에게 전달합니다.
-        /// </summary>
-        public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
-        {
-            switch (attackType)
-            {
-                case PawnAttackType.BasicAttack:
-                    Debug.Log("BasicAttackCreateCommand!");
-                    if (Time.time - lastAttackTime >= attackCooldown)
-                    {
-                        CalculateAttackCooldown();
-                        lastAttackTime = Time.time;
-                        ChangeAnimationState("ATTACK");
-                        AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
-                        return true;
-                    }
-                    return false;
-                case PawnAttackType.Skill1:
-                    if (CheckSkillCooldown(PawnAttackType.Skill1))
-                    {
-                        lastSkillAttack1Time = Time.time;
-                        ChangeAnimationState("ATTACK");
-                        Attack temp = AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
-                        Debug.Log($"<color=yellow>[SKILL1] {temp.gameObject.name} skill1Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
-                        return true;
-                    }
-                    Debug.Log($"<color=yellow>[SKILL1] {gameObject.name} skillAttack1Cooldown: {skillAttack1Cooldown}, lastSkillAttack1Time: {lastSkillAttack1Time}</color>");
-                    return false;
-
-                case PawnAttackType.Skill2:
-                    if (CheckSkillCooldown(PawnAttackType.Skill2))
-                    {
-                        lastSkillAttack2Time = Time.time;
-                        ChangeAnimationState("ATTACK");
-                        Attack temp = AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
-                        Debug.Log($"<color=yellow>[SKILL2] {temp.gameObject.name} skill2Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
-                        return true;
-                    }
-                    Debug.Log($"<color=yellow>[SKILL2] {gameObject.name} skillAttack2Cooldown: {skillAttack2Cooldown}, lastSkillAttack2Time: {lastSkillAttack2Time}</color>");
-                    return false;
-                    
-                default:
-                    return false;
-            }
         }
 
         public void ClearStatModifier()

@@ -13,6 +13,11 @@ namespace CharacterSystem
         // Pawn의 추상 멤버 구현
         public Vector3 lastPosition;
         
+        protected float lastTriggerEnterTime = 0f;
+        public float collisionDamageInterval = 0.5f;
+
+        public override Vector2 CenterOffset { get { return Vector2.zero; } }
+        
         // ===== [Unity 생명주기] =====
         protected override void Start()
         {
@@ -25,15 +30,6 @@ namespace CharacterSystem
         protected override void OnDestroy()
         {
             base.OnDestroy();
-        }
-        
-        void OnTriggerExit2D(Collider2D other)
-        {
-            if (other.CompareTag("Boundary"))
-            {
-                // 경계선 밖으로 나가려 하면 이전 위치로 되돌림
-                transform.position = transform.position;
-            }
         }
 
         public override void Update()
@@ -56,15 +52,6 @@ namespace CharacterSystem
         public override void Deactivate()
         {
             base.Deactivate();
-        }
-
-        public void OnTriggerEnter2D(Collider2D other)
-        {
-            if (other.CompareTag("Boundary"))
-            {
-                Debug.Log("Character001 OnTriggerEnter2D");
-                transform.position = lastPosition;
-            }
         }
 
         // ===== [이벤트 처리 메서드] =====
@@ -94,6 +81,40 @@ namespace CharacterSystem
                     return false;
             }
             return false;
+        }
+
+        protected override void OnTriggerEnter2D(Collider2D other)
+        {
+            base.OnTriggerEnter2D(other);
+            if(other.gameObject.CompareTag("Enemy"))
+            {
+                lastTriggerEnterTime = Time.time;
+            }
+        }
+
+        protected virtual void OnTriggerStay2D(Collider2D other)
+        {
+            if(!other.gameObject.CompareTag("Enemy"))
+            {
+                return;
+            }
+
+            var currentTime = Time.time;
+            if(currentTime - lastTriggerEnterTime >= collisionDamageInterval)
+            {
+                var enemy = other.gameObject.GetComponent<Enemy>();
+                DamageProcessor.ProcessHit(enemy, this);
+                lastTriggerEnterTime = currentTime;
+            }
+        }
+
+        protected override void OnTriggerExit2D(Collider2D other)
+        {
+            base.OnTriggerExit2D(other);
+            if(other.gameObject.CompareTag("Enemy"))
+            {
+                lastTriggerEnterTime = 0f;
+            }
         }
 
         public void CreateAttack(PawnAttackType attackType)

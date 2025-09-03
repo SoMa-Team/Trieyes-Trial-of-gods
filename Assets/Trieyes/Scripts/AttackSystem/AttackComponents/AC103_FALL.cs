@@ -130,13 +130,10 @@ namespace AttackComponents
                         Vector2 currentPosition = spawnedFallingVFX.transform.position;
                         Vector2 newPosition = Vector2.MoveTowards(currentPosition, fallingVFXTargetPosition, fallingVFXMoveSpeed * Time.deltaTime);
                         spawnedFallingVFX.transform.position = newPosition;
-                        
-                        Debug.Log($"<color=blue>[FALL] VFX 이동: {currentPosition} -> {newPosition}, 목표: {fallingVFXTargetPosition}</color>");
-                        
+
                         // 목표 지점에 도달했는지 확인
                         if (Vector2.Distance(newPosition, fallingVFXTargetPosition) < 0.1f)
                         {
-                            Debug.Log("<color=green>[FALL] VFX가 목표 지점에 도달!</color>");
                             fallState = FallAttackState.Impact;
                             fallTimer = 0f;
                             
@@ -174,7 +171,6 @@ namespace AttackComponents
                         spawnedExplosionVFX = CreateAndSetupExplosionVFX(explosionPosition, Vector2.zero);
                         PlayVFX(spawnedExplosionVFX);
                         explosionVFXCreated = true;
-                        Debug.Log($"<color=green>[FALL] 폭발 VFX 생성! 위치: {explosionPosition} (착탄 지점의 남쪽 모서리)</color>");
                     }
                     
                     if (fallTimer >= vfxDuration)
@@ -198,24 +194,13 @@ namespace AttackComponents
             fallingVFXTargetPosition = targetPosition;
             spawnedFallingVFX = CreateAndSetupFallingVFX(fallingVFXStartPosition, Vector2.down);
             PlayVFX(spawnedFallingVFX);
-        
-            // 착탄 지점에 Radius 반경의 원형 Draw 만들기
-            // 원형 필드 디버그 (원의 둘레를 그리기)
-            int segments = 24;
-            Vector2 prevPoint = targetPosition + Vector2.right * (fallRadius-1f);
-            for (int i = 1; i <= segments; i++)
-            {
-                float angle = (360f / segments) * i * Mathf.Deg2Rad;
-                Vector2 currentPoint = targetPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * (fallRadius-1f);
-                Debug.DrawLine(prevPoint, currentPoint, Color.red, 1f);
-                prevPoint = currentPoint;
-            }
         }
 
         private void ApplyImpactDamage()
         {
             // Impact 순간에 범위 내 적들을 다시 탐지
             DetectTargetsInRange();
+            attack.statSheet[StatType.AttackPower].AddBuff(new StatModifier(fallDamage, BuffOperationType.Set));
             
             // 탐지된 모든 적에게 데미지 적용
             for (int i = hitTargets.Count - 1; i >= 0; i--)
@@ -249,18 +234,12 @@ namespace AttackComponents
                     hitTargets.Add(enemy);
                 }
             }
-            
-            Debug.Log($"<color=blue>[FALL_ATTACK] Impact 순간 범위 내 적 탐지: {hitTargets.Count}명</color>");
         }
 
         private void ApplyDamageToTarget(Enemy target)
         {
-            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(fallDamage);
             DamageProcessor.ProcessHit(attack, target);
-
-            Debug.Log($"<color=red>[FALL_ATTACK] {target.pawnName}에게 데미지 적용</color>");
         }
-
 
 
         public override void Deactivate()

@@ -129,8 +129,7 @@ namespace AttackSystem
             attack.parent = parent;
             
             attack.transform.position = parent is not null ? parent.transform.position : attacker.transform.position;
-            var th = Mathf.Atan2(direction.y, direction.x) *  Mathf.Rad2Deg;
-            attack.transform.rotation = Quaternion.Euler(new Vector3(0, 0, th));
+            attack.transform.rotation = Quaternion.Euler(0, 0, 0);
             
             attack.attacker = attacker;
             attack.ApplyStatSheet(parent is not null ? parent.statSheet : attacker.statSheet);
@@ -140,7 +139,7 @@ namespace AttackSystem
             BattleStage.now.AttachAttack(attack);
             
             attack.transform.SetParent(BattleStage.now.View.transform);
-            
+
             attack.gameObject.SetActive(true);
         }
 

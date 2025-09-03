@@ -55,7 +55,10 @@ namespace Stats
 
             foreach (var buff in modifiers)
             {
-                if(BattleStage.now is not null) Debug.Log($"currentTime: {BattleStage.now.GetTime()} | buff.endTime: {buff.endTime}");
+                if(BattleStage.now is not null)
+                {
+                    //Debug.Log($"currentTime: {BattleStage.now.GetTime()} | buff.endTime: {buff.endTime}");
+                } 
                 finalValue = buff.getNextValue(finalValue);
             }
 

@@ -41,7 +41,6 @@ namespace CardActions
 
                     // 경험치 스택: 파괴된 카드 레벨 * 5
                     card.cardEnhancement.level.AddToBasicValue(1);
-                    card.RefreshStats();
 
                     Debug.Log($"[Card0301] 오른쪽 카드 {rightCard.cardName}(레벨 {rightLevel}) 파괴됨, 경험치 +{rightLevel * 5}");
                     return true;

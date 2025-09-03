@@ -55,6 +55,7 @@ namespace CharacterSystem
         
         [Header("Stats")]
 
+        public StatSheet baseStatSheet { get; private set; }
         public StatSheet statSheet { get; private set; }
         
         public StatPresetSO statPresetSO;
@@ -314,6 +315,7 @@ namespace CharacterSystem
             if(statSheet == null)
             {
                 statSheet = new StatSheet();
+                baseStatSheet = statSheet.DeepCopy();
             }
             if(statPresetSO != null)
             {
@@ -429,55 +431,6 @@ namespace CharacterSystem
         public int GetRawStatValue(StatType statType)
         {
             return statSheet.GetRaw(statType);
-        }
-        
-        /// <summary>
-        /// 지정된 스탯 타입의 값을 설정합니다.
-        /// </summary>
-        /// <param name="statType">스탯 타입</param>
-        /// <param name="value">설정할 값</param>
-        public void SetStatValue(StatType statType, int value)
-        {
-            statSheet[statType].SetBasicValue(value);
-        }
-
-        /// <summary>
-        /// 공격에 필요한 스탯 정보를 수집합니다.
-        /// Relic, Card의 영향을 포함한 최종 스탯을 반환합니다.
-        /// </summary>
-        /// <returns>공격용 스탯 정보</returns>
-        public virtual StatSheet CollectAttackStats()
-        {
-            // 기본 스탯 복사
-            StatSheet attackStats = new StatSheet();
-            
-            // Pawn의 모든 스탯을 복사
-            foreach (StatType statType in System.Enum.GetValues(typeof(StatType)))
-            {
-                float statValue = GetStatValue(statType);
-                attackStats[statType].SetBasicValue(statValue);
-            }
-            
-            //Debug.Log($"<color=cyan>[STATS] {gameObject.name} collected attack stats: ATK={attackStats[StatType.AttackPower].Value}, SPD={attackStats[StatType.AttackSpeed].Value}</color>");
-            
-            return attackStats;
-        }
-
-        /// <summary>
-        /// 넉백을 적용합니다.
-        /// </summary>
-        /// <param name="attacker">공격자</param>
-        protected virtual void ApplyKnockback(Pawn attacker)
-        {
-            Rigidbody2D targetRb = GetComponent<Rigidbody2D>();
-            if (targetRb != null)
-            {
-                Vector2 knockbackDirection = (transform.position - attacker.transform.position).normalized;
-                float knockbackForce = 5f; // 기본 넉백 힘
-                targetRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
-                
-                //Debug.Log($"<color=orange>[KNOCKBACK] {gameObject.name} knocked back by {attacker.gameObject.name}</color>");
-            }
         }
 
         // ===== [기능 1] 캐릭터 기본 정보 =====

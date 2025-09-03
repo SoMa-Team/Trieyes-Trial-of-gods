@@ -25,18 +25,8 @@ namespace CardViews
         public Image illustrationImage;
         public TMP_Text cardNameText;
         public TMP_Text descriptionText;
-
-        [Header("스탯/레어리티/특성 UI")]
-        public StatTypeEmblemSO statTypeEmblemTable;
-
-        public GameObject StatTypePair1;
-        public GameObject StatTypePair2;
-        public Image statTypeEmblemImage1;
-        public TMP_Text statIntegerValueText1;
-        public Image statTypeEmblemImage2;
-        public TMP_Text statIntegerValueText2;
         public Image selectionOutline;
-
+        
         [Header("오버레이/엠블럼 프리팹")]
         public List<GameObject> stickerOverlayPrefabs;    // [0]=None, [1]=StatType, [2]=Number
         public List<GameObject> propertyTypeEmblems;      // [0]=Fire, [1]=Ice, [2]=Light, [3]=Dark, [4]=Steel
@@ -237,33 +227,6 @@ namespace CardViews
             // 레어리티 엠블럼
             for (int i = 0; i < rarityEmblems.Count; i++)
                 rarityEmblems[i].gameObject.SetActive(i == (int)card.rarity);
-
-            // 스탯 엠블럼 및 값
-            if (card.cardStats.stats.Count > 0 && statTypeEmblemTable != null)
-            {
-                var stat = card.cardStats.stats[0];
-                statTypeEmblemImage1.sprite = statTypeEmblemTable.GetEmblem(stat.type);
-                statTypeEmblemImage1.enabled = statTypeEmblemImage1.sprite != null;
-                statIntegerValueText1.text = $"+{stat.value.Value}";
-                statIntegerValueText1.enabled = true;
-            }
-            else
-            {
-                StatTypePair1.SetActive(false);
-            }
-
-            if (card.cardStats.stats.Count > 1 && statTypeEmblemTable != null)
-            {
-                var stat = card.cardStats.stats[1];
-                statTypeEmblemImage2.sprite = statTypeEmblemTable.GetEmblem(stat.type);
-                statTypeEmblemImage2.enabled = statTypeEmblemImage2.sprite != null;
-                statIntegerValueText2.text = $"+{stat.value.Value}";
-                statIntegerValueText2.enabled = true;
-            }
-            else
-            {
-                StatTypePair2.SetActive(false);
-            }
 
             // 오버레이 싱크
             SyncStickerOverlays();

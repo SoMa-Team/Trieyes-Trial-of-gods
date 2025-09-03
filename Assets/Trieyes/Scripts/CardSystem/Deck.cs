@@ -115,7 +115,7 @@ namespace CardSystem
                 case Utils.EventType.OnBattleSceneChange:
                     DestoryCardsBeforeBattleStart();
                     ShopSceneManager.Instance.SyncWithDeck();
-                    CalcBaseStat();
+
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     return true;
@@ -251,37 +251,10 @@ namespace CardSystem
 
             // 높은 카드를 기준으로
             cardA.cardEnhancement.level.SetBasicValue(levelA+levelB);
-
-            cardA.RefreshStats();
-
+            
             // 낮은 카드를 덱에서 제거
             RemoveCard(cardB);
             return true;
-        }
-
-        // ===== [기능 2] 덱 스탯 및 카드 액션 초기화 =====
-        /// <summary>
-        /// 덱의 기본 스탯을 계산합니다.
-        /// 모든 카드의 스탯을 소유자에게 버프로 적용합니다.
-        /// </summary>
-        public void CalcBaseStat()
-        {
-            if (owner != null)
-            {
-                owner.statSheet.ClearBuffs();
-                foreach (Card card in cards){
-                    CardStatChangeRecorder.Instance.AddCardTrigger(0, card);
-                    
-                    foreach (var statPair in card.cardStats.stats)
-                    {
-                        int value = statPair.value.Value;
-                        if (value == 0) continue; // 0이면 버프 필요 없음
-
-                        var buff = new StatModifier(value, BuffOperationType.Additive);
-                        owner.statSheet[statPair.type].AddBuff(buff);
-                    }
-                }
-            }
         }
 
         public int PropertyCount(Property p)

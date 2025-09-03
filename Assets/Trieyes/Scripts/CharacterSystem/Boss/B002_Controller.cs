@@ -13,7 +13,6 @@ namespace CharacterSystem
     {
         private B002_Water boss;
         private Character target;
-        private bool autoMode = true;
         
         public override void Activate(Pawn pawn)
         {
@@ -25,53 +24,12 @@ namespace CharacterSystem
             stoneSummonAvailableTime = Time.time + stoneSummonDuration;
             state = B002BehaviorState.Move;
         }
-
-        // TODO : Test용 플레이어블 보스
+        
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-            {
-                autoMode = !autoMode;
+            if (lockMovement)
                 return;
-            }
-
-            if (autoMode)
-            {
-                if (lockMovement)
-                    return;
-                Behavior();
-                return;
-            }
-            
-            var direction = new Vector2(0, 0);
-            
-            if (Input.GetKey(KeyCode.I))
-                direction.y++;
-            if (Input.GetKey(KeyCode.J))
-                direction.x--;
-            if (Input.GetKey(KeyCode.K))
-                direction.y--;
-            if (Input.GetKey(KeyCode.L))
-                direction.x++;
-            
-            boss.Move(direction.normalized);
-            moveDir = direction;
-            
-            if (Input.GetKeyDown(KeyCode.Alpha7))
-            {
-                boss.ExecuteBossAttack(B002AttackType.Default);
-                return;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha8))
-            {
-                boss.ExecuteBossAttack(B002AttackType.CircularSector);
-                return;
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha9))
-            {
-                boss.ExecuteBossAttack(B002AttackType.StoneSummon);
-                return;
-            }
+            Behavior();
         }
 
         private enum B002BehaviorState

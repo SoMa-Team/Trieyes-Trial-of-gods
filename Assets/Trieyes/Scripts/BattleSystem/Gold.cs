@@ -45,7 +45,7 @@ namespace BattleSystem
         {
             var magnetScale = 1.7f;
             
-            var magnet = pawn.statSheet[StatType.ItemMagnet].Value;
+            var magnet = pawn.statSheet.Get(StatType.ItemMagnet);
             var resultDistance = (1 + magnet) * magnetScale;
             return resultDistance;
         }

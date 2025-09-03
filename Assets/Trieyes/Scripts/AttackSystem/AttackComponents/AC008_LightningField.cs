@@ -33,7 +33,7 @@ namespace AttackComponents
         private LightningFieldState fieldState = LightningFieldState.None;
         private float fieldTimer = 0f;
 
-        // AC104 인스턴스 관리
+        // AC105 인스턴스 관리
         private Attack summonedAC105;
 
         // 번개 장판 상태 열거형

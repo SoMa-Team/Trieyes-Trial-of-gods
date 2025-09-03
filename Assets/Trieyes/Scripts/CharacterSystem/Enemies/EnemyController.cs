@@ -28,7 +28,7 @@ namespace CharacterSystem.Enemies
 
         private Enemy enemy;
 
-        private Vector3 targetCollisionOffset = new Vector3(0, 0.4f, 0);
+        private Vector3 targetCollisionOffset;
 
         private void Update()
         {
@@ -48,6 +48,7 @@ namespace CharacterSystem.Enemies
             if (playerObj != null)
             {
                 playerTarget = playerObj.transform;
+                targetCollisionOffset = BattleStage.now.mainCharacter.CenterOffset;
             }
             
             enemy = pawn as Enemy;

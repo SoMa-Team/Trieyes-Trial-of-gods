@@ -273,13 +273,5 @@ namespace AttackComponents
             spawnedVFX.SetActive(true);
             return spawnedVFX;
         }
-
-        void OnDrawGizmos()
-        {
-            #if UNITY_EDITOR
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(attackCenter, attackSize);
-            #endif
-        }
     }
 }

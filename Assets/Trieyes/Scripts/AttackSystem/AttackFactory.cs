@@ -139,14 +139,8 @@ namespace AttackSystem
             BattleStage.now.AttachAttack(attack);
             
             attack.transform.SetParent(BattleStage.now.View.transform);
-            
-            try
-            {
-                attack.gameObject.SetActive(true);
-            }
-            catch(Exception e){
-                Debug.LogError(e);
-            }
+
+            attack.gameObject.SetActive(true);
         }
 
         public void Deactivate(Attack attack)

@@ -43,8 +43,10 @@ namespace BattleSystem
 
         private float GetGoldCollisionDistance(Pawn pawn)
         {
+            var magnetScale = 1.7f;
+            
             var magnet = pawn.statSheet[StatType.ItemMagnet].Value;
-            var resultDistance = (1 + magnet) * 1.7f;
+            var resultDistance = (1 + magnet) * magnetScale;
             return resultDistance;
         }
 

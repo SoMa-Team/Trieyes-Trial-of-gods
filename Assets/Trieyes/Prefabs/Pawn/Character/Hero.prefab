@@ -51,11 +51,9 @@ MonoBehaviour:
   maxHp: 100
   currentHp: 100
   rb: {fileID: -7081958898591838822}
-  Collider: {fileID: 9118692710769573021}
   Controller: {fileID: 0}
   Animator: {fileID: 6833888907546521165}
   statPresetSO: {fileID: 11400000, guid: a8325b89043a44679bb742f702748708, type: 2}
-  lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: c80959e9e2a294ebba9106bad507c163, type: 2}
   skill1Attack: {fileID: 11400000, guid: c36be7ff14a6646f2b115832cbb39858, type: 2}
   skillAttack1Cooldown: 0
@@ -238,7 +236,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 232341036140875247, guid: 416c809be9d1eea4aaa72970edae6b1a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -0.26
       objectReference: {fileID: 0}
     - target: {fileID: 232341036140875247, guid: 416c809be9d1eea4aaa72970edae6b1a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

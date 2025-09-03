@@ -20,6 +20,7 @@ namespace CharacterSystem
         public InputActionReference skillAction002;
 
         public Joystick joystick; // 인스펙터 할당 없이 자동 연결
+        private bool isJoystickActive = true;
 
         public void Awake()
         {
@@ -49,7 +50,7 @@ namespace CharacterSystem
             Vector2 moveDir = new Vector2(joystick.Horizontal, joystick.Vertical);
             this.moveDir = moveDir.normalized;
 
-            if (!lockMovement)
+            if (!lockMovement && isJoystickActive)
             {
                 owner.Move(moveDir);
             }
@@ -71,6 +72,11 @@ namespace CharacterSystem
             {
                 character.PerformAutoAttack();
             }
+        }
+
+        public void SetJoystickActivate(bool value)
+        {
+            isJoystickActive = value;
         }
     }
 } 

@@ -21,6 +21,9 @@ public class BAC00203_StoneSummon : AttackComponent
     private float stoneDropNoiseAngle = 20f;
     private float stoneDropHeight = 1f;
     private float stoneDropDuration = 0.5f;
+    private float deactivateDelay = 0.1f;
+    
+    private float deactivateCounter;
     
     public override void Activate(Attack attack, Vector2 direction)
     {
@@ -37,6 +40,7 @@ public class BAC00203_StoneSummon : AttackComponent
         
         stoneCollider.enabled = true;
         stoneSprite.enabled = true;
+        deactivateCounter = -1;
     }
 
     public override void Deactivate()
@@ -47,6 +51,11 @@ public class BAC00203_StoneSummon : AttackComponent
     protected override void Update()
     {
         base.Update();
+
+        if (deactivateCounter >= 0 && Time.time > deactivateCounter)
+        {
+            AttackFactory.Instance.Deactivate(attack);
+        }
     }
 
     public override void OnTriggerEnter2D(Collider2D other)
@@ -61,6 +70,11 @@ public class BAC00203_StoneSummon : AttackComponent
         if (other.CompareTag("Attack"))
         {
             PlayExplodeVFX();
+            var otherAttack = other.GetComponent<Attack>();
+            AttackFactory.Instance.Deactivate(otherAttack);
+
+            if (deactivateCounter < 0)
+                deactivateCounter = Time.time + deactivateDelay;
         }
     }
 

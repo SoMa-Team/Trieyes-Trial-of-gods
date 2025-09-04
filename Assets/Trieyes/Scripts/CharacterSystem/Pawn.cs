@@ -54,8 +54,6 @@ namespace CharacterSystem
         public AllIn1SpriteShaderHandler allIn1SpriteShaderHandler = new AllIn1SpriteShaderHandler();
         
         [Header("Stats")]
-
-        public StatSheet baseStatSheet { get; private set; }
         public StatSheet statSheet { get; private set; }
         
         public StatPresetSO statPresetSO;
@@ -315,7 +313,6 @@ namespace CharacterSystem
             if(statSheet == null)
             {
                 statSheet = new StatSheet();
-                baseStatSheet = statSheet.DeepCopy();
             }
             if(statPresetSO != null)
             {

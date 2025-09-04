@@ -1,6 +1,7 @@
 using UnityEngine;
 using CharacterSystem;
 using GamePlayer;
+using NodeStage;
 
 namespace GameFramework
 {
@@ -21,21 +22,22 @@ namespace GameFramework
             Instance = this;
         }
 
+        public void StartNextStage(StageType stageType)
+        {
+            
+        }
         public void OpenSelectCharacterPopup()
         {
             
         }
-        
         public void OpenSelectStartRelicPopup()
         {
             
         }
-
         public void OpenSelectStartCardPopup()
         {
             
         }
-
         public void OpenSelectStagePopup()
         {
             

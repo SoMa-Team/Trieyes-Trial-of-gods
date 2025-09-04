@@ -2,14 +2,14 @@ namespace NodeStage
 {
     public enum StageType
     {
-        Battle,
-        Elite,
-        Boss,
-        Shop,
-        CampFire,
-        StickerEvent,
-        StatEvent,
-        Treasure,
-        CardEnhancement,
+        Battle = 0,
+        Elite = 1,
+        Boss = 2,
+        Shop = 3,
+        CampFire = 4,
+        StickerEvent = 5,
+        StatEvent = 6,
+        Treasure = 7,
+        CardEnhancement = 8,
     }
 }

@@ -90,13 +90,5 @@ namespace BattleSystem
                 Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
             }
         }
-        
-        /// <summary>
-        /// 배틀 스테이지 업데이트
-        /// </summary>
-        private void Update()
-        {
-            _battleStage.Update();
-        }
     }
 } 

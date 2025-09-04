@@ -3,6 +3,7 @@ using System.Linq;
 using AttackSystem;
 using Stats;
 using BattleSystem;
+using UnityEngine.EventSystems;
 
 namespace CharacterSystem
 {
@@ -12,6 +13,8 @@ namespace CharacterSystem
         
         // Pawn의 추상 멤버 구현
         public Vector3 lastPosition;
+
+        public int spawnID;
         
         protected float lastTriggerEnterTime = 0f;
         public float collisionDamageInterval = 0.5f;

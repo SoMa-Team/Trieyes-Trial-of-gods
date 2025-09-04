@@ -2,13 +2,15 @@ using UnityEngine;
 using CharacterSystem;
 using GamePlayer;
 using NodeStage;
+using BattleSystem;
+using Utils;
 
 namespace GameFramework
 {
     public class InGameManager : MonoBehaviour
     {
-        private Character mainCharacter;
         private Player player;
+        private int stageRound;
         public static InGameManager Instance { get; private set; }
         
         private void Awake()
@@ -21,10 +23,28 @@ namespace GameFramework
             DontDestroyOnLoad(gameObject);
             Instance = this;
         }
-
-        public void StartNextStage(StageType stageType)
+        
+        private Difficulty GetCurrentDifficulty()
         {
-            
+            return Difficulty.GetByStageRound(stageRound);
+        }
+
+        public void StartNextStage(StageType stageType, Character mainCharacter)
+        {
+            stageRound++;
+            switch (stageType)
+            {
+                case StageType.Battle:
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+                    break;
+                case StageType.Boss:
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+                    break;
+                case StageType.Elite:
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+                    break;
+                
+            }
         }
         public void OpenSelectCharacterPopup()
         {

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using GameFramework;
+using CharacterSystem;
 
 namespace NodeStage
 {
@@ -37,7 +38,7 @@ namespace NodeStage
             return arr.GetRange(0, k);
         }
 
-        public void SetNextStage(StageType current)
+        public void SetNextStage(StageType current, Character mainCharacter)
         {
             var pool = allStages
                 .Where(s => s != null)
@@ -58,7 +59,8 @@ namespace NodeStage
                 slot.label.text = info.name;
                 slot.button.onClick.AddListener(() =>
                 {
-                    InGameManager.Instance.StartNextStage(info.type);
+                    this.gameObject.SetActive(false);
+                    InGameManager.Instance.StartNextStage(info.type, mainCharacter);
                 });
             }
         }

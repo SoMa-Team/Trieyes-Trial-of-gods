@@ -1,4 +1,4 @@
-namespace Trieyes.Scripts.NodeStage
+namespace NodeStage
 {
     public enum StageType
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Trieyes.Scripts.NodeStage
+namespace NodeStage
 {
     public class NodeStage
     {

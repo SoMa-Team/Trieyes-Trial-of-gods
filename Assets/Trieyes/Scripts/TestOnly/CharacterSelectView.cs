@@ -1,7 +1,5 @@
 using UnityEngine;
-using TMPro;
 using GamePlayer;
-using BattleSystem;
 using CharacterSystem;
 using UnityEngine.UI;
 

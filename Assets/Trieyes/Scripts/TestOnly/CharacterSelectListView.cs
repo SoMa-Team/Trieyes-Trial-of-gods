@@ -1,13 +1,7 @@
-using UnityEngine;
-using TMPro;
-using GamePlayer;
-using BattleSystem;
 using CharacterSystem;
-using UnityEngine.UI;
-using GameFramework;
 
 namespace OutGame{
-    public class CharacterSelectListView : MonoBehaviour
+    public class CharacterSelectListView : ListView
     {
         public CharacterSelectView characterSelectView;
         public Character selectedCharacter;

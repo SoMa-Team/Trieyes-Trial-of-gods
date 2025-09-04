@@ -4,10 +4,9 @@ using TMPro;
 using GamePlayer;
 using System.Collections.Generic;
 using System.Linq;
-using RelicSystem;
 
 namespace OutGame{
-    public class RelicListView : MonoBehaviour
+    public class RelicListView : ListView
     {
         public const int RELIC_COUNT = 3;
         
@@ -21,7 +20,7 @@ namespace OutGame{
         [Header("Relic Data")]
         public List<AchievementData> unlockedRelics; // 해금된 유물 목록
 
-        public void Awake()
+        public override void Activate()
         {
             if (relicItemPrefab != null)
             {
@@ -60,6 +59,19 @@ namespace OutGame{
                 }
             }
             selectedRelic = null;
+
+            base.Activate();
+        }
+
+        public override void Deactivate()
+        {
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            selectedRelic = null;
+            base.Deactivate();
         }
         
         public void SetRelicListView(RelicView relicView)

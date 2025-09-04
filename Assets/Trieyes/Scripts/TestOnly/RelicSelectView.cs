@@ -1,9 +1,6 @@
 using UnityEngine;
-using TMPro;
 using GamePlayer;
 using UnityEngine.UI;
-using GameFramework;
-using RelicSystem;
 
 namespace OutGame{
     public class RelicSelectView : MonoBehaviour
@@ -18,8 +15,13 @@ namespace OutGame{
         // 초기화 메서드
         public void Awake()
         {
-            button = GetComponent<Button>();
             relicView = GetComponent<RelicView>();
+
+            if (button != null)
+            {
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => OnButtonClicked());
+            }
         }
 
         public void SetRelicListView(RelicListView relicListView)

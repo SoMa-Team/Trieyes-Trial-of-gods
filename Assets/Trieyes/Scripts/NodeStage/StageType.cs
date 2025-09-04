@@ -9,7 +9,7 @@ namespace NodeStage
         CampFire,
         StickerEvent,
         StatEvent,
-        Tresure,
-        CardEnhansement,
+        Treasure,
+        CardEnhancement,
     }
 }

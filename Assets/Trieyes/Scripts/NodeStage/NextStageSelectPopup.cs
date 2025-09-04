@@ -9,21 +9,23 @@ using CharacterSystem;
 
 namespace NodeStage
 {
-    [Serializable]
-    public class OptionUI
-    {
-        public Button button;
-        public Image icon;
-        public TextMeshProUGUI label;
-        public StageType stageType;
-    }
     public class NextStageSelectPopup : MonoBehaviour
     {
         public List<StageInfoSO> allStages;
-        public OptionUI[] optionSlots = new OptionUI[3];
         
-        private List<StageInfoSO> currentOptions = new List<StageInfoSO>();
+        [SerializeField] private NextStageSlot slotPrefab;
+        [SerializeField] private Transform     slotContainer;
+        public static NextStageSelectPopup Instance { get; private set; }
+        
+        private readonly List<NextStageSlot> spawnedSlots = new();
         private System.Random rng = new System.Random();
+        
+        private void Awake()
+        {
+            if (Instance != null) { Destroy(gameObject); return; }
+            Instance = this;
+            gameObject.SetActive(false);
+        }
 
         private static List<T> SampleWithoutReplacement<T>(IList<T> src, int k, System.Random r)
         {
@@ -37,9 +39,30 @@ namespace NodeStage
             }
             return arr.GetRange(0, k);
         }
+        
+        public void Deactivate()
+        {
+            ClearSlots();
+            gameObject.SetActive(false);
+        }
 
+        private void ClearSlots()
+        {
+            for (int i = 0; i < spawnedSlots.Count; i++)
+            {
+                if (spawnedSlots[i] != null)
+                {
+                    spawnedSlots[i].Deactivate();
+                    Destroy(spawnedSlots[i].gameObject);
+                }
+            }
+            spawnedSlots.Clear();
+        }
         public void SetNextStage(StageType current, Character mainCharacter)
         {
+            this.gameObject.SetActive(true);
+            ClearSlots();
+            
             var pool = allStages
                 .Where(s => s != null)
                 .GroupBy(s => s.type)
@@ -47,22 +70,20 @@ namespace NodeStage
                 .Where(s => s.type != current)
                 .ToList();
             
-            currentOptions.Clear();
-            currentOptions.AddRange(SampleWithoutReplacement(pool, 3, rng));
-
-            for (int i = 0; i < optionSlots.Length; i++)
+            var options = SampleWithoutReplacement(pool, 3, rng);
+            
+            foreach (var info in options)
             {
-                var slot = optionSlots[i];
-                var info = currentOptions[i];
-                slot.stageType = info.type;
-                slot.icon.sprite = info.icon;
-                slot.label.text = info.name;
-                slot.button.onClick.AddListener(() =>
+                var slot = Instantiate(slotPrefab, slotContainer);
+                slot.SetStage(info, chosenType =>
                 {
-                    this.gameObject.SetActive(false);
-                    InGameManager.Instance.StartNextStage(info.type, mainCharacter);
+                    InGameManager.Instance.StartNextStage(chosenType, mainCharacter);
+                    Deactivate();
                 });
+                spawnedSlots.Add(slot);
             }
+
+            gameObject.SetActive(true);
         }
     }
 }

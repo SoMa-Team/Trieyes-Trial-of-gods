@@ -2,10 +2,9 @@ using UnityEngine;
 using CharacterSystem;
 namespace NodeStage
 {
-    public abstract class NodeStage
+    public interface NodeStage
     {
-        public abstract void Activate(Character mainCharacter);
-        public abstract void DeActivate();
-        public abstract void NextStage();
+        abstract void Activate(Character mainCharacter);
+        abstract void NextStage();
     }
 }

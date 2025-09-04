@@ -131,9 +131,7 @@ namespace GameFramework
                 mainCharacter.AddRelic(RelicFactory.Create(relicId));
             }
 
-            mainCharacter.ApplyRelic();
-
-            CharacterFactory.Instance.Deactivate(mainCharacter);
+            //CharacterFactory.Instance.Deactivate(mainCharacter);
             BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
             ShopSceneManager.Instance.Deactivate();
         }

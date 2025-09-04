@@ -70,6 +70,8 @@ namespace CharacterSystem
 
         public override void Deactivate()
         {
+            basicAttack = _basicAttack;
+            weaponElementState = HeroWeaponElementState.None;
             base.Deactivate();
         }
 

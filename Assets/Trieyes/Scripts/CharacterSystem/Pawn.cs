@@ -293,12 +293,10 @@ namespace CharacterSystem
         {
             if (basicAttack != null)
             {
-                Debug.LogWarning($"backup b: {basicAttack.attackId}, name : {basicAttack.attackName}");
                 backupBasicAttack = basicAttack;
             }
             if (skill1Attack != null)
             {
-                Debug.LogWarning($"backup w1: {skill1Attack.attackId}, name : {skill1Attack.attackName}");
                 backupSkill1Attack = skill1Attack;
             }
             if (skill2Attack != null)

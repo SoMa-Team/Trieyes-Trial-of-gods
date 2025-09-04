@@ -11,5 +11,6 @@ namespace NodeStage
         StatEvent = 6,
         Treasure = 7,
         CardEnhancement = 8,
+        CardSelect = 9,
     }
 }

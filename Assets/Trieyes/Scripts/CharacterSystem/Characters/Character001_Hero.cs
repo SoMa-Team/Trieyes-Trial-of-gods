@@ -42,39 +42,19 @@ namespace CharacterSystem
         
         // RAC009 컴포넌트 (hero가 직접 소유)
         public AC108_OrbitingManager orbitingManager;
-        
-        // Pawn의 추상 멤버 구현
-        
-        // ===== [Unity 생명주기] =====
-        protected override void Start()
-        {
-            base.Start();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
-
-        public override void Update()
-        {
-            base.Update();
-            Debug.LogError($"basicAttack : {basicAttack.attackId}, name : {basicAttack.attackName}");
-        }
 
         // ===== [커스텀 메서드] =====
         public override void Activate()
         {
-            base.Activate(); // 20204 기본공격
+            base.Activate();
             weaponElementState = HeroWeaponElementState.None;
-            _basicAttack = basicAttack; // _basicAttack = 20204
+            _basicAttack = basicAttack;
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
             weaponElementState = HeroWeaponElementState.None;
-            Debug.LogWarning($"hero deactivate: {basicAttack.attackId}, name : {basicAttack.attackName}");
         }
 
         // ===== [이벤트 처리 메서드] =====

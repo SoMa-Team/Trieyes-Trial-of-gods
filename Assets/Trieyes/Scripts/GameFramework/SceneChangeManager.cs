@@ -6,6 +6,7 @@ using CharacterSystem;
 using Utils;
 using RelicSystem;
 using GamePlayer;
+using OutGame;
 
 namespace GameFramework
 {
@@ -48,6 +49,13 @@ namespace GameFramework
             player = Player.Instance;
             
             LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter);
+        }
+
+        public void StartBattleSceneTest2()
+        {
+            player = Player.Instance;
+            
+            LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter2);
         }
 
         /// <summary>
@@ -131,6 +139,20 @@ namespace GameFramework
                 mainCharacter.AddRelic(RelicFactory.Create(relicId));
             }
 
+            mainCharacter.ApplyRelic();
+
+            CharacterFactory.Instance.Deactivate(mainCharacter);
+            BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+            ShopSceneManager.Instance.Deactivate();
+        }
+
+        private void OnBattleSceneLoadedWithNewCharacter2(Scene scene)
+        {
+            var mainCharacter = CharacterFactory.Instance.Create(StartSceneManager.Instance.mainCharacter.spawnID);
+
+            mainCharacter.deck.AddCard(StartSceneManager.Instance.selectedCard.DeepCopy());
+            
+            mainCharacter.AddRelic(RelicFactory.Create(StartSceneManager.Instance.selectedRelic.achievementID));
             mainCharacter.ApplyRelic();
 
             CharacterFactory.Instance.Deactivate(mainCharacter);

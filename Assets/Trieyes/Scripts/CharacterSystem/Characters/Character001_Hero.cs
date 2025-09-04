@@ -59,20 +59,22 @@ namespace CharacterSystem
         public override void Update()
         {
             base.Update();
+            Debug.LogError($"basicAttack : {basicAttack.attackId}, name : {basicAttack.attackName}");
         }
 
         // ===== [커스텀 메서드] =====
         public override void Activate()
         {
-            base.Activate();
-            _basicAttack = basicAttack;
+            base.Activate(); // 20204 기본공격
+            weaponElementState = HeroWeaponElementState.None;
+            _basicAttack = basicAttack; // _basicAttack = 20204
         }
 
         public override void Deactivate()
         {
-            basicAttack = _basicAttack;
-            weaponElementState = HeroWeaponElementState.None;
             base.Deactivate();
+            weaponElementState = HeroWeaponElementState.None;
+            Debug.LogWarning($"hero deactivate: {basicAttack.attackId}, name : {basicAttack.attackName}");
         }
 
         // ===== [이벤트 처리 메서드] =====

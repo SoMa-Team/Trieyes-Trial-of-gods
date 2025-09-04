@@ -291,21 +291,29 @@ namespace CharacterSystem
         
         public void ApplyRelic()
         {
-            backupBasicAttack = basicAttack;
-            backupSkill1Attack = skill1Attack;
-            backupSkill2Attack = skill2Attack;
+            if (basicAttack != null)
+            {
+                Debug.LogWarning($"backup b: {basicAttack.attackId}, name : {basicAttack.attackName}");
+                backupBasicAttack = basicAttack;
+            }
+            if (skill1Attack != null)
+            {
+                Debug.LogWarning($"backup w1: {skill1Attack.attackId}, name : {skill1Attack.attackName}");
+                backupSkill1Attack = skill1Attack;
+            }
+            if (skill2Attack != null)
+            {
+                backupSkill2Attack = skill2Attack;
+            }
             
             if (relics.Count > 0)
             {
-                Debug.LogWarning($"ApplyRelic b: {basicAttack.attackId}, name : {basicAttack.attackName}");
                 basicAttack = basicAttack.Copy();
                 basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
                 
-                Debug.LogWarning($"ApplyRelic s1: {skill1Attack.attackId}, name : {skill1Attack.attackName}");
                 skill1Attack = skill1Attack.Copy();
                 skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
                 
-                Debug.LogWarning($"ApplyRelic s2: {skill2Attack.attackId}, name : {skill2Attack.attackName}");
                 skill2Attack = skill2Attack.Copy();
                 skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
             }

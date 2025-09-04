@@ -52,7 +52,6 @@ namespace AttackSystem
         public HashSet<AttackID> registeredAttackIDs = new();
         public AttackData RegisterRelicAppliedAttack(AttackData attackData, Pawn owner)
         {
-            Debug.LogWarning($"Origin RegisterRelicAppliedAttack: {attackData.attackId}, name : {attackData.attackName}");
             var attack = ClonePrefab(attackData.attackId);
 
             // 유물 메인 옵션 적용
@@ -91,8 +90,6 @@ namespace AttackSystem
             attack.gameObject.SetActive(false);
             var newAttackData = attackData.Copy();
             newAttackData.attackId = id;
-
-            Debug.LogWarning($"Applied RegisterRelicAppliedAttack: {newAttackData.attackId}, name : {newAttackData.attackName}");
             return newAttackData;
         }
 
@@ -116,10 +113,6 @@ namespace AttackSystem
             bool autoDirectional = false
             )
         {
-            if (attackData != null)
-            {
-                Debug.LogWarning($"Create: {attackData.attackId}, name : {attackData.attackName}");
-            }
             // attackData 변조를 막기 위한 Copy 생성
             attackData = attackData.Copy();
 
@@ -240,9 +233,12 @@ namespace AttackSystem
         private Attack GetPrefabById(AttackID id)
         {
             if (!attackPrefab.ContainsKey(id))
+            {
                 throw new Exception($"Attack (id : {id}) is not exist.");
+            }
+
             return attackPrefab[id];
-            
+                    
             // return id switch
             // {
             //     0 => attackPrefab[0],

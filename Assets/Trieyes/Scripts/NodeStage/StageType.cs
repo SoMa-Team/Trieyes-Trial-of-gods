@@ -12,6 +12,7 @@ namespace NodeStage
         Treasure = 7,
         CardEnhancement = 8,
         CardSelect = 9,
-        RelicSelect = 10
+        RelicSelect = 10,
+        SkillReward = 11,
     }
 }

@@ -52,9 +52,6 @@ namespace CardSystem
         /// <summary> 카드 액션(행동/효과) </summary>
         public CardAction cardAction;
 
-        /// <summary> 카드의 현재 스탯 </summary>
-        public CardStat cardStats;
-
         /// <summary> 카드의 강화 정보 (레벨/경험치) </summary>
         public CardEnhancement cardEnhancement;
 
@@ -93,7 +90,6 @@ namespace CardSystem
         public void Activate(int level)
         {
             Debug.Log($"Card Activated! {cardId}, card level: {level}");
-            cardStats = new CardStat(properties, level);
             cardEnhancement = new CardEnhancement(level, 0);
         }
 
@@ -127,15 +123,6 @@ namespace CardSystem
         public void LevelUp()
         {
             cardEnhancement.level.AddToBasicValue(1);
-            RefreshStats();
-        }
-
-        /// <summary>
-        /// 카드의 현재 스탯을 새로 고침
-        /// </summary>
-        public void RefreshStats()
-        {
-            cardStats = new CardStat(properties, cardEnhancement.level.Value);
         }
 
         private static string FormatProbability(object probability)
@@ -322,7 +309,6 @@ namespace CardSystem
                     ? this.paramCharRanges.Select(r => new ParamCharRange { start = r.start, end = r.end }).ToList()
                     : new List<ParamCharRange>(),
                 cardAction      = this.cardAction?.DeepCopy(),
-                cardStats       = this.cardStats?.DeepCopy(),
                 cardEnhancement = this.cardEnhancement?.DeepCopy(),
                 
                 stickerOverrides = this.stickerOverrides != null

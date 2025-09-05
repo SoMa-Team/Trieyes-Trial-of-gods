@@ -19,10 +19,6 @@ namespace OutGame{
         public GameObject CardSelectPanel;
         public GameObject RelicSelectPanel;
 
-        public Character mainCharacter;
-        public Card selectedCard;
-        public AchievementData selectedRelic;
-
         async void Start()
         {
             Debug.Log("StartSceneManager");
@@ -78,7 +74,7 @@ namespace OutGame{
 
         public void GameStart()
         {
-            SceneChangeManager.Instance.StartBattleSceneTest2();
+            SceneChangeManager.Instance.StartBattleScene();
         }
         
         public void ToCharacterSelectPanel()
@@ -112,13 +108,13 @@ namespace OutGame{
 
         public void CloseCharacterSelectPanel()
         {
-            this.mainCharacter = null;
+            Player.Instance.mainCharacterId = -1;
             HidePanelWithFade(CharacterSelectPanel);
         }
 
         public void CloseCardSelectPanel()
         {
-            selectedCard = null;
+            Player.Instance.selectedCard = null;
             
             // CardSelectListView의 Deactivate 호출
             var cardSelectListView = CardSelectPanel.GetComponent<Popup>().ListView;
@@ -132,7 +128,7 @@ namespace OutGame{
 
         public void CloseRelicSelectPanel()
         {
-            selectedRelic = null;
+            Player.Instance.selectedRelic = null;
 
             // RelicSelectListView의 Deactivate 호출
             var relicSelectListView = RelicSelectPanel.GetComponent<Popup>().ListView;

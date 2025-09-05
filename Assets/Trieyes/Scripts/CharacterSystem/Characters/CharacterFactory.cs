@@ -93,18 +93,12 @@ namespace CharacterSystem
         /// <returns>해당하는 GameObject 프리팹</returns>
         private GameObject GetPrefabById(CharacterID id)
         {
-            // TODO: characterID와 characterPrefab 매칭 필요
-            if (!(0 <= id && id < characterPrefabs.Length))
-                throw new Exception($"Character (id : {id}) is not exist.");
-            return characterPrefabs[id];
-            
-            // return id switch
-            // {
-            //     0 => characterPrefabs[0],
-            //     1 => characterPrefabs[1],
-            //     // TODO: 더 많은 캐릭터 ID 추가 필요
-            //     _ => null
-            // };
+            return id switch
+            {
+                100001 => characterPrefabs[0],
+                // TODO: 더 많은 캐릭터 ID 추가 필요
+                _ => throw new Exception($"Character (id : {id}) does not exist.")
+            };
         }
     }
 }

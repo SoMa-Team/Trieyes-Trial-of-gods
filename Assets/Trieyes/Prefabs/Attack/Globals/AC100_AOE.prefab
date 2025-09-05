@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 5801996999287398140}
+  - component: {fileID: 7535615950411682077}
   m_Layer: 0
-  m_Name: AC101
+  m_Name: AC100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5801996999287398140
+--- !u!114 &7535615950411682077
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,21 +41,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb841ae8bf409f647b7bde6aa3abeafc, type: 3}
+  m_Script: {fileID: 11500000, guid: c14e1f52728dc25429f50c81ecaa5475, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  dotTargetType: 0
-  dotDamage: 20
-  dotDuration: 5
-  dotInterval: 1
-  dotTargets: []
-  additionalBuffType: 0
-  additionalBuffDuration: 5
-  additionalBuffMultiplier: 1.5
-  additionalBuffValue: 10
-  dotVFXPrefab: {fileID: 0}
-  dotVFXDuration: 0.3
+  aoeTargetType: 0
+  aoeShapeType: 1
+  aoeWidth: 1
+  aoeHeight: 1
+  aoeRadius: 1
+  aoeDamage: 20
+  aoeDuration: 5
+  aoeInterval: 1
+  aoeTargets: []
+  aoeVFXPrefab: {fileID: 0}
+  aoeVFXDuration: 0.3
+  vfxID: 7
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,7 +156,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: DOT
+  m_Name: AC100_AOE
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -190,12 +191,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: eb8b651eb20254a94a00f59327c0e86c, type: 2}
+  attackData: {fileID: 11400000, guid: ab99c9f503ae744a6893a923c9d737e4, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 5801996999287398140}
+  - {fileID: 7535615950411682077}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

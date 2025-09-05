@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 7252893535430268561}
+  - component: {fileID: 6256741257565850654}
   m_Layer: 0
-  m_Name: AC107
+  m_Name: S_Hero_001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7252893535430268561
+--- !u!114 &6256741257565850654
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,22 +41,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e13e034c4b4b8a48a061a81a3b43749, type: 3}
+  m_Script: {fileID: 11500000, guid: cb2b45022a51af64e8bb30e6b7d4f5c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  orbitTarget: {fileID: 0}
-  orbitDirection: 0
-  orbitRadius: 2
-  orbitSpeed: 90
-  orbitOffset: 0
-  ellipseRatio: 1
-  colliderCount: 4
-  colliderWidth: 0.5
-  colliderHeight: 0.5
-  colliderRadius: 1
-  collisionBehavior: 0
-  orbitVFXPrefab: {fileID: 0}
+  randomEnchantmentID: 1
+  enchantmentDuration: 7
+  generationInterval: 1
+  attackDatas:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 8386695d3c4e645e8a7b4d4ab683ee05, type: 2}
+  - {fileID: 11400000, guid: b449bb2283b9d48be923643ed6189ca5, type: 2}
+  - {fileID: 11400000, guid: 9027b104423ed48d397c17acfd46b7e4, type: 2}
+  - {fileID: 11400000, guid: 1a9d911722b0743cd93a9785e14e8034, type: 2}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,8 +153,8 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: OrbitingElement
-  m_TagString: Attack
+  m_Name: SK1001_HeroSkill001
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -191,12 +188,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 548f62e7dfc699c4b9e4f0c8c09004f8, type: 2}
+  attackData: {fileID: 11400000, guid: c36be7ff14a6646f2b115832cbb39858, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 7252893535430268561}
+  - {fileID: 6256741257565850654}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 8289520380374606190}
+  - component: {fileID: 8494832663461597784}
   m_Layer: 0
-  m_Name: AC109
+  m_Name: AC104
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8289520380374606190
+--- !u!114 &8494832663461597784
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,21 +41,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d03c6a4fae5bf9a4192e1a9e1ccf7953, type: 3}
+  m_Script: {fileID: 11500000, guid: 817fcb6da99ff28418de823eb89b14c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  dashTargetType: 1
-  dashDirection: {x: 1, y: 0}
-  dashRange: 3
-  dashDuration: 0.5
-  dashCollisionType: 0
-  dashColliderWidth: 1
-  dashColliderHeight: 1
-  dashColliderRadius: 0.5
-  dashDamage: 30
-  dashVFXPrefab: {fileID: 0}
-  dashVFXDuration: 0.3
+  globalDamage: 25
+  globalDuration: 6
+  damageInterval: 0.5
+  additionalDebuffDuration: 2
+  additionalDebuffChance: 0.3
+  additionalDebuffMultiplier: 2
+  globalVFXPrefab: {fileID: 0}
+  globalVFXDuration: 0.3
+  additionalDebuffType: 0
+  affectedEnemies: []
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,7 +154,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: Dash
+  m_Name: AC104_GLOBAL
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -190,12 +189,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: fd6de742b896fd743add08f2cd3f7875, type: 2}
+  attackData: {fileID: 11400000, guid: 515708724d1d44edfb1bc4a1082f6eba, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 8289520380374606190}
+  - {fileID: 8494832663461597784}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

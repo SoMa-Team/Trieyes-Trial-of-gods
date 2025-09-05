@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 8594255158053445017}
+  - component: {fileID: 5801996999287398140}
   m_Layer: 0
-  m_Name: AC007
+  m_Name: AC101
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8594255158053445017
+--- !u!114 &5801996999287398140
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,14 +41,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d59a7ba2be324cc4384856d15fb45d3a, type: 3}
+  m_Script: {fileID: 11500000, guid: bb841ae8bf409f647b7bde6aa3abeafc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  summonDelay: 0.5
-  vfxDuration: 0.3
-  globalVFXPrefab: {fileID: 4932088507883938021, guid: 4ac1720a2d21ce84083686b6fab93a88, type: 3}
-  globalBlizzardData: {fileID: 11400000, guid: 515708724d1d44edfb1bc4a1082f6eba, type: 2}
+  dotTargetType: 0
+  dotDamage: 20
+  dotDuration: 5
+  dotInterval: 1
+  dotTargets: []
+  additionalBuffType: 0
+  additionalBuffDuration: 5
+  additionalBuffMultiplier: 1.5
+  additionalBuffValue: 10
+  dotVFXPrefab: {fileID: 0}
+  dotVFXDuration: 0.3
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,7 +155,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: HeroIceStorm
+  m_Name: AC101_DOT
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -183,12 +190,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 6e58218d8a8604c5db83bf97cc089ec1, type: 2}
+  attackData: {fileID: 11400000, guid: eb8b651eb20254a94a00f59327c0e86c, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 8594255158053445017}
+  - {fileID: 5801996999287398140}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

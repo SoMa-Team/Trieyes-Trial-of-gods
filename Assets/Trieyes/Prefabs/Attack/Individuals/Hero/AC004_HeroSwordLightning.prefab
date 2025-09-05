@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 7175719141285207572}
+  - component: {fileID: 6688702165203733951}
   m_Layer: 0
-  m_Name: AC103
+  m_Name: AC004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7175719141285207572
+--- !u!114 &6688702165203733951
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,21 +41,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f33d9fb7e2b9f548a9b0592f0b2a8a2, type: 3}
+  m_Script: {fileID: 11500000, guid: 644c06c9e15484a439f039dbcdf81fc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  fallXYOffset: {x: 0, y: 0}
-  fallXRandomOffsetMin: 0
-  fallXRandomOffsetMax: 0
-  fallYRandomOffsetMin: 0
-  fallYRandomOffsetMax: 0
-  fallDamage: 100
-  fallRadius: 2
-  fallDuration: 0.5
-  fallDelay: 0.1
-  fallVFXPrefab: {fileID: 0}
-  vfxDuration: 0.3
+  attackRadius: 1.5
+  attackSpeed: 1
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  chainDamage: 10
+  chainRadius: 3.5
+  chainCount: 3
+  chainDelay: 0.4
+  chainAttackData: {fileID: 11400000, guid: d894bbff8ad684abba0a3922d1715c6c, type: 2}
+  vfxPrefab: {fileID: 4748681987041982144, guid: c0c9390dde8ef274bba581932d9f9465, type: 3}
+  chainVFXPrefab: {fileID: 2246134187322411851, guid: 7fe3fd9c32eff574c8a1b8cc77acce79, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,7 +156,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: FALL
+  m_Name: AC004_HeroSwordLightning
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -190,12 +191,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 3d6dadc67627c4686bb471dda2745806, type: 2}
+  attackData: {fileID: 11400000, guid: 9027b104423ed48d397c17acfd46b7e4, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 7175719141285207572}
+  - {fileID: 6688702165203733951}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

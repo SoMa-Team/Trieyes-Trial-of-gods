@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 6734605957035325706}
+  - component: {fileID: 7849427905453486481}
   m_Layer: 0
-  m_Name: AC108
+  m_Name: AC002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6734605957035325706
+--- !u!114 &7849427905453486481
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,20 +41,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ae8234d988b02744ad7a817db08c553, type: 3}
+  m_Script: {fileID: 11500000, guid: 05f6d3b83c985534980bfa27e8106c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  orbitRadius: 2
-  orbitSpeed: 90
-  orbitDirection: 0
-  angleCorrectionDuration: 0.5
-  positionMoveDuration: 0.3
-  spawnScaleDuration: 0.2
-  despawnScaleDuration: 0.2
-  initialPoolSize: 10
-  ac107AttackData: {fileID: 11400000, guid: 548f62e7dfc699c4b9e4f0c8c09004f8, type: 2}
-  orbitOwner: {fileID: 0}
+  attackAngle: 90
+  attackDuration: 0.3
+  attackRadius: 1.5
+  segments: 8
+  dotTargetType: 0
+  dotDamage: 2
+  dotDuration: 2
+  dotInterval: 0.2
+  dotAttackData: {fileID: 11400000, guid: eb8b651eb20254a94a00f59327c0e86c, type: 2}
+  vfxPrefab: {fileID: 4748681987041982144, guid: 9a360c93ed1104d5c9039d27a08edcd7, type: 3}
+  dotVFXPrefab: {fileID: 4748681987041982144, guid: e94f656c4c820664da8fa73d1ccf6d48, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,7 +155,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: OrbitingManager
+  m_Name: AC002_HeroSwordFire
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -189,12 +190,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 8abb9df532cdf474ca1b91ed568f762f, type: 2}
+  attackData: {fileID: 11400000, guid: 8386695d3c4e645e8a7b4d4ab683ee05, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 6734605957035325706}
+  - {fileID: 7849427905453486481}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

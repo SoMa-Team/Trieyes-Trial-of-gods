@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 2451361506874016655}
+  - component: {fileID: 4018152355819753735}
   m_Layer: 0
-  m_Name: AC001
+  m_Name: AC105
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2451361506874016655
+--- !u!114 &4018152355819753735
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,18 +41,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2dac088fe4d7e3545b71d33b32509b7f, type: 3}
+  m_Script: {fileID: 11500000, guid: 3fc453129e2d32843a412ed6b1fa8663, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  aoeWidth: 0.5
-  aoeHeight: 0.5
-  aoeDuration: 0.2
-  aoeInterval: 0.2
-  attackRadius: 1.5
-  attackSpeed: 1
-  vfxPrefab: {fileID: 4748681987041982144, guid: 5d980b4774a8ec943a952cd7a59c97b6, type: 3}
-  aoeAttackData: {fileID: 11400000, guid: ab99c9f503ae744a6893a923c9d737e4, type: 2}
+  fieldShape: 0
+  fieldRadius: 2.5
+  fieldWidth: 3
+  fieldHeight: 3
+  fieldDamage: 30
+  fieldTickInterval: 0.5
+  fieldDuration: 5
+  followDistance: 0
+  followPlayer: 1
+  followOffset: {x: 0, y: 0}
+  fieldVFXPrefab: {fileID: 0}
+  fieldVFXDuration: 0.3
+  vfxID: 6
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,7 +157,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: HeroSwordRad
+  m_Name: AC105_FollowingField
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -187,12 +192,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: c80959e9e2a294ebba9106bad507c163, type: 2}
+  attackData: {fileID: 11400000, guid: 673fb3a76a69f45f5a93532ae6431a5a, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 2451361506874016655}
+  - {fileID: 4018152355819753735}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

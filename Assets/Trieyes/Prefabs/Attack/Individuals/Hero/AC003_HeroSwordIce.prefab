@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 7849427905453486481}
+  - component: {fileID: 3710738166778104982}
   m_Layer: 0
-  m_Name: AC002
+  m_Name: AC003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7849427905453486481
+--- !u!114 &3710738166778104982
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,21 +41,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05f6d3b83c985534980bfa27e8106c04, type: 3}
+  m_Script: {fileID: 11500000, guid: 92eb291c3ff15684589029582362fa32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
   attackAngle: 90
   attackDuration: 0.3
   attackRadius: 1.5
+  debuffDuration: 3
+  debuffMultiplier: 15
   segments: 8
-  dotTargetType: 0
-  dotDamage: 2
-  dotDuration: 2
-  dotInterval: 0.2
-  dotAttackData: {fileID: 11400000, guid: eb8b651eb20254a94a00f59327c0e86c, type: 2}
-  vfxPrefab: {fileID: 4748681987041982144, guid: 9a360c93ed1104d5c9039d27a08edcd7, type: 3}
-  dotVFXPrefab: {fileID: 4748681987041982144, guid: e94f656c4c820664da8fa73d1ccf6d48, type: 3}
+  vfxPrefab: {fileID: 4748681987041982144, guid: 0c75b68079d034f74b40e5769c99f000, type: 3}
+  DebuffVFXPrefab: {fileID: 4748681987041982144, guid: 961da7415cb25f24c9c662734346f244, type: 3}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,12 +152,12 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: HeroSwordFire
+  m_Name: AC003_HeroSwordIce
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1553043495906535806
 Transform:
   m_ObjectHideFlags: 0
@@ -190,12 +187,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 8386695d3c4e645e8a7b4d4ab683ee05, type: 2}
+  attackData: {fileID: 11400000, guid: b449bb2283b9d48be923643ed6189ca5, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 7849427905453486481}
+  - {fileID: 3710738166778104982}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

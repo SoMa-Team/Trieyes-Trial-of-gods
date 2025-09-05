@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8783834321740468731}
-  - component: {fileID: 8009249486039389314}
+  - component: {fileID: 618353836253685963}
   m_Layer: 0
-  m_Name: AC006
+  m_Name: AC102
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1553043495906535806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8009249486039389314
+--- !u!114 &618353836253685963
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,14 +41,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 504040419305228825}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cda8fac1dc10f645bb75dd8d5cc14a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 18bb40eef41e4d749bdb660a5b614cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  fallAttackData: {fileID: 11400000, guid: 3d6dadc67627c4686bb471dda2745806, type: 2}
-  meteorRadius: 2
-  fallingVFXPrefab: {fileID: 3603805084505722815, guid: 6fd4344d8796b994491d109dd3c00224, type: 3}
-  explosionVFXPrefab: {fileID: 4374370317186983222, guid: 67dde23a728577a429cf348d2a2940e5, type: 3}
+  chainDamage: 100
+  chainRadius: 10
+  chainCount: 10
+  chainDelay: 0.4
+  lightningVFXPrefab: {fileID: 0}
+  lightningDuration: 0.2
+  targetEnemies: []
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,7 +151,7 @@ GameObject:
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
   m_Layer: 0
-  m_Name: HeroFireMeteor
+  m_Name: AC102_CHAIN
   m_TagString: Attack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -183,12 +186,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e818d5e0a46772c489c6bc93913606e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackData: {fileID: 11400000, guid: 8bfee67cf3c2e481d9f3115e11373fc3, type: 2}
+  attackData: {fileID: 11400000, guid: d894bbff8ad684abba0a3922d1715c6c, type: 2}
   attacker: {fileID: 0}
   parent: {fileID: 0}
   children: []
   components:
-  - {fileID: 8009249486039389314}
+  - {fileID: 618353836253685963}
   rb: {fileID: 0}
   attackCollider: {fileID: 0}
   objectID: 0

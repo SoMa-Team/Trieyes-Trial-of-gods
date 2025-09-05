@@ -51,13 +51,6 @@ namespace GameFramework
             LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter);
         }
 
-        public void StartBattleSceneTest2()
-        {
-            player = Player.Instance;
-            
-            LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter2);
-        }
-
         /// <summary>
         /// 전투 → 상점 씬 전환 (캐릭터 객체 전달)
         /// </summary>
@@ -126,34 +119,20 @@ namespace GameFramework
             return Difficulty.GetByStageRound(stageRound);
         }
 
-        /// <summary>
-        /// Battle Scene 전용: 새 캐릭터 생성 및 세팅 후 스테이지 생성
-        /// </summary>
         private void OnBattleSceneLoadedWithNewCharacter(Scene scene)
         {
-            var mainCharacter = CharacterFactory.Instance.Create(0);
+            var mainCharacter = CharacterFactory.Instance.Create(Player.Instance.mainCharacterId);
 
-            foreach (var relicId in player.selectedRelicIds)
+            if (Player.Instance.selectedCard is not null)
             {
-                Debug.Log($"Relic ID: {relicId}");
-                mainCharacter.AddRelic(RelicFactory.Create(relicId));
+                mainCharacter.deck.AddCard(Player.Instance.selectedCard.DeepCopy());
             }
 
-            mainCharacter.ApplyRelic();
-
-            CharacterFactory.Instance.Deactivate(mainCharacter);
-            BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
-            ShopSceneManager.Instance.Deactivate();
-        }
-
-        private void OnBattleSceneLoadedWithNewCharacter2(Scene scene)
-        {
-            var mainCharacter = CharacterFactory.Instance.Create(StartSceneManager.Instance.mainCharacter.spawnID);
-
-            mainCharacter.deck.AddCard(StartSceneManager.Instance.selectedCard.DeepCopy());
-            
-            mainCharacter.AddRelic(RelicFactory.Create(StartSceneManager.Instance.selectedRelic.achievementID));
-            mainCharacter.ApplyRelic();
+            if (Player.Instance.selectedRelic is not null)
+            {
+                mainCharacter.AddRelic(RelicFactory.Create(Player.Instance.selectedRelic.achievementID));
+                mainCharacter.ApplyRelic();
+            }
 
             CharacterFactory.Instance.Deactivate(mainCharacter);
             BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());

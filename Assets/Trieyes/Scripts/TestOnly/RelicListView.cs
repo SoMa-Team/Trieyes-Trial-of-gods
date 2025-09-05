@@ -86,7 +86,7 @@ namespace OutGame{
         
         public void ToGameStart()
         {
-            StartSceneManager.Instance.selectedRelic = selectedRelic;
+            Player.Instance.selectedRelic = selectedRelic;
             StartSceneManager.Instance.GameStart();
         }
         

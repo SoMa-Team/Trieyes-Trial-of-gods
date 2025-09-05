@@ -1,6 +1,7 @@
 using UnityEngine;
 using CardSystem;
 using CardViews;
+using GamePlayer;
 
 namespace OutGame{
     public class CardSelectListView : ListView
@@ -14,7 +15,7 @@ namespace OutGame{
 
         public void ToRelicSelectPanel()
         {
-            StartSceneManager.Instance.selectedCard = selectedCard;
+            Player.Instance.selectedCard = selectedCard;
             StartSceneManager.Instance.ToRelicSelectPanel();
         }
         

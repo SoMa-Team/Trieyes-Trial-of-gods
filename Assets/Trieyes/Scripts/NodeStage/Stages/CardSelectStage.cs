@@ -8,6 +8,14 @@ namespace NodeStage
     {
         private Character mainCharacter;
         
+        public static CardSelectStage Instance { get; private set; }
+        
+        private void Awake()
+        {
+            if (Instance != null) { Destroy(gameObject); return; }
+            Instance = this;
+        }
+        
         public void Activate(Character mainCharacter)
         {
             this.mainCharacter = mainCharacter;

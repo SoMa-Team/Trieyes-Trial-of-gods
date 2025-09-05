@@ -4,9 +4,17 @@ using UnityEngine;
 
 namespace NodeStage
 {
-    public class TeasureStage: MonoBehaviour, NodeStage
+    public class TreasureStage: MonoBehaviour, NodeStage
     {
         private Character mainCharacter;
+        
+        public static TreasureStage Instance { get; private set; }
+        
+        private void Awake()
+        {
+            if (Instance != null) { Destroy(gameObject); return; }
+            Instance = this;
+        }
         
         public void Activate(Character mainCharacter)
         {

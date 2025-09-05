@@ -43,7 +43,21 @@ namespace GameFramework
                 case StageType.Elite:
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
                     break;
-                
+                case StageType.StartCard:
+                    StartCardStage.Instance.Activate(mainCharacter);
+                    break;
+                case StageType.StartRelic:
+                    StartRelicStage.Instance.Activate(mainCharacter);
+                    break;
+                case StageType.CampFire:
+                    CampFireStage.Instance.Activate(mainCharacter);
+                    break;
+                case StageType.CardEnhancement:
+                    CardEnhancementStage.Instance.Activate(mainCharacter);
+                    break;
+                case StageType.Shop:
+                    ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
+                    break;
             }
         }
         public void OpenSelectCharacterPopup()

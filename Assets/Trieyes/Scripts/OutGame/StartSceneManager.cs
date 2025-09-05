@@ -35,7 +35,7 @@ namespace OutGame{
 
         public void GameStart()
         {
-            SceneChangeManager.Instance.StartBattleScene();
+            SceneChangeManager.Instance.GameStart();
         }
         
         public void ToCharacterSelectPanel()

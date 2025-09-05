@@ -106,6 +106,7 @@ namespace NodeStage
         
         public void StartGame(Character mainCharacter)
         {
+            ClearSlots();
             ShowStartChoices(mainCharacter);
         }
 

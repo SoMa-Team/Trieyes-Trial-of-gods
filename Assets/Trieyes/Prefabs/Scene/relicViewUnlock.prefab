@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 3978768785871573558}
   - component: {fileID: 3245428602500672188}
   - component: {fileID: 7203714038528602025}
-  - component: {fileID: 6034959984671566885}
   - component: {fileID: 2588729327633901025}
   m_Layer: 5
-  m_Name: relicView1
+  m_Name: relicViewUnlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,31 +78,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6034959984671566885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2170257120313367306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db34faf2e5e59fe40905a31ed4043b68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  relicIcon: {fileID: 2950363713534023040}
-  relicName: {fileID: 5085295148598319313}
-  relicSelectButton: {fileID: 2687578147574494038}
-  relic:
-    achievementType: 0
-    achievementID: 0
-    achievementName: 
-    achievementDescription: 
-    achievementProgressCurrent: 0
-    achievementProgressMax: 0
-    unlockElementID: 0
-    AddressableKey: 
-    achievementIcon: {fileID: 0}
 --- !u!114 &2588729327633901025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,7 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99e3d9986e0dc5e4a9a07744efa049af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  relicListView: {fileID: 0}
+  RelicSelectListView: {fileID: 0}
   button: {fileID: 6663086164090029024}
   relicAchievementData:
     achievementType: 0
@@ -128,7 +102,9 @@ MonoBehaviour:
     unlockElementID: 0
     AddressableKey: 
     achievementIcon: {fileID: 0}
-  relicView: {fileID: 0}
+  relicIcon: {fileID: 2950363713534023040}
+  relicName: {fileID: 5085295148598319313}
+  relicSelectButton: {fileID: 2687578147574494038}
 --- !u!1 &2687578147574494038
 GameObject:
   m_ObjectHideFlags: 0

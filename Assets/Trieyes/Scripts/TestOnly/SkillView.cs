@@ -104,7 +104,7 @@ namespace OutGame
 
         private void LoadSkillIcon(Image image, string addressableKey, bool isLocked = false)
         {
-            string addressablePath = "Assets/Trieyes/Addressable/Icons/Skills/" + addressableKey + ".png";
+            string addressablePath = AddressablePath + addressableKey + ".png";
                     
             // Addressable에서 스프라이트 로드 시도
             var handle = Addressables.LoadAssetAsync<Sprite>(addressablePath);

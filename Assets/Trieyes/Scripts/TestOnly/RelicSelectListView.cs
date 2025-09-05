@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace OutGame{
-    public class RelicListView : ListView
+    public class RelicSelectListView : ListView
     {
         public const int RELIC_COUNT = 3;
         
@@ -33,28 +33,20 @@ namespace OutGame{
                 for (int i = 0; i < RELIC_COUNT; i++)
                 {
                     var obj = Instantiate(relicItemPrefab, transform);
-                    var relicView = obj.GetComponent<RelicView>();
-
                     var relicSelectView = obj.GetComponent<RelicSelectView>();
                     
                     // 선택된 유물 ID로 유물 데이터 가져오기
                     int relicId = selectedRelicIds[i];
                     AchievementData relicData = GetRelicDataById(relicId);
                     
-                    // RelicView에 유물 데이터 설정
-                    if (relicData != null)
-                    {
-                        SetRelicData(relicView, relicData);
-                    }
-                    
                     // RelicSelectView에 유물 데이터 설정
-                    if (relicSelectView != null)
+                    if (relicSelectView != null && relicData != null)
                     {
+                        SetRelicData(relicSelectView, relicData);
                         relicSelectView.relicAchievementData = relicData;
-                        relicSelectView.SetRelicListView(this);
+                        relicSelectView.SetRelicSelectListView(this);
                     }
                     
-                    SetRelicListView(relicView);
                     obj.SetActive(true);
                 }
             }
@@ -74,15 +66,6 @@ namespace OutGame{
             base.Deactivate();
         }
         
-        public void SetRelicListView(RelicView relicView)
-        {
-            // RelicSelectView 컴포넌트가 있다면 RelicListView 참조 설정
-            var relicSelectView = relicView.GetComponent<RelicSelectView>();
-            if (relicSelectView != null)
-            {
-                relicSelectView.SetRelicListView(this);
-            }
-        }
         
         public void ToGameStart()
         {
@@ -129,17 +112,15 @@ namespace OutGame{
             return unlockedRelics?.FirstOrDefault(relic => relic.achievementID == relicId);
         }
         
-        // RelicView에 유물 데이터 설정
-        private void SetRelicData(RelicView relicView, AchievementData relicData)
+        // RelicSelectView에 유물 데이터 설정
+        private void SetRelicData(RelicSelectView relicSelectView, AchievementData relicData)
         {
-            if (relicView == null || relicData == null) return;
-            
-            relicView.relic = relicData;
+            if (relicSelectView == null || relicData == null) return;
             
             // 아이콘 설정
-            if (relicView.relicIcon != null)
+            if (relicSelectView.relicIcon != null)
             {
-                var relicIconImage = relicView.relicIcon.GetComponent<Image>();
+                var relicIconImage = relicSelectView.relicIcon.GetComponent<Image>();
                 if (relicIconImage != null && relicData.achievementIcon != null)
                 {
                     relicIconImage.sprite = relicData.achievementIcon;
@@ -147,9 +128,9 @@ namespace OutGame{
             }
             
             // 이름 설정
-            if (relicView.relicName != null)
+            if (relicSelectView.relicName != null)
             {
-                var relicNameComponent = relicView.relicName.GetComponent<TextMeshProUGUI>();
+                var relicNameComponent = relicSelectView.relicName.GetComponent<TextMeshProUGUI>();
                 if (relicNameComponent != null)
                 {
                     relicNameComponent.text = relicData.achievementName;

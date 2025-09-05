@@ -1,8 +1,6 @@
 using UnityEngine;
-using GamePlayer;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections.Generic;
 
 namespace OutGame{
     public class CharacterSelectView : MonoBehaviour
@@ -26,14 +24,10 @@ namespace OutGame{
 
         // JsonToAchivement 연동
         private IAchievementObject characterAchievement;
-        private JsonToAchivement jsonToAchivement;
         
         // 초기화 메서드
         public void Awake()
         {
-            // JsonToAchivement 참조 가져오기
-            jsonToAchivement = Player.Instance.jsonToAchivement;
-            
             if (characterIcon != null)
             {
                 var button = characterIcon.GetComponent<Button>();
@@ -161,28 +155,10 @@ namespace OutGame{
                 }
             }
 
-            // 진행도 바 업데이트
-            UpdateProgressBar();
-
             // 스킬 정보 숨기기 (잠긴 캐릭터는 스킬 정보 표시 안함)
             if (skillView != null)
             {
                 skillView.HideSkillInfo();
-            }
-        }
-
-        /// <summary>
-        /// 진행도 바를 업데이트합니다.
-        /// </summary>
-        private void UpdateProgressBar()
-        {
-            if (unlockProgressBar == null || characterAchievement == null) return;
-
-            var slider = unlockProgressBar.GetComponent<Slider>();
-            if (slider != null && characterAchievement.UnlockProgress.Count > 0)
-            {
-                var progress = characterAchievement.UnlockProgress[0]; // 첫 번째 진행도 사용
-                slider.value = (float)progress.currentValue / progress.maxValue;
             }
         }
 
@@ -222,21 +198,6 @@ namespace OutGame{
             {
                 var progress = characterAchievement.UnlockProgress[i];
                 Debug.Log($"진행도: {progress.key} - {progress.currentValue}/{progress.maxValue}");
-            }
-        }
-
-
-        /// <summary>
-        /// 진행도를 업데이트합니다.
-        /// </summary>
-        /// <param name="conditionType">조건 타입</param>
-        /// <param name="increment">증가량</param>
-        public void UpdateProgress(UnlockConditionType conditionType, int increment = 1)
-        {
-            if (jsonToAchivement != null && characterAchievement != null)
-            {
-                jsonToAchivement.UpdateProgress(characterAchievement, conditionType, increment);
-                UpdateUI(); // 전체 UI 업데이트
             }
         }
     }

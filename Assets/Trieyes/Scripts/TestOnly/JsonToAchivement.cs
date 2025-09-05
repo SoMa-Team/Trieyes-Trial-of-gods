@@ -256,6 +256,8 @@ namespace OutGame
         private const string CHARACTER_JSON_NAME = "CharacterAchievementData.json";
         private const string SKILL_JSON_NAME = "SkillAchievementData.json";
         private const string RELIC_JSON_NAME = "RelicAchievementData.json";
+
+        private const string RELIC_DATA_JSON_NAME = "RelicData.json";
         
         public const int CHARACTER_TYPE = 1;
         public const int SKILL_TYPE = 2;
@@ -303,6 +305,7 @@ namespace OutGame
             // 유물 데이터 로드
             LoadRelicAchievements(dataPath);
         }
+
 
         private void LoadCharacterAchievements(string dataPath)
         {
@@ -409,11 +412,6 @@ namespace OutGame
         /// 모든 타입의 업적을 반환합니다.
         /// </summary>
         /// <returns>타입별 업적 리스트</returns>
-        public Dictionary<int, List<IAchievementObject>> GetAllAchievements()
-        {
-            return new Dictionary<int, List<IAchievementObject>>(achievementsByType);
-        }
-
         public bool IsAchievementUnlocked(int id)
         {
             if (allAchievementsById.ContainsKey(id) && allAchievementsById[id].IsUnlocked)
@@ -421,6 +419,11 @@ namespace OutGame
                 return true;
             }
             return false;
+        }
+
+        public Dictionary<int, List<IAchievementObject>> GetAllAchievements()
+        {
+            return new Dictionary<int, List<IAchievementObject>>(achievementsByType);
         }
 
         /// <summary>
@@ -440,7 +443,7 @@ namespace OutGame
         }
 
         /// <summary>
-        /// 해금된 업적만 반환합니다.
+        /// 해금된 모든 업적들을 반환합니다.
         /// </summary>
         /// <returns>타입별 해금된 업적 리스트</returns>
         public Dictionary<int, List<IAchievementObject>> GetUnlockedAchievements()
@@ -489,21 +492,28 @@ namespace OutGame
         }
 
         /// <summary>
-        /// ID로 특정 업적을 조회합니다.
+        /// 특정 id에 종속받는 업적과 공통 타입의 해금된 업적들을 조회합니다.
         /// </summary>
         /// <param name="id">업적 ID</param>
         /// <returns>해당 ID의 업적 객체</returns>
-        public IAchievementObject GetAchievementById(int id)
+        public List<IAchievementObject> GetUnlockedAchievementByIdByType(int type, int id)
         {
-            if (allAchievementsById.ContainsKey(id))
+            List<IAchievementObject> unlockedList = new List<IAchievementObject>();
+            foreach (var achievement in achievementsByType[type])
             {
-                return allAchievementsById[id];
+                if ((achievement.Dependency == id || achievement.Dependency == -1) && achievement.IsUnlocked)
+                {
+                    unlockedList.Add(achievement);
+                }
             }
             
-            Debug.LogWarning($"ID {id}에 해당하는 업적이 없습니다.");
-            return null;
+            return unlockedList;
         }
 
+        /// <summary>
+        /// 모든 해금된 업적의 id 리스트를 가져옵니다.
+        /// </summary>
+        /// <returns>해금된 업적의 id 리스트</returns>
         public List<int> GetAllUnlockedAchievementIds()
         {
             List<int> unlockedIds = new List<int>();
@@ -517,6 +527,11 @@ namespace OutGame
             return unlockedIds;
         }
 
+        /// <summary>
+        /// 특정 타입의 해금된 업적의 id 리스트를 가져옵니다.
+        /// </summary>
+        /// <param name="type">업적 타입</param>
+        /// <returns>해금된 업적의 id 리스트</returns>
         public List<int> GetUnlockedAchievementIdsByType(int type)
         {
             List<int> unlockedIds = new List<int>();
@@ -528,65 +543,6 @@ namespace OutGame
                 }
             }
             return unlockedIds;
-        }
-
-        /// <summary>
-        /// 의존성을 확인하여 업적을 해금합니다.
-        /// </summary>
-        /// <param name="achievement">해금할 업적</param>
-        /// <returns>해금 성공 여부</returns>
-        public bool UnlockAchievement(IAchievementObject achievement)
-        {
-            // 의존성 확인
-            if (achievement.Dependency != -1)
-            {
-                IAchievementObject dependency = GetAchievementById(achievement.Dependency);
-                if (dependency == null || !dependency.IsUnlocked)
-                {
-                    Debug.LogWarning($"의존성 업적 {achievement.Dependency}가 해금되지 않았습니다.");
-                    return false;
-                }
-            }
-
-            // 해금 조건 확인
-            for (int i = 0; i < achievement.UnlockConditions.Count; i++)
-            {
-                if (achievement.UnlockProgress[i].currentValue < achievement.UnlockProgress[i].maxValue)
-                {
-                    Debug.LogWarning($"해금 조건이 충족되지 않았습니다: {achievement.UnlockConditionDescription}");
-                    return false;
-                }
-            }
-
-            achievement.IsUnlocked = true;
-            Debug.Log($"업적 해금: {achievement.Name}");
-            return true;
-        }
-
-        /// <summary>
-        /// 진행도를 업데이트합니다.
-        /// </summary>
-        /// <param name="achievement">업데이트할 업적</param>
-        /// <param name="conditionType">조건 타입</param>
-        /// <param name="increment">증가량</param>
-        public void UpdateProgress(IAchievementObject achievement, UnlockConditionType conditionType, int increment = 1)
-        {
-            for (int i = 0; i < achievement.UnlockProgress.Count; i++)
-            {
-                if (achievement.UnlockProgress[i].key == conditionType)
-                {
-                    achievement.UnlockProgress[i].currentValue += increment;
-                    
-                    // 최대값 제한
-                    if (achievement.UnlockProgress[i].currentValue > achievement.UnlockProgress[i].maxValue)
-                    {
-                        achievement.UnlockProgress[i].currentValue = achievement.UnlockProgress[i].maxValue;
-                    }
-                    
-                    Debug.Log($"진행도 업데이트: {achievement.Name} - {conditionType}: {achievement.UnlockProgress[i].currentValue}/{achievement.UnlockProgress[i].maxValue}");
-                    break;
-                }
-            }
         }
 
         public void PrintAllAchievements()

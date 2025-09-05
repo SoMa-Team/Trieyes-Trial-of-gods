@@ -6,33 +6,12 @@
       "relicName": "용사의 가호",
       "relicIconAddressable": "Relic_HeroBlessing",
       "relicDescription": "원소부여 스킬이 천상 강림으로 바뀝니다. 천상 강림은 {0}초 동안 {1}% 공격력과 {2}% 방어력을 증가시킵니다.",
-      "relicValues": [
-        {
-          "key": "지속시간",
-          "value": "8"
-        },
-        {
-          "key": "공격력 증가",
-          "value": "50"
-        },
-        {
-          "key": "방어력 증가",
-          "value": "30"
-        }
-      ],
       "unlockConditionDescription": "{0}로 {1}승을 달성해야 합니다.",
       "isUnlocked": false,
       "unlockConditions": [
         {
           "key": "CharacterWinCount",
           "value": 5
-        }
-      ],
-      "unlockProgress": [
-        {
-          "key": "CharacterWinCount",
-          "currentValue": 0,
-          "maxValue": 5
         }
       ]
     },

@@ -167,45 +167,6 @@ namespace OutGame{
             }
         }
 
-        /// <summary>
-        /// 특정 캐릭터의 진행도를 업데이트합니다.
-        /// </summary>
-        /// <param name="characterId">캐릭터 ID</param>
-        /// <param name="conditionType">조건 타입</param>
-        /// <param name="increment">증가량</param>
-        public void UpdateCharacterProgress(int characterId, UnlockConditionType conditionType, int increment = 1)
-        {
-            if (jsonToAchivement != null)
-            {
-                IAchievementObject character = jsonToAchivement.GetAchievementById(characterId);
-                if (character != null)
-                {
-                    jsonToAchivement.UpdateProgress(character, conditionType, increment);
-                    
-                    // UI 새로고침
-                    RefreshCharacterList();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 선택된 캐릭터 업적 데이터를 반환합니다.
-        /// </summary>
-        /// <returns>선택된 캐릭터 업적 데이터</returns>
-        public IAchievementObject GetSelectedCharacterAchievement()
-        {
-            return selectedCharacterAchievement;
-        }
-
-        /// <summary>
-        /// 선택된 캐릭터 ID를 반환합니다.
-        /// </summary>
-        /// <returns>선택된 캐릭터 ID</returns>
-        public int GetSelectedCharacterId()
-        {
-            return selectedCharacterAchievement?.Id ?? -1;
-        }
-
         public void ToCardSelectPanel()
         {
             if (selectedCharacterAchievement != null)
@@ -274,28 +235,6 @@ namespace OutGame{
             selectedCharacterAchievement = currentCharacter;
 
             Debug.Log($"현재 캐릭터: {currentCharacter.Name} (인덱스: {currentCharacterIndex})");
-        }
-
-        /// <summary>
-        /// 현재 선택된 캐릭터 인덱스를 반환합니다.
-        /// </summary>
-        /// <returns>현재 캐릭터 인덱스</returns>
-        public int GetCurrentCharacterIndex()
-        {
-            return currentCharacterIndex;
-        }
-
-        /// <summary>
-        /// 특정 인덱스의 캐릭터로 이동합니다.
-        /// </summary>
-        /// <param name="index">이동할 캐릭터 인덱스</param>
-        public void SetCurrentCharacterIndex(int index)
-        {
-            if (characterAchievements == null || characterAchievements.Count == 0) return;
-            if (index < 0 || index >= characterAchievements.Count) return;
-
-            currentCharacterIndex = index;
-            UpdateCurrentCharacter();
         }
     }
 }

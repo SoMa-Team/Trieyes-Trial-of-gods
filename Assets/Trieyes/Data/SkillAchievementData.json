@@ -1,0 +1,477 @@
+{
+  "skillAchievements": [
+    {
+      "skillId": 1001,
+      "dependency": -1,
+      "skillName": "속성 부여",
+      "skillIconAddressable": "Skill_ElementalEnchant",
+      "skillDescription": "무기에 {0} 속성을 부여하여 {1}초 동안 {2} 효과를 적용합니다.",
+      "skillStats": [
+        {
+          "key": "속성",
+          "value": "무작위"
+        },
+        {
+          "key": "지속시간",
+          "value": "5"
+        },
+        {
+          "key": "효과",
+          "value": "속성별 특수효과"
+        }
+      ],
+      "unlockConditionDescription": "게임 시작 시 기본 제공됩니다.",
+      "isUnlocked": true,
+      "unlockConditions": [
+        {
+          "key": "DefaultUnlock",
+          "value": 1
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "DefaultUnlock",
+          "currentValue": 1,
+          "maxValue": 1
+        }
+      ]
+    },
+    {
+      "skillId": 1002,
+      "dependency": 721001,
+      "skillName": "천상 강림",
+      "skillIconAddressable": "Skill_HeavenlyDescent",
+      "skillName": "천상 강림",
+      "skillDescription": "신성한 힘으로 {0}초 동안 {1}% 공격력 증가와 {2}% 방어력 증가를 얻습니다.",
+      "skillStats": [
+        {
+          "key": "지속시간",
+          "value": "8"
+        },
+        {
+          "key": "공격력 증가",
+          "value": "50"
+        },
+        {
+          "key": "방어력 증가",
+          "value": "30"
+        }
+      ],
+      "unlockConditionDescription": "{0} 유물을 획득해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "RelicObtained",
+          "value": 1
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "RelicObtained",
+          "currentValue": 0,
+          "maxValue": 1
+        }
+      ]
+    },
+    {
+      "skillId": 1003,
+      "dependency": 721001,
+      "skillName": "방패 밀쳐내기",
+      "skillIconAddressable": "Skill_ShieldBash",
+      "skillDescription": "방패로 전방 {0} 범위의 적들을 {1}만큼 밀쳐내며 {2}의 피해를 입힙니다.",
+      "skillStats": [
+        {
+          "key": "범위",
+          "value": "3"
+        },
+        {
+          "key": "넉백 거리",
+          "value": "2"
+        },
+        {
+          "key": "피해량",
+          "value": "방어력의 150%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 레벨 {1}을 달성해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "CharacterLevel",
+          "value": 5
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "CharacterLevel",
+          "currentValue": 0,
+          "maxValue": 5
+        }
+      ]
+    },
+    {
+      "skillId": 1004,
+      "dependency": 721001,
+      "skillName": "방패 돌진",
+      "skillIconAddressable": "Skill_ShieldCharge",
+      "skillDescription": "방패를 앞세워 {0} 거리만큼 돌진하며 경로상의 적들에게 {1}의 피해를 입힙니다.",
+      "skillStats": [
+        {
+          "key": "돌진 거리",
+          "value": "5"
+        },
+        {
+          "key": "피해량",
+          "value": "공격력의 200%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 10
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 10
+        }
+      ]
+    },
+    {
+      "skillId": 1005,
+      "dependency": 721001,
+      "skillName": "전장의 포효",
+      "skillIconAddressable": "Skill_BattleCry",
+      "skillDescription": "강력한 함성으로 주변 {0} 범위의 적들을 {1}초 동안 기절시키고 {2}의 피해를 입힙니다.",
+      "skillStats": [
+        {
+          "key": "범위",
+          "value": "4"
+        },
+        {
+          "key": "기절 시간",
+          "value": "2"
+        },
+        {
+          "key": "피해량",
+          "value": "공격력의 120%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 15
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 15
+        }
+      ]
+    },
+    {
+      "skillId": 2001,
+      "dependency": 721002,
+      "skillName": "화염구",
+      "skillIconAddressable": "Skill_Fireball",
+      "skillDescription": "화염의 구체를 발사하여 {0} 범위에 {1}의 화염 피해를 입히고 {2}초 동안 화상 효과를 적용합니다.",
+      "skillStats": [
+        {
+          "key": "폭발 범위",
+          "value": "2"
+        },
+        {
+          "key": "피해량",
+          "value": "마법력의 180%"
+        },
+        {
+          "key": "화상 지속시간",
+          "value": "5"
+        }
+      ],
+      "unlockConditionDescription": "{0} 레벨 {1}을 달성해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "CharacterLevel",
+          "value": 3
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "CharacterLevel",
+          "currentValue": 0,
+          "maxValue": 3
+        }
+      ]
+    },
+    {
+      "skillId": 2002,
+      "dependency": 721002,
+      "skillName": "얼음 파편",
+      "skillIconAddressable": "Skill_IceShard",
+      "skillDescription": "얼음 파편을 발사하여 적에게 {0}의 냉기 피해를 입히고 {1}초 동안 둔화 효과를 적용합니다.",
+      "skillStats": [
+        {
+          "key": "피해량",
+          "value": "마법력의 150%"
+        },
+        {
+          "key": "둔화 지속시간",
+          "value": "3"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 20
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 20
+        }
+      ]
+    },
+    {
+      "skillId": 2003,
+      "dependency": 721002,
+      "skillName": "번개 강타",
+      "skillIconAddressable": "Skill_LightningStrike",
+      "skillDescription": "번개를 소환하여 {0} 범위의 적들에게 {1}의 전기 피해를 입히고 {2}초 동안 감전 효과를 적용합니다.",
+      "skillStats": [
+        {
+          "key": "범위",
+          "value": "3"
+        },
+        {
+          "key": "피해량",
+          "value": "마법력의 200%"
+        },
+        {
+          "key": "감전 지속시간",
+          "value": "4"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 25
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 25
+        }
+      ]
+    },
+    {
+      "skillId": 3001,
+      "dependency": 721003,
+      "skillName": "정밀 사격",
+      "skillIconAddressable": "Skill_PreciseShot",
+      "skillDescription": "정확한 조준으로 {0}% 확률로 치명타를 발생시키며 {1}의 피해를 입힙니다.",
+      "skillStats": [
+        {
+          "key": "치명타 확률",
+          "value": "100"
+        },
+        {
+          "key": "피해량",
+          "value": "공격력의 250%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 레벨 {1}을 달성해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "CharacterLevel",
+          "value": 4
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "CharacterLevel",
+          "currentValue": 0,
+          "maxValue": 4
+        }
+      ]
+    },
+    {
+      "skillId": 3002,
+      "dependency": 721003,
+      "skillName": "연발 사격",
+      "skillIconAddressable": "Skill_RapidFire",
+      "skillDescription": "빠르게 {0}발의 화살을 연속으로 발사하여 각각 {1}의 피해를 입힙니다.",
+      "skillStats": [
+        {
+          "key": "발사 횟수",
+          "value": "3"
+        },
+        {
+          "key": "피해량",
+          "value": "공격력의 80%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 30
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 30
+        }
+      ]
+    },
+    {
+      "skillId": 4001,
+      "dependency": 721004,
+      "skillName": "그림자 베기",
+      "skillIconAddressable": "Skill_ShadowSlash",
+      "skillDescription": "그림자 속에서 적의 뒤로 이동하여 {0}의 피해를 입히고 {1}초 동안 은신 상태가 됩니다.",
+      "skillStats": [
+        {
+          "key": "피해량",
+          "value": "공격력의 300%"
+        },
+        {
+          "key": "은신 지속시간",
+          "value": "3"
+        }
+      ],
+      "unlockConditionDescription": "{0} 레벨 {1}을 달성해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "CharacterLevel",
+          "value": 6
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "CharacterLevel",
+          "currentValue": 0,
+          "maxValue": 6
+        }
+      ]
+    },
+    {
+      "skillId": 4002,
+      "dependency": 721004,
+      "skillName": "독 칼날",
+      "skillIconAddressable": "Skill_PoisonBlade",
+      "skillDescription": "독이 발라진 칼날로 공격하여 {0}의 피해를 입히고 {1}초 동안 독 효과를 적용합니다.",
+      "skillStats": [
+        {
+          "key": "피해량",
+          "value": "공격력의 120%"
+        },
+        {
+          "key": "독 지속시간",
+          "value": "6"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 40
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 40
+        }
+      ]
+    },
+    {
+      "skillId": 5001,
+      "dependency": 721005,
+      "skillName": "신성 치유",
+      "skillIconAddressable": "Skill_HolyHeal",
+      "skillDescription": "신성한 힘으로 자신과 주변 {0} 범위의 동료들의 체력을 {1}만큼 회복시킵니다.",
+      "skillStats": [
+        {
+          "key": "치유 범위",
+          "value": "5"
+        },
+        {
+          "key": "회복량",
+          "value": "최대 체력의 30%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 레벨 {1}을 달성해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "CharacterLevel",
+          "value": 7
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "CharacterLevel",
+          "currentValue": 0,
+          "maxValue": 7
+        }
+      ]
+    },
+    {
+      "skillId": 5002,
+      "dependency": 721005,
+      "skillName": "신성 보호막",
+      "skillIconAddressable": "Skill_HolyShield",
+      "skillDescription": "신성한 보호막을 생성하여 {0}초 동안 받는 피해를 {1}% 감소시킵니다.",
+      "skillStats": [
+        {
+          "key": "지속시간",
+          "value": "10"
+        },
+        {
+          "key": "피해 감소율",
+          "value": "50"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 50
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 50
+        }
+      ]
+    }
+  ]
+}

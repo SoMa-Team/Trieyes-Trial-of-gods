@@ -20,6 +20,12 @@ namespace NodeStage
         private readonly List<NextStageSlot> spawnedSlots = new();
         private System.Random rng = new System.Random();
         
+        private static readonly HashSet<StageType> StartTypes = new()
+        {
+            StageType.StartCard,
+            StageType.StartRelic,
+        };
+        
         private void Awake()
         {
             if (Instance != null) { Destroy(gameObject); return; }
@@ -38,6 +44,29 @@ namespace NodeStage
                 (arr[i], arr[j]) = (arr[j], arr[i]);
             }
             return arr.GetRange(0, k);
+        }
+        
+        private StageInfoSO GetFirstInfoOfType(StageType t)
+        {
+            return allStages
+                .FirstOrDefault(s => s != null && s.type == t);
+        }
+        
+        private void SpawnSlots(IEnumerable<StageInfoSO> infos, Character mainCharacter)
+        {
+            ClearSlots();
+            foreach (var info in infos)
+            {
+                if (info == null) continue;
+                var slot = Instantiate(slotPrefab, slotContainer);
+                slot.SetStage(info, chosenType =>
+                {
+                    InGameManager.Instance.StartNextStage(chosenType, mainCharacter);
+                    Deactivate();
+                });
+                spawnedSlots.Add(slot);
+            }
+            gameObject.SetActive(true);
         }
         
         public void Deactivate()
@@ -67,23 +96,36 @@ namespace NodeStage
                 .Where(s => s != null)
                 .GroupBy(s => s.type)
                 .Select(g => g.First())
-                .Where(s => s.type != current)
+                .Where(s => s.type != current && !StartTypes.Contains(s.type))
                 .ToList();
             
             var options = SampleWithoutReplacement(pool, 3, rng);
             
-            foreach (var info in options)
-            {
-                var slot = Instantiate(slotPrefab, slotContainer);
-                slot.SetStage(info, chosenType =>
-                {
-                    InGameManager.Instance.StartNextStage(chosenType, mainCharacter);
-                    Deactivate();
-                });
-                spawnedSlots.Add(slot);
-            }
+            SpawnSlots(options, mainCharacter);
+        }
+        
+        public void StartGame(Character mainCharacter)
+        {
+            ShowStartChoices(mainCharacter);
+        }
 
-            gameObject.SetActive(true);
+        private void ShowStartChoices(Character mainCharacter)
+        {
+            var startInfos = new List<StageInfoSO>
+                {
+                    GetFirstInfoOfType(StageType.StartCard),
+                    GetFirstInfoOfType(StageType.StartRelic),
+                }
+                .Where(x => x != null)
+                .ToList();
+
+            if (startInfos.Count == 0)
+            {
+                SetNextStage(StageType.Battle, mainCharacter);
+                return;
+            }
+            
+            SpawnSlots(startInfos, mainCharacter);
         }
     }
 }

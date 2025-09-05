@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2294497638298300499}
   - component: {fileID: 1647044340205376366}
   m_Layer: 5
-  m_Name: Description
+  m_Name: Unlock_Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 7203714038528602025}
   - component: {fileID: 1255305850469604673}
   m_Layer: 5
-  m_Name: CharacterViewUnlock
+  m_Name: CharacterViewLock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,14 +167,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterSelectListView: {fileID: 0}
-  characterIcon: {fileID: 2950363713534023040}
-  characterName: {fileID: 5085295148598319313}
-  characterDescription: {fileID: 8735907194317153938}
-  lockedCharacterIcon: {fileID: 0}
-  lockedCharacterName: {fileID: 0}
+  characterIcon: {fileID: 0}
+  characterName: {fileID: 0}
+  characterDescription: {fileID: 0}
+  lockedCharacterIcon: {fileID: 2950363713534023040}
+  lockedCharacterName: {fileID: 5085295148598319313}
   unlockProgressBar: {fileID: 0}
   lockIcon: {fileID: 0}
-  unlockConditionText: {fileID: 0}
+  unlockConditionText: {fileID: 8735907194317153938}
 --- !u!1 &2950363713534023040
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,7 +273,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_NormalColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 0.7058824}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -446,7 +446,7 @@ GameObject:
   - component: {fileID: 7536186581396618098}
   - component: {fileID: 1194283127359426927}
   m_Layer: 5
-  m_Name: Text_Description
+  m_Name: Text_Unlock_Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -499,8 +499,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SELECT YOUR CHARACTER SELECT YOUR CHARACTER SELECT YOUR CHARACTER SELECT
-    YOUR CHARACTER SELECT YOUR CHARACTER SELECT YOUR CHARACTER
+  m_text: 'SELECT YOUR CHARACTER SELECT YOUR CHARACTER SELECT YOUR CHARACTER SELECT
+    YOUR CHARACTER SELECT YOUR CHARACTER SELECT YOUR CHARACTER '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 76952f6430ac84061aee4d1f022d8c1b, type: 2}
   m_sharedMaterial: {fileID: 7609114644363106975, guid: 76952f6430ac84061aee4d1f022d8c1b, type: 2}

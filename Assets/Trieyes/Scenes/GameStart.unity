@@ -135,18 +135,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: character_popup
       objectReference: {fileID: 0}
-    - target: {fileID: 5539092481146384004, guid: 343562cdada517349b932e9da1767c63, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6761231492199245898, guid: 343562cdada517349b932e9da1767c63, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -880
-      objectReference: {fileID: 0}
-    - target: {fileID: 6761231492199245898, guid: 343562cdada517349b932e9da1767c63, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -1000
-      objectReference: {fileID: 0}
     - target: {fileID: 7526295382788308473, guid: 343562cdada517349b932e9da1767c63, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -907,6 +895,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: card_popup
       objectReference: {fileID: 0}
+    - target: {fileID: 5539092481146384004, guid: 4bbf32c3aa822634baac16edfbf6af60, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6761231492199245898, guid: 4bbf32c3aa822634baac16edfbf6af60, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -500
+      objectReference: {fileID: 0}
+    - target: {fileID: 6761231492199245898, guid: 4bbf32c3aa822634baac16edfbf6af60, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -73
+      objectReference: {fileID: 0}
     - target: {fileID: 7526295382788308473, guid: 4bbf32c3aa822634baac16edfbf6af60, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1365,17 +1365,6 @@ MonoBehaviour:
   CharacterSelectPanel: {fileID: 1216492947}
   CardSelectPanel: {fileID: 2057031827}
   RelicSelectPanel: {fileID: 625863209}
-  mainCharacter: {fileID: 0}
-  selectedRelic:
-    achievementType: 0
-    achievementID: 0
-    achievementName: 
-    achievementDescription: 
-    achievementProgressCurrent: 0
-    achievementProgressMax: 0
-    unlockElementID: 0
-    AddressableKey: 
-    achievementIcon: {fileID: 0}
 --- !u!4 &2126304203
 Transform:
   m_ObjectHideFlags: 0

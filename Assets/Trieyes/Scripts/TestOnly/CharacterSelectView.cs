@@ -1,6 +1,5 @@
 using UnityEngine;
 using GamePlayer;
-using CharacterSystem;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
@@ -21,6 +20,9 @@ namespace OutGame{
         public GameObject unlockProgressBar;
         public GameObject lockIcon;
         public GameObject unlockConditionText;
+
+        [Header("Character Skill Info UI")]
+        public SkillView skillView;
 
         // JsonToAchivement 연동
         private IAchievementObject characterAchievement;
@@ -114,6 +116,12 @@ namespace OutGame{
                     descText.text = characterAchievement.Description;
                 }
             }
+
+            // 스킬 정보 표시
+            if (skillView != null)
+            {
+                skillView.UpdateSkillInfo(characterAchievement);
+            }
         }
 
         /// <summary>
@@ -155,6 +163,12 @@ namespace OutGame{
 
             // 진행도 바 업데이트
             UpdateProgressBar();
+
+            // 스킬 정보 숨기기 (잠긴 캐릭터는 스킬 정보 표시 안함)
+            if (skillView != null)
+            {
+                skillView.HideSkillInfo();
+            }
         }
 
         /// <summary>
@@ -210,6 +224,7 @@ namespace OutGame{
                 Debug.Log($"진행도: {progress.key} - {progress.currentValue}/{progress.maxValue}");
             }
         }
+
 
         /// <summary>
         /// 진행도를 업데이트합니다.

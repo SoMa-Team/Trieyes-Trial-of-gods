@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AttackSystem;
 using GameFramework;
 using JetBrains.Annotations;
+using NodeStage;
 using Stats;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -110,7 +111,7 @@ namespace BattleSystem
         // 전투 클리어 시 호출
         public void OnBattleClear()
         {
-            SceneChangeManager.Instance.ChangeBattleToShop((Character)this.mainCharacter);
+            InGameManager.Instance.StartNextStage(StageType.BattleReward, mainCharacter);
         }
         
         // 플레이어 사망 시 호출

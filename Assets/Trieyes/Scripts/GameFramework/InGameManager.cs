@@ -58,6 +58,10 @@ namespace GameFramework
                 case StageType.Shop:
                     ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
                     break;
+                case StageType.BattleReward:
+                    BattleStageFactory.Instance.Deactivate(BattleStage.now);
+                    BattleRewardStage.Instance.Activate(mainCharacter);
+                    break;
             }
         }
         public void OpenSelectCharacterPopup()

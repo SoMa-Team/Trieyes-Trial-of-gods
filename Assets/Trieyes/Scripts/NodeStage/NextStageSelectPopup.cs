@@ -119,12 +119,6 @@ namespace NodeStage
                 }
                 .Where(x => x != null)
                 .ToList();
-
-            if (startInfos.Count == 0)
-            {
-                SetNextStage(StageType.Battle, mainCharacter);
-                return;
-            }
             
             SpawnSlots(startInfos, mainCharacter);
         }

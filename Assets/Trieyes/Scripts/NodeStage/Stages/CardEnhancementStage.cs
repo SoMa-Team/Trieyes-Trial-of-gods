@@ -6,6 +6,7 @@ namespace NodeStage
 {
     public class CardEnhancementStage : MonoBehaviour, NodeStage
     {
+        [SerializeField] private RectTransform rectTransform;
         private Character mainCharacter;
         
         public static CardEnhancementStage Instance { get; private set; }
@@ -14,6 +15,8 @@ namespace NodeStage
         {
             if (Instance != null) { Destroy(gameObject); return; }
             Instance = this;
+            rectTransform.anchoredPosition = Vector2.zero;
+            gameObject.SetActive(false);
         }
         
         public void Activate(Character mainCharacter)

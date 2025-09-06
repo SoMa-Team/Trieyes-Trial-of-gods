@@ -201,19 +201,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8759749011342541036}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7001578652243274424}
-        m_TargetAssemblyTypeName: OutGame.CardSelectListView, Assembly-CSharp
-        m_MethodName: ToRelicSelectPanel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
+      m_Calls: []
 --- !u!1 &2869693658206640332
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,6 +499,7 @@ MonoBehaviour:
   moneyScorePanel: {fileID: 1620417702665289068}
   TotalScorePanel: {fileID: 3998929617255380576}
   ScoreImagePanel: {fileID: 4866892536420120734}
+  BackToTitleButton: {fileID: 4990189389645726983}
   scoreImages:
   - {fileID: 8933880513373444334, guid: 2e92f9b8d7902114c93dfadb6698134e, type: 3}
   - {fileID: 8345661964065717319, guid: d00ac87219c44084f8a33bc2f2b89ed0, type: 3}

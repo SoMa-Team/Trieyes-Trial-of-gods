@@ -221,6 +221,8 @@ namespace AttackComponents
             CreateDOTVFXForTarget(dotTarget);
             
             // VFX 재생
+            if (spawnedVFX == null) return;
+            
             spawnedVFX.SetActive(true);
             PlayVFX(spawnedVFX);
 

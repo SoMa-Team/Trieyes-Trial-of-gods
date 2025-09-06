@@ -201,6 +201,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1069155515899738731}
     m_Modifications:
+    - target: {fileID: 4990189389645726983, guid: 4474eeb757c02a84ca4e588fa6712793, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5539092481146384004, guid: 4474eeb757c02a84ca4e588fa6712793, type: 3}
       propertyPath: m_Name
       value: gameover_popup

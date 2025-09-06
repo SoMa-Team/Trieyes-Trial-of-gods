@@ -13,7 +13,7 @@ namespace NodeStage
         private Action<GoldRewardView> onClicked;
         public int Amount { get; private set; }
         
-        public void Init(int amount, Action<GoldRewardView> onClicked)
+        public void Activate(int amount, Action<GoldRewardView> onClicked)
         {
             Amount = amount;
             this.onClicked = onClicked;
@@ -27,7 +27,7 @@ namespace NodeStage
             {
                 selectionOutline.enabled = selected; // or change color
                 selectionOutline.color = selected ? Color.yellow : 
-                    new Color(246f/255f, 220f/255f, 168f/255f, 1f);
+                    new Color(246f/255f, 220f/255f, 168f/255f, 0f);
             }
         }
         

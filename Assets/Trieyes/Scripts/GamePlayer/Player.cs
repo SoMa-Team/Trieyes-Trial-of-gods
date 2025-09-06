@@ -42,6 +42,11 @@ namespace GamePlayer
             }
 
             DontDestroyOnLoad(this);
+            Activate();
+        }
+
+        public void Activate()
+        {
             InitializeAchievement();
             playScoreLogger = new PlayScoreLogger();
 
@@ -67,6 +72,14 @@ namespace GamePlayer
                 // 폴백으로 CSV에서 로드
                 achievement = new Achievement();
             }
+        }
+
+        public void Deactivate()
+        {
+            playScoreLogger.ResetScore();
+            mainCharacterId = 0;
+            selectedCard = null;
+            selectedRelic = null;
         }
     }
 }

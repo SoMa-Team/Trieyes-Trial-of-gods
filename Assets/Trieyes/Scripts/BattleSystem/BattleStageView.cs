@@ -96,7 +96,10 @@ namespace BattleSystem
         /// </summary>
         private void Update()
         {
-            _battleStage.Update();
+            if (_battleStage.difficulty is not null)
+            {
+                _battleStage.Update();
+            }
         }
     }
 } 

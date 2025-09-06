@@ -13,12 +13,6 @@ namespace UISystem
         public static DamageNumberViewFactory Instance { get; private set; } 
         private void Awake()
         {
-            if (Instance is not null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-        
             Instance = this;
         }
     

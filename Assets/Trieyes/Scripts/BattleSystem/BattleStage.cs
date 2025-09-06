@@ -6,7 +6,7 @@ using GameFramework;
 using UnityEngine;
 using Utils;
 using UISystem;
-using Trieyes.Scripts.GameOver;
+using GameOver;
 
 namespace BattleSystem
 {

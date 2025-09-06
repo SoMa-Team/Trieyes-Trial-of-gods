@@ -9,12 +9,6 @@ public class BattleWorldCanvasController : MonoBehaviour
     
     private void Awake()
     {
-        if (Instance is not null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        
         Instance = this;        
     }
 

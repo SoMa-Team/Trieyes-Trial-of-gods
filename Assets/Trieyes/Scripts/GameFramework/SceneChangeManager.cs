@@ -7,6 +7,7 @@ using Utils;
 using RelicSystem;
 using GamePlayer;
 using OutGame;
+using GameOver;
 
 namespace GameFramework
 {
@@ -71,9 +72,11 @@ namespace GameFramework
 
         public void ChangeGameOverToGameStart()
         {
+            GameOverManager.Instance.Deactivate();
+            
             LoadSceneWithCallback(GameStartSceneName, scene =>
             {
-            
+                OnGameOverSceneLoaded(scene);
             });
         }
 
@@ -120,7 +123,7 @@ namespace GameFramework
                 mainCharacter.deck.AddCard(Player.Instance.selectedCard.DeepCopy());
             }
 
-            if (Player.Instance.selectedRelic is not null)
+            if (Player.Instance.selectedRelic.achievementID > 0)
             {
                 mainCharacter.AddRelic(RelicFactory.Create(Player.Instance.selectedRelic.achievementID));
                 mainCharacter.ApplyRelic();
@@ -129,6 +132,12 @@ namespace GameFramework
             CharacterFactory.Instance.Deactivate(mainCharacter);
             BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
             ShopSceneManager.Instance.Deactivate();
+        }
+
+        private void OnGameOverSceneLoaded(Scene scene)
+        {
+            Player.Instance.Deactivate();
+            stageRound = 1;
         }
     }
 }

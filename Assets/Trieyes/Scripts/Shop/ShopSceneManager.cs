@@ -295,6 +295,7 @@ public class ShopSceneManager : MonoBehaviour
 
             cardView.SetCard(card);
             cardView.SetCanInteract(true);
+            cardView.SetOnClicked(OnCardClicked);
         }
         UpdateButtonState();
         UpdateDeckCountUI();

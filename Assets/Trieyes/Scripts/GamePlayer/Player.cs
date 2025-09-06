@@ -17,11 +17,11 @@ namespace GamePlayer
         [Header("업적 시스템")]
         [SerializeField] private AchievementDatabaseSO achievementDatabase;
         public Achievement achievement;
-
-        public JsonToAchivement jsonToAchivement;
+        
+        [HideInInspector]
+        public JsonToAchivement jsonToAchivement = new JsonToAchivement();
 
         public static Player Instance { get; private set; }
-
 
         public int mainCharacterId;
         public Card selectedCard;
@@ -41,15 +41,6 @@ namespace GamePlayer
 
             DontDestroyOnLoad(this);
             InitializeAchievement();
-
-            if (!gameObject.GetComponent<JsonToAchivement>())
-            {
-                Debug.LogError("JsonToAchivement not found");
-            }
-            else
-            {
-                jsonToAchivement = gameObject.GetComponent<JsonToAchivement>();
-            }
         }
         
         private void InitializeAchievement()

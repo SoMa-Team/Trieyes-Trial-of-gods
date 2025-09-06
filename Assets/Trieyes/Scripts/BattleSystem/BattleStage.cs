@@ -3,12 +3,10 @@ using CharacterSystem;
 using System.Collections.Generic;
 using AttackSystem;
 using GameFramework;
-using JetBrains.Annotations;
-using Stats;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using Utils;
-using EventType = UnityEngine.EventType;
+using UISystem;
+using Trieyes.Scripts.GameOver;
 
 namespace BattleSystem
 {
@@ -117,7 +115,8 @@ namespace BattleSystem
         public void OnPlayerDeath()
         {
             BattleStageFactory.Instance.Deactivate(this);
-            SceneChangeManager.Instance.ChangeBattleToGameOver();
+
+            GameOverManager.Instance.Activate();
         }
         
         // ===== 시간 관리 관련 =====

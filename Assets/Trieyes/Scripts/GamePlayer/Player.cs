@@ -4,6 +4,7 @@ using CharacterSystem;
 using RelicSystem;
 using OutGame;
 using CardSystem;
+using GameFramework;
 
 namespace GamePlayer
 {
@@ -19,6 +20,7 @@ namespace GamePlayer
         public Achievement achievement;
 
         public JsonToAchivement jsonToAchivement;
+        public PlayScoreLogger playScoreLogger;
 
         public static Player Instance { get; private set; }
 
@@ -41,6 +43,7 @@ namespace GamePlayer
 
             DontDestroyOnLoad(this);
             InitializeAchievement();
+            playScoreLogger = new PlayScoreLogger();
 
             if (!gameObject.GetComponent<JsonToAchivement>())
             {

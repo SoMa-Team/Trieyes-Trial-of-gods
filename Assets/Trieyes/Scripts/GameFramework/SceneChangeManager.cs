@@ -22,7 +22,7 @@ namespace GameFramework
         private const string GameStartSceneName = "GameStart";
         private const string BattleSceneName = "BattleScene";
         private const string ShopSceneName = "ShopScene";
-        private const string GameOverSceneName = "GameOverScene";
+
         private int stageRound = 1;
 
         public Player player;
@@ -67,14 +67,6 @@ namespace GameFramework
         {
             stageRound++;
             BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
-        }
-
-        public void ChangeBattleToGameOver()
-        {
-            LoadSceneWithCallback(GameOverSceneName, scene =>
-            {
-                
-            });
         }
 
         public void ChangeGameOverToGameStart()

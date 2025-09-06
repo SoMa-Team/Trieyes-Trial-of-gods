@@ -36,7 +36,7 @@ namespace OutGame{
         /// <summary>
         /// 모든 패널을 초기 상태로 설정합니다.
         /// </summary>
-        private void InitializePanels()
+        public void InitializePanels()
         {
             // 패널들을 비활성화하고 CanvasGroup 설정
             if (CharacterSelectPanel != null)

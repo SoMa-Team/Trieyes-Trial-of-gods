@@ -1,9 +1,8 @@
 using System;
 using GameFramework;
 using UnityEngine;
-using UnityEngine.UI;
 
-namespace Trieyes.Scripts.GameOver
+namespace GameOver
 {
     public class GameOverManager : MonoBehaviour
     {
@@ -33,21 +32,10 @@ namespace Trieyes.Scripts.GameOver
         {
             if (gameOverUIPrefab != null)
             {
-                SetupUIEvents();
-            }
-
-            if (gameOverUIPrefab != null)
-            {
                 gameOverUIPrefab.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
             }
 
             gameObject.SetActive(false);
-        }
-
-        // ========= [UI 이벤트 설정] =========
-        private void SetupUIEvents()
-        {
-            gameOverUIPrefab.OnBackToTitlePressed += OnMainMenuButtonPressed;
         }
 
         // ========= [활성화/비활성화] =========
@@ -84,12 +72,9 @@ namespace Trieyes.Scripts.GameOver
             gameObject.SetActive(false);
         }
 
-        // ========= [버튼 이벤트 핸들러] =========
-        private void OnMainMenuButtonPressed()
+        public void OnDestroy()
         {
-            Deactivate();
-            // TODO: 메인 메뉴로 이동하는 로직 구현
-            Debug.Log("Main Menu button pressed - implement main menu navigation");
+            if (Instance == this) Instance = null;
         }
     }
 }

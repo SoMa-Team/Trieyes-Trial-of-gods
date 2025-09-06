@@ -49,5 +49,11 @@ namespace GameFramework
         {
             return totalScore;
         }
+
+        internal void ResetScore()
+        {
+            killScore = 0;
+            moneyScore = 0;
+        }
     }
 }

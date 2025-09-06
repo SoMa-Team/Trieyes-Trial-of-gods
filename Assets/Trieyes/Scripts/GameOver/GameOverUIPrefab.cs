@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Trieyes.Scripts.GameOver
+namespace GameOver
 {
     public class GameOverUIPrefab : MonoBehaviour
     {
@@ -18,17 +18,14 @@ namespace Trieyes.Scripts.GameOver
 
         public GameObject ScoreImagePanel;
 
-        public Sprite[] scoreImages;
+        public Button BackToTitleButton;
 
-        private Button BackToTitleButton;
+        public Sprite[] scoreImages;
 
         //TODO : Difficulty 등으로 옮기기
         private int totalScore;
         private int rankALowerBound = 1000;
         private int rankSLowerBound = 2000;
-
-        // ========= [이벤트] =========
-        public event Action OnBackToTitlePressed;
 
         // ========= [라이프사이클] =========
         private void Awake()
@@ -43,7 +40,8 @@ namespace Trieyes.Scripts.GameOver
         // ========= [버튼 이벤트 핸들러] =========
         private void OnBackToTitleButtonPressed()
         {
-            OnBackToTitlePressed?.Invoke();
+            Debug.Log("ChangeGameOverToGameStart");
+            SceneChangeManager.Instance.ChangeGameOverToGameStart();
         }
 
         // ========= [UI 활성화/비활성화] =========
@@ -108,13 +106,6 @@ namespace Trieyes.Scripts.GameOver
             }
 
             img.sprite = scoreImages[rank];
-        }
-
-        // ========= [버튼 상태 관리] =========
-        public void OnBackToTitleButtonInteractable(bool interactable)
-        {
-            if (BackToTitleButton != null)
-                BackToTitleButton.interactable = interactable;
         }
     }
 }

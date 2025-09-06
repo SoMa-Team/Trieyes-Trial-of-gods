@@ -22,6 +22,8 @@ namespace OutGame{
 
         public override void Activate()
         {
+            player = Player.Instance;
+            
             if (relicItemPrefab != null)
             {
                 // 해금된 유물 리스트 가져오기

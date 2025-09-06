@@ -15,6 +15,7 @@ namespace NodeStage
         
         [SerializeField] private NextStageSlot slotPrefab;
         [SerializeField] private Transform     slotContainer;
+        [SerializeField] private RectTransform rectTransform;
         public static NextStageSelectPopup Instance { get; private set; }
         
         private readonly List<NextStageSlot> spawnedSlots = new();
@@ -30,6 +31,7 @@ namespace NodeStage
         {
             if (Instance != null) { Destroy(gameObject); return; }
             Instance = this;
+            rectTransform.anchoredPosition = Vector2.zero;
             gameObject.SetActive(false);
         }
 

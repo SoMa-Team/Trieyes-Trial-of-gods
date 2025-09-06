@@ -214,7 +214,6 @@ namespace AttackComponents
             ProcessAC101TargetStatus(dotTarget);
 
             // 단일 대상에게 데미지 적용
-            attack.statSheet[StatType.AttackPower] = new IntegerStatValue(dotDamage);
             DamageProcessor.ProcessHit(attack, dotTarget);
 
             // 버프 적용

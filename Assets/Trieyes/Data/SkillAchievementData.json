@@ -1,0 +1,173 @@
+{
+  "skillAchievements": [
+    {
+      "skillId": 1001,
+      "dependency": -1,
+      "skillName": "속성 부여",
+      "skillIconAddressable": "fire3",
+      "skillDescription": "무기에 {0} 속성을 부여하여 {1}초 동안 {2} 효과를 적용합니다.",
+      "skillStats": [
+        {
+          "key": "속성",
+          "value": "무작위"
+        },
+        {
+          "key": "지속시간",
+          "value": "5"
+        },
+        {
+          "key": "효과",
+          "value": "속성별 특수효과"
+        }
+      ],
+      "unlockConditionDescription": "게임 시작 시 기본 제공됩니다.",
+      "isUnlocked": true,
+      "unlockConditions": [
+        {
+          "key": "DefaultUnlock",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "skillId": 1002,
+      "dependency": 100001,
+      "skillName": "천상 강림",
+      "skillIconAddressable": "fire3",
+      "skillDescription": "신성한 힘으로 {0}초 동안 {1}% 공격력 증가와 {2}% 방어력 증가를 얻습니다.",
+      "skillStats": [
+        {
+          "key": "지속시간",
+          "value": "8"
+        },
+        {
+          "key": "공격력 증가",
+          "value": "50"
+        },
+        {
+          "key": "방어력 증가",
+          "value": "30"
+        }
+      ],
+      "unlockConditionDescription": "{0} 유물을 획득해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "RelicObtained",
+          "value": 1
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "RelicObtained",
+          "currentValue": 0,
+          "maxValue": 1
+        }
+      ]
+    },
+    {
+      "skillId": 1003,
+      "dependency": 100001,
+      "skillName": "방패 밀쳐내기",
+      "skillIconAddressable": "ice3",
+      "skillDescription": "방패로 전방 {0} 범위의 적들을 {1}만큼 밀쳐내며 {2}의 피해를 입힙니다.",
+      "skillStats": [
+        {
+          "key": "범위",
+          "value": "3"
+        },
+        {
+          "key": "넉백 거리",
+          "value": "2"
+        },
+        {
+          "key": "피해량",
+          "value": "방어력의 150%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 레벨 {1}을 달성해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "CharacterLevel",
+          "value": 5
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "CharacterLevel",
+          "currentValue": 5,
+          "maxValue": 5
+        }
+      ]
+    },
+    {
+      "skillId": 1004,
+      "dependency": -1,
+      "skillName": "방패 돌진",
+      "skillIconAddressable": "ice3",
+      "skillDescription": "방패를 앞세워 {0} 거리만큼 돌진하며 경로상의 적들에게 {1}의 피해를 입힙니다.",
+      "skillStats": [
+        {
+          "key": "돌진 거리",
+          "value": "5"
+        },
+        {
+          "key": "피해량",
+          "value": "공격력의 200%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 10
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 10
+        }
+      ]
+    },
+    {
+      "skillId": 1005,
+      "dependency": 100002,
+      "skillName": "전장의 포효",
+      "skillIconAddressable": "Skill_BattleCry",
+      "skillDescription": "강력한 함성으로 주변 {0} 범위의 적들을 {1}초 동안 기절시키고 {2}의 피해를 입힙니다.",
+      "skillStats": [
+        {
+          "key": "범위",
+          "value": "4"
+        },
+        {
+          "key": "기절 시간",
+          "value": "2"
+        },
+        {
+          "key": "피해량",
+          "value": "공격력의 120%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 15
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 15
+        }
+      ]
+    }
+  ]
+}

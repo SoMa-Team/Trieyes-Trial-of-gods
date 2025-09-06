@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using CharacterSystem;
 using RelicSystem;
+using OutGame;
+using CardSystem;
 
 namespace GamePlayer
 {
@@ -16,10 +18,14 @@ namespace GamePlayer
         [SerializeField] private AchievementDatabaseSO achievementDatabase;
         public Achievement achievement;
 
+        public JsonToAchivement jsonToAchivement;
+
         public static Player Instance { get; private set; }
 
-        public Character selectedCharacter; // 캐릭터 선택은 일단 인스펙터에서 직접 할당
-        public List<int> selectedRelicIds; // 유물 선택은 Achievement에서 연동 + 선택 창에서 id 받기
+
+        public int mainCharacterId;
+        public Card selectedCard;
+        public AchievementData selectedRelic;
 
         public void Awake()
         {
@@ -35,6 +41,15 @@ namespace GamePlayer
 
             DontDestroyOnLoad(this);
             InitializeAchievement();
+
+            if (!gameObject.GetComponent<JsonToAchivement>())
+            {
+                Debug.LogError("JsonToAchivement not found");
+            }
+            else
+            {
+                jsonToAchivement = gameObject.GetComponent<JsonToAchivement>();
+            }
         }
         
         private void InitializeAchievement()

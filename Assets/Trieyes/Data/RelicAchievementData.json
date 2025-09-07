@@ -1,0 +1,391 @@
+{
+  "relicAchievements": [
+    {
+      "relicId": 2,
+      "dependency": 100001,
+      "relicName": "용사의 가호",
+      "relicIconAddressable": "Relic_HeroBlessing",
+      "relicDescription": "원소부여 스킬이 천상 강림으로 바뀝니다. 천상 강림은 {0}초 동안 {1}% 공격력과 {2}% 방어력을 증가시킵니다.",
+      "unlockConditionDescription": "{0}로 {1}승을 달성해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "CharacterWinCount",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "relicId": 3,
+      "dependency": 100001,
+      "relicName": "양손잡이",
+      "relicIconAddressable": "Relic_Ambidextrous",
+      "relicDescription": "원소부여 스킬의 쿨타임이 {0}초 감소합니다. 방패 밀쳐내기의 범위가 양방향으로 변합니다.",
+      "relicValues": [
+        {
+          "key": "쿨타임 감소",
+          "value": "2"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 20
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 20
+        }
+      ]
+    },
+    {
+      "relicId": 720003,
+      "dependency": 100001,
+      "relicName": "죽음을 초월한 용사",
+      "relicIconAddressable": "Relic_TranscendedHero",
+      "relicDescription": "체력이 1 이하로 떨어지는 순간 {0}초 동안 무적 상태가 되고 체력을 {1}% 회복합니다. 이후 게임이 끝날 때까지 속성 부여 스킬의 쿨타임이 {2}초 감소합니다.",
+      "relicValues": [
+        {
+          "key": "무적 지속시간",
+          "value": "3"
+        },
+        {
+          "key": "체력 회복률",
+          "value": "20"
+        },
+        {
+          "key": "쿨타임 감소",
+          "value": "2"
+        }
+      ],
+      "unlockConditionDescription": "체력을 1 이하로 떨어뜨리기를 {0}회 해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "HealthBelowOne",
+          "value": 10
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "HealthBelowOne",
+          "currentValue": 0,
+          "maxValue": 10
+        }
+      ]
+    },
+    {
+      "relicId": 720004,
+      "dependency": 100001,
+      "relicName": "RAC002",
+      "relicIconAddressable": "Relic_RAC002",
+      "relicDescription": "방패 밀쳐내기의 범위가 줄어들고 넉백이 사라집니다. 쿨타임이 {0}초로 감소합니다. 기본공격을 더 이상 사용할 수 없습니다.",
+      "relicValues": [
+        {
+          "key": "쿨타임",
+          "value": "3"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 100
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 100
+        }
+      ]
+    },
+    {
+      "relicId": 720005,
+      "dependency": 100001,
+      "relicName": "RAC003",
+      "relicIconAddressable": "Relic_RAC003",
+      "relicDescription": "방패 돌진이 방어력에 비례하는 추가 피해를 입힙니다. 추가 피해는 방어력의 {0}%입니다.",
+      "relicValues": [
+        {
+          "key": "추가 피해 비율",
+          "value": "100"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 75
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 75
+        }
+      ]
+    },
+    {
+      "relicId": 720006,
+      "dependency": 100001,
+      "relicName": "RAC004",
+      "relicIconAddressable": "Relic_RAC004",
+      "relicDescription": "전장의 포효가 사용자의 체력을 일부 회복시킵니다. 회복량은 최대 체력의 {0}%입니다.",
+      "relicValues": [
+        {
+          "key": "체력 회복률",
+          "value": "15"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 50
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 50
+        }
+      ]
+    },
+    {
+      "relicId": 720007,
+      "dependency": 100001,
+      "relicName": "RAC005",
+      "relicIconAddressable": "Relic_RAC005",
+      "relicDescription": "속성 부여가 무작위 속성을 부여하는 대신 천상 속성을 부여합니다. 천상 속성은 {0}초 동안 지속됩니다.",
+      "relicValues": [
+        {
+          "key": "천상 속성 지속시간",
+          "value": "10"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 200
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 200
+        }
+      ]
+    },
+    {
+      "relicId": 720008,
+      "dependency": 100001,
+      "relicName": "RAC006",
+      "relicIconAddressable": "Relic_RAC006",
+      "relicDescription": "속성이 부여되면 공격할 때마다 전방으로 해당 속성의 검기를 발사합니다. 검기는 {0}의 피해를 입힙니다.",
+      "relicValues": [
+        {
+          "key": "검기 피해량",
+          "value": "공격력의 60%"
+        }
+      ],
+      "unlockConditionDescription": "속성 부여 상태에서 공격을 {0}회 해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "AttackWithBuff",
+          "value": 500
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "AttackWithBuff",
+          "currentValue": 0,
+          "maxValue": 500
+        }
+      ]
+    },
+    {
+      "relicId": 720009,
+      "dependency": 100001,
+      "relicName": "RAC007",
+      "relicIconAddressable": "Relic_RAC007",
+      "relicDescription": "속성이 부여되는 동안 함께 전투를 도와주는 해당 속성의 정령이 소환됩니다. 정령은 {0}초마다 공격합니다.",
+      "relicValues": [
+        {
+          "key": "정령 공격 간격",
+          "value": "2"
+        }
+      ],
+      "unlockConditionDescription": "속성 부여 상태를 {0}초 유지해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "BuffDuration",
+          "value": 1000
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "BuffDuration",
+          "currentValue": 0,
+          "maxValue": 1000
+        }
+      ]
+    },
+    {
+      "relicId": 720010,
+      "dependency": 100001,
+      "relicName": "RAC008",
+      "relicIconAddressable": "Relic_RAC008",
+      "relicDescription": "속성 부여 상태에서 적을 죽일 때마다 지속시간이 {0}초 증가합니다.",
+      "relicValues": [
+        {
+          "key": "지속시간 증가",
+          "value": "0.1"
+        }
+      ],
+      "unlockConditionDescription": "속성 부여 상태에서 적을 {0}회 처치해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "KillWithBuff",
+          "value": 100
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "KillWithBuff",
+          "currentValue": 0,
+          "maxValue": 100
+        }
+      ]
+    },
+    {
+      "relicId": 720011,
+      "dependency": 100001,
+      "relicName": "RAC009",
+      "relicIconAddressable": "Relic_RAC009",
+      "relicDescription": "속성 부여 스킬을 사용할 때마다 자신의 주위를 공전하는 별을 생성합니다. 별에 닿을 때마다 적은 {0}의 피해를 받습니다.",
+      "relicValues": [
+        {
+          "key": "별 피해량",
+          "value": "공격력의 40%"
+        }
+      ],
+      "unlockConditionDescription": "{0} 스킬을 {1}회 사용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SkillUsageCount",
+          "value": 300
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SkillUsageCount",
+          "currentValue": 0,
+          "maxValue": 300
+        }
+      ]
+    },
+    {
+      "relicId": 720012,
+      "dependency": 100001,
+      "relicName": "RAC010",
+      "relicIconAddressable": "Relic_RAC010",
+      "relicDescription": "속성 부여가 번개 속성으로 고정됩니다. 번개 속성이 부여됐을 때 공격속도가 {0}% 증가합니다.",
+      "relicValues": [
+        {
+          "key": "공격속도 증가",
+          "value": "100"
+        }
+      ],
+      "unlockConditionDescription": "번개 속성 부여를 {0}회 해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "LightningBuffCount",
+          "value": 150
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "LightningBuffCount",
+          "currentValue": 0,
+          "maxValue": 150
+        }
+      ]
+    },
+    {
+      "relicId": 720013,
+      "dependency": 100001,
+      "relicName": "RAC011",
+      "relicIconAddressable": "Relic_RAC011",
+      "relicDescription": "속성 부여가 불 속성으로 고정됩니다. 화상을 입은 적이 다시 화상을 입는 경우 남은 화상 피해량의 {0}%를 즉시 입으며 화상의 지속시간이 초기화됩니다.",
+      "relicValues": [
+        {
+          "key": "즉시 피해 비율",
+          "value": "20"
+        }
+      ],
+      "unlockConditionDescription": "화상 효과를 {0}회 적용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "BurnEffectCount",
+          "value": 200
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "BurnEffectCount",
+          "currentValue": 0,
+          "maxValue": 200
+        }
+      ]
+    },
+    {
+      "relicId": 720014,
+      "dependency": 100001,
+      "relicName": "RAC012",
+      "relicIconAddressable": "Relic_RAC012",
+      "relicDescription": "속성부여가 얼음 속성으로 고정됩니다. 둔화가 걸린 적이 다시 둔화에 걸리는 경우 해당 적의 방어력이 {0}% 감소합니다.",
+      "relicValues": [
+        {
+          "key": "방어력 감소율",
+          "value": "25"
+        }
+      ],
+      "unlockConditionDescription": "둔화 효과를 {0}회 적용해야 합니다.",
+      "isUnlocked": false,
+      "unlockConditions": [
+        {
+          "key": "SlowEffectCount",
+          "value": 180
+        }
+      ],
+      "unlockProgress": [
+        {
+          "key": "SlowEffectCount",
+          "currentValue": 0,
+          "maxValue": 180
+        }
+      ]
+    }
+  ]
+}

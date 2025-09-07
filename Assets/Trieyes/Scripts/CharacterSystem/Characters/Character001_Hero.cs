@@ -49,6 +49,8 @@ namespace CharacterSystem
         protected override void Start()
         {
             base.Start();
+            pawnName = "용사";
+            spawnID = 1;
         }
 
         protected override void OnDestroy()

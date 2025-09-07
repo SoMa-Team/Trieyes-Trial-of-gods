@@ -43,6 +43,7 @@ namespace NodeStage
         {
             this.mainCharacter = mainCharacter;
             this.gameObject.SetActive(true);
+            SetupRewards();
         }
 
         private void DeActivate()

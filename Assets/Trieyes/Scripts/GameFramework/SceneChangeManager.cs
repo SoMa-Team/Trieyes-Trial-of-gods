@@ -128,7 +128,7 @@ namespace GameFramework
                 mainCharacter.deck.AddCard(Player.Instance.selectedCard.DeepCopy());
             }
 
-            if (Player.Instance.selectedRelic is not null)
+            if (Player.Instance.selectedRelic.achievementID != 0)
             {
                 mainCharacter.AddRelic(RelicFactory.Create(Player.Instance.selectedRelic.achievementID));
                 mainCharacter.ApplyRelic();

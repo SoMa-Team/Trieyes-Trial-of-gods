@@ -96,6 +96,7 @@ namespace CharacterSystem
             return id switch
             {
                 100001 => characterPrefabs[0],
+                100002 => characterPrefabs[1],
                 // TODO: 더 많은 캐릭터 ID 추가 필요
                 _ => throw new Exception($"Character (id : {id}) does not exist.")
             };

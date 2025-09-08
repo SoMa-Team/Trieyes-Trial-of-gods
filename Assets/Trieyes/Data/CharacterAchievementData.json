@@ -18,7 +18,7 @@
       "characterName": "마법사",
       "characterDescription": "원소의 힘을 다루는 현명한 마법사. 불, 얼음, 번개의 힘을 자유자재로 조작하며, 전장에서 강력한 마법을 구사한다.",
       "unlockConditionDescription": "{0}로 {1}승을 달성해야 합니다.",
-      "isUnlocked": false,
+      "isUnlocked": true,
       "unlockConditions": [
         {
           "key": "CharacterWinCount",
@@ -28,7 +28,7 @@
       "unlockProgress": [
         {
           "key": "CharacterWinCount",
-          "currentValue": 0,
+          "currentValue": 10,
           "maxValue": 10
         }
       ]

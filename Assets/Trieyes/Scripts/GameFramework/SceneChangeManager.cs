@@ -47,7 +47,7 @@ namespace GameFramework
         {
             player = Player.Instance;
             
-            LoadSceneWithCallback(BattleSceneName, GameStartWithNewCharacter);
+            LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter);
         }
 
         public void ChangeBattleToGameOver()
@@ -82,38 +82,9 @@ namespace GameFramework
             SceneManager.LoadScene(sceneName);
         }
 
-        /// <summary>
-        /// 공통: 캐릭터 DontDestroyOnLoad 및 부모 분리
-        /// </summary>
-        private void PrepareCharacterForSceneTransition(Character character)
-        {
-            if (character == null) return;
-            character.transform.SetParent(null);
-            DontDestroyOnLoad(character.gameObject);
-        }
-
-        /// <summary>
-        /// 현재 스테이지 난이도 반환
-        /// </summary>
-        private Difficulty GetCurrentDifficulty()
-        {
-            return Difficulty.GetByStageRound(stageRound);
-        }
-
         private void OnBattleSceneLoadedWithNewCharacter(Scene scene)
         {
             var mainCharacter = CharacterFactory.Instance.Create(Player.Instance.mainCharacterId);
-
-            if (Player.Instance.selectedCard is not null)
-            {
-                mainCharacter.deck.AddCard(Player.Instance.selectedCard.DeepCopy());
-            }
-
-            if (Player.Instance.selectedRelic is not null)
-            {
-                mainCharacter.AddRelic(RelicFactory.Create(Player.Instance.selectedRelic.achievementID));
-                mainCharacter.ApplyRelic();
-            }
 
             CharacterFactory.Instance.Deactivate(mainCharacter);
             NextStageSelectPopup.Instance.StartGame((Character)mainCharacter);

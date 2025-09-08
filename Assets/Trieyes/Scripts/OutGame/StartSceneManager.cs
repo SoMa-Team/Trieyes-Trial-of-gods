@@ -16,8 +16,6 @@ namespace OutGame{
         public static StartSceneManager Instance { get; private set; }
         
         public GameObject CharacterSelectPanel;
-        public GameObject CardSelectPanel;
-        public GameObject RelicSelectPanel;
 
         async void Start()
         {
@@ -43,18 +41,6 @@ namespace OutGame{
             {
                 CharacterSelectPanel.SetActive(false);
                 SetupCanvasGroup(CharacterSelectPanel);
-            }
-            
-            if (RelicSelectPanel != null)
-            {
-                RelicSelectPanel.SetActive(false);
-                SetupCanvasGroup(RelicSelectPanel);
-            }
-            
-            if (CardSelectPanel != null)
-            {
-                CardSelectPanel.SetActive(false);
-                SetupCanvasGroup(CardSelectPanel);
             }
         }
 
@@ -82,62 +68,10 @@ namespace OutGame{
             ShowPanelWithFade(CharacterSelectPanel);
         }
 
-        public void ToCardSelectPanel()
-        {
-            // CardSelectListView의 Activate 호출
-            var cardSelectListView = CardSelectPanel.GetComponent<Popup>().ListView;
-            if (cardSelectListView != null)
-            {
-                cardSelectListView.Activate();
-            }
-
-            ShowPanelWithFade(CardSelectPanel);
-        }
-
-        public void ToRelicSelectPanel()
-        {
-            // RelicSelectListView의 Activate 호출
-            var relicSelectListView = RelicSelectPanel.GetComponent<Popup>().ListView;
-            if (relicSelectListView != null)
-            {
-                relicSelectListView.Activate();
-            }
-
-            ShowPanelWithFade(RelicSelectPanel);
-        }
-
         public void CloseCharacterSelectPanel()
         {
             Player.Instance.mainCharacterId = -1;
             HidePanelWithFade(CharacterSelectPanel);
-        }
-
-        public void CloseCardSelectPanel()
-        {
-            Player.Instance.selectedCard = null;
-            
-            // CardSelectListView의 Deactivate 호출
-            var cardSelectListView = CardSelectPanel.GetComponent<Popup>().ListView;
-            if (cardSelectListView != null)
-            {
-                cardSelectListView.Deactivate();
-            }
-            
-            HidePanelWithFade(CardSelectPanel);
-        }
-
-        public void CloseRelicSelectPanel()
-        {
-            Player.Instance.selectedRelic = null;
-
-            // RelicSelectListView의 Deactivate 호출
-            var relicSelectListView = RelicSelectPanel.GetComponent<Popup>().ListView;
-            if (relicSelectListView != null)
-            {
-                relicSelectListView.Deactivate();
-            }
-
-            HidePanelWithFade(RelicSelectPanel);
         }
 
         /// <summary>

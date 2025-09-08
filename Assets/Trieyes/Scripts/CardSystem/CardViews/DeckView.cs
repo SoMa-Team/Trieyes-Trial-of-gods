@@ -18,6 +18,7 @@ namespace CardViews
         [SerializeField] private CardView cardPrefab;   
         
         [SerializeField] private RectTransform rectTransform;
+        [SerializeField] private float cardHeightPercent = 0.8f; 
 
         private readonly List<CardView> spawned = new();
         private readonly HashSet<CardView> selected = new();
@@ -25,6 +26,8 @@ namespace CardViews
         private int requiredSelectCount;
         private Action<List<Card>> onConfirm;
         private Action onCancel;
+        
+        private readonly Dictionary<CardView, Vector3> baseScales = new();
 
         public void Activate(Deck deck, int requiredCount, Action<List<Card>> onConfirm, Action onCancel)
         {
@@ -41,7 +44,7 @@ namespace CardViews
             HookButtons(true);
             
             rectTransform.anchoredPosition = Vector2.zero;
-            gameObject.SetActive(false);
+            OnResize();
         }
 
         public void Deactivate()
@@ -65,6 +68,39 @@ namespace CardViews
                 if (nextButton) nextButton.onClick.RemoveListener(Confirm);
             }
         }
+        
+        public void OnResize()
+        {
+            if (cardContainer == null || spawned.Count == 0) return;
+
+            Canvas.ForceUpdateCanvases();
+
+            var container = (RectTransform)cardContainer;
+            Vector2 containerWorld = Vector2.Scale(container.rect.size, container.lossyScale);
+
+            float desiredHeight = Mathf.Max(1f, containerWorld.y) * Mathf.Clamp01(cardHeightPercent);
+
+            foreach (var cv in spawned)
+            {
+                if (cv == null) continue;
+                var view = cv.rectTransform;
+                
+                if (!baseScales.TryGetValue(cv, out var baseScale))
+                    baseScale = view.localScale;
+                
+                float parentScaleY = Mathf.Max(1e-6f, view.lossyScale.y / Mathf.Max(1e-6f, view.localScale.y));
+                
+                float baseWorldHeight = view.rect.size.y * parentScaleY * baseScale.y;
+                float scaleFactor     = desiredHeight / Mathf.Max(1f, baseWorldHeight);
+                
+                view.localScale = new Vector3(
+                    baseScale.x * scaleFactor,
+                    baseScale.y * scaleFactor,
+                    baseScale.z
+                );
+            }
+        }
+
 
         private void Build(Deck deck)
         {
@@ -77,6 +113,8 @@ namespace CardViews
                 cv.SetSelected(false);
                 cv.SetOnClicked(OnCardClicked);
                 spawned.Add(cv);
+                
+                baseScales[cv] = cv.rectTransform.localScale;
             }
         }
 
@@ -86,6 +124,7 @@ namespace CardViews
                 if (cv) Destroy(cv.gameObject);
             spawned.Clear();
             selected.Clear();
+            baseScales.Clear();
         }
 
         private void OnCardClicked(CardView cv)

@@ -24,7 +24,7 @@ namespace GameFramework
         private const string BattleSceneName = "BattleScene";
         private const string GameOverSceneName = "GameOverScene";
 
-        public Player player;
+        [HideInInspector] public Player player;
 
         // ====== 초기화 ======
         private void Awake()

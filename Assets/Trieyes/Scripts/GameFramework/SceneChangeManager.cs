@@ -7,6 +7,7 @@ using Utils;
 using RelicSystem;
 using GamePlayer;
 using NodeStage;
+using OutGame;
 
 namespace GameFramework
 {
@@ -80,17 +81,39 @@ namespace GameFramework
             SceneManager.sceneLoaded += Handler;
             SceneManager.LoadScene(sceneName);
         }
-        private void GameStartWithNewCharacter(Scene scene)
-        {
-            var mainCharacter = CharacterFactory.Instance.Create(0);
 
-            foreach (var relicId in player.selectedRelicIds)
+        /// <summary>
+        /// 공통: 캐릭터 DontDestroyOnLoad 및 부모 분리
+        /// </summary>
+        private void PrepareCharacterForSceneTransition(Character character)
+        {
+            if (character == null) return;
+            character.transform.SetParent(null);
+            DontDestroyOnLoad(character.gameObject);
+        }
+
+        /// <summary>
+        /// 현재 스테이지 난이도 반환
+        /// </summary>
+        private Difficulty GetCurrentDifficulty()
+        {
+            return Difficulty.GetByStageRound(stageRound);
+        }
+
+        private void OnBattleSceneLoadedWithNewCharacter(Scene scene)
+        {
+            var mainCharacter = CharacterFactory.Instance.Create(Player.Instance.mainCharacterId);
+
+            if (Player.Instance.selectedCard is not null)
             {
-                Debug.Log($"Relic ID: {relicId}");
-                mainCharacter.AddRelic(RelicFactory.Create(relicId));
+                mainCharacter.deck.AddCard(Player.Instance.selectedCard.DeepCopy());
             }
 
-            mainCharacter.ApplyRelic();
+            if (Player.Instance.selectedRelic is not null)
+            {
+                mainCharacter.AddRelic(RelicFactory.Create(Player.Instance.selectedRelic.achievementID));
+                mainCharacter.ApplyRelic();
+            }
 
             CharacterFactory.Instance.Deactivate(mainCharacter);
             NextStageSelectPopup.Instance.StartGame((Character)mainCharacter);

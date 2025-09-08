@@ -181,7 +181,6 @@ namespace CardViews
             UpdateView();
         }
         private Action<CardView> onClicked;
-
         public void SetOnClicked(Action<CardView> handler)
         {
             onClicked = handler;

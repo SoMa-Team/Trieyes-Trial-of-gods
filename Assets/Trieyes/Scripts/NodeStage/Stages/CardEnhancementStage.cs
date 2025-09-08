@@ -15,8 +15,8 @@ namespace NodeStage
 
         [Header("UI")]
         [SerializeField] private Button btnEnhance;
-        [SerializeField] private Button btnSwap; 
-        [SerializeField] private Button nextStageButton; 
+        [SerializeField] private Button btnSwap;
+        [SerializeField] private Button nextStageButton;
 
         [Header("Popup")]
         [SerializeField] private DeckView deckView;
@@ -96,6 +96,7 @@ namespace NodeStage
             }
 
             currentMode = Mode.None;
+            NextStage();
         }
 
         // 강화 적용(프로젝트 규약에 맞춰 조정)

@@ -114,8 +114,9 @@ namespace CardViews
         {
             if (selected.Count != requiredSelectCount) return;
             var cards = selected.Select(s => s.GetCurrentCard()).ToList();
-            onConfirm?.Invoke(cards);
+            
             Deactivate();
+            onConfirm?.Invoke(cards);
         }
 
         private void Cancel()

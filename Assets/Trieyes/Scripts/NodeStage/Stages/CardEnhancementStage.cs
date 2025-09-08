@@ -16,7 +16,6 @@ namespace NodeStage
         [Header("UI")]
         [SerializeField] private Button btnEnhance;
         [SerializeField] private Button btnSwap;
-        [SerializeField] private Button nextStageButton;
 
         [Header("Popup")]
         [SerializeField] private DeckView deckView;

@@ -15,7 +15,9 @@ namespace CardViews
         [SerializeField] private Button nextButton;      
 
         [SerializeField] private Transform cardContainer;  
-        [SerializeField] private CardView cardPrefab;      
+        [SerializeField] private CardView cardPrefab;   
+        
+        [SerializeField] private RectTransform rectTransform;
 
         private readonly List<CardView> spawned = new();
         private readonly HashSet<CardView> selected = new();
@@ -26,6 +28,7 @@ namespace CardViews
 
         public void Activate(Deck deck, int requiredCount, Action<List<Card>> onConfirm, Action onCancel)
         {
+            Debug.Log("CardViews::Activate");
             this.requiredSelectCount = requiredCount;
             this.onConfirm = onConfirm;
             this.onCancel = onCancel;
@@ -36,6 +39,9 @@ namespace CardViews
             Build(deck);
             SetNextInteractable();
             HookButtons(true);
+            
+            rectTransform.anchoredPosition = Vector2.zero;
+            gameObject.SetActive(false);
         }
 
         public void Deactivate()

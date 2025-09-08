@@ -18,7 +18,7 @@ namespace CharacterSystem
         protected int dropGold; // 드랍할 골드 양
         public Character playerTarget;
 
-        public override Vector2 CenterOffset { get { return Vector2.zero; } }
+        public override Vector2 CenterOffset { get; set; } = Vector2.zero;
    
         // ===== [기능 2] 초기화 =====
         protected override void Start()

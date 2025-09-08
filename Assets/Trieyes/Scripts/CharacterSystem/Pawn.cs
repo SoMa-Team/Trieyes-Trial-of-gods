@@ -49,7 +49,7 @@ namespace CharacterSystem
         [SerializeField] public Controller Controller; // TODO : 테스트 컨트롤러를 위한 임시 접근데어자 변경
         [SerializeField] protected Animator Animator;
 
-        public abstract Vector2 CenterOffset { get; }
+        public abstract Vector2 CenterOffset { get; set; }
 
         public AllIn1SpriteShaderHandler allIn1SpriteShaderHandler = new AllIn1SpriteShaderHandler();
         

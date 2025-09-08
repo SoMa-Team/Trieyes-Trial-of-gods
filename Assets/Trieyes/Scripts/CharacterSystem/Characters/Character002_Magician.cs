@@ -14,6 +14,13 @@ namespace CharacterSystem
         [HideInInspector] public int killedDuringSkill002 = 0;
 
         [HideInInspector] public AttackData _basicAttack;
+
+        [Header("Attack Data")] 
+        public int AC050_MaxBounces;
+        public float AC050_DamageMultiplier;
+        public float AC050_BounceChange;
+
+        public float AC050_Radius;
         
         // Pawn의 추상 멤버 구현
         

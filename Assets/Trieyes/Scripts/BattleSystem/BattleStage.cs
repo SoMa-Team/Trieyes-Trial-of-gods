@@ -153,6 +153,64 @@ namespace BattleSystem
             return enemiesInRange;
         }
 
+        public List<Enemy> GetEnemiesInRectRangeFromTarget(Pawn target, Vector2 start, Vector2 end)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in enemies)
+            {
+                if (enemy.Value is null || enemy.Value.transform == null)
+                {
+                    continue;
+                }
+                
+                if (enemy.Value.transform.position.x > start.x && enemy.Value.transform.position.x < end.x &&
+                    enemy.Value.transform.position.y > start.y && enemy.Value.transform.position.y < end.y)
+                {
+                    enemiesInRange.Add(enemy.Value as Enemy);
+                }
+            }
+            return enemiesInRange;
+        }
+
+        public List<Enemy> GetEnemiesInRectRangeFromTargetOrderByDistance(Pawn target, Vector2 start, Vector2 end)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in enemies)
+            {
+                if (enemy.Value is null || enemy.Value.transform == null)
+                {
+                    continue;
+                }
+                
+                if (enemy.Value.transform.position.x > start.x && enemy.Value.transform.position.x < end.x &&
+                    enemy.Value.transform.position.y > start.y && enemy.Value.transform.position.y < end.y)
+                {
+                    enemiesInRange.Add(enemy.Value as Enemy);
+                }
+            }
+            enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, target.transform.position).CompareTo(Vector2.Distance(b.transform.position, target.transform.position)));
+            return enemiesInRange;
+        }
+
+        public List<Enemy> GetEnemiesInCircleRangeFromTargetOrderByDistance(Pawn target, float radius)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in enemies)
+            {
+                if (enemy.Value is null || enemy.Value.transform == null)
+                {
+                    continue;
+                }
+                
+                if (Vector2.Distance(enemy.Value.transform.position, target.transform.position) < radius)
+                {
+                    enemiesInRange.Add(enemy.Value as Enemy);
+                }
+            }
+            enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, target.transform.position).CompareTo(Vector2.Distance(b.transform.position, target.transform.position)));
+            return enemiesInRange;
+        }
+
         public List<Enemy> GetEnemiesInRectRangeOrderByDistance(Vector2 start, Vector2 end)
         {
             List<Enemy> enemiesInRange = new List<Enemy>();

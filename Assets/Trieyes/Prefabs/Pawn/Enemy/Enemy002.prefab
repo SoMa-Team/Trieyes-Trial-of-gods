@@ -222,7 +222,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.02, y: -0.06}
+  m_Offset: {x: 0.02, y: 0}
   m_Size: {x: 0.18, y: 0.22}
   m_Direction: 0
 --- !u!114 &-5832122986476030886
@@ -243,7 +243,6 @@ MonoBehaviour:
   Controller: {fileID: 0}
   Animator: {fileID: 0}
   statPresetSO: {fileID: 11400000, guid: 3eef8c216c47346f8883e83d964d4294, type: 2}
-  lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 0}
   skillAttack1Cooldown: 0
@@ -254,7 +253,6 @@ MonoBehaviour:
   objectID: 0
   dropGold: 0
   playerTarget: {fileID: 0}
-  collisionDamageInterval: 0.33
   material: {fileID: 0}
   spriteRenderer: {fileID: 0}
 --- !u!114 &7116576973010013569

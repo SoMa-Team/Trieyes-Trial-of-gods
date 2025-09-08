@@ -20,7 +20,7 @@ namespace CharacterSystem
         protected float lastTriggerEnterTime = 0f;
         public float collisionDamageInterval = 0.5f;
 
-        public override Vector2 CenterOffset { get { return Vector2.zero; } }
+        public override Vector2 CenterOffset { get; set; } = Vector2.zero;
         
         // ===== [Unity 생명주기] =====
         protected override void Start()

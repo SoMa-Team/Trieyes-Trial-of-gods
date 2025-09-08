@@ -5,57 +5,56 @@ using UnityEngine;
 using System.Collections.Generic;
 using BattleSystem;
 using Utils;
+using System;
+using PrimeTween;
 
 namespace AttackComponents
 {
     /// <summary>
-    /// 캐릭터 소드 공격
-    /// 캐릭터 소드 공격은 Physics.OverlapBox을 사용하여 구현합니다.
-    /// 1. 캐릭터의 위치를 기준으로 Physics.OverlapBox을 사용하여 충돌을 감지합니다.
-    /// 2. 콜라이더 없이 물리 오버랩을 통해 효율적인 충돌 감지를 수행합니다.
-    /// 3. 0.6초 동안 지속되는 공격을 실행합니다.
+    /// 유도 매직 미사일 공격
+    /// 1. 가장 가까운 적을 타겟으로 하는 매직 미사일을 발사합니다.
+    /// 2. 매직 미사일은 0.5초 후 적에게 데미지를 입힙니다.
+    /// 3. 25% 확률로 도탄되어 추가 적을 공격할 수 있습니다.
     /// </summary>
     public class AC050_MagicMissile : AttackComponent
     {
         // FSM 상태 관리
-        private AttackState attackState = AttackState.None;
+        public AttackState attackState;
 
-        private List<Enemy> target = new List<Enemy>();
+        private Character002_Magician magician;
 
-        private float vfxSize = 0f;
         private float attackTimer = 0f;
+        private const float attackDelay = 0.1f;
+        private bool isTrailMoving = false; // trail 이동 상태 추적
 
-        private float vfxDuration = 0.6f;
-        private Vector2 attackDirection;
+        // 매직 미사일 설정
+        [Header("Magic Missile Settings")]
+        public float missileTravelTime = 0.5f; // 미사일이 적에게 도달하는 시간 (고정)
+        private float elapsedTime = 0f;
+        public float bounceChance = 0.5f; // 50% 도탄 확률
+        public int maxBounces = 1; // 최대 도탄 횟수
+        public LayerMask targetLayerMask = -1;
 
-        // Physics.OverlapBox 설정
-        [Header("Physics Overlap Settings")]
-        public float attackRadius = 1f;
-        public float attackSpeed = 1f;
-        public LayerMask targetLayerMask = -1; // 기본적으로 모든 레이어
-
-        // 충돌 감지 설정
-        private Vector2 attackCenter;
-        private Vector2 attackSize;
+        private Enemy targetEnemy;
 
         // VFX 설정
         [Header("VFX Settings")]
-        [SerializeField] private GameObject vfxPrefab; // 인스펙터에서 받을 VFX 프리팹
+        [SerializeField] private TrailRenderer trail;
+        [SerializeField] private ParticleSystem particle;
 
         // 공격 상태 열거형
-        private enum AttackState { None, Preparing, Active, Finishing, Finished }
+        [HideInInspector] public enum AttackState { None, Preparing, Active, Finishing, Finished }
 
         public override void Activate(Attack attack, Vector2 direction)
         {
             base.Activate(attack, direction);
             
             // 초기 상태 설정
-            attackState = AttackState.Preparing;
+            attackState = AttackState.None;
             attackTimer = 0f;
-            attackDirection = direction.normalized;
-            attackSpeed = attack.attacker.statSheet.Get(StatType.AttackSpeed) / 10f * 1.5f;
-            attackRadius = attack.attacker.statSheet.Get(StatType.AttackRange) / 10f;
-            
+            trail.enabled = false;
+            magician = attack.attacker as Character002_Magician;
+           
             // 공격 시작
             StartAttack();
         }
@@ -63,26 +62,19 @@ namespace AttackComponents
         public override void Deactivate()
         {
             base.Deactivate();
-            target.Clear();
+            targetEnemy = null;
+            isTrailMoving = false;
+            trail.Clear();
+            trail.enabled = false;
             StopAndDestroyVFX(spawnedVFX);
         }
 
         private void StartAttack()
         {
-            attackState = AttackState.Preparing;
+            maxBounces = magician.AC050_MaxBounces;
+            bounceChance = magician.AC050_BounceChange;
+            attackState = AttackState.None;
             attackTimer = 0f;
-            
-            // 1. 캐릭터의 위치를 기준으로 공격 영역 설정
-            var pawnPrefab = attack.attacker.PawnPrefab;
-            Vector2 vfxPosition = (Vector2)pawnPrefab.transform.position;
-
-            spawnedVFX = CreateAndSetupVFX(vfxPrefab, vfxPosition, attackDirection);
-
-            // 공격 중심점과 크기 계산
-            // TODO : 공통적으로 적용되도록 수정
-            float characterXLength = 1f;
-            attackCenter = spawnedVFX.transform.position + (attackDirection.x >= 0 ? -new Vector3(characterXLength * 0.5f, 0, 0) : new Vector3(characterXLength * 0.5f, 0, 0));
-            attackSize = new Vector2(attackRadius * 2f + 0.5f * characterXLength, attackRadius * 2f);
         }
 
         protected override void Update()
@@ -101,32 +93,78 @@ namespace AttackComponents
             switch (attackState)
             {
                 case AttackState.None:
+                    var choose = ChooseEnemyTarget();
+                    if (!choose)
+                    {
+                        attackState = AttackState.Finishing;
+                        return;
+                    }
+                    attackTimer = 0f;
+                    attackState = AttackState.Preparing;
                     break;
 
                 case AttackState.Preparing:
-                    // 공격 활성화
-                    PlayVFX(spawnedVFX);
-                    DetectCollisions();
-                    attackState = AttackState.Active;
-                    attackTimer = 0f;
-                    break;
-
-                case AttackState.Active:
-                    // VFX가 완료될 때까지 대기
-                    if (attackTimer >= vfxDuration)
+                    // 공격 지연 시간 대기
+                    if (attackTimer >= attackDelay)
                     {
-                        foreach (var targetPawn in target)
+                        SetEnemyTarget(targetEnemy);
+                        if (maxBounces == magician.AC050_MaxBounces)
                         {
-                            targetPawn.allIn1SpriteShaderHandler.SetShaderAllObjects(AllIn1SpriteShaderType.Off);
+                            trail.transform.position = magician.transform.position;
                         }
-                        attackState = AttackState.Finishing;
+                        trail.enabled = true;
+                        isTrailMoving = false; // trail 이동 상태 초기화
+                        attackState = AttackState.Active;
                         attackTimer = 0f;
                     }
                     else
                     {
                         attackTimer += Time.deltaTime;
                     }
+                    break;
+                
+                case AttackState.Active:
+                    if (targetEnemy == null)
+                    {
+                        attackState = AttackState.Finishing;
+                        return;
+                    }
 
+                    // 남은 시간
+                    float remaining = missileTravelTime - attackTimer;
+                    if (remaining <= 0f)
+                    {
+                        // 도탄 처리
+                        var bounce = DamageToTarget();
+                        if (bounce)
+                        {
+                            // 도탄 시 트레일 정보 초기화 하고 다시 한 번 동작
+                            attackTimer = 0f;
+                            isTrailMoving = false;
+                            trail.Clear();
+                            trail.enabled = false;
+                            elapsedTime = 0f;
+                            attackState = AttackState.Preparing;
+                        }
+                        else
+                        {
+                            attackTimer = 0f;
+                            attackState = AttackState.Finishing;
+                        }
+                    }
+                    else
+                    {
+                        // 등속 이동 보정
+                        Vector3 dir = targetEnemy.transform.position + (Vector3)targetEnemy.CenterOffset - trail.transform.position;
+                        float distance = dir.magnitude;
+                        if (distance > 0.01f)
+                        {
+                            float step = distance / remaining * Time.deltaTime;
+                            trail.transform.position += dir.normalized * step;
+                        }
+
+                        attackTimer += Time.deltaTime;
+                    }
                     break;
 
                 case AttackState.Finishing:
@@ -140,60 +178,49 @@ namespace AttackComponents
             }
         }
 
-        /// <summary>
-        /// Physics.OverlapBox을 사용하여 충돌을 감지합니다.
-        /// </summary>
-        private void DetectCollisions()
+        private bool DamageToTarget()
         {
-            // Physics.OverlapBox을 사용하여 충돌 감지
-            Collider2D[] hitColliders = Physics2D.OverlapBoxAll(attackCenter, attackSize, 0f, targetLayerMask);
-
-            foreach (Collider2D hitCollider in hitColliders)
+            if (targetEnemy is not null)
             {
-                // 공격자 자신은 제외
-                if (hitCollider.TryGetComponent(out Enemy targetPawn))
+                DamageProcessor.ProcessHit(attack, targetEnemy);
+
+                // 도탄 여부 판단하기
+                if (maxBounces > 0 && UnityEngine.Random.Range(0f, 1f) <= bounceChance)
                 {
-                    target.Add(targetPawn);
-                    targetPawn.allIn1SpriteShaderHandler.SetObject(targetPawn.gameObject);
-                    targetPawn.allIn1SpriteShaderHandler.SetShaderAllObjects(AllIn1SpriteShaderType.DamageNormal);
-                    DamageProcessor.ProcessHit(attack, targetPawn);
+                    Debug.LogWarning($"Bounce Chance : {bounceChance}, BounceToTarget: {targetEnemy.name}");
+                    var newTargetList =
+                        BattleStage.now.GetEnemiesInCircleRangeFromTargetOrderByDistance(targetEnemy, 10f);
+                    if (newTargetList.Count > 2)
+                    {
+                        targetEnemy = newTargetList[1];
+                        maxBounces--;
+                        return true;
+                    }
                 }
             }
+            return false;
         }
 
-        protected override GameObject CreateAndSetupVFX(GameObject vfxPrefab, Vector2 position, Vector2 direction)
+        private bool ChooseEnemyTarget()
         {
-            // 기본 VFX 생성 (base 호출)
-            if (spawnedVFX is null)
+            var targetEnemyList = BattleStage.now.GetEnemiesInCircleRangeOrderByDistance(magician.transform.position, 10f, 1);
+            if (targetEnemyList.Count > 1)
             {
-                spawnedVFX = base.CreateAndSetupVFX(vfxPrefab, position, direction);
+                targetEnemy = targetEnemyList[0];
+                return true;
             }
+            return false;
+        }
 
-            // vfx의 가로 세로 길이 구하기
-            var psr = spawnedVFX.transform.GetChild(0).GetComponent<ParticleSystemRenderer>();
-            
-            if(direction.x <= 0)
+        private void SetEnemyTarget(Enemy target)
+        {
+            if (target == null)
             {
-                psr.flip = new Vector3(1, 0, 0);
+                attackState = AttackState.Finishing;
+                return;
             }
-            else
-            {
-                psr.flip = new Vector3(0, 0, 0);
-            }
-
-            spawnedVFX.transform.localScale = new Vector3(attackRadius, attackRadius, 1f);
-
-            vfxSize = psr.bounds.size.x;
-            
-            spawnedVFX.transform.SetParent(attack.attacker.transform);
-
-            var offsetX = direction.x > 0 ? vfxSize / 2 : -vfxSize / 2;
-            spawnedVFX.transform.localPosition = new Vector3(offsetX, attack.attacker.CenterOffset.y, 0);
-            
-            SetVFXSpeed(spawnedVFX, attackSpeed);
-
-            spawnedVFX.SetActive(true);
-            return spawnedVFX;
+            Debug.LogWarning($"SetEnemyTarget: {target.name}");
+            targetEnemy = target;
         }
     }
 }

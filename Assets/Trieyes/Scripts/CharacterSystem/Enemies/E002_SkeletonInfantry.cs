@@ -20,6 +20,8 @@ namespace CharacterSystem
         protected override void Start()
         {
             base.Start();
+
+            CenterOffset = new Vector2(0f, 0.1f);
             
             // 머티리얼 초기화
             if (spriteRenderer == null)

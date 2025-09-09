@@ -366,7 +366,6 @@ namespace CharacterSystem
                         ? Quaternion.Euler(0, 180, 0)
                         : Quaternion.identity;
                 }
-
                 ChangeAnimationState("MOVE");
             }
             else
@@ -382,7 +381,7 @@ namespace CharacterSystem
         /// <param name="newState">새로운 애니메이션 상태</param>
         protected virtual void ChangeAnimationState(string newState)
         {          
-            if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
+            if (Animator != null && Animator.HasState(0, Animator.StringToHash(newState)))
             {
                 Animator.speed = 1f;
                 // switch로 각 newStat에 대한 Parameter 값을 변경

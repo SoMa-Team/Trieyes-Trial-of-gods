@@ -16,7 +16,7 @@ namespace NodeStage
         private Action<StageType> onPick;
 
         /// <summary>슬롯 내용을 채우고 클릭 핸들러를 바인딩합니다.</summary>
-        public void SetStage(StageInfoSO info, Action<StageType> onPick)
+        public void Activate(StageInfoSO info, Action<StageType> onPick)
         {
             stageType = info.type;
             this.onPick = onPick;

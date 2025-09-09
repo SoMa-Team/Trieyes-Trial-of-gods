@@ -35,7 +35,7 @@ namespace NodeStage
             gameObject.SetActive(false);
         }
 
-        private static List<T> SampleWithoutReplacement<T>(IList<T> src, int k, System.Random r)
+        private List<T> SampleWithoutReplacement<T>(IList<T> src, int k, System.Random r)
         {
             if (src == null || src.Count == 0 || k <= 0) return new List<T>();
             k = Mathf.Clamp(k, 0, src.Count);
@@ -61,7 +61,7 @@ namespace NodeStage
             {
                 if (info == null) continue;
                 var slot = Instantiate(slotPrefab, slotContainer);
-                slot.SetStage(info, chosenType =>
+                slot.Activate(info, chosenType =>
                 {
                     InGameManager.Instance.StartNextStage(chosenType, mainCharacter);
                     Deactivate();

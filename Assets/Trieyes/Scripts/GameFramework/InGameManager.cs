@@ -64,21 +64,5 @@ namespace GameFramework
                     break;
             }
         }
-        public void OpenSelectCharacterPopup()
-        {
-            
-        }
-        public void OpenSelectStartRelicPopup()
-        {
-            
-        }
-        public void OpenSelectStartCardPopup()
-        {
-            
-        }
-        public void OpenSelectStagePopup()
-        {
-            
-        }
     }
 }

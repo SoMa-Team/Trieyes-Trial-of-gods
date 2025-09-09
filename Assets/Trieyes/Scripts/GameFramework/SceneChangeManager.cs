@@ -24,8 +24,6 @@ namespace GameFramework
         private const string BattleSceneName = "BattleScene";
         private const string GameOverSceneName = "GameOverScene";
 
-        [HideInInspector] public Player player;
-
         // ====== 초기화 ======
         private void Awake()
         {
@@ -45,8 +43,6 @@ namespace GameFramework
         /// </summary>
         public void GameStart()
         {
-            player = Player.Instance;
-            
             LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter);
         }
 

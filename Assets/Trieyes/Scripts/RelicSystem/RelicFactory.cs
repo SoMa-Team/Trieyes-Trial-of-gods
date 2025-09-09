@@ -26,26 +26,24 @@ namespace RelicSystem
             }
             relic.relicID = relicID;
             relic.name = data.name;
+            relic.icon = data.icon;
             relic.description = data.description;
             relic.filterAttackIDs = data.filterAttackIDs;
-            relic.filterAttackTag = AttackTagManager.GetAttackTagByName(data.filterTag);
             relic.attackComponentIDs = data.attackComponentIDs;
-
-            relic.randomOptions = new List<RandomOption>();
             
-            for (int i = 0; i < getRandomOptionCount(relicID); i++)
-            {
-                var randomOption = RandomOptionGenerator.Create(relicID);
-                relic.randomOptions.Add(randomOption);
-            }
-            
+        // public int relicID;
+        // public string name;
+        // public Sprite icon = null;
+        // public string description;
+        //
+        // public RelicAction relicAction;
+        // // Relic의 이벤트 Handler
+        // public List<int> filterAttackIDs;
+        // // 유물이 적용되는 공격 대상 // null일 경우 전체 공격 대상
+        // public List<int> attackComponentIDs;
+        //     // 유물이 적용되는 공격에 부착되는 AttackComponent
+        
             return relic;
-        }
-
-        private static int getRandomOptionCount(RelicID id)
-        {
-            // TODO: 랜덤 옵션의 줄 수가 유동적일 경우 수정
-            return 2;
         }
     }
 } 

@@ -63,6 +63,7 @@ namespace NodeStage
             if (deckView == null || mainCharacter == null) return;
             deckView.Activate(mainCharacter.deck, requiredCount: 0, onConfirm: null, onCancel: null);
         }
+        protected virtual void OnDestroy() { }
     }
     
     public class EventStage<T> : EventStage where T : EventStage<T>
@@ -84,6 +85,7 @@ namespace NodeStage
         protected virtual void OnDestroy()
         {
             if (Instance == (T)this) Instance = null;
+            base.OnDestroy();
         }
     }
 }

@@ -175,7 +175,7 @@ namespace OutGame{
                 Player.Instance.mainCharacterId = selectedCharacterAchievement.Id;
                 Debug.Log($"캐릭터 선택 완료: {selectedCharacterAchievement.Name} (ID: {selectedCharacterAchievement.Id})");
                 
-                StartSceneManager.Instance.ToCardSelectPanel();
+                StartSceneManager.Instance.GameStart();
             }
             else
             {

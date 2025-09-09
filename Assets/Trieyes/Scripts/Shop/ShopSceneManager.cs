@@ -10,6 +10,7 @@ using Stats;
 using StickerSystem;
 using Utils;
 using GameFramework;
+using NodeStage;
 using UISystem;
 
 public class ShopSceneManager : MonoBehaviour
@@ -294,6 +295,7 @@ public class ShopSceneManager : MonoBehaviour
 
             cardView.SetCard(card);
             cardView.SetCanInteract(true);
+            cardView.SetOnClicked(OnCardClicked);
         }
         UpdateButtonState();
         UpdateDeckCountUI();
@@ -496,6 +498,6 @@ public class ShopSceneManager : MonoBehaviour
     {
         UpdatePlayerStat();
         Deactivate();
-        SceneChangeManager.Instance.ChangeShopToBattle((Character)mainCharacter);
+        NextStageSelectPopup.Instance.SetNextStage(StageType.Shop, mainCharacter);
     }
 }

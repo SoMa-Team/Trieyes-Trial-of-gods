@@ -26,15 +26,17 @@ namespace CardViews
         private int requiredSelectCount;
         private Action<List<Card>> onConfirm;
         private Action onCancel;
+        private bool inspectOnly = false;
         
         private readonly Dictionary<CardView, Vector3> baseScales = new();
 
         public void Activate(Deck deck, int requiredCount, Action<List<Card>> onConfirm, Action onCancel)
         {
-            Debug.Log("CardViews::Activate");
             this.requiredSelectCount = requiredCount;
             this.onConfirm = onConfirm;
             this.onCancel = onCancel;
+            
+            inspectOnly = (requiredSelectCount <= 0);
 
             gameObject.SetActive(true);
             if (panelRoot) panelRoot.SetActive(true);
@@ -44,6 +46,7 @@ namespace CardViews
             HookButtons(true);
             
             rectTransform.anchoredPosition = Vector2.zero;
+            if (nextButton) nextButton.gameObject.SetActive(!inspectOnly);
             OnResize();
         }
 
@@ -109,9 +112,17 @@ namespace CardViews
             {
                 var cv = Instantiate(cardPrefab, cardContainer);
                 cv.SetCard(card);
-                cv.SetCanInteract(true);
                 cv.SetSelected(false);
-                cv.SetOnClicked(OnCardClicked);
+                if (inspectOnly)
+                {
+                    cv.SetCanInteract(false);                  // ✅ 클릭/선택 비활성
+                    cv.SetOnClicked(null);
+                }
+                else
+                {
+                    cv.SetCanInteract(true);
+                    cv.SetOnClicked(OnCardClicked);
+                }
                 spawned.Add(cv);
                 
                 baseScales[cv] = cv.rectTransform.localScale;
@@ -129,6 +140,7 @@ namespace CardViews
 
         private void OnCardClicked(CardView cv)
         {
+            if (inspectOnly) return; 
             if (selected.Contains(cv))
             {
                 selected.Remove(cv);
@@ -152,11 +164,13 @@ namespace CardViews
 
         private void SetNextInteractable()
         {
+            if (inspectOnly) { nextButton.interactable = false; return; }
             if (nextButton) nextButton.interactable = (selected.Count == requiredSelectCount);
         }
 
         private void Confirm()
         {
+            if (inspectOnly) return;  
             if (selected.Count != requiredSelectCount) return;
             var cards = selected.Select(s => s.GetCurrentCard()).ToList();
             

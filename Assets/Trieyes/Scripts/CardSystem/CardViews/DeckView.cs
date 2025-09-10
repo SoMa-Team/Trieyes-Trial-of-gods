@@ -11,7 +11,7 @@ namespace CardViews
     public class DeckView : MonoBehaviour
     {
         [SerializeField] private GameObject panelRoot;    
-        [SerializeField] private Button overlayButton;   
+        [SerializeField] private Button overlayButton;//TODO: 같은 기능을 하는 CancelButton 만들기   
         [SerializeField] private Button nextButton;      
 
         [SerializeField] private Transform cardContainer;  

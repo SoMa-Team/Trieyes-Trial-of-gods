@@ -17,7 +17,7 @@ namespace BattleSystem
     /// 전투 스테이지의 핵심 데이터와 상태를 관리하는 클래스
     /// 현재 활성화된 전투 스테이지의 정보를 담고 있습니다.
     /// </summary>
-    public class BattleStage
+    public class BattleStage //TODO: 안정화 시 NodeStage 시스템과 통합 요망
     {
         // ===== 전역 스테이지 관리 =====
         public static BattleStage now;

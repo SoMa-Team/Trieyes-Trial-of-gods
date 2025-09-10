@@ -65,6 +65,7 @@ namespace AttackComponents
             timerBombPosition = character.transform.position;
             timerBombDirection = direction;
 
+            timerBombSprite.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(timerBombDirection.y, timerBombDirection.x) * Mathf.Rad2Deg);
             timerBombSprite.enabled = true;
             attack.GetComponent<Collider2D>().enabled = true;
 

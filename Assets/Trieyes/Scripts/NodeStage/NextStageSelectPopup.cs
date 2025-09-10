@@ -97,26 +97,25 @@ namespace NodeStage
             spawnedSlots.Clear();
         }
 
-        public void SetNextStage(StageType current, Character mainCharacter)
+        public void SetNextStage(StageType? current, Character mainCharacter, bool isStart=false)
         {
-            BindDeckButton(mainCharacter);
-
-            var pool = allStages
-                .Where(s => s != null)
-                .GroupBy(s => s.type)
-                .Select(g => g.First())
-                .Where(s => s.type != current && !StartTypes.Contains(s.type))
-                .ToList();
-
-            var options = SampleWithoutReplacement(pool, 3, rng);
-            SpawnSlots(options, mainCharacter);
-        }
-
-        public void StartGame(Character mainCharacter)
-        {
+            Debug.Log("Call: SetNextStage");
             BindDeckButton(mainCharacter);
             ClearSlots();
-            ShowStartChoices(mainCharacter);
+            
+            if(isStart) ShowStartChoices(mainCharacter);
+            else
+            {
+                var pool = allStages
+                    .Where(s => s != null)
+                    .GroupBy(s => s.type)
+                    .Select(g => g.First())
+                    .Where(s => s.type != current && !StartTypes.Contains(s.type))
+                    .ToList();
+
+                var options = SampleWithoutReplacement(pool, 3, rng);
+                SpawnSlots(options, mainCharacter);
+            }
         }
 
         private void ShowStartChoices(Character mainCharacter)

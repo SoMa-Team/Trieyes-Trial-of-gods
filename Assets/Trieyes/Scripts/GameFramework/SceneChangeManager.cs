@@ -8,6 +8,7 @@ using RelicSystem;
 using GamePlayer;
 using NodeStage;
 using OutGame;
+using Unity.VisualScripting;
 
 namespace GameFramework
 {
@@ -83,7 +84,7 @@ namespace GameFramework
             var mainCharacter = CharacterFactory.Instance.Create(Player.Instance.mainCharacterId);
 
             CharacterFactory.Instance.Deactivate(mainCharacter);
-            NextStageSelectPopup.Instance.StartGame((Character)mainCharacter);
+            NextStageSelectPopup.Instance.SetNextStage(null, (Character)mainCharacter, true);
         }
     }
 }

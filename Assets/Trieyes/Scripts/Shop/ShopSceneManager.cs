@@ -47,7 +47,6 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
 
     private int rerollPrice;
     private Difficulty difficulty;
-    [HideInInspector]public Character mainCharacter;
 
     // ========= [UI - 스탯/라운드/릴릭] =========
     [SerializeField] private TextMeshProUGUI textRoundInfo;
@@ -101,7 +100,7 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
     // ================= [초기화/비활성] =================
     public void Activate(Character mainCharacter, Difficulty difficulty)
     {
-        this.mainCharacter = mainCharacter;
+        base.Activate(mainCharacter);
         this.difficulty = difficulty;
 
         shopScenePrefab.SetActive(true);

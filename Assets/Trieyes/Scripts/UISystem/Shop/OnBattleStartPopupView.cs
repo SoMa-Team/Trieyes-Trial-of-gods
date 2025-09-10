@@ -47,7 +47,6 @@ namespace UISystem
                 lastScreenHeight = Screen.height;
             }
             
-            UpdatePlayerStat();
         }
 
         public void Activate(Character mainCharacter, Difficulty difficulty)
@@ -119,8 +118,6 @@ namespace UISystem
             public StatType statType;
             public List<TextMeshProUGUI> text;
         }
-        
-        [SerializeField] private StatTypeTMPPair[] statTypeTMPPairs;
 
         private void InitCards()
         {
@@ -306,21 +303,10 @@ namespace UISystem
             particles.Add(particle);
             particle.Activate(rectCard, rectStat, duration, scale);
         }
-        
-        private void UpdatePlayerStat()
-        {
-            foreach (var pair in statTypeTMPPairs)
-            {
-                var statValue = mainCharacter.statSheet[pair.statType].Value;
-                foreach (var tmp in pair.text)
-                    tmp.text = statValue.ToString();
-            }
-        }
 
         public void OnClickNextRound()
         {
             BattleStageFactory.Instance.Create(mainCharacter, difficulty);
-            UpdatePlayerStat();
             Deactivate();
         }
     }

@@ -84,7 +84,8 @@ namespace AttackSystem
         protected virtual void OnTriggerEnter2D(Collider2D other)
         {
             // null 체크 추가
-            if (other == null || other.gameObject == null) return;
+            // TODO: Trigger 계열과 Collision 계열 함수에 따른 구분 적용
+            if (other == null || other.gameObject == null || !other.isTrigger) return;
             
             foreach (var attackComponent in components)
             {
@@ -116,7 +117,7 @@ namespace AttackSystem
                 case "Enemy":
                     if (attacker.gameObject.CompareTag(hitObject.tag))
                         return;
-                    
+
                     ProcessAttackCollision(hitObject.GetComponent<Pawn>());
                     break;
                 

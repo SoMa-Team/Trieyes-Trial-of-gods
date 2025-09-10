@@ -110,7 +110,7 @@ namespace AttackComponents
                         SetEnemyTarget(targetEnemy);
                         if (maxBounces == magician.AC050_MaxBounces)
                         {
-                            trail.transform.position = magician.transform.position;
+                            attack.transform.position = magician.transform.position;
                         }
                         trail.enabled = true;
                         isTrailMoving = false; // trail 이동 상태 초기화
@@ -155,12 +155,12 @@ namespace AttackComponents
                     else
                     {
                         // 등속 이동 보정
-                        Vector3 dir = targetEnemy.transform.position + (Vector3)targetEnemy.CenterOffset - trail.transform.position;
+                        Vector3 dir = targetEnemy.transform.position + (Vector3)targetEnemy.CenterOffset - attack.transform.position;
                         float distance = dir.magnitude;
                         if (distance > 0.01f)
                         {
                             float step = distance / remaining * Time.deltaTime;
-                            trail.transform.position += dir.normalized * step;
+                            attack.transform.position += dir.normalized * step;
                         }
 
                         attackTimer += Time.deltaTime;
@@ -182,15 +182,13 @@ namespace AttackComponents
         {
             if (targetEnemy is not null)
             {
-                DamageProcessor.ProcessHit(attack, targetEnemy);
-
                 // 도탄 여부 판단하기
                 if (maxBounces > 0 && UnityEngine.Random.Range(0f, 1f) <= bounceChance)
                 {
                     Debug.LogWarning($"Bounce Chance : {bounceChance}, BounceToTarget: {targetEnemy.name}");
                     var newTargetList =
                         BattleStage.now.GetEnemiesInCircleRangeFromTargetOrderByDistance(targetEnemy, 10f);
-                    if (newTargetList.Count > 2)
+                    if (newTargetList.Count > 1)
                     {
                         targetEnemy = newTargetList[1];
                         maxBounces--;
@@ -204,7 +202,7 @@ namespace AttackComponents
         private bool ChooseEnemyTarget()
         {
             var targetEnemyList = BattleStage.now.GetEnemiesInCircleRangeOrderByDistance(magician.transform.position, 10f, 1);
-            if (targetEnemyList.Count > 1)
+            if (targetEnemyList.Count > 0)
             {
                 targetEnemy = targetEnemyList[0];
                 return true;

@@ -171,6 +171,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: AttackFactory
       objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: b4cced3fcba4648eca92ef8cee9caebf, type: 3}
+      propertyPath: rawAttackPrefab.Array.size
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: b4cced3fcba4648eca92ef8cee9caebf, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[30].id
+      value: 1103
+      objectReference: {fileID: 0}
+    - target: {fileID: 4922532762382342664, guid: b4cced3fcba4648eca92ef8cee9caebf, type: 3}
+      propertyPath: rawAttackPrefab.Array.data[30].attackPrefab
+      value: 
+      objectReference: {fileID: 2257760205768175811, guid: 089b67e1dabe95942a4068ca5c7a8d79, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

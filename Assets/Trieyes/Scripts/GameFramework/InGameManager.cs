@@ -4,6 +4,7 @@ using GamePlayer;
 using NodeStage;
 using BattleSystem;
 using Utils;
+using UISystem;
 
 namespace GameFramework
 {
@@ -11,6 +12,7 @@ namespace GameFramework
     {
         private Player player;
         private int stageRound;
+        [SerializeField] private OnBattleStartPopupView onBattleStartPopupView;
         public static InGameManager Instance { get; private set; }
         
         private void Awake()
@@ -33,16 +35,21 @@ namespace GameFramework
         {
             stageRound++;
             switch (stageType)
-            {
+            { 
                 case StageType.Battle:
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
-                    break;
                 case StageType.Boss:
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
-                    break;
                 case StageType.Elite:
+                {
+                    onBattleStartPopupView.Activate();
+
+                    CardStatChangeRecorder.Instance.RecordStart();
+                    mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
+                    var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
+
+                    onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
                     break;
+                }
                 case StageType.StartCard:
                     StartCardStage.Instance.Activate(mainCharacter);
                     break;

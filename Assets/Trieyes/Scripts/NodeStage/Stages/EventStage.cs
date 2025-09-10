@@ -6,7 +6,7 @@ using GameFramework;
 
 namespace NodeStage
 {
-    public class EventStage : MonoBehaviour, NodeStage
+    public abstract class EventStage : MonoBehaviour, NodeStage
     {
         [Header("공통 UI")]
         [SerializeField] protected RectTransform rectTransform;
@@ -66,7 +66,7 @@ namespace NodeStage
         protected virtual void OnDestroy() { }
     }
     
-    public class EventStage<T> : EventStage where T : EventStage<T>
+    public abstract class EventStage<T> : EventStage where T : EventStage<T>
     {
         public static T Instance { get; private set; }
 

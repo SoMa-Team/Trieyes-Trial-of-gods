@@ -30,8 +30,15 @@ namespace CardViews
         
         private readonly Dictionary<CardView, Vector3> baseScales = new();
 
+        private void Awake()
+        {
+            rectTransform.anchoredPosition = Vector2.zero;
+            gameObject.SetActive(false);
+        }
+
         public void Activate(Deck deck, int requiredCount, Action<List<Card>> onConfirm, Action onCancel)
         {
+            gameObject.SetActive(true);
             this.requiredSelectCount = requiredCount;
             this.onConfirm = onConfirm;
             this.onCancel = onCancel;

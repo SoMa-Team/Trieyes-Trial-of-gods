@@ -13,7 +13,7 @@ using GameFramework;
 using NodeStage;
 using UISystem;
 
-public class ShopSceneManager : MonoBehaviour
+public class ShopSceneManager : EventStage<ShopSceneManager>
 {
     // ========= [싱글턴] =========
     public static ShopSceneManager Instance { get; private set; }
@@ -35,7 +35,6 @@ public class ShopSceneManager : MonoBehaviour
     public TMP_Text deckCountText;
 
     // ========= [플레이어/선택 상태] =========
-    [HideInInspector] public Character mainCharacter;
     [HideInInspector] public CardView selectedCard1;
     [HideInInspector] public CardView selectedCard2;
 
@@ -48,24 +47,13 @@ public class ShopSceneManager : MonoBehaviour
 
     private int rerollPrice;
     private Difficulty difficulty;
+    [HideInInspector]public Character mainCharacter;
 
     // ========= [UI - 스탯/라운드/릴릭] =========
     [SerializeField] private TextMeshProUGUI textRoundInfo;
     [SerializeField] private TextMeshProUGUI textGold;
     [SerializeField] private List<Image> imageRelics;
     [SerializeField] private GameObject popupStatInfo;
-
-    [Serializable]
-    class StatTypeTMPPair
-    {
-        public StatType statType;
-        public List<TextMeshProUGUI> text;
-    }
-    [SerializeField] private StatTypeTMPPair[] statTypeTMPPairs;
-
-    // ========= [전체 레이아웃] =========
-    [Header("전체 레이아웃")]
-    [SerializeField] private RectTransform rectTransform;
 
     // ========= [덱/상점 스크롤 컨테이너] =========
     [Header("Deck Auto Scaling")]
@@ -74,11 +62,6 @@ public class ShopSceneManager : MonoBehaviour
 
     [SerializeField] private RectTransform DeckScaleRectParent;
     [SerializeField] private RectTransform ShopScaleRectParent;
-
-    // ========= [전투 시작 애니메이션] =========
-    [Header("전투 시작 애니메이션")]
-    [SerializeField] private RectTransform rectOnBattleStartPopup;
-    [SerializeField] private OnBattleStartPopupView onBattleStartPopupView;
 
     // ========= [영역별 비활성 패널] =========
     [Header("Inactive Panel")]
@@ -107,22 +90,17 @@ public class ShopSceneManager : MonoBehaviour
     {
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
+        shopScenePrefab.SetActive(false);
     }
 
     private void Start()
     {
         rectTransform.anchoredPosition = Vector2.zero;
-        if (rectOnBattleStartPopup != null)
-        {
-            rectOnBattleStartPopup.gameObject.SetActive(false);
-            rectOnBattleStartPopup.anchoredPosition = Vector2.zero;
-        }
     }
 
     // ================= [초기화/비활성] =================
     public void Activate(Character mainCharacter, Difficulty difficulty)
     {
-        Debug.Log("ShopSceneManager: Activate");
         this.mainCharacter = mainCharacter;
         this.difficulty = difficulty;
 
@@ -141,18 +119,18 @@ public class ShopSceneManager : MonoBehaviour
         SetMode(ShopMode.Normal);
     }
 
-    public void Deactivate()
+    protected override void DeActivate()
     {
         shopScenePrefab.SetActive(false);
+        base.DeActivate();
     }
 
     // ============= [프레임 동기화] =============
     private void Update()
     {
-        if (mainCharacter == null || difficulty == null || !shopScenePrefab.activeSelf) return;
+        if (difficulty == null || !shopScenePrefab.activeSelf) return;
         UpdateRoundInfo();
         UpdatePlayerGold();
-        UpdatePlayerStat();
     }
 
     private void LateUpdate()
@@ -163,6 +141,7 @@ public class ShopSceneManager : MonoBehaviour
     // ============= [모드 전환/잠금] =============
     private void SetGlobalUIInteractable(bool enabled)
     {
+        
         bool isExceed = mainCharacter != null && mainCharacter.deck.IsDeckExceed();
 
         rerollButton.interactable     = enabled && !isExceed;
@@ -223,16 +202,6 @@ public class ShopSceneManager : MonoBehaviour
             if (relic.icon is null)
                 Debug.Log($"ShopSceneManager : Relic({relic.name})의 아이콘 없음.");
             relicView.sprite = relic.icon;
-        }
-    }
-
-    private void UpdatePlayerStat()
-    {
-        foreach (var pair in statTypeTMPPairs)
-        {
-            var statValue = mainCharacter.statSheet[pair.statType].Value;
-            foreach (var tmp in pair.text)
-                tmp.text = statValue.ToString();
         }
     }
 
@@ -473,15 +442,9 @@ public class ShopSceneManager : MonoBehaviour
         mainCharacter.gold += 10000;
     }
 
-    public void OnClickNextRound()
+    public override void NextStage()
     {
-        onBattleStartPopupView.Activate();
-
-        CardStatChangeRecorder.Instance.RecordStart();
-        mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-        var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
-
-        onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
+        base.NextStage(); // ✅ 공통 전환
     }
 
     public void OnClickStatInfo()
@@ -492,12 +455,5 @@ public class ShopSceneManager : MonoBehaviour
     private void ToggleStatInfoPopup()
     {
         popupStatInfo.SetActive(!popupStatInfo.activeSelf);
-    }
-
-    public void StartNextBattleOnPopup()
-    {
-        UpdatePlayerStat();
-        Deactivate();
-        NextStageSelectPopup.Instance.SetNextStage(StageType.Shop, mainCharacter);
     }
 }

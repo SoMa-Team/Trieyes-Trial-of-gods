@@ -40,14 +40,13 @@ namespace GameFramework
                 case StageType.Boss:
                 case StageType.Elite:
                 {
-                    onBattleStartPopupView.Activate();
+                    onBattleStartPopupView.Activate(mainCharacter, GetCurrentDifficulty());
 
                     CardStatChangeRecorder.Instance.RecordStart();
                     mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
                     var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
 
                     onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
                     break;
                 }
                 case StageType.StartCard:

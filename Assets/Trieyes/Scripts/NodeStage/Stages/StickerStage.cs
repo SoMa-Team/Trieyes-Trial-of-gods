@@ -11,14 +11,16 @@ namespace NodeStage
 {
     public class StickerStage : EventStage<StickerStage>
     {
-        [SerializeField] private StickerView stickerPrefab;
+        [SerializeField] private ShopStickerSlot stickerPrefab;
         [SerializeField] private Transform stickerContainer;
         
         [SerializeField] private DeckView deckView;
         [SerializeField] private StickerApplyPopup stickerApplyPopup;
 
         private Sticker pendingSticker;
-        private readonly List<StickerView> stickerViews = new();
+        private readonly List<ShopStickerSlot> stickerSlots = new();
+        
+        private const int STICKER_COUNT = 3;
 
         protected override void OnActivated()
         {
@@ -30,26 +32,13 @@ namespace NodeStage
             ClearSlots();
         }
 
-        private List<Sticker> CreateStickerPool()
-        {
-            var pool = new List<Sticker>();
-            
-            pool.Add(StickerFactory.CreateNumberSticker(UnityEngine.Random.Range(1, 100)));
-            pool.Add(StickerFactory.CreateProbabilitySticker(UnityEngine.Random.Range(1, 40)));
-            var stats = (StatType[])Enum.GetValues(typeof(StatType));
-            var stat = stats[UnityEngine.Random.Range(0, stats.Length)];
-            pool.Add(StickerFactory.CreateStatTypeSticker(stat));
-
-            return pool;
-        }
-
         private void ClearSlots()
         {
-            foreach (var stickerView in stickerViews)
+            foreach (var stickerSlot in stickerSlots)
             {
-                Destroy(stickerView.gameObject);
+                Destroy(stickerSlot.gameObject);
             }
-            stickerViews.Clear();
+            stickerSlots.Clear();
             pendingSticker = null;
             
         }
@@ -57,18 +46,16 @@ namespace NodeStage
         private void SetUpStickerSlots()
         {
             ClearSlots();
-            
-            var pool = CreateStickerPool();
-            for (int i = 0; i < pool.Count; i++)
+
+            for (int i = 0; i < STICKER_COUNT; i++)
             {
-                Sticker sticker = pool[i];
-                var stickerView = Instantiate(stickerPrefab, stickerContainer);
-                stickerView.SetSticker(sticker);
+                var stickerSlot = Instantiate(stickerPrefab, stickerContainer);
+                stickerSlot.SetSticker();
                 
-                var btn = stickerView.gameObject.AddComponent<Button>();
-                btn.onClick.AddListener(() => OnStickerClicked(stickerView.GetSticker()));
+                var btn = stickerSlot.gameObject.AddComponent<Button>();
+                btn.onClick.AddListener(() => OnStickerClicked(stickerSlot.GetCurrentSticker()));
                 
-                stickerViews.Add(stickerView);
+                stickerSlots.Add(stickerSlot);
             }
         }
 

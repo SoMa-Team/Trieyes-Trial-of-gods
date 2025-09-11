@@ -1,16 +1,16 @@
+using System;
 using UnityEngine;
-using BattleSystem;
 using CharacterSystem;
+using BattleSystem;
 using Stats;
 
 namespace Enemies
 {
-
     /// <summary>
     /// 적 전용 컨트롤러. 플레이어를 추적해서 Pawn.Move로 이동시킴.
     /// </summary>
     [RequireComponent(typeof(Pawn))]
-    public class EnemyController : Controller
+    public class EnemyController_Admurin : Controller
     {
         public float minFollowDistance = 0.1f; // 너무 가까우면 멈춤
 
@@ -19,7 +19,7 @@ namespace Enemies
         public EnemyType enemyType;
         private Transform playerTarget;
 
-        private Enemy enemy;
+        private Enemy_Admurin enemy;
 
         private Vector3 targetCollisionOffset;
 
@@ -44,7 +44,7 @@ namespace Enemies
                 targetCollisionOffset = BattleStage.now.mainCharacter.CenterOffset;
             }
             
-            enemy = pawn as Enemy;
+            enemy = pawn as Enemy_Admurin;
         }
 
         private void Behaviour()
@@ -63,10 +63,6 @@ namespace Enemies
                         if (dist > minFollowDistance)
                         {
                             enemy.Move(toPlayer.normalized);
-                        }
-                        else
-                        {
-                            enemy.Move(Vector2.zero); // 너무 가까우면 멈춤
                         }
                         break;
                     case EnemyType.RangeAttackRun:

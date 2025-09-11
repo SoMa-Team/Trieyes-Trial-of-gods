@@ -12,6 +12,15 @@ namespace CharacterSystem
         public Pawn owner;
 
         public bool lockMovement;
+        
+        public enum EnemyType
+        {
+            Follow,
+            RangeAttackRun,
+            RangeAttackOnly,
+            Block,
+            Boss
+        }
 
         /// <summary>
         /// 현재 이동 방향

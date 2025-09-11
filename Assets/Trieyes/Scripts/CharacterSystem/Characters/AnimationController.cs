@@ -28,6 +28,10 @@ public class AnimationController : MonoBehaviour
         {
             character.CreateAttack(PawnAttackType.BasicAttack);
         }
+        if (owner is Enemy_Admurin enemy)
+        {
+            enemy.CreateAttack(PawnAttackType.BasicAttack);
+        }
     }
 
     public void Skill1OnAnimationStart()

@@ -11,15 +11,8 @@ namespace CharacterSystem
     /// <summary>
     /// 사망 시 골드를 드랍하는 기본 적 캐릭터
     /// </summary>
-    public class Enemy : Pawn
-    {
-        // ===== [기능 1] 적 기본 정보 =====
-        [SerializeField] 
-        protected int dropGold; // 드랍할 골드 양
-        public Character playerTarget;
-
-        public override Vector2 CenterOffset { get; set; } = Vector2.zero;
-   
+    public class Enemy_Admurin : Enemy
+    { 
         // ===== [기능 2] 초기화 =====
         protected override void Start()
         {
@@ -69,59 +62,46 @@ namespace CharacterSystem
             }
         }
         
-        // TODO
-        public void CreateAttack(PawnAttackType attackType)
+        private string GetStateString(string state)
         {
-            switch (attackType)
+            switch (state)
             {
-                case PawnAttackType.BasicAttack:
-                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
-                    break;
-                case PawnAttackType.Skill1:
-                    AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
-                    break;
-                case PawnAttackType.Skill2:
-                    AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
-                    break;
+                case "IDLE":
+                    return "IDLE";
+                case "MOVE":
+                    return "Movement";
+                case "ATTACK":
+                    return "Attack";
+                case "DAMAGE":
+                    return "DAMAGE";
+                case "DEATH":
+                    return "DEATH";
                 default:
-                    break;
+                    return "IDLE";
             }
         }
-        
-        // TODO
-        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
-        {
-            switch (attackType)
+        protected override void ChangeAnimationState(string newState)
+        {          
+            if (Animator != null && Animator.HasState(0, Animator.StringToHash(GetStateString(newState))))
             {
-                case PawnAttackType.BasicAttack:
-                    if (Time.time - lastAttackTime >= attackCooldown)
-                    {
-                        CalculateAttackCooldown();
-                        lastAttackTime = Time.time;
-                        ChangeAnimationState("ATTACK");
-                        return true;
-                    }
-                    return false;
-                case PawnAttackType.Skill1:
-                    if (CheckSkillCooldown(PawnAttackType.Skill1))
-                    {
-                        lastSkillAttack1Time = Time.time;
-                        ChangeAnimationState("SKILL001");
-                        return true;
-                    }
-                    return false;
-
-                case PawnAttackType.Skill2:
-                    if (CheckSkillCooldown(PawnAttackType.Skill2))
-                    {
-                        lastSkillAttack2Time = Time.time;
-                        ChangeAnimationState("SKILL002");
-                        return true;
-                    }
-                    return false;
-                    
-                default:
-                    return false;
+                Animator.speed = 1f;
+                // switch로 각 newStat에 대한 Parameter 값을 변경
+                switch (newState)
+                {
+                    case "IDLE":
+                        break;
+                    case "MOVE":
+                        Animator.ResetTrigger("Attack");
+                        Animator.SetTrigger("Move");
+                        break;
+                    case "ATTACK":
+                        float attackSpeed = GetStatValue(StatType.AttackSpeed);
+                        Animator.speed = Mathf.Max(0f, attackSpeed / 10f);
+                        Animator.ResetTrigger("Move");
+                        Animator.SetTrigger("Attack");
+                        break;
+                }
+                currentAnimationState = newState;
             }
         }
 

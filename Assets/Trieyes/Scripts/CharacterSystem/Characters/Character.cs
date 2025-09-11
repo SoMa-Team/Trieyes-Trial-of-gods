@@ -104,6 +104,7 @@ namespace CharacterSystem
             if(currentTime - lastTriggerEnterTime >= collisionDamageInterval)
             {
                 var enemy = other.gameObject.GetComponent<Enemy>();
+                enemy.ExecuteAttack();
                 DamageProcessor.ProcessHit(enemy, this);
                 lastTriggerEnterTime = currentTime;
             }

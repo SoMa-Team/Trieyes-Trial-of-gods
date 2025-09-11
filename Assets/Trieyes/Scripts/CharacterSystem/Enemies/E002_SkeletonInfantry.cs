@@ -1,9 +1,5 @@
 using AttackSystem;
 using UnityEngine;
-using Utils;
-using System.Linq;
-using BattleSystem;
-using Stats;
 
 namespace CharacterSystem
 {
@@ -20,8 +16,6 @@ namespace CharacterSystem
         protected override void Start()
         {
             base.Start();
-
-            CenterOffset = new Vector2(0f, 0.1f);
             
             // 머티리얼 초기화
             if (spriteRenderer == null)
@@ -38,11 +32,6 @@ namespace CharacterSystem
         {
             base.Activate();
             dropGold = 1;
-            // TODO: AttackComponent 할당
-            ////Debug.Log("Enemy001 Activated.");
-
-            // 이런 느낌으로 각 적마다 커스터마이징 
-            // boxCollider = Collider as BoxCollider2D;
         }
 
         /// <summary>
@@ -50,11 +39,8 @@ namespace CharacterSystem
         /// </summary>
         public override void Deactivate()
         {
-            // Enemy001 고유 정리 로직
-            dropGold = 10; // 기본값으로 초기화
-            
+            dropGold = 1;
             base.Deactivate();
-            ////Debug.Log("Enemy001 Deactivated.");
         }
         
         /// <summary>
@@ -72,11 +58,6 @@ namespace CharacterSystem
                 material.SetFloat("_Glow", Mathf.Clamp(glowIntensity, 0f, 100f));
                 material.SetFloat("_GlowGlobal", 1f);
             }
-        }
-
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            base.OnTriggerEnter2D(other);
         }
 
         /// <summary>

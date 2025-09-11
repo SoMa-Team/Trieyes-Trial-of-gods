@@ -184,8 +184,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.03, y: -0.22}
-  m_Size: {x: 0.1, y: 0.1}
+  m_Offset: {x: 0.02672006, y: -0.13800156}
+  m_Size: {x: 0.35583514, y: 0.37551475}
   m_Direction: 0
 --- !u!114 &5757735018499706438
 MonoBehaviour:
@@ -202,11 +202,9 @@ MonoBehaviour:
   maxHp: 0
   currentHp: 0
   rb: {fileID: 7661104193838161178}
-  Collider: {fileID: 9097963647980026422}
   Controller: {fileID: 0}
   Animator: {fileID: 0}
   statPresetSO: {fileID: 11400000, guid: 4efb14d1612e54ff898caa3c5193f75d, type: 2}
-  lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 2a5459a399bd4d84f85bda78f3b0df40, type: 2}
   skill1Attack: {fileID: 0}
   skillAttack1Cooldown: 0

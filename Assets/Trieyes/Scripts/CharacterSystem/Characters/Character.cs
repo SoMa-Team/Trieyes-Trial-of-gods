@@ -1,10 +1,6 @@
-using System;
 using UnityEngine;
-using System.Linq;
 using AttackSystem;
-using Stats;
 using BattleSystem;
-using UnityEngine.EventSystems;
 
 namespace CharacterSystem
 {
@@ -29,6 +25,7 @@ namespace CharacterSystem
             
             // Collision Layer를 Character로 설정
             gameObject.layer = LayerMask.NameToLayer("Character");
+            rb.bodyType = RigidbodyType2D.Kinematic;
         }
 
         protected override void OnDestroy()
@@ -87,16 +84,16 @@ namespace CharacterSystem
             return false;
         }
 
-        protected override void OnTriggerEnter2D(Collider2D other)
+        protected override void OnCollisionEnter2D(Collision2D other)
         {
-            base.OnTriggerEnter2D(other);
+            base.OnCollisionEnter2D(other);
             if(other.gameObject.CompareTag("Enemy"))
             {
                 lastTriggerEnterTime = Time.time;
             }
         }
 
-        protected virtual void OnTriggerStay2D(Collider2D other)
+        protected virtual void OnCollisionStay2D(Collision2D other)
         {
             if(!other.gameObject.CompareTag("Enemy"))
             {
@@ -112,9 +109,9 @@ namespace CharacterSystem
             }
         }
 
-        protected override void OnTriggerExit2D(Collider2D other)
+        protected override void OnCollisionExit2D(Collision2D other)
         {
-            base.OnTriggerExit2D(other);
+            base.OnCollisionExit2D(other);
             if(other.gameObject.CompareTag("Enemy"))
             {
                 lastTriggerEnterTime = 0f;

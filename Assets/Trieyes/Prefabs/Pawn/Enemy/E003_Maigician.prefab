@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3900128025414688336}
   - component: {fileID: 4427265434021822855}
   m_Layer: 0
-  m_Name: E002
+  m_Name: E003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,8 +26,8 @@ Transform:
   m_GameObject: {fileID: 2981591724599550202}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 373576148167022596}
@@ -75,8 +75,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: c351391a5530c8d479d6bdffcd3fdede, type: 3}
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: bc1f7255dcb777942aa8e90293cc44b7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -86,7 +86,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 1
+  m_SpriteSortPoint: 0
 --- !u!1 &9048457892950683038
 GameObject:
   m_ObjectHideFlags: 0
@@ -97,11 +97,11 @@ GameObject:
   m_Component:
   - component: {fileID: 373576148167022596}
   - component: {fileID: 7661104193838161178}
-  - component: {fileID: 4759634581685196447}
-  - component: {fileID: -5832122986476030886}
+  - component: {fileID: 9097963647980026422}
+  - component: {fileID: 5757735018499706438}
   - component: {fileID: 7116576973010013569}
   m_Layer: 7
-  m_Name: Enemy002
+  m_Name: E003_Maigician
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -117,7 +117,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4, y: 4, z: 1}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3900128025414688336}
@@ -150,7 +150,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!70 &4759634581685196447
+--- !u!70 &9097963647980026422
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -163,7 +163,7 @@ CapsuleCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -184,10 +184,10 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.02, y: 0}
-  m_Size: {x: 0.18, y: 0.22}
+  m_Offset: {x: 0.02672006, y: -0.13800156}
+  m_Size: {x: 0.35583514, y: 0.37551475}
   m_Direction: 0
---- !u!114 &-5832122986476030886
+--- !u!114 &5757735018499706438
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -196,16 +196,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 9048457892950683038}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51458e102a15de846ad464b14fd3cca5, type: 3}
+  m_Script: {fileID: 11500000, guid: 6e5deedda6a12a04289af1499e58e450, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 50
-  currentHp: 50
+  maxHp: 0
+  currentHp: 0
   rb: {fileID: 7661104193838161178}
   Controller: {fileID: 0}
   Animator: {fileID: 0}
-  statPresetSO: {fileID: 11400000, guid: 3eef8c216c47346f8883e83d964d4294, type: 2}
-  basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
+  statPresetSO: {fileID: 11400000, guid: 4efb14d1612e54ff898caa3c5193f75d, type: 2}
+  basicAttack: {fileID: 11400000, guid: 2a5459a399bd4d84f85bda78f3b0df40, type: 2}
   skill1Attack: {fileID: 0}
   skillAttack1Cooldown: 0
   lastSkillAttack1Time: -999
@@ -229,10 +229,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69256d39b1a4d0f43b9c8aa962f71acc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: {fileID: -5832122986476030886}
+  owner: {fileID: 5757735018499706438}
   lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
   minFollowDistance: 0.1
-  minRunDistance: 1
-  enemyType: 0
+  minRunDistance: 2.5
+  enemyType: 1

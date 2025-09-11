@@ -32,6 +32,8 @@ namespace AttackComponents
 
         private Vector3 timerBombPosition;
         private Vector3 timerBombDirection;
+
+        private const float timerBombZAngleDefault = 40f;
         
         private float timerBombTimer = 0f;
         private float timerBombMoveTimer = 0f;
@@ -65,7 +67,7 @@ namespace AttackComponents
             timerBombPosition = character.transform.position;
             timerBombDirection = direction;
 
-            timerBombSprite.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(timerBombDirection.y, timerBombDirection.x) * Mathf.Rad2Deg);
+            timerBombSprite.transform.rotation = Quaternion.Euler(0, 0, timerBombZAngleDefault + Mathf.Atan2(timerBombDirection.y, timerBombDirection.x) * Mathf.Rad2Deg);
             timerBombSprite.enabled = true;
             attack.GetComponent<Collider2D>().enabled = true;
 
@@ -84,15 +86,13 @@ namespace AttackComponents
             ProcesstimerBombState();
         }
 
-        public override void OnTriggerEnter2D(Collider2D other)
+        public override void ProcessComponentCollision(Pawn targetPawn)
         {
-            base.OnTriggerEnter2D(other);
+            base.ProcessComponentCollision(targetPawn);
 
-            hitEnemy = other.GetComponent<Enemy>();
-            if(other.CompareTag("Enemy"))
+            hitEnemy = targetPawn as Enemy;
+            if(hitEnemy != null)
             {
-                DamageProcessor.ProcessHit(attack, hitEnemy);
-
                 if(!hitEnemy.isDead)
                 {
                     timerBombState = TimerBombState.Active2;

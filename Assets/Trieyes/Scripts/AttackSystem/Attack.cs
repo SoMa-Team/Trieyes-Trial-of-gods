@@ -85,7 +85,7 @@ namespace AttackSystem
         {
             // null 체크 추가
             // TODO: Trigger 계열과 Collision 계열 함수에 따른 구분 적용
-            if (other == null || other.gameObject == null || !other.isTrigger) return;
+            if (other == null || other.gameObject == null) return;
             
             foreach (var attackComponent in components)
             {

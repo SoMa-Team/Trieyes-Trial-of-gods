@@ -63,10 +63,6 @@ namespace GameFramework
                     BattleRewardStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.SkillReward:
-                    if (BattleStage.now != null)
-                    {
-                        BattleStageFactory.Instance.Deactivate(BattleStage.now);
-                    }
                     SkillRewardStage.Instance.Activate(mainCharacter);
                     break;
             }

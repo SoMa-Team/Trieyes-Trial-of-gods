@@ -151,7 +151,7 @@ namespace CharacterSystem
                     }
                     return false;
                 case PawnAttackType.Skill1:
-                    if (CheckSkillCooldown(PawnAttackType.Skill1))
+                    if (skill1Attack is not null && CheckSkillCooldown(PawnAttackType.Skill1))
                     {
                         lastSkillAttack1Time = Time.time;
                         ChangeAnimationState("SKILL001");
@@ -160,7 +160,7 @@ namespace CharacterSystem
                     return false;
 
                 case PawnAttackType.Skill2:
-                    if (CheckSkillCooldown(PawnAttackType.Skill2))
+                    if (skill2Attack is not null &&CheckSkillCooldown(PawnAttackType.Skill2))
                     {
                         lastSkillAttack2Time = Time.time;
                         ChangeAnimationState("SKILL002");

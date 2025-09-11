@@ -298,14 +298,21 @@ namespace CharacterSystem
             
             if (relics.Count > 0)
             {
-                basicAttack = basicAttack.Copy();
-                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
-                
-                skill1Attack = skill1Attack.Copy();
-                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
-                
-                skill2Attack = skill2Attack.Copy();
-                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+                if (basicAttack is not null)
+                {
+                    basicAttack = basicAttack.Copy();
+                    basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+                }
+                if (skill1Attack is not null)
+                {
+                    skill1Attack = skill1Attack.Copy();
+                    skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
+                }
+                if (skill2Attack is not null)
+                {
+                    skill2Attack = skill2Attack.Copy();
+                    skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+                }
             }
         }
 

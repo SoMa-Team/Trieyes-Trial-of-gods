@@ -16,7 +16,7 @@ namespace NodeStage
         [Header("다음 스테이지 타입")]
         [SerializeField] protected StageType stageType;     // 인스펙터에서 스테이지마다 지정
 
-        protected Character mainCharacter;
+        [HideInInspector]public Character mainCharacter;
 
         protected virtual void Awake()
         {

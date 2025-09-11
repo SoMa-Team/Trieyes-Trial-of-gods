@@ -7,11 +7,18 @@ using Stats;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils;
+using CharacterSystem;
+using GameFramework;
+using NodeStage;
+using BattleSystem;
+using Stats;
+using TMPro;
 
 namespace UISystem
 {
     public class OnBattleStartPopupView : MonoBehaviour
     {
+        [SerializeField] protected RectTransform rectTransform;
         public static OnBattleStartPopupView Instance { get; private set; }
 
         private void Awake()
@@ -23,10 +30,14 @@ namespace UISystem
             }
 
             Instance = this;
+            if (rectTransform != null) rectTransform.anchoredPosition = Vector2.zero;
+            gameObject.SetActive(false);
         }
 
         private int lastScreenWidth;
         private int lastScreenHeight;
+        private Character mainCharacter;
+        private Difficulty difficulty;
         private void Update()
         {
             if (Screen.width != lastScreenWidth || Screen.height != lastScreenHeight)
@@ -35,11 +46,15 @@ namespace UISystem
                 lastScreenWidth = Screen.width;
                 lastScreenHeight = Screen.height;
             }
+            
         }
 
-        public void Activate()
+        public void Activate(Character mainCharacter, Difficulty difficulty)
         {
             gameObject.SetActive(true);
+            
+            this.mainCharacter = mainCharacter;
+            this.difficulty = difficulty;
 
             nextRoundButton.interactable = false;
             
@@ -96,22 +111,28 @@ namespace UISystem
         [SerializeField] private RectTransform logListRect;
         [SerializeField] private StatChangeLogItem logItemPrefab;
         [SerializeField] private Button nextRoundButton; 
+        
+        [Serializable]
+        class StatTypeTMPPair
+        {
+            public StatType statType;
+            public List<TextMeshProUGUI> text;
+        }
 
         private void InitCards()
         {
-            var character = ShopSceneManager.Instance.mainCharacter;
 
-            var total = character.deck.Cards.Count;
+            var total = mainCharacter.deck.Cards.Count;
             if (total == 1)
             {
-                var card = character.deck.Cards[0];
+                var card = mainCharacter.deck.Cards[0];
                 AttachCard(card, 0.5f);
                 return;
             }
             
             for (int i = 0; i < total; i++)
             {
-                var card = character.deck.Cards[i];
+                var card = mainCharacter.deck.Cards[i];
                 AttachCard(card, (float)i / (total - 1));
             }
         }
@@ -138,12 +159,11 @@ namespace UISystem
 
         private void InitStat()
         {
-            var character = ShopSceneManager.Instance.mainCharacter;
 
             int index = 0;
             foreach (StatType statType in applyStatLists)
             {
-                var statValue = character.statSheet[statType].Value;
+                var statValue = mainCharacter.statSheet[statType].Value;
                 var statItem = Instantiate(statItemPrefab, statListRect);
                 statItem.rect.anchoredPosition = new Vector2(0, -statItemHeight * index++);
                 statItem.Activate(statType, statValue, false);
@@ -286,8 +306,8 @@ namespace UISystem
 
         public void OnClickNextRound()
         {
+            BattleStageFactory.Instance.Create(mainCharacter, difficulty);
             Deactivate();
-            ShopSceneManager.Instance.StartNextBattleOnPopup();
         }
     }
 }

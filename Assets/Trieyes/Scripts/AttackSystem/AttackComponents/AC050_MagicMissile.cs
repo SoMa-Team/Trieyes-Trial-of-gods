@@ -185,7 +185,6 @@ namespace AttackComponents
                 // 도탄 여부 판단하기
                 if (maxBounces > 0 && UnityEngine.Random.Range(0f, 1f) <= bounceChance)
                 {
-                    Debug.LogWarning($"Bounce Chance : {bounceChance}, BounceToTarget: {targetEnemy.name}");
                     var newTargetList =
                         BattleStage.now.GetEnemiesInCircleRangeFromTargetOrderByDistance(targetEnemy, 10f);
                     if (newTargetList.Count > 1)
@@ -217,7 +216,6 @@ namespace AttackComponents
                 attackState = AttackState.Finishing;
                 return;
             }
-            Debug.LogWarning($"SetEnemyTarget: {target.name}");
             targetEnemy = target;
         }
     }

@@ -4,7 +4,7 @@ using Stats;
 using UnityEngine;
 using System.Collections.Generic;
 using BattleSystem;
-using CharacterSystem.Enemies;
+using Enemies;
 using VFXSystem;
 
 namespace AttackComponents

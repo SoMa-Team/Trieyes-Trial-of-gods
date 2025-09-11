@@ -1,8 +1,9 @@
 using UnityEngine;
+using CharacterSystem;
 using BattleSystem;
 using Stats;
 
-namespace CharacterSystem.Enemies
+namespace Enemies
 {
     public enum BossState
     {

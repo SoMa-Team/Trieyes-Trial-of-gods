@@ -31,16 +31,18 @@ namespace GameFramework
 
         public void StartNextStage(StageType stageType, Character mainCharacter)
         {
-            stageRound++;
             switch (stageType)
             {
                 case StageType.Battle:
+                    stageRound++;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
                     break;
                 case StageType.Boss:
+                    stageRound++;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
                     break;
                 case StageType.Elite:
+                    stageRound++;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
                     break;
                 case StageType.StartCard:
@@ -49,9 +51,9 @@ namespace GameFramework
                 // case StageType.StartRelic:
                 //     StartRelicStage.Instance.Activate(mainCharacter);
                 //     break;
-                // case StageType.CampFire:
-                //     CampFireStage.Instance.Activate(mainCharacter);
-                //     break;
+                case StageType.CampFire:
+                    CampfireStage.Instance.Activate(mainCharacter);
+                    break;
                 case StageType.CardEnhancement:
                     CardEnhancementStage.Instance.Activate(mainCharacter);
                     break;

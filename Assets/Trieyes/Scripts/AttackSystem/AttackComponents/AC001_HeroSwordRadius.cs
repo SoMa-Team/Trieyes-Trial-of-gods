@@ -154,7 +154,6 @@ namespace AttackComponents
                 if (hitCollider.TryGetComponent(out Enemy targetPawn))
                 {
                     target.Add(targetPawn);
-                    targetPawn.allIn1SpriteShaderHandler.SetObject(targetPawn.gameObject);
                     targetPawn.allIn1SpriteShaderHandler.SetShaderAllObjects(AllIn1SpriteShaderType.DamageNormal);
                     DamageProcessor.ProcessHit(attack, targetPawn);
                 }

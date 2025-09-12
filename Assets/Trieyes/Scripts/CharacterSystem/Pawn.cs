@@ -145,7 +145,6 @@ namespace CharacterSystem
         protected virtual void Start()
         {
             if(rb is null) rb = GetComponent<Rigidbody2D>();
-            allIn1SpriteShaderHandler.SetObject(gameObject);
             
             pawnPrefab = transform.GetChild(0).gameObject;
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();

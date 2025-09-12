@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 // Properties
 // {
@@ -296,23 +297,10 @@ namespace Utils
             "ALPHAROUND_ON",
         };
 
-        public bool SetObject(GameObject obj)
+        public bool SetObject(Material obj)
         {
-            // 자기 자신 혹은 하위 오브젝트를 검색하여 머티리얼이 AllIn1SpriteShader인 오브젝트를 찾아서 추가
-            var sr = obj.GetComponent<SpriteRenderer>();
-            if(sr && sr.material.shader.name == "AllIn1SpriteShader/AllIn1SpriteShader")
-            {
-                mat = sr.material;
-                return true;
-            }
-            else
-            {
-                foreach(Transform child in obj.transform)
-                {
-                    SetObject(child.gameObject);
-                }
-            }
-            return false;
+            mat = obj;
+            return true;
         }
 
         public void SetShaderAllObjects(AllIn1SpriteShaderType type)
@@ -322,7 +310,6 @@ namespace Utils
                 case AllIn1SpriteShaderType.None:
                     break;
                 case AllIn1SpriteShaderType.DamageNormal:
-                // Fade Amount 0.5로 주고 Fade 옵션 켜기
                     mat.SetFloat("_Glow", 2.5f);
                     mat.EnableKeyword("GLOW_ON");
                     break;

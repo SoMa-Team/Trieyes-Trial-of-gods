@@ -242,8 +242,8 @@ MonoBehaviour:
   rb: {fileID: 7661104193838161178}
   Controller: {fileID: 0}
   Animator: {fileID: 0}
+  allin1Material: {fileID: 2100000, guid: cc460e5b1c6c0bd498b44195a0c3da99, type: 2}
   statPresetSO: {fileID: 11400000, guid: 3eef8c216c47346f8883e83d964d4294, type: 2}
-  lastestDirection: {x: 0, y: 0}
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 0}
   skillAttack1Cooldown: 0
@@ -254,9 +254,7 @@ MonoBehaviour:
   objectID: 0
   dropGold: 0
   playerTarget: {fileID: 0}
-  collisionDamageInterval: 0.33
-  material: {fileID: 0}
-  spriteRenderer: {fileID: 0}
+  sr: {fileID: 4427265434021822855}
 --- !u!114 &7116576973010013569
 MonoBehaviour:
   m_ObjectHideFlags: 0

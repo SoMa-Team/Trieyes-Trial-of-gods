@@ -33,13 +33,13 @@ public class ShopStickerSlot : MonoBehaviour
     {
         disableOverlay.SetActive(false);
         priceText.text = STICKER_PRICE.ToString();
-        SetSticker(); // 초기 랜덤 스티커 설정
+        SetRandomSticker(); // 초기 랜덤 스티커 설정
     }
 
     /// <summary>
     /// 슬롯에 새로운 랜덤 스티커를 배정하고 UI 갱신
     /// </summary>
-    public void SetSticker()
+    public void SetRandomSticker()
     {
         sticker = StickerFactory.CreateRandomSticker();
         isReserved = false;
@@ -70,6 +70,11 @@ public class ShopStickerSlot : MonoBehaviour
                 backGround.color = Color.gray;
                 break;
         }
+    }
+
+    public void SetSticker(Sticker sticker)
+    {
+        //
     }
 
     /// <summary>

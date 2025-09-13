@@ -32,12 +32,17 @@ namespace BattleSystem
         public Dictionary<int, Attack> attacks = new ();
         public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
+        
+        private bool canUpdate = false;
 
         public void Update()
         {
-            if (Time.time - startTime >= difficulty.battleLength)
+            if (canUpdate)
             {
-                OnBattleClear();
+                if (Time.time - startTime >= difficulty.battleLength)
+                {
+                    OnBattleClear();
+                }
             }
         }
 
@@ -57,6 +62,7 @@ namespace BattleSystem
             startTime = Time.time;
             now = this;
             View.gameObject.SetActive(true);
+            canUpdate = true;
         }
 
         /// <summary>
@@ -66,6 +72,7 @@ namespace BattleSystem
             Debug.Log("Deactivating battle stage.");
             now = null;
             View.gameObject.SetActive(false);
+            canUpdate = false;
         }
 
         // ===== 적 관리 =====

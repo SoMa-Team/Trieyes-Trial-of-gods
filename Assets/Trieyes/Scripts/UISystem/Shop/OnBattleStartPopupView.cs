@@ -38,6 +38,7 @@ namespace UISystem
         private int lastScreenHeight;
         private Character mainCharacter;
         private Difficulty difficulty;
+        private BattleStage battleStage;
         private void Update()
         {
             if (Screen.width != lastScreenWidth || Screen.height != lastScreenHeight)
@@ -49,12 +50,13 @@ namespace UISystem
             
         }
 
-        public void Activate(Character mainCharacter, Difficulty difficulty)
+        public void Activate(Character mainCharacter, Difficulty difficulty, BattleStage battleStage)
         {
             gameObject.SetActive(true);
             
             this.mainCharacter = mainCharacter;
             this.difficulty = difficulty;
+            this.battleStage = battleStage;
 
             nextRoundButton.interactable = false;
             
@@ -306,8 +308,8 @@ namespace UISystem
 
         public void OnClickNextRound()
         {
-            BattleStageFactory.Instance.Create(mainCharacter, difficulty);
             Deactivate();
+            BattleStageFactory.Instance.Activate(battleStage, mainCharacter, difficulty);
         }
     }
 }

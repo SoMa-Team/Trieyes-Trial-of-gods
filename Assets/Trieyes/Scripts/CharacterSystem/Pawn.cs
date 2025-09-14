@@ -216,6 +216,8 @@ namespace CharacterSystem
                 Utils.EventType.OnHPUpdated
             );
 
+            ApplyRelic();
+
             skillAttack1Cooldown = skill1Attack?.cooldown ?? 0f;
             skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
 
@@ -224,9 +226,6 @@ namespace CharacterSystem
             SyncHP();
             
             gameObject.SetActive(true);
-            
-            // relic에 따른 Attack 적용
-            ApplyRelic();
             
             Controller.Activate(this);
         }
@@ -292,9 +291,18 @@ namespace CharacterSystem
         
         public void ApplyRelic()
         {
-            backupBasicAttack = basicAttack;
-            backupSkill1Attack = skill1Attack;
-            backupSkill2Attack = skill2Attack;
+            if (basicAttack != null)
+            {
+                backupBasicAttack = basicAttack;
+            }
+            if (skill1Attack != null)
+            {
+                backupSkill1Attack = skill1Attack;
+            }
+            if (skill2Attack != null)
+            {
+                backupSkill2Attack = skill2Attack;
+            }
             
             if (relics.Count > 0)
             {

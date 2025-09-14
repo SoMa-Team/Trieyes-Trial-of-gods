@@ -53,26 +53,18 @@ namespace CharacterSystem
             spawnID = 1;
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
-
-        public override void Update()
-        {
-            base.Update();
-        }
-
         // ===== [커스텀 메서드] =====
         public override void Activate()
         {
             base.Activate();
+            weaponElementState = HeroWeaponElementState.None;
             _basicAttack = basicAttack;
         }
 
         public override void Deactivate()
         {
             base.Deactivate();
+            weaponElementState = HeroWeaponElementState.None;
         }
 
         // ===== [이벤트 처리 메서드] =====

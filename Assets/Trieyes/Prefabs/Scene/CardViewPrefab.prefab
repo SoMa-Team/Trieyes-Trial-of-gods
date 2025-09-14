@@ -401,7 +401,6 @@ GameObject:
   m_Component:
   - component: {fileID: 284955019594156341}
   - component: {fileID: 5173740652284747469}
-  - component: {fileID: 5142915651344159025}
   - component: {fileID: 6678257484589571840}
   m_Layer: 5
   m_Name: CardViewPrefab
@@ -465,21 +464,6 @@ MonoBehaviour:
   - {fileID: 888368728467633701}
   - {fileID: 9018175710151431105}
   - {fileID: 2056935956608475863}
---- !u!114 &5142915651344159025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4986477773496189538}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be41647aeead486418665fa73352a077, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardSelectListView: {fileID: 0}
-  button: {fileID: 0}
-  cardView: {fileID: 0}
 --- !u!114 &6678257484589571840
 MonoBehaviour:
   m_ObjectHideFlags: 0

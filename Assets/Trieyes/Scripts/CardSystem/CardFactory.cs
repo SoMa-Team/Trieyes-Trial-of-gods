@@ -178,7 +178,7 @@ namespace CardSystem
                 case 602: return new Card0602_Berserker();
                 case 801: return new Card0801_FTL();
                 case 802: return new Card0802_RageOfBlade();
-                case 1001: return new Card2001_Stop();
+                case 2001: return new Card2001_Stop();
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {id}");
                     return null;

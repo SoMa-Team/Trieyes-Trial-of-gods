@@ -26,9 +26,14 @@ namespace GameFramework
             Instance = this;
         }
         
-        private Difficulty GetCurrentDifficulty()
+        private Difficulty GetCurrentBattleDifficulty()
         {
             return Difficulty.GetByStageRound(stageRound);
+        }
+        
+        private Difficulty GetCurrentBossDifficulty()
+        {
+            return Difficulty.GetByStageRound(stageRound, true);
         }
 
         public void StartNextStage(StageType stageType, Character mainCharacter)
@@ -37,10 +42,14 @@ namespace GameFramework
             switch (stageType)
             { 
                 case StageType.Battle:
+                {
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBattleDifficulty());
+                    break;
+                }
                 case StageType.Boss:
                 case StageType.Elite:
                 {
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
                     break;
                 }
                 case StageType.StartCard:
@@ -56,7 +65,7 @@ namespace GameFramework
                     CardEnhancementStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.Shop:
-                    ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
+                    ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentBattleDifficulty());
                     break;
                 case StageType.BattleReward:
                     BattleStageFactory.Instance.Deactivate(BattleStage.now);

@@ -24,16 +24,16 @@ namespace Utils
 
         public float SpawnInterval => 1f / spawnFrequency;
 
-        public static Difficulty GetByStageRound(int stageRound)
+        public static Difficulty GetByStageRound(int stageRound, bool isBoss = false)
         {
             var difficulty = new Difficulty();
             
             difficulty.stageNumber = stageRound;
             difficulty.spawnFrequency = stageRound;
-            difficulty.enemyHpMultiplier = (int)Mathf.Pow(5f, (stageRound - 1) / 3f);
+            difficulty.enemyHpMultiplier = (int)Mathf.Pow(1.2f, (stageRound - 1) / 3f);
             difficulty.enemyAttackMultiplier = stageRound;
 
-            if (stageRound % 3 == 0)
+            if (isBoss)
             {
                 difficulty.EnemyID = 5;
                 difficulty.battleLength = 120;

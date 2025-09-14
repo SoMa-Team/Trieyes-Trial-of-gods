@@ -66,7 +66,7 @@ namespace NodeStage
         protected virtual void OnDestroy() { }
     }
     
-    public class EventStage<T> : EventStage where T : EventStage<T>
+    public abstract class EventStage<T> : EventStage where T : EventStage<T>
     {
         public static T Instance { get; private set; }
 

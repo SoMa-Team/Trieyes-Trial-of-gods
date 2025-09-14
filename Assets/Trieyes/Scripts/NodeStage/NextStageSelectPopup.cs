@@ -99,13 +99,15 @@ namespace NodeStage
             spawnedSlots.Clear();
         }
 
-        public void SetNextStage(StageType? current, Character mainCharacter, bool isStart=false)
+        public void SetNextStage(StageType? current, Character mainCharacter, bool gameStart = false)
         {
-            Debug.Log("Call: SetNextStage");
             BindDeckButton(mainCharacter);
             ClearSlots();
-            
-            if(isStart) ShowStartChoices(mainCharacter);
+
+            if (gameStart)
+            {
+                ShowStartChoices(mainCharacter);
+            }
             else
             {
                 var pool = allStages

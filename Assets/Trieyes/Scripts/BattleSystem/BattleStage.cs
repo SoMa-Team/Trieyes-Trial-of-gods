@@ -33,11 +33,19 @@ namespace BattleSystem
         public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
 
+        private float ticDuration = 0.5f;
+        private float lastTick = -1;
         public void Update()
         {
             if (Time.time - startTime >= difficulty.battleLength)
             {
                 OnBattleClear();
+            }
+
+            if (Time.time - lastTick > ticDuration)
+            {
+                mainCharacter.OnEvent(Utils.EventType.OnTick, mainCharacter);
+                lastTick = Time.time;
             }
         }
 
@@ -55,6 +63,7 @@ namespace BattleSystem
             }
             
             startTime = Time.time;
+            lastTick = Time.time;
             now = this;
             View.gameObject.SetActive(true);
         }

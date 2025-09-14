@@ -14,6 +14,8 @@ namespace CardSystem
         Legendary = 2,
         
         Exceed = 3,
+        
+        Gimmick = 4,
     }
 
     // ===== [기능 2] Property Enum =====

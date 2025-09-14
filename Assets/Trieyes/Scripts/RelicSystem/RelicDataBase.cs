@@ -4,6 +4,7 @@ using UnityEngine.AddressableAssets;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 
 namespace RelicSystem
 {
@@ -36,8 +37,6 @@ namespace RelicSystem
             
             // 한 번만 초기화되도록 플래그 설정
             initialized = true;
-            
-            Debug.LogError($"RelicDataSO initialized {relicDict.Count}");
         }
     
         public static RelicDataSO GetRelicDataSO(int id)
@@ -51,6 +50,12 @@ namespace RelicSystem
             if (!relicDict.TryGetValue(id, out var so))
                 throw new Exception($"Relic (id : {id}) is not exist.");
             return so;
+        }
+
+        // TODO : 테스트용 임시 함수 / 업적 구현 시 제거
+        public static List<int> GetAllRelicIDs()
+        {
+            return relicDict.Keys.ToList();
         }
     }
 }

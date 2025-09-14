@@ -29,10 +29,14 @@ namespace CardSystem
         /// 등록된 CardInfo ScriptableObject 리스트.
         /// 인덱스가 CardActionID 역할도 겸함.
         /// </summary>
-        public List<CardInfo> CommonCards = new();
-        public List<CardInfo> UncommonCards = new();
-        public List<CardInfo> LegendaryCards = new();
-        public List<CardInfo> ExceedCards = new();
+        [SerializeField] private List<CardInfo> RawCards;
+        
+        private Dictionary<int, CardInfo> cardDictionary = new Dictionary<int, CardInfo>();
+        private List<int> CommonCards = new();
+        private List<int> UncommonCards = new();
+        private List<int> LegendaryCards = new();
+        private List<int> ExceedCards = new();
+        private List<int> GimmickCards = new();
 
         // ==== [싱글톤 패턴] ====
 
@@ -45,6 +49,24 @@ namespace CardSystem
             }
             Instance = this;
             DontDestroyOnLoad(gameObject); // 씬 이동 시에도 유지하려면 주석 해제
+        }
+
+        private void Start()
+        {
+            foreach (var cardInfo in RawCards)
+            {
+                cardDictionary.Add(cardInfo.Id, cardInfo);
+
+                (cardInfo.rarity switch
+                {
+                    Rarity.Common => CommonCards,
+                    Rarity.Uncommon => UncommonCards,
+                    Rarity.Legendary => LegendaryCards,
+                    Rarity.Exceed => ExceedCards,
+                    Rarity.Gimmick => GimmickCards,
+                    _ => throw new ArgumentOutOfRangeException()
+                }).Add(cardInfo.Id);
+            }
         }
 
         // ==== [카드 생성 및 관리] ====
@@ -67,8 +89,8 @@ namespace CardSystem
             // Common: 53%, Uncommon: 33%, Legendary: 13%, Exceed: 1%
             float rand = UnityEngine.Random.Range(0f, 100f);
 
-            List<CardInfo> pool = null;
-
+            List<int> pool;
+            
             if (rand < COMMON_PROB) // Common
             {
                 pool = CommonCards;
@@ -93,9 +115,18 @@ namespace CardSystem
             }
 
             int idx = UnityEngine.Random.Range(0, pool.Count);
-            CardInfo info = pool[idx];
+            int cardID = pool[idx];
 
-            return Create(level, info);
+            return CreateByID(cardID);
+        }
+
+        public Card CreateByID(int id, int level = 1)
+        {
+            if (!cardDictionary.ContainsKey(id))
+                return null;
+            
+            var cardInfo = cardDictionary[id];
+            return Create(level, cardInfo);
         }
 
         /// <summary>
@@ -147,6 +178,7 @@ namespace CardSystem
                 case 602: return new Card0602_Berserker();
                 case 801: return new Card0801_FTL();
                 case 802: return new Card0802_RageOfBlade();
+                case 1001: return new Card2001_Stop();
                 default:
                     Debug.LogWarning($"[CardFactory] 지원하지 않는 CardActionID: {id}");
                     return null;

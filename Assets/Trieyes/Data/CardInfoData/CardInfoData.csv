@@ -14,3 +14,4 @@ Card0601_AbsorbingBlade,601,흡수하는 칼날,Legendary,Dark,AbsorbingBlade,"<
 Card0602_Berserker,602,광전사의 분노,Legendary,Fire,Berserker,<size=35><b>피해를 받을 시</b></size>\n{0}    {1} 증가,OnBattleSceneChange|OnDamaged,공격력|1
 Card801_FTL,801,빛보다 빠르게,Legendary,Light,FTL,"<size=35><b>전투 시작 시</b></size>\n{0}    {1} % 감소, {2}    {3} % 증가",OnBattleSceneChange,공격력|100|공격속도|1000
 Card802_RageOfBlade,802,칼의 분노,Exceed,Dark,RageOfBlade,<size=35><b>전투 시작 시</b></size>\n{0}    {1} 감소\n<size=35><b>공격 명중 시</b></size>\n{2} {3} % 증가,OnBattleSceneChange|OnAttack,공격속도|100|공격속도|1
+Card2001_Stop,2001,무효,Gimmick,Dark,Shadow,"<size=35><b>전투 시작 시</b></size>\n카드가 트리거 될 경우, 더 이상 다른 카드가 트리거 되지 않음",OnBattleSceneChange,

@@ -43,7 +43,7 @@ namespace CardSystem
         private Dictionary<Utils.EventType, int> eventTypeCount = new();
         public IReadOnlyDictionary<Utils.EventType, int> EventTypeCount => eventTypeCount;
         
-        public int maxCardCount = 5;
+        public int maxCardCount => (int)owner.statSheet.Get(StatType.DeckSize);
         
         // ===== [기능 3] 카드 호출 순서 관리 =====
         /// <summary>
@@ -137,17 +137,7 @@ namespace CardSystem
             }
         }
 
-        public bool IsDeckFull()//ToDo: ShopSceneManager 이식 끝나면 없애기
-        {
-            if (cards.Count >= maxCardCount) return true;
-            else return false;
-        }
-
-        public bool IsDeckExceed()
-        {
-            if (cards.Count >= maxCardCount+1) return true;
-            else return false;
-        }
+        public bool IsDeckExceed => cards.Count > maxCardCount;
 
         public void EventProcessor(Utils.EventType eventType, object param)
         {
@@ -302,7 +292,7 @@ namespace CardSystem
                 cardCallOrder.Add(currentCardIndex);
 
                 var card = cards[currentCardIndex];
-
+                
                 if (card != null)
                 {
                     card.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, (card, currentCardIndex));

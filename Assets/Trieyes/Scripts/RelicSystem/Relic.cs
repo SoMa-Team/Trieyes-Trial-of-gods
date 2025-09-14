@@ -28,7 +28,7 @@ namespace RelicSystem
         // 유물이 적용되는 공격에 부착되는 AttackComponent
         
         // ===== [기능 3] 이벤트 처리 =====
-        [CanBeNull] private Pawn owner; // 유물의 소유자 (Pawn)
+        [CanBeNull] public Pawn owner; // 유물의 소유자 (Pawn)
 
         public void AttachTo(Pawn owner)
         {
@@ -37,6 +37,8 @@ namespace RelicSystem
 
         public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
+            if (relicAction is null)
+                return false;
             return relicAction.OnEvent(eventType, param);
         }
     }

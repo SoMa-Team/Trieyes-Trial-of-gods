@@ -34,11 +34,11 @@ public static class CSVToRelicInfoSOImporter
         int idx_description = Array.IndexOf(headers, "description");
         int idx_attackComponentIDs = Array.IndexOf(headers, "attackComponentIDs");
         int idx_filterAttackIDs = Array.IndexOf(headers, "filterAttackIDs");
-        
+
         for (int i = 1; i < lines.Length; i++)
         {
-            if (string.IsNullOrWhiteSpace(lines[i])) continue;
-            var values = lines[i].Split(',');
+            if (string.IsNullOrWhiteSpace(lines[i]))continue;
+            var values = Utils.CsvUtils.SplitCsvLine(lines[i]).ToArray();
 
             if (values.Length < headers.Length) continue;
 
@@ -47,7 +47,8 @@ public static class CSVToRelicInfoSOImporter
             string assetPath = Path.Combine(soOutputPath, $"{soName}.asset");
 
             // 기존 SO 불러오기 or 새로 생성
-            RelicDataSO relic = AssetDatabase.LoadAssetAtPath<RelicDataSO>(assetPath.Replace(Application.dataPath, "Assets"));
+            RelicDataSO relic =
+                AssetDatabase.LoadAssetAtPath<RelicDataSO>(assetPath.Replace(Application.dataPath, "Assets"));
             bool isNew = false;
             if (relic == null)
             {
@@ -63,9 +64,10 @@ public static class CSVToRelicInfoSOImporter
 
             // name
             relic.name = values[idx_name];
-            
+
             // icon
-            Addressables.LoadAssetAsync<Sprite>($"Assets/Trieyes/Addressable/Icons/Relics/{values[idx_icon]}").Completed += handle =>
+            Addressables.LoadAssetAsync<Sprite>($"Assets/Trieyes/Addressable/Icons/Relics/{values[idx_icon]}")
+                .Completed += handle =>
             {
                 if (handle.Status != AsyncOperationStatus.Succeeded)
                     relic.icon = null;

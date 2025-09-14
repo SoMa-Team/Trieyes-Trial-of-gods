@@ -456,6 +456,7 @@ namespace CharacterSystem
         {
             relic.AttachTo(this);
             relics.Add(relic);
+            this.OnEvent(Utils.EventType.OnRelicAdded, relic); // TODO : 이벤트 전파 수정
         }
 
         /// <summary>

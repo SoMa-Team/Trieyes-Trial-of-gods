@@ -180,6 +180,13 @@ namespace CardViews
             SetSelected(false);
             UpdateView();
         }
+        private Action<CardView> onClicked;
+        public void SetOnClicked(Action<CardView> handler)
+        {
+            SetCanInteract(true);
+            SetSelected(false);
+            onClicked = handler;
+        }
 
         public void SetCanInteract(bool canInteract)
         {
@@ -278,7 +285,7 @@ namespace CardViews
 
             if (!inDescription)
             {
-                ShopSceneManager.Instance.OnCardClicked(this);
+                onClicked?.Invoke(this);
                 return;
             }
 
@@ -290,7 +297,7 @@ namespace CardViews
             // 글자에 히트하지 못했으면 카드 클릭 처리
             if (charIndex == -1)
             {
-                ShopSceneManager.Instance.OnCardClicked(this);
+                onClicked?.Invoke(this);
                 return;
             }
 
@@ -298,7 +305,7 @@ namespace CardViews
             var sticker = paramPickMode ? pickModeSticker : null;
             if (sticker == null)
             {
-                ShopSceneManager.Instance.OnCardClicked(this);
+                onClicked?.Invoke(this);
                 return;
             }
 

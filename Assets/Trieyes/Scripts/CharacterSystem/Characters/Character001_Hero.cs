@@ -42,6 +42,16 @@ namespace CharacterSystem
         
         // RAC009 컴포넌트 (hero가 직접 소유)
         public AC108_OrbitingManager orbitingManager;
+        
+        // Pawn의 추상 멤버 구현
+        
+        // ===== [Unity 생명주기] =====
+        protected override void Start()
+        {
+            base.Start();
+            pawnName = "용사";
+            spawnID = 1;
+        }
 
         // ===== [커스텀 메서드] =====
         public override void Activate()

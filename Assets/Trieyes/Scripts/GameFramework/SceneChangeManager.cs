@@ -8,6 +8,7 @@ using RelicSystem;
 using GamePlayer;
 using NodeStage;
 using OutGame;
+using Unity.VisualScripting;
 
 namespace GameFramework
 {
@@ -84,7 +85,6 @@ namespace GameFramework
 
             CharacterFactory.Instance.Deactivate(mainCharacter);
             NextStageSelectPopup.Instance.SetNextStage(null, (Character)mainCharacter, true);
-            ShopSceneManager.Instance.Deactivate();
         }
     }
 }

@@ -183,6 +183,8 @@ namespace CardViews
         private Action<CardView> onClicked;
         public void SetOnClicked(Action<CardView> handler)
         {
+            SetCanInteract(true);
+            SetSelected(false);
             onClicked = handler;
         }
 

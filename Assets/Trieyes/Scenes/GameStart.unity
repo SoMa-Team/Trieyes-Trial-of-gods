@@ -764,11 +764,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7526295382788308473, guid: 83658cea01c3a8c4fadca7d98061465f, type: 3}
   m_PrefabInstance: {fileID: 625863207}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &625863209 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5539092481146384004, guid: 83658cea01c3a8c4fadca7d98061465f, type: 3}
-  m_PrefabInstance: {fileID: 625863207}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &775118951
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1087,7 +1082,7 @@ GameObject:
   - component: {fileID: 1096868785}
   - component: {fileID: 1096868784}
   m_Layer: 0
-  m_Name: TSceneChangeManager
+  m_Name: SceneChangeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1105,7 +1100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5707e50e90604c6aa0343f291cda8a6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
 --- !u!4 &1096868785
 Transform:
   m_ObjectHideFlags: 0
@@ -1327,11 +1321,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1773531947}
   m_CullTransparentMesh: 1
---- !u!1 &2057031827 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5539092481146384004, guid: 4bbf32c3aa822634baac16edfbf6af60, type: 3}
-  m_PrefabInstance: {fileID: 814521815}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2126304201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1363,8 +1352,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 8298278986126138086}
   CharacterSelectPanel: {fileID: 1216492947}
-  CardSelectPanel: {fileID: 2057031827}
-  RelicSelectPanel: {fileID: 625863209}
 --- !u!4 &2126304203
 Transform:
   m_ObjectHideFlags: 0

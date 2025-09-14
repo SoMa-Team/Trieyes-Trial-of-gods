@@ -12,7 +12,7 @@ namespace GameFramework
     {
         private Player player;
         private int stageRound;
-        [SerializeField] private OnBattleStartPopupView onBattleStartPopupView;
+        
         public static InGameManager Instance { get; private set; }
         
         private void Awake()
@@ -40,13 +40,7 @@ namespace GameFramework
                 case StageType.Boss:
                 case StageType.Elite:
                 {
-                    onBattleStartPopupView.Activate(mainCharacter, GetCurrentDifficulty());
-
-                    CardStatChangeRecorder.Instance.RecordStart();
-                    mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
-                    var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
-
-                    onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
                     break;
                 }
                 case StageType.StartCard:

@@ -5,6 +5,7 @@ using TMPro;
 using CardSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using StickerSystem;
 using Utils;
 
@@ -151,8 +152,9 @@ namespace CardViews
             activeStickerOverlays.Clear();
 
             // 2. 파라미터별 오버레이 생성
-            descriptionText.ForceMeshUpdate();
-            var textInfo = descriptionText.textInfo;
+            var textInfo = descriptionText.GetTextInfo(descriptionText.text);
+            
+            Debug.LogError($"cnt : {descriptionText.textInfo.characterCount}");
 
             for (int paramIdx = 0; paramIdx < card.paramCharRanges.Count; paramIdx++)
             {

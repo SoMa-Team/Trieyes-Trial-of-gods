@@ -35,8 +35,6 @@ namespace NodeStage
             {
                 var cv = Instantiate(cardPrefab, cardContainer);
                 cv.SetCard(CardFactory.Instance.RandomCreate());
-                cv.SetCanInteract(true);
-                cv.SetSelected(false);
                 cv.SetOnClicked(OnCardClicked);
                 cardSlots.Add(cv);
             }

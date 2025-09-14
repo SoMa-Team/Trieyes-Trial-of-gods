@@ -25,6 +25,8 @@ namespace NodeStage
 
         private readonly List<NextStageSlot> spawnedSlots = new();
         private System.Random rng = new System.Random();
+        
+        private int nodeSelectCount = 3;
 
         private static readonly HashSet<StageType> StartTypes = new()
         {
@@ -115,7 +117,7 @@ namespace NodeStage
                     .Where(s => s.type != current && !StartTypes.Contains(s.type))
                     .ToList();
 
-                var options = SampleWithoutReplacement(pool, 3, rng);
+                var options = SampleWithoutReplacement(pool, nodeSelectCount, rng);
                 SpawnSlots(options, mainCharacter);
             }
         }

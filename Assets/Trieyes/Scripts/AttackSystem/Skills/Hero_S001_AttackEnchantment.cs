@@ -280,7 +280,7 @@ namespace AttackComponents
         public override void Deactivate()
         {
             base.Deactivate();
-            
+
             character.basicAttack = character._basicAttack;
             character.Skill001Attack = null;
             character.weaponElementState = HeroWeaponElementState.None;

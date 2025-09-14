@@ -4,6 +4,7 @@ using GamePlayer;
 using NodeStage;
 using BattleSystem;
 using Utils;
+using UISystem;
 
 namespace GameFramework
 {
@@ -11,6 +12,7 @@ namespace GameFramework
     {
         private Player player;
         private int stageRound;
+        
         public static InGameManager Instance { get; private set; }
         
         private void Awake()
@@ -33,16 +35,14 @@ namespace GameFramework
         {
             stageRound++;
             switch (stageType)
-            {
+            { 
                 case StageType.Battle:
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
-                    break;
                 case StageType.Boss:
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
-                    break;
                 case StageType.Elite:
+                {
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
                     break;
+                }
                 case StageType.StartCard:
                     StartCardStage.Instance.Activate(mainCharacter);
                     break;
@@ -61,6 +61,9 @@ namespace GameFramework
                 case StageType.BattleReward:
                     BattleStageFactory.Instance.Deactivate(BattleStage.now);
                     BattleRewardStage.Instance.Activate(mainCharacter);
+                    break;
+                case StageType.StickerEvent:
+                    StickerStage.Instance.Activate(mainCharacter);
                     break;
             }
         }

@@ -4101,7 +4101,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6be329a203d1460e8edc36a10153e1e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onBattleStartPopupView: {fileID: 50217912}
 --- !u!4 &277645440
 Transform:
   m_ObjectHideFlags: 0
@@ -30460,7 +30459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3120115679059456073, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.016589666
+      value: -0.016773216
       objectReference: {fileID: 0}
     - target: {fileID: 3364664003216765670, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -30640,7 +30639,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6596087777759807577, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.016589666
+      value: -0.016773216
       objectReference: {fileID: 0}
     - target: {fileID: 6913855767558527846, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -32473,6 +32472,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BattleStageFactory
       objectReference: {fileID: 0}
+    - target: {fileID: 7564836210491077033, guid: a98c40370aa497341a33d7671322148b, type: 3}
+      propertyPath: onBattleStartPopupView
+      value: 
+      objectReference: {fileID: 50217912}
     - target: {fileID: 7564836210491077033, guid: a98c40370aa497341a33d7671322148b, type: 3}
       propertyPath: 'battleStagePrefabs.Array.data[0]'
       value: 

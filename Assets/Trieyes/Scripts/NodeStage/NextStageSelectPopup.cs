@@ -6,27 +6,34 @@ using TMPro;
 using System.Linq;
 using GameFramework;
 using CharacterSystem;
+using CardViews;
 
 namespace NodeStage
 {
     public class NextStageSelectPopup : MonoBehaviour
     {
         public List<StageInfoSO> allStages;
-        
+
         [SerializeField] private NextStageSlot slotPrefab;
         [SerializeField] private Transform     slotContainer;
         [SerializeField] private RectTransform rectTransform;
+
+        [SerializeField] protected DeckView deckView;
+        [SerializeField] protected Button openDeckButton;
+
         public static NextStageSelectPopup Instance { get; private set; }
-        
+
         private readonly List<NextStageSlot> spawnedSlots = new();
         private System.Random rng = new System.Random();
         
+        private int nodeSelectCount = 3;
+
         private static readonly HashSet<StageType> StartTypes = new()
         {
             StageType.StartCard,
             StageType.StartRelic,
         };
-        
+
         private void Awake()
         {
             if (Instance != null) { Destroy(gameObject); return; }
@@ -35,7 +42,7 @@ namespace NodeStage
             gameObject.SetActive(false);
         }
 
-        private static List<T> SampleWithoutReplacement<T>(IList<T> src, int k, System.Random r)
+        private List<T> SampleWithoutReplacement<T>(IList<T> src, int k, System.Random r)
         {
             if (src == null || src.Count == 0 || k <= 0) return new List<T>();
             k = Mathf.Clamp(k, 0, src.Count);
@@ -47,13 +54,12 @@ namespace NodeStage
             }
             return arr.GetRange(0, k);
         }
-        
+
         private StageInfoSO GetFirstInfoOfType(StageType t)
         {
-            return allStages
-                .FirstOrDefault(s => s != null && s.type == t);
+            return allStages.FirstOrDefault(s => s != null && s.type == t);
         }
-        
+
         private void SpawnSlots(IEnumerable<StageInfoSO> infos, Character mainCharacter)
         {
             ClearSlots();
@@ -61,7 +67,7 @@ namespace NodeStage
             {
                 if (info == null) continue;
                 var slot = Instantiate(slotPrefab, slotContainer);
-                slot.SetStage(info, chosenType =>
+                slot.Activate(info, chosenType =>
                 {
                     InGameManager.Instance.StartNextStage(chosenType, mainCharacter);
                     Deactivate();
@@ -70,9 +76,12 @@ namespace NodeStage
             }
             gameObject.SetActive(true);
         }
-        
+
         public void Deactivate()
         {
+            // 버튼 리스너 해제(중복 방지)
+            if (openDeckButton != null) openDeckButton.onClick.RemoveAllListeners();
+
             ClearSlots();
             gameObject.SetActive(false);
         }
@@ -89,27 +98,28 @@ namespace NodeStage
             }
             spawnedSlots.Clear();
         }
-        public void SetNextStage(StageType current, Character mainCharacter)
+
+        public void SetNextStage(StageType? current, Character mainCharacter, bool gameStart = false)
         {
-            this.gameObject.SetActive(true);
+            BindDeckButton(mainCharacter);
             ClearSlots();
-            
-            var pool = allStages
-                .Where(s => s != null)
-                .GroupBy(s => s.type)
-                .Select(g => g.First())
-                .Where(s => s.type != current && !StartTypes.Contains(s.type))
-                .ToList();
-            
-            var options = SampleWithoutReplacement(pool, 3, rng);
-            
-            SpawnSlots(options, mainCharacter);
-        }
-        
-        public void StartGame(Character mainCharacter)
-        {
-            ClearSlots();
-            ShowStartChoices(mainCharacter);
+
+            if (gameStart)
+            {
+                ShowStartChoices(mainCharacter);
+            }
+            else
+            {
+                var pool = allStages
+                    .Where(s => s != null)
+                    .GroupBy(s => s.type)
+                    .Select(g => g.First())
+                    .Where(s => s.type != current && !StartTypes.Contains(s.type))
+                    .ToList();
+
+                var options = SampleWithoutReplacement(pool, nodeSelectCount, rng);
+                SpawnSlots(options, mainCharacter);
+            }
         }
 
         private void ShowStartChoices(Character mainCharacter)
@@ -121,8 +131,24 @@ namespace NodeStage
                 }
                 .Where(x => x != null)
                 .ToList();
-            
+
             SpawnSlots(startInfos, mainCharacter);
+        }
+
+        private void BindDeckButton(Character mainCharacter)
+        {
+            if (openDeckButton == null) return;
+
+            openDeckButton.onClick.RemoveAllListeners();
+            
+            openDeckButton.onClick.AddListener(() => OpenDeckInspectOnly(mainCharacter));
+            openDeckButton.interactable = true;
+        }
+
+        protected void OpenDeckInspectOnly(Character mainCharacter)
+        {
+            if (deckView == null || mainCharacter == null) return;
+            deckView.Activate(mainCharacter.deck, requiredCount: 0, onConfirm: null, onCancel: null);
         }
     }
 }

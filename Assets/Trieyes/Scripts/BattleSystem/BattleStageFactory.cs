@@ -23,6 +23,7 @@ namespace BattleSystem
         // ===== 스테이지 프리팹 =====
         public GameObject[] battleStagePrefabs;
         public static BattleStageFactory Instance {private set; get;}
+        [SerializeField] private OnBattleStartPopupView onBattleStartPopupView;
 
         // ===== 초기화 =====
         
@@ -49,7 +50,7 @@ namespace BattleSystem
         /// <param name="mainCharacter">메인 캐릭터 Pawn</param>
         /// <param name="difficulty">전투 난이도 설정</param>
         /// <returns>생성된 BattleStage 인스턴스</returns>
-        public BattleStage Create(Pawn mainCharacter, Difficulty difficulty)
+        public void Create(Pawn mainCharacter, Difficulty difficulty)
         {
             BattleStageID battleStageID = 0; // TODO: 난이도와 연동하여 스테이지 ID 설정 필요
             
@@ -57,9 +58,14 @@ namespace BattleSystem
             var battleStageView = battleStageGameObject.GetComponent<BattleStageView>();
             var battleStage = new BattleStage();
             battleStageView.BattleStage = battleStage;
+            
+            onBattleStartPopupView.Activate((Character)mainCharacter, difficulty, battleStage);
 
-            Activate(battleStage, mainCharacter, difficulty);
-            return battleStage;
+            CardStatChangeRecorder.Instance.RecordStart();
+            mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
+            var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
+
+            onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
         }
 
         // ===== 스테이지 활성화/비활성화 =====

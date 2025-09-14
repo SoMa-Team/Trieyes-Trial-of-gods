@@ -8,6 +8,7 @@ using RelicSystem;
 using GamePlayer;
 using NodeStage;
 using OutGame;
+using Unity.VisualScripting;
 
 namespace GameFramework
 {
@@ -23,8 +24,6 @@ namespace GameFramework
         private const string GameStartSceneName = "GameStart";
         private const string BattleSceneName = "BattleScene";
         private const string GameOverSceneName = "GameOverScene";
-
-        [HideInInspector] public Player player;
 
         // ====== 초기화 ======
         private void Awake()
@@ -45,8 +44,6 @@ namespace GameFramework
         /// </summary>
         public void GameStart()
         {
-            player = Player.Instance;
-            
             LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter);
         }
 
@@ -87,8 +84,7 @@ namespace GameFramework
             var mainCharacter = CharacterFactory.Instance.Create(Player.Instance.mainCharacterId);
 
             CharacterFactory.Instance.Deactivate(mainCharacter);
-            NextStageSelectPopup.Instance.StartGame((Character)mainCharacter);
-            ShopSceneManager.Instance.Deactivate();
+            NextStageSelectPopup.Instance.SetNextStage(null, (Character)mainCharacter, true);
         }
     }
 }

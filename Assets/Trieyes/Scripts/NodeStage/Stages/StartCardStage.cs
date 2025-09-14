@@ -1,5 +1,4 @@
 using CharacterSystem;
-using GameFramework;
 using UnityEngine;
 using System.Collections.Generic;
 using CardSystem;
@@ -8,55 +7,25 @@ using UnityEngine.UI;
 
 namespace NodeStage
 {
-    public class StartCardStage : MonoBehaviour, NodeStage
+    public class StartCardStage : EventStage<StartCardStage>
     {
-        [SerializeField] private RectTransform rectTransform;
         [SerializeField] private CardView cardPrefab;
         [SerializeField] private Transform cardContainer;
-        [SerializeField] private Button nextButton; 
-        
-        private Character mainCharacter;
-        
+        [SerializeField] private Button nextButton;
+
         private readonly List<CardView> cardSlots = new();
         private CardView selected;
-        
-        public static StartCardStage Instance { get; private set; }
+        [SerializeField] private int defaultCardCount = 3;
 
-        private int defaultCardCount = 3;
-        
-        private void Awake()
+        protected override void OnActivated()
         {
-            if (Instance != null) { Destroy(gameObject); return; }
-            Instance = this;
-            rectTransform.anchoredPosition = Vector2.zero;
-            gameObject.SetActive(false);
-        }
-        
-        public void Activate(Character mainCharacter)
-        {
-            this.mainCharacter = mainCharacter;
-            this.gameObject.SetActive(true);
             SetupCardSlots();
+            if (nextButton) nextButton.interactable = false;
         }
 
-        private void DeActivate()
+        protected override void OnDeactivated()
         {
             ClearSlots();
-            this.gameObject.SetActive(false);
-        }
-
-        private void ClearSlots()
-        {
-            for (int i = 0; i < cardSlots.Count; i++)
-            {
-                if (cardSlots[i] != null)
-                {
-                    Destroy(cardSlots[i].gameObject);
-                }
-            }
-            cardSlots.Clear();
-            selected = null;
-            if(nextButton != null) nextButton.interactable = false;
         }
 
         private void SetupCardSlots()
@@ -64,14 +33,21 @@ namespace NodeStage
             ClearSlots();
             for (int i = 0; i < defaultCardCount; i++)
             {
-                var card = Instantiate(cardPrefab, cardContainer);
-                card.SetCard(CardFactory.Instance.RandomCreate());
-                card.SetCanInteract(true);
-                card.SetSelected(false);
-                card.SetOnClicked(OnCardClicked);
-                cardSlots.Add(card);
+                var cv = Instantiate(cardPrefab, cardContainer);
+                cv.SetCard(CardFactory.Instance.RandomCreate());
+                cv.SetOnClicked(OnCardClicked);
+                cardSlots.Add(cv);
             }
         }
+
+        private void ClearSlots()
+        {
+            foreach (var cv in cardSlots) if (cv) Destroy(cv.gameObject);
+            cardSlots.Clear();
+            selected = null;
+            if (nextButton) nextButton.interactable = false;
+        }
+
         private void OnCardClicked(CardView clicked)
         {
             if (selected == clicked)
@@ -85,17 +61,17 @@ namespace NodeStage
                 selected = clicked;
                 selected.SetSelected(true);
             }
-            if (nextButton != null) nextButton.interactable = (selected != null);
+            if (nextButton) nextButton.interactable = (selected != null);
         }
-        public void NextStage()
+
+        public override void NextStage()
         {
             if (selected != null)
             {
-                var pickedCard = selected.GetCurrentCard().DeepCopy();
-                mainCharacter.deck.AddCard(pickedCard);
+                var picked = selected.GetCurrentCard().DeepCopy();
+                mainCharacter.deck.AddCard(picked);
             }
-            DeActivate();
-            NextStageSelectPopup.Instance.SetNextStage(StageType.StartCard, mainCharacter);
+            base.NextStage();
         }
     }
 }

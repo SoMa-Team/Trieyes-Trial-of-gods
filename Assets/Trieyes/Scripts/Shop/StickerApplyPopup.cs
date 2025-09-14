@@ -12,6 +12,8 @@ public class StickerApplyPopup : MonoBehaviour
     [SerializeField] private CardView CardView;       // 확대 카드뷰(프리뷰 전용)
     [SerializeField] private Button confirmButton;       // 확정
     [SerializeField] private Button backgroundButton;    // 배경(딤) 누르면 취소
+    
+    [SerializeField] protected RectTransform rectTransform;
 
     private Action<int> onConfirm;
     private Action onCancel;
@@ -84,10 +86,16 @@ public class StickerApplyPopup : MonoBehaviour
 
     private void Awake()
     {
+        rectTransform.anchoredPosition = Vector2.zero;
         if (confirmButton)   confirmButton.onClick.AddListener(() =>
         {
             if (selectedParamIdx >= 0) onConfirm?.Invoke(selectedParamIdx);
         });
-        if (backgroundButton) backgroundButton.onClick.AddListener(() => onCancel?.Invoke());
+        if (backgroundButton) backgroundButton.onClick.AddListener(() =>
+        {
+            onCancel?.Invoke();
+            Deactivate();
+        });
+        gameObject.SetActive(false);
     }
 }

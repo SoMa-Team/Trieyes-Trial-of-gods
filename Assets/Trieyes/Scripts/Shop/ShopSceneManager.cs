@@ -117,10 +117,9 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
         SetMode(ShopMode.Normal);
     }
 
-    public override void Deactivate()
+    protected override void OnDeactivated()
     {
         shopScenePrefab.SetActive(false);
-        base.Deactivate();
     }
 
     // ============= [프레임 동기화] =============

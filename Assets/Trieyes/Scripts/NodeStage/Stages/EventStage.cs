@@ -42,7 +42,7 @@ namespace NodeStage
         // 파생에서 초기화/세팅
         protected virtual void OnActivated() { }
 
-        public virtual void Deactivate()
+        protected virtual void Deactivate()
         {
             OnDeactivated();
             gameObject.SetActive(false);

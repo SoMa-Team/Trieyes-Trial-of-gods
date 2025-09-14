@@ -12,7 +12,7 @@ namespace RelicSystem.RelicActions
             switch (eventType)
             {
                 case EventType.OnBattleStart:
-                    // AttackFactory.Instance.Create();
+                    // TODO : AttackFactory.Instance.Create();
                     return true;
             }
             

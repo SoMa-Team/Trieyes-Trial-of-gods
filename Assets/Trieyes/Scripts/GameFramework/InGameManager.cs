@@ -46,9 +46,9 @@ namespace GameFramework
                 case StageType.StartCard:
                     StartCardStage.Instance.Activate(mainCharacter);
                     break;
-                // case StageType.StartRelic:
-                //     StartRelicStage.Instance.Activate(mainCharacter);
-                //     break;
+                case StageType.StartRelic:
+                    StartRelicStage.Instance.Activate(mainCharacter);
+                    break;
                 // case StageType.CampFire:
                 //     CampFireStage.Instance.Activate(mainCharacter);
                 //     break;

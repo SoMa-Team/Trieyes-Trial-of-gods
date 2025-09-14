@@ -9,43 +9,31 @@ using Utils;
 
 namespace NodeStage
 {
-    public class StartRelicStage : MonoBehaviour, NodeStage
+    public class StartRelicStage : EventStage<StartRelicStage>
     {
-        [SerializeField] private RectTransform rectTransform;
+        // [SerializeField] private RectTransform rectTransform;
         [SerializeField] private RelicSlotView relicSlotViewPrefab;
         [SerializeField] private RectTransform RelicListView;
         [SerializeField] private Button nextStageButton;
         
-        private Character mainCharacter;
+        // private Character mainCharacter;
         private RelicSlotView _selectedRelicSlotView;
         private List<RelicSlotView> RelicSlotViews = new List<RelicSlotView>();
-        
-        public static StartRelicStage Instance { get; private set; }
-        
-        private void Awake()
+
+        protected override void OnActivated()
         {
-            if (Instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            
-            Instance = this;
-            gameObject.SetActive(false);
-            rectTransform.anchoredPosition = Vector2.zero;
-        }
-        
-        public void Activate(Character mainCharacter)
-        {
-            this.mainCharacter = mainCharacter;
             _selectedRelicSlotView = null;
             nextStageButton.interactable = false;
+
+            for (int i = RelicListView.childCount - 1; i >= 0; i--)
+            {
+                Destroy(RelicListView.GetChild(i).gameObject);
+            }
             
-            gameObject.SetActive(true);
             SetRelicViews();
         }
 
-        private void DeActivate()
+        protected override void OnDeactivated()
         {
             _selectedRelicSlotView = null;
             foreach (var relicSlotView in RelicSlotViews)
@@ -55,15 +43,12 @@ namespace NodeStage
             }
             
             RelicSlotViews.Clear();
-            gameObject.SetActive(false);
         }
 
-        public void NextStage()
+        public override void NextStage()
         {
             mainCharacter.AddRelic(_selectedRelicSlotView.Relic);
-            
-            DeActivate();
-            NextStageSelectPopup.Instance.SetNextStage(StageType.StartRelic, mainCharacter);
+            base.NextStage();
         }
         
         private void SetRelicViews()

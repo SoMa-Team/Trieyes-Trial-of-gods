@@ -39,6 +39,7 @@ namespace CharacterSystem
         public override void Update()
         {
             base.Update();
+            
             Controller?.ProcessInputActions();
             lastPosition = transform.position;
         }

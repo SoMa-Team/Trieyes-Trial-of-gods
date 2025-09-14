@@ -250,7 +250,7 @@ namespace OutGame
     }
 
     // 업적 관리자
-    public class JsonToAchivement : MonoBehaviour
+    public class JsonToAchivement
     {
         // 상수 정의
         private const string CHARACTER_JSON_NAME = "CharacterAchievementData.json";
@@ -270,18 +270,10 @@ namespace OutGame
         // 싱글톤 패턴
         public static JsonToAchivement Instance { get; private set; }
 
-        private void Awake()
+        public JsonToAchivement()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-                Initialize();
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            Instance = this;
+            Initialize();
         }
 
         private void Initialize()

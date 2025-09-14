@@ -233,9 +233,12 @@ namespace AttackSystem
         private Attack GetPrefabById(AttackID id)
         {
             if (!attackPrefab.ContainsKey(id))
+            {
                 throw new Exception($"Attack (id : {id}) is not exist.");
+            }
+
             return attackPrefab[id];
-            
+                    
             // return id switch
             // {
             //     0 => attackPrefab[0],

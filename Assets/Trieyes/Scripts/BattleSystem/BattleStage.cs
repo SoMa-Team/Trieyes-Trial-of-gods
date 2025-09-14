@@ -3,6 +3,9 @@ using CharacterSystem;
 using System.Collections.Generic;
 using AttackSystem;
 using GameFramework;
+using JetBrains.Annotations;
+using NodeStage;
+using Stats;
 using UnityEngine;
 using Utils;
 using UISystem;
@@ -14,7 +17,7 @@ namespace BattleSystem
     /// 전투 스테이지의 핵심 데이터와 상태를 관리하는 클래스
     /// 현재 활성화된 전투 스테이지의 정보를 담고 있습니다.
     /// </summary>
-    public class BattleStage
+    public class BattleStage //TODO: 안정화 시 NodeStage 시스템과 통합 요망
     {
         // ===== 전역 스테이지 관리 =====
         public static BattleStage now;
@@ -61,8 +64,10 @@ namespace BattleSystem
         public void Deactivate()
         {
             Debug.Log("Deactivating battle stage.");
-            now = null;
             View.gameObject.SetActive(false);
+
+            now = null;
+            difficulty = null; // difficulty를 null로 설정하여 Update에서 오류 방지
         }
 
         // ===== 적 관리 =====
@@ -108,15 +113,14 @@ namespace BattleSystem
         // 전투 클리어 시 호출
         public void OnBattleClear()
         {
-            SceneChangeManager.Instance.ChangeBattleToShop((Character)this.mainCharacter);
+            InGameManager.Instance.StartNextStage(StageType.BattleReward, mainCharacter);
         }
         
         // 플레이어 사망 시 호출
         public void OnPlayerDeath()
         {
             BattleStageFactory.Instance.Deactivate(this);
-
-            GameOverManager.Instance.Activate();
+            SceneChangeManager.Instance.ChangeBattleToGameOver();
         }
         
         // ===== 시간 관리 관련 =====

@@ -21,9 +21,11 @@ namespace GamePlayer
 
         public JsonToAchivement jsonToAchivement;
         public PlayScoreLogger playScoreLogger;
+        
+        [HideInInspector]
+        public JsonToAchivement jsonToAchivement = new JsonToAchivement();
 
         public static Player Instance { get; private set; }
-
 
         public int mainCharacterId;
         public Card selectedCard;

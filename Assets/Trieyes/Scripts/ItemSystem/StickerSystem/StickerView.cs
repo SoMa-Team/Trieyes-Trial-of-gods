@@ -26,6 +26,11 @@ namespace StickerSystem
             UpdateView();
         }
 
+        public Sticker GetSticker()
+        {
+            return sticker;
+        }
+
         private void UpdateView()
         {
             if (sticker == null)

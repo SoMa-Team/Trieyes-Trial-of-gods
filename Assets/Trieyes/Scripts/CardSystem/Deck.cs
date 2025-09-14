@@ -114,8 +114,6 @@ namespace CardSystem
             {
                 case Utils.EventType.OnBattleSceneChange:
                     DestoryCardsBeforeBattleStart();
-                    ShopSceneManager.Instance.SyncWithDeck();
-
                     CalcActionInitOrder();
                     CalcActionInitStat(Utils.EventType.OnBattleSceneChange);
                     return true;

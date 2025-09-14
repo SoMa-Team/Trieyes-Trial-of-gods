@@ -6,7 +6,9 @@ using CharacterSystem;
 using Utils;
 using RelicSystem;
 using GamePlayer;
+using NodeStage;
 using OutGame;
+using Unity.VisualScripting;
 using GameOver;
 
 namespace GameFramework
@@ -22,11 +24,7 @@ namespace GameFramework
         // ====== 씬 이름 상수 ======
         private const string GameStartSceneName = "GameStart";
         private const string BattleSceneName = "BattleScene";
-        private const string ShopSceneName = "ShopScene";
-
-        private int stageRound = 1;
-
-        public Player player;
+        private const string GameOverSceneName = "GameOverScene";
 
         // ====== 초기화 ======
         private void Awake()
@@ -45,29 +43,17 @@ namespace GameFramework
         /// <summary>
         /// 전투 테스트 씬 시작 (캐릭터 자동 생성)
         /// </summary>
-        public void StartBattleScene()
+        public void GameStart()
         {
-            player = Player.Instance;
-            
             LoadSceneWithCallback(BattleSceneName, OnBattleSceneLoadedWithNewCharacter);
         }
 
-        /// <summary>
-        /// 전투 → 상점 씬 전환 (캐릭터 객체 전달)
-        /// </summary>
-        public void ChangeBattleToShop(Character mainCharacter)
+        public void ChangeBattleToGameOver()
         {
-            BattleStageFactory.Instance.Deactivate(BattleStage.now);
-            ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
-        }
-
-        /// <summary>
-        /// 상점 → 전투 씬 전환 (캐릭터 객체 전달)
-        /// </summary>
-        public void ChangeShopToBattle(Character mainCharacter)
-        {
-            stageRound++;
-            BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+            LoadSceneWithCallback(GameOverSceneName, scene =>
+            {
+                
+            });
         }
 
         public void ChangeGameOverToGameStart()
@@ -96,48 +82,17 @@ namespace GameFramework
             SceneManager.LoadScene(sceneName);
         }
 
-        /// <summary>
-        /// 공통: 캐릭터 DontDestroyOnLoad 및 부모 분리
-        /// </summary>
-        private void PrepareCharacterForSceneTransition(Character character)
-        {
-            if (character == null) return;
-            character.transform.SetParent(null);
-            DontDestroyOnLoad(character.gameObject);
-        }
-
-        /// <summary>
-        /// 현재 스테이지 난이도 반환
-        /// </summary>
-        private Difficulty GetCurrentDifficulty()
-        {
-            return Difficulty.GetByStageRound(stageRound);
-        }
-
         private void OnBattleSceneLoadedWithNewCharacter(Scene scene)
         {
             var mainCharacter = CharacterFactory.Instance.Create(Player.Instance.mainCharacterId);
 
-            if (Player.Instance.selectedCard is not null)
-            {
-                mainCharacter.deck.AddCard(Player.Instance.selectedCard.DeepCopy());
-            }
-
-            if (Player.Instance.selectedRelic.achievementID > 0)
-            {
-                mainCharacter.AddRelic(RelicFactory.Create(Player.Instance.selectedRelic.achievementID));
-                mainCharacter.ApplyRelic();
-            }
-
             CharacterFactory.Instance.Deactivate(mainCharacter);
-            BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
-            ShopSceneManager.Instance.Deactivate();
+            NextStageSelectPopup.Instance.SetNextStage(null, (Character)mainCharacter, true);
         }
 
         private void OnGameOverSceneLoaded(Scene scene)
         {
             Player.Instance.Deactivate();
-            stageRound = 1;
         }
     }
 }

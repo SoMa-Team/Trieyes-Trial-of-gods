@@ -90,16 +90,13 @@ namespace BattleSystem
                 Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
             }
         }
-        
-        /// <summary>
-        /// 배틀 스테이지 업데이트
-        /// </summary>
-        private void Update()
+
+        public void Update()
         {
-            if (_battleStage.difficulty is not null)
-            {
-                _battleStage.Update();
-            }
+            if(_battleStage == null || _battleStage.difficulty == null)
+                return;
+            
+            _battleStage.Update();
         }
     }
 } 

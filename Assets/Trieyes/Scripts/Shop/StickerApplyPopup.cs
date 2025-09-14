@@ -91,7 +91,11 @@ public class StickerApplyPopup : MonoBehaviour
         {
             if (selectedParamIdx >= 0) onConfirm?.Invoke(selectedParamIdx);
         });
-        if (backgroundButton) backgroundButton.onClick.AddListener(() => onCancel?.Invoke());
+        if (backgroundButton) backgroundButton.onClick.AddListener(() =>
+        {
+            onCancel?.Invoke();
+            Deactivate();
+        });
         gameObject.SetActive(false);
     }
 }

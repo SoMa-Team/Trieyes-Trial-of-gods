@@ -3939,6 +3939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6be329a203d1460e8edc36a10153e1e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onBattleStartPopupView: {fileID: 0}
 --- !u!4 &277645440
 Transform:
   m_ObjectHideFlags: 0
@@ -6156,7 +6157,8 @@ MonoBehaviour:
   rectTransform: {fileID: 434271550}
   openDeckButton: {fileID: 699399319}
   deckView: {fileID: 231562455}
-  stageType: 0
+  stageType: 10
+  mainCharacter: {fileID: 0}
   cardPrefab: {fileID: 5173740652284747469, guid: 57117521023954de2a4709ce6555217c, type: 3}
   rewardContainer: {fileID: 187410190}
   goldRewardPrefab: {fileID: 2926555016659273661, guid: 1899705cacb154093aee8ce76c6b3d3f, type: 3}
@@ -8846,10 +8848,10 @@ MonoBehaviour:
   rectTransform: {fileID: 577513088}
   openDeckButton: {fileID: 770863062}
   deckView: {fileID: 231562455}
-  stageType: 0
+  stageType: 5
+  mainCharacter: {fileID: 0}
   stickerPrefab: {fileID: 3747578483239600252, guid: 52954f236b5744ce9abec4ce4d3670fd, type: 3}
   stickerContainer: {fileID: 747362337}
-  deckView: {fileID: 231562455}
   stickerApplyPopup: {fileID: 1824400633}
 --- !u!222 &577513090
 CanvasRenderer:
@@ -21525,7 +21527,8 @@ MonoBehaviour:
   rectTransform: {fileID: 1481289083}
   openDeckButton: {fileID: 1985100529}
   deckView: {fileID: 231562455}
-  stageType: 0
+  stageType: 13
+  mainCharacter: {fileID: 0}
   cardPrefab: {fileID: 5173740652284747469, guid: 57117521023954de2a4709ce6555217c, type: 3}
   cardContainer: {fileID: 918294595}
   nextButton: {fileID: 654914991}
@@ -31358,7 +31361,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3120115679059456073, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.016316712
+      value: -0.016272243
       objectReference: {fileID: 0}
     - target: {fileID: 3364664003216765670, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -31501,12 +31504,16 @@ PrefabInstance:
       value: 0.969697
       objectReference: {fileID: 0}
     - target: {fileID: 5576991401071774346, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: stageType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5576991401071774346, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: stickerApplyPopup
       value: 
       objectReference: {fileID: 1824400633}
     - target: {fileID: 6596087777759807577, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.016316712
+      value: -0.016272243
       objectReference: {fileID: 0}
     - target: {fileID: 6913855767558527846, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -31615,6 +31622,14 @@ PrefabInstance:
     - target: {fileID: 8590328825391446525, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8789414774319112187, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: NextStage
+      objectReference: {fileID: 0}
+    - target: {fileID: 8789414774319112187, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ShopSceneManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 9046783585732892222, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchorMax.x
@@ -31780,7 +31795,8 @@ MonoBehaviour:
   rectTransform: {fileID: 2083368173}
   openDeckButton: {fileID: 1665102999}
   deckView: {fileID: 231562455}
-  stageType: 0
+  stageType: 8
+  mainCharacter: {fileID: 0}
   btnEnhance: {fileID: 975481055}
   btnSwap: {fileID: 1815755143}
   deckViewLocal: {fileID: 231562455}

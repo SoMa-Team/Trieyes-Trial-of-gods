@@ -68,6 +68,9 @@ namespace GameFramework
                     BattleStageFactory.Instance.Deactivate(BattleStage.now);
                     BattleRewardStage.Instance.Activate(mainCharacter);
                     break;
+                case StageType.StickerEvent:
+                    StickerStage.Instance.Activate(mainCharacter);
+                    break;
             }
         }
     }

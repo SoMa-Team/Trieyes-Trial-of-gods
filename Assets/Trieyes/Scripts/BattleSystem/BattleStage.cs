@@ -82,6 +82,9 @@ namespace BattleSystem
             now = null;
             isActivated = false;
             View.gameObject.SetActive(false);
+
+            now = null;
+            difficulty = null; // difficulty를 null로 설정하여 Update에서 오류 방지
         }
 
         // ===== 적 관리 =====

@@ -27,15 +27,6 @@ namespace AttackComponents
         // ===== [Lock 메커니즘] =====
         protected bool isLocked = false; // Lock 상태 관리
 
-        protected virtual void Start()
-        {
-        }
-
-        protected virtual void OnDestroy()
-        {
-            Deactivate();
-        }
-
         protected virtual void Update()
         {
             // Lock 상태일 때는 Update 실행하지 않음

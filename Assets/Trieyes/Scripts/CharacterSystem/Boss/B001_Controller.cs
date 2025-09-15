@@ -32,17 +32,7 @@ namespace Enemies
             currentState = BossState.Idle;
         }
 
-        private void Update()
-        {
-            if (bossOwner == null || Target == null || bossOwner.isDead)
-            {
-                return;
-            }
-
-            Behaviour();
-        }
-
-        private void Behaviour()
+        protected override void Behaviour()
         {
             var attackRange = bossOwner.statSheet[StatType.AttackRange];
             var playerPos = Target.transform.position;

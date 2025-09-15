@@ -17,11 +17,11 @@ namespace Enemies
         public float minRunDistance = 1f;
 
         public EnemyType enemyType;
-        private Transform playerTarget;
+        protected Transform playerTarget;
 
-        private Enemy enemy;
+        protected Enemy enemy;
 
-        private Vector3 targetCollisionOffset;
+        protected Vector3 targetCollisionOffset;
 
         public override void Update()
         {
@@ -48,7 +48,7 @@ namespace Enemies
             enemy = pawn as Enemy;
         }
 
-        private void Behaviour()
+        protected virtual void Behaviour()
         {
             var attackRange = enemy.statSheet[StatType.AttackRange];
             var playerPos = playerTarget.position;

@@ -82,7 +82,7 @@ namespace NodeStage
             Instance = (T)this;
         }
 
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
             if (Instance == (T)this) Instance = null;
             base.OnDestroy();

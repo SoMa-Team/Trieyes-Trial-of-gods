@@ -153,8 +153,6 @@ namespace CardViews
 
             // 2. 파라미터별 오버레이 생성
             var textInfo = descriptionText.GetTextInfo(descriptionText.text);
-            
-            Debug.LogError($"cnt : {descriptionText.textInfo.characterCount}");
 
             for (int paramIdx = 0; paramIdx < card.paramCharRanges.Count; paramIdx++)
             {

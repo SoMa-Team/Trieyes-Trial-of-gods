@@ -257,6 +257,32 @@ namespace CardSystem
             return count;
         }
 
+        /// <summary>
+        /// 카드 호출 순서를 계산합니다.
+        /// 각 카드의 CardActionSO에 CalcActionInitOrder 이벤트를 전파하여 순서를 결정합니다.
+        /// </summary>
+        public void CalcActionInitOrder()
+        {
+            if (cards.Count == 0) return;
+            cardCallCounts = new List<int>(new int[cards.Count]);
+            cardCallOrder = Enumerable.Range(0, cards.Count).ToList();
+            maxIterations = cards.Count * 100;
+
+            int iteration = 0;
+            int currentIndex = 0;
+            while (iteration < maxIterations && currentIndex < cardCallOrder.Count)
+            {
+                var cardIndex = cardCallOrder[currentIndex];
+                var card = cards[cardIndex];
+                card.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, (cardCallOrder, currentIndex));
+
+                currentIndex++;
+                iteration++;
+            }
+
+            Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
+        }
+
         public int SubstringCount(string str)
         {
             int count = 0;
@@ -267,40 +293,6 @@ namespace CardSystem
                     count++;
             }
             return count;
-        }
-
-        /// <summary>
-        /// 카드 호출 순서를 계산합니다.
-        /// 각 카드의 CardActionSO에 CalcActionInitOrder 이벤트를 전파하여 순서를 결정합니다.
-        /// </summary>
-        public void CalcActionInitOrder()
-        {
-            if (cards.Count == 0) return;
-            cardCallCounts = new List<int>(new int[cards.Count]);
-            cardCallOrder ??= new List<int>();
-            cardCallOrder.Clear();
-            maxIterations = cards.Count * 100;
-
-            int currentCardIndex = 0;
-            int iterationCount = 0;
-
-            while (currentCardIndex < cards.Count && iterationCount < maxIterations)
-            {
-                cardCallCounts[currentCardIndex]++;
-                cardCallOrder.Add(currentCardIndex);
-
-                var card = cards[currentCardIndex];
-                
-                if (card != null)
-                {
-                    card.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, (card, currentCardIndex));
-                }
-
-                currentCardIndex++;
-                iterationCount++;
-            }
-
-            Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using CharacterSystem;
 using CardSystem;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 using Utils;
 
 namespace CardActions
@@ -41,18 +42,16 @@ namespace CardActions
             if (eventType == Utils.EventType.CalcActionInitOrder)
             {
                 // param: (Card, int) 튜플에서 자신의 카드 인덱스를 가져옴
-                if (param is ValueTuple<Card, int> tuple)
+                if (param is ValueTuple<List<int>, int> tuple)
                 {
                     int currentCardIndex = tuple.Item2;
                     int repeatCount = Convert.ToInt32(GetEffectiveParam(repeatCountIndex));
-                    HandleCalcActionInitOrder(deck, repeatCount, currentCardIndex);
+                    var cardCallOrder = tuple.Item1;
+                    return HandleCalcActionInitOrder(deck, cardCallOrder, repeatCount, currentCardIndex);
                 }
-                else
-                {
-                    Debug.LogError("[Shadow] param 형식이 잘못되었습니다. (ValueTuple<Card, int>이어야 함)");
-                }
-
-                return true;
+                
+                Debug.LogError("[Shadow] param 형식이 잘못되었습니다. (ValueTuple<Card, int>이어야 함)");
+                return false;
             }
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
@@ -66,30 +65,22 @@ namespace CardActions
         /// <summary>
         /// 자기 자신을 제외한 모든 카드의 인덱스를 repeatCount번 callOrder에 추가.
         /// </summary>
-        private void HandleCalcActionInitOrder(Deck deck, int repeatCount, int currentCardIndex)
+        private bool HandleCalcActionInitOrder(Deck deck, List<int> cardCallOrder, int repeatCount, int currentCardIndex)
         {
-            // 예외: 덱이 1장뿐이거나, 인덱스가 유효하지 않은 경우 무효
-            if (deck.Cards.Count <= 1 || currentCardIndex < 0 || currentCardIndex >= deck.Cards.Count)
-            {
-                Debug.Log("<color=yellow>[Shadow] 유효하지 않은 상황: 카드가 한 장뿐이거나 인덱스가 잘못됨 (효과 없음)</color>");
-                return;
-            }
+            var deckSize = deck.Cards.Count;
+            var isFirstTrigger = Enumerable.Range(0, currentCardIndex).All(i => cardCallOrder[i] != cardCallOrder[currentCardIndex]);
 
-            var cardsToAppend = new List<int>();
-            var callOrder = deck.GetCallOrder();
+            if (!isFirstTrigger)
+                return false;
 
-            for (int repeat = 0; repeat < repeatCount; repeat++)
-            {
-                for (int i = 0; i < deck.Cards.Count; i++)
-                {
-                    if (i != currentCardIndex)
-                        cardsToAppend.Add(i);
-                }
-            }
-
-            callOrder.AddRange(cardsToAppend);
-
-            Debug.Log($"<color=green>[Shadow] {deck.GetOwner().gameObject.name}의 카드 효과: 자신({currentCardIndex}) 제외 {repeatCount}회 추가 발동 [{string.Join(", ", cardsToAppend)}]</color>");
+            var cardIndex = cardCallOrder[currentCardIndex];
+            List<int> insertCards = Enumerable.Range(0, repeatCount)
+                .SelectMany(_ => Enumerable.Range(0, deckSize)
+                    .Where(x => x != cardIndex))
+                .ToList();
+            
+            cardCallOrder.InsertRange(cardIndex + 1, insertCards);
+            return true;
         }
     }
 }

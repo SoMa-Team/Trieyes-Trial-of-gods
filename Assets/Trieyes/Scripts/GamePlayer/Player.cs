@@ -21,6 +21,10 @@ namespace GamePlayer
         [HideInInspector]
         public JsonToAchivement jsonToAchivement = new JsonToAchivement();
 
+        [SerializeField] private GameObject developerUIPrefab;
+        private bool isDeveloperUIActive = false;
+        private GameObject currentDeveloperUI;
+
         public static Player Instance { get; private set; }
 
         public int mainCharacterId;
@@ -54,6 +58,33 @@ namespace GamePlayer
             {
                 // 폴백으로 CSV에서 로드
                 achievement = new Achievement();
+            }
+        }
+
+        // F12 버튼 누르면 개발자 UI 표시
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.F12))
+            {
+                if(isDeveloperUIActive)
+                {
+                    if (currentDeveloperUI != null)
+                    {
+                        Destroy(currentDeveloperUI);
+                        currentDeveloperUI = null;
+                    }
+                    isDeveloperUIActive = false;
+                    Time.timeScale = 1f;
+                    return;
+                }
+                
+                currentDeveloperUI = Instantiate(developerUIPrefab);
+                // Canvas 자식으로 등록
+                var canvas = GameObject.Find("Canvas");
+                currentDeveloperUI.transform.SetParent(canvas.transform);
+                Time.timeScale = 0f;
+                isDeveloperUIActive = true;
+                currentDeveloperUI.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
             }
         }
     }

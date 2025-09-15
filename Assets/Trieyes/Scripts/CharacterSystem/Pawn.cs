@@ -47,7 +47,7 @@ namespace CharacterSystem
         public Rigidbody2D rb;
 
         [SerializeField] public Controller Controller; // TODO : 테스트 컨트롤러를 위한 임시 접근데어자 변경
-        [SerializeField] protected Animator Animator;
+        [SerializeField] public Animator Animator;
 
         public abstract Vector2 CenterOffset { get; set; }
 
@@ -789,7 +789,7 @@ namespace CharacterSystem
         {
             Controller.lockMovement = lockMovement;
         }
-        
+
         public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
             CalculateAttackCooldown();

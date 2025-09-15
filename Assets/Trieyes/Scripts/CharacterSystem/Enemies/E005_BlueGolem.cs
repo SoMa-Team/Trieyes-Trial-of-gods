@@ -1,4 +1,4 @@
-using AttackSystem;
+using Stats;
 using UnityEngine;
 
 namespace CharacterSystem
@@ -6,7 +6,7 @@ namespace CharacterSystem
     /// <summary>
     /// 사망 시 골드를 드랍하는 기본 적 캐릭터
     /// </summary>
-    public class E005_BlueGolem : Enemy_Admurin
+    public class E005_BlueGolem : Enemy
     {        
         [Header("Material Control")]
         [SerializeField] private Material material;
@@ -38,6 +38,49 @@ namespace CharacterSystem
                 material.SetColor("_GlowColor", glowColor);
                 material.SetFloat("_Glow", Mathf.Clamp(glowIntensity, 0f, 100f));
                 material.SetFloat("_GlowGlobal", 1f);
+            }
+        }
+
+        private string GetStateString(string state)
+        {
+            switch (state)
+            {
+                case "IDLE":
+                    return "IDLE";
+                case "MOVE":
+                    return "Movement";
+                case "ATTACK":
+                    return "Attack";
+                case "DAMAGE":
+                    return "DAMAGE";
+                case "DEATH":
+                    return "DEATH";
+                default:
+                    return "IDLE";
+            }
+        }
+        protected override void ChangeAnimationState(string newState)
+        {          
+            if (Animator != null && Animator.HasState(0, Animator.StringToHash(GetStateString(newState))))
+            {
+                Animator.speed = 1f;
+                // switch로 각 newStat에 대한 Parameter 값을 변경
+                switch (newState)
+                {
+                    case "IDLE":
+                        break;
+                    case "MOVE":
+                        if(Animator.GetBool("Attack")) return;
+                        Animator.SetTrigger("Move");
+                        break;
+                    case "ATTACK":
+                        float attackSpeed = GetStatValue(StatType.AttackSpeed);
+                        Animator.speed = Mathf.Max(0f, attackSpeed / 10f);
+                        Animator.SetBool("Move", false);
+                        Animator.SetBool("Attack", true);
+                        break;
+                }
+                currentAnimationState = newState;
             }
         }
 

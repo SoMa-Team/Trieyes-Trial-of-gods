@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1761054105064877854}
   - component: {fileID: 7679009411154008925}
   - component: {fileID: 356517923465032212}
-  - component: {fileID: 2718375612241808998}
+  - component: {fileID: 7929870148127106973}
   m_Layer: 0
   m_Name: E005_Golem Blue_Detail
   m_TagString: Untagged
@@ -111,7 +111,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2718375612241808998
+--- !u!114 &7929870148127106973
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -120,13 +120,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5719627300328357772}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af3ae466856c0c347b1ae638bee33684, type: 3}
+  m_Script: {fileID: 11500000, guid: 8e9ea7d5456c1af49a544a39ec2a0941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasMove: 1
-  hasAbility: 0
-  hasAttack: 1
-  hasAttack2: 0
 --- !u!1 &6132933825584311148
 GameObject:
   m_ObjectHideFlags: 0
@@ -175,19 +171,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a023987730044fa688cf046e8d65307f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 300
-  currentHp: 300
+  maxHp: 500
+  currentHp: 500
   rb: {fileID: 2880572157098302278}
   Controller: {fileID: -1423779297242688908}
   Animator: {fileID: 356517923465032212}
   statPresetSO: {fileID: 11400000, guid: 61f39897e20fa4e8f85c18bdc68a6c3e, type: 2}
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 0}
-  skillAttack1Cooldown: 0
-  lastSkillAttack1Time: -999
   skill2Attack: {fileID: 0}
-  skillAttack2Cooldown: 0
-  lastSkillAttack2Time: -999
   objectID: 0
   dropGold: 0
   playerTarget: {fileID: 0}

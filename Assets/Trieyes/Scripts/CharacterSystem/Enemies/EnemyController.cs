@@ -67,6 +67,7 @@ namespace Enemies
                         }
                         else
                         {
+                            enemy.ExecuteAttack();
                             enemy.Move(Vector2.zero); // 너무 가까우면 멈춤
                         }
                         break;

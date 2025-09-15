@@ -53,6 +53,11 @@ namespace CharacterSystem
             
         }
 
+        public virtual void Update()
+        {
+            owner.UpdateCooldown();
+        }
+
         public void Deactivate()
         {
             enabled = false;

@@ -55,7 +55,7 @@ namespace Enemies
                 {
                     bossOwner.Move(toPlayer.normalized);
                 }
-                else if (bossOwner.CheckSkillCooldown(PawnAttackType.Skill1))
+                else if (bossOwner.CheckCooldown(PawnAttackType.Skill1))
                 {
                     bossOwner.ExecuteAttack(PawnAttackType.Skill1);
                 }

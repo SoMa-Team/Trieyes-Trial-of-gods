@@ -87,43 +87,6 @@ namespace CharacterSystem
                     break;
             }
         }
-        
-        // TODO
-        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
-        {
-            switch (attackType)
-            {
-                case PawnAttackType.BasicAttack:
-                    if (Time.time - lastAttackTime >= attackCooldown)
-                    {
-                        CalculateAttackCooldown();
-                        lastAttackTime = Time.time;
-                        ChangeAnimationState("ATTACK");
-                        return true;
-                    }
-                    return false;
-                case PawnAttackType.Skill1:
-                    if (CheckSkillCooldown(PawnAttackType.Skill1))
-                    {
-                        lastSkillAttack1Time = Time.time;
-                        ChangeAnimationState("SKILL001");
-                        return true;
-                    }
-                    return false;
-
-                case PawnAttackType.Skill2:
-                    if (CheckSkillCooldown(PawnAttackType.Skill2))
-                    {
-                        lastSkillAttack2Time = Time.time;
-                        ChangeAnimationState("SKILL002");
-                        return true;
-                    }
-                    return false;
-                    
-                default:
-                    return false;
-            }
-        }
 
         // ===== [이벤트 처리 메서드] =====
         /// <summary>

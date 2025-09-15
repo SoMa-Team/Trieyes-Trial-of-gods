@@ -60,10 +60,6 @@ namespace CharacterSystem
 
         private List<object> eventHandlers = new List<object>();
         protected string currentAnimationState;
-
-        protected float lastAttackTime = 0f;
-
-        protected float attackCooldown = 0f;
         
         // ===== [프로퍼티] =====
         public int? enemyID;
@@ -85,19 +81,23 @@ namespace CharacterSystem
         public AttackData basicAttack;
         private AttackData backupBasicAttack;
 
+        protected float lastAttackTime = 0f;
+
+        protected float attackCooldown = 0f;
+
         public AttackData skill1Attack;
         private AttackData backupSkill1Attack;
-        public float skillAttack1Cooldown = 0f;
-        public float lastSkillAttack1Time = -999f;
+        [HideInInspector] protected float skillAttack1Cooldown = 0f;
+        [HideInInspector] protected float lastSkillAttack1Time = 0f;
         
         public AttackData skill2Attack;
         private AttackData backupSkill2Attack;
-        public float skillAttack2Cooldown = 0f;
-        public float lastSkillAttack2Time = -999f;
+        [HideInInspector] protected float skillAttack2Cooldown = 0f;
+        [HideInInspector] protected float lastSkillAttack2Time = 0f;
         
-        public float BasicAttackCoolDownRate => Mathf.Max(1 - (Time.time - lastAttackTime) / attackCooldown, 0);
-        public float Skill1CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack1Time) / skillAttack1Cooldown, 0);
-        public float Skill2CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack2Time) / skillAttack2Cooldown, 0);
+        public float BasicAttackCoolDownRate => Mathf.Max(1 - lastAttackTime / attackCooldown, 0);
+        public float Skill1CoolDownRate => Mathf.Max(1 - lastSkillAttack1Time / skillAttack1Cooldown, 0);
+        public float Skill2CoolDownRate => Mathf.Max(1 - lastSkillAttack2Time / skillAttack2Cooldown, 0);
         public float HpRate => (float)currentHp / maxHp;
         
         /// <summary>
@@ -226,7 +226,6 @@ namespace CharacterSystem
             SyncHP();
             
             gameObject.SetActive(true);
-            
             Controller.Activate(this);
         }
 
@@ -685,9 +684,6 @@ namespace CharacterSystem
                     return false;
             }
         }
-
-        public abstract bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack);
-
         public void ApplyDamage(AttackResult result)
         {
             // 여러번 OnDeath 이벤트가 발생되지 않기 위한 예외문
@@ -744,11 +740,7 @@ namespace CharacterSystem
         protected virtual void CalculateAttackCooldown()
         {
             float attackSpeed = GetStatValue(StatType.AttackSpeed);
-            // 공격속도 10을 기준으로 1초에 1개 발사
-            // 공격속도가 높을수록 쿨다운이 짧아짐
             attackCooldown = 1f / (attackSpeed / 10f);
-            
-            //Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
         }
 
         /// <summary>
@@ -756,22 +748,74 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="skillType">스킬 타입</param>
         /// <returns>쿨타임이 지났으면 true, 아니면 false</returns>
-        public bool CheckSkillCooldown(PawnAttackType skillType)
+        public bool CheckCooldown(PawnAttackType skillType)
         {
             switch (skillType)
             {
+                case PawnAttackType.BasicAttack:
+                    return lastAttackTime >= attackCooldown;
                 case PawnAttackType.Skill1:
-                    return Time.time - lastSkillAttack1Time >= skillAttack1Cooldown;
+                    return lastSkillAttack1Time >= skillAttack1Cooldown;
                 case PawnAttackType.Skill2:
-                    return Time.time - lastSkillAttack2Time >= skillAttack2Cooldown;
+                    return lastSkillAttack2Time >= skillAttack2Cooldown;
                 default:
                     return false;
             }
         }
 
+        public void SetSkillCooldown(PawnAttackType skillType, float cooldown)
+        {
+            switch (skillType)
+            {
+                case PawnAttackType.Skill1:
+                    skillAttack1Cooldown = cooldown;
+                    break;
+                case PawnAttackType.Skill2:
+                    skillAttack2Cooldown = cooldown;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void UpdateCooldown()
+        {
+            lastAttackTime += Time.deltaTime;
+            lastSkillAttack1Time += Time.deltaTime;
+            lastSkillAttack2Time += Time.deltaTime;
+        }
+
         public void SetLockMovement(bool lockMovement)
         {
             Controller.lockMovement = lockMovement;
+        }
+        
+        public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        {
+            CalculateAttackCooldown();
+            if(CheckCooldown(attackType))
+            {
+                switch (attackType)
+                {
+                    case PawnAttackType.BasicAttack:
+                        lastAttackTime = 0f;
+                        ChangeAnimationState("ATTACK");
+                        return true;
+                    case PawnAttackType.Skill1:
+                        lastSkillAttack1Time = 0f;
+                        ChangeAnimationState("SKILL001");
+                        return true;
+
+                    case PawnAttackType.Skill2:
+                        lastSkillAttack2Time = 0f;
+                        ChangeAnimationState("SKILL002");
+                        return true;
+                        
+                    default:
+                        return false;
+                }
+            }
+            return false;
         }
 
         public void ClearStatModifier()

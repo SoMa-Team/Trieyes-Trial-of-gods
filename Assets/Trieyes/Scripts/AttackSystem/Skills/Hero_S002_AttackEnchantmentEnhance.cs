@@ -86,7 +86,7 @@ namespace AttackComponents
                     break;
                 default:
                     // None: character.lastSkillAttack1Time = 0f; 설정하고 바로 종료
-                    character.lastSkillAttack1Time = 0f;
+                    character.SetSkillCooldown(PawnAttackType.Skill1, 0f);
                     currentState = EnhancementState.Finished;
                     break;
             }

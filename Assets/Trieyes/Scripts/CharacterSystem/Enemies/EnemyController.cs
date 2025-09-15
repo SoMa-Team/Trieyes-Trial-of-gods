@@ -23,13 +23,14 @@ namespace Enemies
 
         private Vector3 targetCollisionOffset;
 
-        private void Update()
+        public override void Update()
         {
             if (owner == null || playerTarget == null || enemy.isDead)
             {
                 return;
             }
 
+            base.Update();
             Behaviour();
         }
 

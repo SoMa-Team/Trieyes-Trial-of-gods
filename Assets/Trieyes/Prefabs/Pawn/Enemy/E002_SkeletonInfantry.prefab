@@ -184,8 +184,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.02, y: 0}
-  m_Size: {x: 0.18, y: 0.22}
+  m_Offset: {x: 0.020000003, y: -0.03}
+  m_Size: {x: 0.09173922, y: 0.11447079}
   m_Direction: 0
 --- !u!114 &-5832122986476030886
 MonoBehaviour:
@@ -207,11 +207,7 @@ MonoBehaviour:
   statPresetSO: {fileID: 11400000, guid: 3eef8c216c47346f8883e83d964d4294, type: 2}
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 0}
-  skillAttack1Cooldown: 0
-  lastSkillAttack1Time: -999
   skill2Attack: {fileID: 0}
-  skillAttack2Cooldown: 0
-  lastSkillAttack2Time: -999
   objectID: 0
   dropGold: 0
   playerTarget: {fileID: 0}

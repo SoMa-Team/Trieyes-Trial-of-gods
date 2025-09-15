@@ -8,6 +8,7 @@ using Utils;
 using System.Linq;
 using VFXSystem;
 using Object = System.Object;
+using GamePlayer;
 
 namespace BattleSystem
 {
@@ -65,6 +66,7 @@ namespace BattleSystem
             var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
 
             onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
+            Player.Instance.gameScoreRecoder.roundScore += 100;
         }
 
         // ===== 스테이지 활성화/비활성화 =====

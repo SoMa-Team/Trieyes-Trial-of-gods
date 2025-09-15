@@ -120,7 +120,7 @@ namespace BattleSystem
         public void OnPlayerDeath()
         {
             BattleStageFactory.Instance.Deactivate(this);
-            SceneChangeManager.Instance.ChangeBattleToGameOver();
+            InGameManager.Instance.StartNextStage(StageType.GameOver, mainCharacter);
         }
         
         // ===== 시간 관리 관련 =====

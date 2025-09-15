@@ -17,5 +17,6 @@ namespace NodeStage
         SkillReward = 12,
         StartCard = 13,
         StartRelic = 14,
+        GameOver = 255,
     }
 }

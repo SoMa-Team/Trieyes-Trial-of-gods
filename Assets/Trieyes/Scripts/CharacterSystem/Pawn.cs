@@ -6,7 +6,8 @@ using RelicSystem;
 using UnityEngine;
 using CardSystem;
 using System;
-using BattleSystem; 
+using BattleSystem;
+using GamePlayer;
 
 namespace CharacterSystem
 {
@@ -567,6 +568,7 @@ namespace CharacterSystem
         {
             int preGold = gold;
             gold = Mathf.Max(0, gold + amount);
+            Player.Instance.gameScoreRecoder.goldScore += amount;
             
             if (preGold != gold)
             {
@@ -705,6 +707,7 @@ namespace CharacterSystem
             
             if (currentHp <= 0)
             {
+                Player.Instance.gameScoreRecoder.killScore++;
                 result.attack?.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
 

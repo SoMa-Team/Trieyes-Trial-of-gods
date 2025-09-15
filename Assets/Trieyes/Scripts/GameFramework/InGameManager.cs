@@ -71,6 +71,10 @@ namespace GameFramework
                 case StageType.StickerEvent:
                     StickerStage.Instance.Activate(mainCharacter);
                     break;
+                case StageType.GameOver:
+                    Time.timeScale = 0;
+                    GameOverStage.Instance.Activate(mainCharacter);
+                    break;
             }
         }
     }

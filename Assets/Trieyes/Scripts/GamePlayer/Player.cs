@@ -7,6 +7,12 @@ using CardSystem;
 
 namespace GamePlayer
 {
+    public class GameScoreRecoder
+    {
+        public int killScore = 0;
+        public int roundScore = 0;
+        public int goldScore = 0;
+    }
     public class Player : MonoBehaviour
     {
         // ===== [기능 1] 유저 정보 =====
@@ -20,6 +26,7 @@ namespace GamePlayer
         
         [HideInInspector]
         public JsonToAchivement jsonToAchivement = new JsonToAchivement();
+        public GameScoreRecoder gameScoreRecoder = new GameScoreRecoder();
 
         [SerializeField] private GameObject developerUIPrefab;
         private bool isDeveloperUIActive = false;

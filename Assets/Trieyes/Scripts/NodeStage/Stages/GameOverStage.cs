@@ -38,7 +38,8 @@ namespace NodeStage
         private void CalculateRank()
         {
             int totalScore = Player.Instance.gameScoreRecoder.killScore + Player.Instance.gameScoreRecoder.roundScore + Player.Instance.gameScoreRecoder.goldScore;
-            
+            SetScoreImages();
+
             // Sprite[0]이 낮은 랭크 -> 갈수록 높은 랭크 이미지
             if (totalScore < 20)
             {
@@ -48,13 +49,25 @@ namespace NodeStage
             {
                 RankImagePanel.GetComponent<Image>().sprite = rankImages[1];
             }
-            else if (totalScore < 100)
+            else
             {
                 RankImagePanel.GetComponent<Image>().sprite = rankImages[2];
             }
-            else
+        }
+
+        public void SetScoreImages()
+        {
+            // Set Native Size
+            RankImagePanel.GetComponent<Image>().SetNativeSize();
+
+            // ScoreImagePanel의 RectTransform을 가져와서 Anchor를 0.5, 0.5로 설정
+            var rectTransform = RankImagePanel.GetComponent<RectTransform>();
+            if (rectTransform != null)
             {
-                RankImagePanel.GetComponent<Image>().sprite = rankImages[3];
+                rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+
+                rectTransform.anchoredPosition = new Vector2(560f, 0f);
             }
         }
 

@@ -305,6 +305,7 @@ namespace Utils
 
         public void SetShaderAllObjects(AllIn1SpriteShaderType type)
         {
+            if (mat == null) return;
             switch(type)
             {
                 case AllIn1SpriteShaderType.None:

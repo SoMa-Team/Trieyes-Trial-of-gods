@@ -23,11 +23,11 @@ namespace UISystem
 
         private void Awake()
         {
-            if (Instance is not null)
-            {
-                Destroy(Instance);
-                return;
-            }
+            // if (Instance is not null)
+            // {
+            //     Destroy(Instance);
+            //     return;
+            // }
 
             Instance = this;
             if (rectTransform != null) rectTransform.anchoredPosition = Vector2.zero;

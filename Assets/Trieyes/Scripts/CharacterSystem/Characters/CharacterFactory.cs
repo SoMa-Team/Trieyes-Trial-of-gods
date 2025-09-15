@@ -26,11 +26,7 @@ namespace CharacterSystem
         /// </summary>
         void Awake()
         {
-            if (Instance is not null)
-            {
-                Destroy(gameObject);
-                return;
-            }
+
             
             DontDestroyOnLoad(gameObject);
             Instance = this;

@@ -16,12 +16,6 @@ namespace UISystem
 
         private void Awake()
         {
-            if (Instance is not null)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            
             Instance = this;
         }
         
@@ -96,12 +90,12 @@ namespace UISystem
         {
             foreach (var view in AutoBasicAttackOnViews)
             {
-                view.SetActive(isAuto);
+                if (view != null) view.SetActive(isAuto);
             }
             
             foreach (var view in AutoBasicAttackOffViews)
             {
-                view.SetActive(!isAuto);
+                if (view != null) view.SetActive(!isAuto);
             }
         }
 
@@ -140,21 +134,23 @@ namespace UISystem
 
         private void SetBasicAttackIcon(Sprite sprite)
         {
-            BasicAttackIconView.sprite = sprite;
+            if (BasicAttackIconView != null) BasicAttackIconView.sprite = sprite;
         }
 
         private void SetSkill1AttackIcon(Sprite sprite)
         {
-            Skill1IconView.sprite = sprite;
+            if (Skill1IconView != null) Skill1IconView.sprite = sprite;
         }
 
         private void SetSkill2AttackIcon(Sprite sprite)
         {
-            Skill2IconView.sprite = sprite;
+            if (Skill2IconView != null) Skill2IconView.sprite = sprite;
         }
 
         private void SetBasicAttackCoolDown(float rate)
         {
+            if (BasicAttackCoolDown == null) return;
+            
             if (BattleStage.now.mainCharacter.isAutoAttack)
             {
                 BasicAttackCoolDown.fillAmount = 1;
@@ -166,12 +162,12 @@ namespace UISystem
 
         private void SetSkill1CoolDown(float rate)
         {
-            Skill1CoolDown.fillAmount = rate;
+            if (Skill1CoolDown != null) Skill1CoolDown.fillAmount = rate;
         }
 
         private void SetSkill2CoolDown(float rate)
         {
-            Skill2CoolDown.fillAmount = rate;
+            if (Skill2CoolDown != null) Skill2CoolDown.fillAmount = rate;
         }
 
         public void OnClickBasicAttack()

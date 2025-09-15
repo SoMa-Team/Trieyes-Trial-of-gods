@@ -32,13 +32,7 @@ namespace BattleSystem
         /// 중복 인스턴스가 생성되지 않도록 합니다.
         /// </summary>
         private void Awake()
-        {
-            if (Instance is not null)
-            {
-                Destroy(this);
-                return;
-            }
-            
+        {      
             DontDestroyOnLoad(gameObject);
             Instance = this;
         }
@@ -59,13 +53,13 @@ namespace BattleSystem
             var battleStage = new BattleStage();
             battleStageView.BattleStage = battleStage;
             
-            onBattleStartPopupView.Activate((Character)mainCharacter, difficulty, battleStage);
+            (onBattleStartPopupView ?? OnBattleStartPopupView.Instance).Activate((Character)mainCharacter, difficulty, battleStage);
 
             CardStatChangeRecorder.Instance.RecordStart();
             mainCharacter.OnEvent(Utils.EventType.OnBattleSceneChange, null);
             var triggerResult = CardStatChangeRecorder.Instance.RecordEnd();
 
-            onBattleStartPopupView.AnimateTriggerEvent(triggerResult);
+            (onBattleStartPopupView ?? OnBattleStartPopupView.Instance).AnimateTriggerEvent(triggerResult);
             Player.Instance.gameScoreRecoder.roundScore += 100;
         }
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using AttackSystem;
 using BattleSystem;
 using System;
+using Stats;
 
 namespace CharacterSystem
 {
@@ -119,6 +120,13 @@ namespace CharacterSystem
             {
                 lastTriggerEnterTime = 0f;
             }
+        }
+
+        protected override void ChangeAnimationState(string newState)
+        {
+            float attackSpeed = GetStatValue(StatType.AttackSpeed);
+            Animator.speed = Mathf.Max(0f, attackSpeed / 10f);
+            base.ChangeAnimationState(newState);
         }
 
         public void CreateAttack(PawnAttackType attackType)

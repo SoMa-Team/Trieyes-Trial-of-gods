@@ -29,9 +29,9 @@ namespace CharacterSystem
             rb.bodyType = RigidbodyType2D.Kinematic;
         }
 
-        protected override void OnDestroy()
+        protected override void OnDisable()
         {
-            base.OnDestroy();
+            base.OnDisable();
         }
 
         public override void Update()

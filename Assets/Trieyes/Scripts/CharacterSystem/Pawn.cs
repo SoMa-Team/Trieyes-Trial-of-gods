@@ -158,7 +158,7 @@ namespace CharacterSystem
             }
         }
 
-        protected virtual void OnDestroy()
+        protected virtual void OnDisable()
         {
             if (BattleStage.now is null) return;
             if (isEnemy)

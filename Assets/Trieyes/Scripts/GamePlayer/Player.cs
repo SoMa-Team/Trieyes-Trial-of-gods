@@ -4,6 +4,7 @@ using CharacterSystem;
 using RelicSystem;
 using OutGame;
 using CardSystem;
+using UISystem;
 
 namespace GamePlayer
 {
@@ -80,18 +81,29 @@ namespace GamePlayer
                         Destroy(currentDeveloperUI);
                         currentDeveloperUI = null;
                     }
+                    if (BattleOverlayCanvasController.Instance is not null) 
+                    {
+                        BattleOverlayCanvasController.Instance.joystick.gameObject.SetActive(true);
+                    }
                     isDeveloperUIActive = false;
                     Time.timeScale = 1f;
                     return;
                 }
-                
-                currentDeveloperUI = Instantiate(developerUIPrefab);
-                // Canvas 자식으로 등록
-                var canvas = GameObject.Find("Canvas");
-                currentDeveloperUI.transform.SetParent(canvas.transform);
-                Time.timeScale = 0f;
-                isDeveloperUIActive = true;
-                currentDeveloperUI.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+
+                else
+                {
+                    if (BattleOverlayCanvasController.Instance is not null)
+                    {
+                        BattleOverlayCanvasController.Instance.joystick.gameObject.SetActive(false);
+                    }
+                    currentDeveloperUI = Instantiate(developerUIPrefab);
+                    // Canvas 자식으로 등록
+                    var canvas = GameObject.Find("Canvas");
+                    currentDeveloperUI.transform.SetParent(canvas.transform);
+                    Time.timeScale = 0f;
+                    isDeveloperUIActive = true;
+                    currentDeveloperUI.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+                }
             }
         }
     }

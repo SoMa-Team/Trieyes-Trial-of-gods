@@ -33,11 +33,6 @@ namespace CharacterSystem
             CenterOffset = new Vector3(0, 0.4f, 0);
         }
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
-
         public override void Update()
         {
             base.Update();

@@ -45,34 +45,42 @@ namespace UISystem
         [Header("========== Auto Attack ==========")]
         [SerializeField] private GameObject[] AutoBasicAttackOnViews;
         [SerializeField] private GameObject[] AutoBasicAttackOffViews;
-        
+
         public void Activate()
         {
             Debug.LogWarning($"Activate: {BattleStage.now.mainCharacter}, \n Attack : {BattleStage.now.mainCharacter.basicAttack}, \n Skill1 : {BattleStage.now.mainCharacter.skill1Attack}, \n Skill2 : {BattleStage.now.mainCharacter.skill2Attack}");
             var basicAttackAddress = buildAttackIconAddress(BattleStage.now.mainCharacter.basicAttack.attackIcon);
-            Addressables.LoadAssetAsync<Sprite>(basicAttackAddress).Completed += (AsyncOperationHandle<Sprite> handle) =>
-            {
-                if (handle.Status != AsyncOperationStatus.Succeeded)
-                    throw new Exception($"Failed to load Basic Attack Icon {basicAttackAddress}");
-                SetBasicAttackIcon(handle.Result);
-            };
-            
-            var skill1Address = buildAttackIconAddress(BattleStage.now.mainCharacter.skill1Attack.attackIcon);
-            Addressables.LoadAssetAsync<Sprite>(skill1Address).Completed += (AsyncOperationHandle<Sprite> handle) =>
-            {
-                if (handle.Status != AsyncOperationStatus.Succeeded)
-                    throw new Exception($"Failed to load Skill1 Icon {skill1Address}");
-                SetSkill1AttackIcon(handle.Result);
-            };
-            
-            var skill2Address = buildAttackIconAddress(BattleStage.now.mainCharacter.skill2Attack.attackIcon);
-            Addressables.LoadAssetAsync<Sprite>(skill2Address).Completed += (AsyncOperationHandle<Sprite> handle) =>
-            {
-                if (handle.Status != AsyncOperationStatus.Succeeded)
-                    throw new Exception($"Failed to load Skill2 Icon {skill2Address}");
-                SetSkill2AttackIcon(handle.Result);
-            };
+            Addressables.LoadAssetAsync<Sprite>(basicAttackAddress).Completed +=
+                (AsyncOperationHandle<Sprite> handle) =>
+                {
+                    if (handle.Status != AsyncOperationStatus.Succeeded)
+                        throw new Exception($"Failed to load Basic Attack Icon {basicAttackAddress}");
+                    SetBasicAttackIcon(handle.Result);
+                };
 
+            // TODO: 스킬이 없을 때도 고려
+            var skill1Address = buildAttackIconAddress(BattleStage.now.mainCharacter.skill1Attack?.attackIcon);
+            if (skill1Address != "")
+            {
+                Addressables.LoadAssetAsync<Sprite>(skill1Address).Completed += (AsyncOperationHandle<Sprite> handle) =>
+                {
+                    if (handle.Status != AsyncOperationStatus.Succeeded)
+                        throw new Exception($"Failed to load Skill1 Icon {skill1Address}");
+                    SetSkill1AttackIcon(handle.Result);
+                };
+            }
+
+            var skill2Address = buildAttackIconAddress(BattleStage.now.mainCharacter.skill2Attack?.attackIcon);
+            if (skill2Address != "")
+            {
+                Addressables.LoadAssetAsync<Sprite>(skill2Address).Completed += (AsyncOperationHandle<Sprite> handle) =>
+                {
+                    if (handle.Status != AsyncOperationStatus.Succeeded)
+                        throw new Exception($"Failed to load Skill2 Icon {skill2Address}");
+                    SetSkill2AttackIcon(handle.Result);
+                };
+            }
+            
             SetStageNumber();
             InitAutoAttackToggle();
             gameObject.SetActive(true);
@@ -104,6 +112,8 @@ namespace UISystem
 
         private string buildAttackIconAddress(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                return "";
             return $"Assets/Trieyes/Addressable/Icons/Skills/{name}";
         }
 

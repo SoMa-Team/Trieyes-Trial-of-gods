@@ -111,7 +111,6 @@ namespace OutGame
         public string skillName;
         public string skillIconAddressable;
         public string skillDescription;
-        public List<SkillStat> skillStats;
         public string unlockConditionDescription;
         public bool isUnlocked;
         public List<UnlockCondition> unlockConditions;
@@ -137,13 +136,6 @@ namespace OutGame
             Debug.Log($"해금 조건 설명: {unlockConditionDescription}");
             Debug.Log($"해금 여부: {(isUnlocked ? "해금됨" : "미해금")}");
             Debug.Log($"의존성: {(dependency == -1 ? "없음" : dependency.ToString())}");
-            
-            Debug.Log("스킬 스탯:");
-            for (int i = 0; i < skillStats.Count; i++)
-            {
-                Debug.Log($"  - {skillStats[i].key}: {skillStats[i].value}");
-            }
-            
             Debug.Log("해금 조건:");
             for (int i = 0; i < unlockConditions.Count; i++)
             {

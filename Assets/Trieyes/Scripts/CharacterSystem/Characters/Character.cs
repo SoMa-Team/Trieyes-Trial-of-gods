@@ -1,7 +1,6 @@
 using UnityEngine;
 using AttackSystem;
 using BattleSystem;
-using System;
 using Stats;
 
 namespace CharacterSystem

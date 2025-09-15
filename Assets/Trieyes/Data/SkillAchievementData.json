@@ -2,24 +2,10 @@
   "skillAchievements": [
     {
       "skillId": 1001,
-      "dependency": -1,
+      "dependency": 100001,
       "skillName": "속성 부여",
       "skillIconAddressable": "fire3",
       "skillDescription": "무기에 {0} 속성을 부여하여 {1}초 동안 {2} 효과를 적용합니다.",
-      "skillStats": [
-        {
-          "key": "속성",
-          "value": "무작위"
-        },
-        {
-          "key": "지속시간",
-          "value": "5"
-        },
-        {
-          "key": "효과",
-          "value": "속성별 특수효과"
-        }
-      ],
       "unlockConditionDescription": "게임 시작 시 기본 제공됩니다.",
       "isUnlocked": true,
       "unlockConditions": [
@@ -32,25 +18,11 @@
     {
       "skillId": 1002,
       "dependency": 100001,
-      "skillName": "천상 강림",
+      "skillName": "무기 속성 연계",
       "skillIconAddressable": "fire3",
-      "skillDescription": "신성한 힘으로 {0}초 동안 {1}% 공격력 증가와 {2}% 방어력 증가를 얻습니다.",
-      "skillStats": [
-        {
-          "key": "지속시간",
-          "value": "8"
-        },
-        {
-          "key": "공격력 증가",
-          "value": "50"
-        },
-        {
-          "key": "방어력 증가",
-          "value": "30"
-        }
-      ],
+      "skillDescription": "현재 검에 부여된 속성에 따라 다양한 효과가 발생합니다..",
       "unlockConditionDescription": "{0} 유물을 획득해야 합니다.",
-      "isUnlocked": false,
+      "isUnlocked": true,
       "unlockConditions": [
         {
           "key": "RelicObtained",
@@ -60,7 +32,7 @@
       "unlockProgress": [
         {
           "key": "RelicObtained",
-          "currentValue": 0,
+          "currentValue": 1,
           "maxValue": 1
         }
       ]

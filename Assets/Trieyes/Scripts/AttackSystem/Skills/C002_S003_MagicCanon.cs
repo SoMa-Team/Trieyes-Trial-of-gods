@@ -70,7 +70,6 @@ namespace AttackComponents
         public override void OnTriggerEnter2D(Collider2D other)
         {
             base.OnTriggerEnter2D(other);
-            Debug.LogWarning($"[MagicCanon] 마법 포탑에 닿았습니다. {other.gameObject.name}");
 
             // 마법 공격이 포탑에 닿았을 때 AOE 공격 발사
             if (other.CompareTag("Attack") && magicCanonState == MagicCanonState.Active)

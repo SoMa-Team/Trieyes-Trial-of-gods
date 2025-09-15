@@ -25,12 +25,10 @@ namespace AttackComponents
 
         private float attackTimer = 0f;
         private const float attackDelay = 0.1f;
-        private bool isTrailMoving = false; // trail 이동 상태 추적
 
         // 매직 미사일 설정
         [Header("Magic Missile Settings")]
         public float missileTravelTime = 0.5f; // 미사일이 적에게 도달하는 시간 (고정)
-        private float elapsedTime = 0f;
         public float bounceChance = 0.5f; // 50% 도탄 확률
         public int maxBounces = 1; // 최대 도탄 횟수
         public LayerMask targetLayerMask = -1;
@@ -63,7 +61,6 @@ namespace AttackComponents
         {
             base.Deactivate();
             targetEnemy = null;
-            isTrailMoving = false;
             trail.Clear();
             trail.enabled = false;
             StopAndDestroyVFX(spawnedVFX);
@@ -113,7 +110,6 @@ namespace AttackComponents
                             attack.transform.position = magician.transform.position;
                         }
                         trail.enabled = true;
-                        isTrailMoving = false; // trail 이동 상태 초기화
                         attackState = AttackState.Active;
                         attackTimer = 0f;
                     }
@@ -140,10 +136,8 @@ namespace AttackComponents
                         {
                             // 도탄 시 트레일 정보 초기화 하고 다시 한 번 동작
                             attackTimer = 0f;
-                            isTrailMoving = false;
                             trail.Clear();
                             trail.enabled = false;
-                            elapsedTime = 0f;
                             attackState = AttackState.Preparing;
                         }
                         else

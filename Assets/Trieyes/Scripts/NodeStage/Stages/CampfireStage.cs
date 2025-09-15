@@ -18,7 +18,6 @@ namespace NodeStage
         [SerializeField] private DeckView deckViewLocal; // 부모의 deckView와 같다면 생략 가능
 
         private enum Mode { None, HpOption1, HpOption2, HpOption3 }
-        private Mode currentMode = Mode.None;
         private AllIn1SpriteShaderHandler shaderHandler;
 
         protected override void OnActivated()

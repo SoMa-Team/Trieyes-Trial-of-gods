@@ -36,9 +36,17 @@ namespace CharacterSystem
         /// </summary>
         private void Awake()
         {
-
-
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
             Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            Instance = null;
         }
 
         // ===== 적 생성 =====

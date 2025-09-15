@@ -16,7 +16,16 @@ namespace UISystem
 
         private void Awake()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
             Instance = this;
+        }
+        private void OnDestroy()
+        {
+            Instance = null;
         }
         
         [Header("========== Joysticks ==========")]

@@ -63,12 +63,6 @@ namespace AttackComponents
         // VFX 설정
         [Header("VFX 설정")]
         [SerializeField] public GameObject projectileVFXPrefab; // 발사체 VFX 프리팹
-        
-
-        // 디버그 설정
-        [Header("디버그 설정")]
-        [SerializeField] private Color debugCollisionColor = Color.red; // 디버그 콜리전 색상
-        [SerializeField] private float debugCollisionAlpha = 0.3f; // 디버그 콜리전 투명도
 
         // FSM 상태 관리
         private ProjectileState projectileState = ProjectileState.None;

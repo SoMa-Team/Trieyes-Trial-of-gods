@@ -96,9 +96,9 @@ namespace CharacterSystem
         [HideInInspector] protected float skillAttack2Cooldown = 0f;
         [HideInInspector] protected float lastSkillAttack2Time = 0f;
         
-        public float BasicAttackCoolDownRate => Mathf.Max(1 - lastAttackTime / attackCooldown, 0);
-        public float Skill1CoolDownRate => Mathf.Max(1 - lastSkillAttack1Time / skillAttack1Cooldown, 0);
-        public float Skill2CoolDownRate => Mathf.Max(1 - lastSkillAttack2Time / skillAttack2Cooldown, 0);
+        public float BasicAttackCoolDownRate => Mathf.Max(1 - (Time.time - lastAttackTime) / attackCooldown, 0);
+        public float Skill1CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack1Time) / skillAttack1Cooldown, 0);
+        public float Skill2CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack2Time) / skillAttack2Cooldown, 0);
         public float HpRate => (float)currentHp / maxHp;
         
         /// <summary>
@@ -397,8 +397,6 @@ namespace CharacterSystem
         {          
             if (Animator != null && Animator.HasState(0, Animator.StringToHash(newState)))
             {
-                Animator.speed = 1f;
-                // switch로 각 newStat에 대한 Parameter 값을 변경
                 switch (newState)
                 {
                     case "MOVE":
@@ -408,9 +406,6 @@ namespace CharacterSystem
                         Animator.SetBool("1_Move", false);
                         break;
                     case "ATTACK":
-                        float attackSpeed = GetStatValue(StatType.AttackSpeed);
-                        // TODO: StatManager에서 공속 값 가져와서 연동하기
-                        Animator.speed = Mathf.Max(0f, attackSpeed / 10f);
                         Animator.SetTrigger("2_Attack");
                         break;
                     case "DAMAGED":
@@ -744,12 +739,10 @@ namespace CharacterSystem
         // ===== [기능 12] 자동공격 시스템 =====
         /// <summary>
         /// 공격속도 스탯을 기반으로 공격 쿨다운을 계산합니다.
-        /// 공격속도 10 = 60fps 기준 1초에 1개 발사
         /// </summary>
-        protected virtual void CalculateAttackCooldown()
+        public void CalculateBasicAttackCooldown()
         {
-            float attackSpeed = GetStatValue(StatType.AttackSpeed);
-            attackCooldown = 1f / (attackSpeed / 10f);
+            attackCooldown = 1f / (GetStatValue(StatType.AttackSpeed) / 3f);
         }
 
         /// <summary>
@@ -762,11 +755,11 @@ namespace CharacterSystem
             switch (skillType)
             {
                 case PawnAttackType.BasicAttack:
-                    return lastAttackTime >= attackCooldown;
+                    return lastAttackTime + attackCooldown <= Time.time;
                 case PawnAttackType.Skill1:
-                    return lastSkillAttack1Time >= skillAttack1Cooldown;
+                    return lastSkillAttack1Time + skillAttack1Cooldown <= Time.time;
                 case PawnAttackType.Skill2:
-                    return lastSkillAttack2Time >= skillAttack2Cooldown;
+                    return lastSkillAttack2Time + skillAttack2Cooldown <= Time.time;
                 default:
                     return false;
             }
@@ -787,36 +780,26 @@ namespace CharacterSystem
             }
         }
 
-        public void UpdateCooldown()
-        {
-            lastAttackTime += Time.deltaTime;
-            lastSkillAttack1Time += Time.deltaTime;
-            lastSkillAttack2Time += Time.deltaTime;
-        }
-
-        public void SetLockMovement(bool lockMovement)
-        {
-            Controller.lockMovement = lockMovement;
-        }
-
         public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
-            CalculateAttackCooldown();
             if(CheckCooldown(attackType))
             {
                 switch (attackType)
                 {
                     case PawnAttackType.BasicAttack:
-                        lastAttackTime = 0f;
+                        // t2 = t1;
+                        // t1 = Time.time;
+                        // Debug.LogError($"delta time : {t1 - t2}");
+                        lastAttackTime = Time.time;
                         ChangeAnimationState("ATTACK");
                         return true;
                     case PawnAttackType.Skill1:
-                        lastSkillAttack1Time = 0f;
+                        lastSkillAttack1Time = Time.time;
                         ChangeAnimationState("SKILL001");
                         return true;
 
                     case PawnAttackType.Skill2:
-                        lastSkillAttack2Time = 0f;
+                        lastSkillAttack2Time = Time.time;
                         ChangeAnimationState("SKILL002");
                         return true;
                         

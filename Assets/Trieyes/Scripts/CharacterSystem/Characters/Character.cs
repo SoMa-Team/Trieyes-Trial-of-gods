@@ -123,9 +123,15 @@ namespace CharacterSystem
 
         protected override void ChangeAnimationState(string newState)
         {
-            float attackSpeed = GetStatValue(StatType.AttackSpeed);
-            Animator.speed = Mathf.Max(0f, attackSpeed / 10f);
-            base.ChangeAnimationState(newState);
+            if (Animator != null && Animator.HasState(0, Animator.StringToHash(newState)) && newState == "ATTACK")
+            {
+                Animator.SetFloat("AttackSpeedMultiplier", GetStatValue(StatType.AttackSpeed)/3);
+                Animator.SetTrigger("2_Attack");
+            }
+            else
+            {
+                base.ChangeAnimationState(newState);
+            }
         }
 
         public void CreateAttack(PawnAttackType attackType)

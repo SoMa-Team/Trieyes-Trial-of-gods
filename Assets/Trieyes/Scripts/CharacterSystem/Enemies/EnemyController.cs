@@ -12,14 +12,15 @@ namespace Enemies
     [RequireComponent(typeof(Pawn))]
     public class EnemyController : Controller
     {
-        public float minFollowDistance = 0.1f; // 너무 가까우면 멈춤
-
-        public float minRunDistance = 1f;
-
         public EnemyType enemyType;
+
         protected Transform playerTarget;
 
         protected Enemy enemy;
+
+        protected float minFollowDistance = 0.1f; // 너무 가까우면 멈춤
+
+        protected float minRunDistance = 1f;
 
         protected Vector3 targetCollisionOffset;
 

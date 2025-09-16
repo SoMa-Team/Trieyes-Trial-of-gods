@@ -13,19 +13,17 @@ namespace AttackComponents
     /// 이 컴포넌트는 IEventHandler를 구현하여 이벤트를 처리할 수 있습니다.
     /// </summary>
     public abstract class AttackComponent : MonoBehaviour, IEventHandler
-    {
-        private int level; // Relic과 연결될 경우, 자동으로 초기화
-        
+    {        
         // ===== [기능 1] 기본 정보 =====
-        protected Attack attack; // 부모 Attack
-        protected Pawn attacker => attack?.attacker; // 소유자 (Attack의 attacker)
+        [HideInInspector] protected Attack attack; // 부모 Attack
+        [HideInInspector] protected Pawn attacker => attack?.attacker; // 소유자 (Attack의 attacker)
 
         // VFX GameObject 구현하는 방향으로 변경
         [SerializeField] protected List<GameObject> vfxList = new List<GameObject>();
         protected GameObject spawnedVFX;
 
         // ===== [Lock 메커니즘] =====
-        protected bool isLocked = false; // Lock 상태 관리
+        [HideInInspector] protected bool isLocked = false; // Lock 상태 관리
 
         protected virtual void Update()
         {
@@ -208,11 +206,6 @@ namespace AttackComponents
             // 하위 클래스에서 이 메서드를 오버라이드하여
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
             return true;
-        }
-
-        public void SetLevel(int level)
-        {
-            this.level = level;
         }
     }
 } 

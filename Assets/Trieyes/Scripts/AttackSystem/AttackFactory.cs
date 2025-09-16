@@ -64,7 +64,7 @@ namespace AttackSystem
                 
                 foreach (var attackComponentID in relic.attackComponentIDs)
                 {
-                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, relic.level, attack, Vector2.zero);
+                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, attack, Vector2.zero);
                     attack.AddAttackComponent(attackComponent);
                 }
             }

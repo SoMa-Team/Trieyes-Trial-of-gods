@@ -2,6 +2,7 @@ using UnityEngine;
 using AttackSystem;
 using BattleSystem;
 using Stats;
+using System;
 
 namespace CharacterSystem
 {
@@ -10,12 +11,9 @@ namespace CharacterSystem
         // ===== [필드] =====
         
         // Pawn의 추상 멤버 구현
-        public Vector3 lastPosition;
-
-        public int spawnID;
         
         protected float lastTriggerEnterTime = 0f;
-        public float collisionDamageInterval = 0.5f;
+        [HideInInspector] public float collisionDamageInterval = 0.5f;
 
         public override Vector2 CenterOffset { get; set; } = Vector2.zero;
         
@@ -39,7 +37,6 @@ namespace CharacterSystem
             base.Update();
             
             Controller?.ProcessInputActions();
-            lastPosition = transform.position;
         }
 
         // ===== [커스텀 메서드] =====
@@ -92,6 +89,10 @@ namespace CharacterSystem
             if(other.gameObject.CompareTag("Enemy"))
             {
                 lastTriggerEnterTime = Time.time;
+
+                var enemy = other.gameObject.GetComponent<Enemy>();
+                enemy.ExecuteAttack();
+                DamageProcessor.ProcessHit(enemy, this);
             }
         }
 
@@ -125,7 +126,7 @@ namespace CharacterSystem
         {
             if (Animator != null && Animator.HasState(0, Animator.StringToHash(newState)) && newState == "ATTACK")
             {
-                Animator.SetFloat("AttackSpeedMultiplier", GetStatValue(StatType.AttackSpeed)/3);
+                Animator.SetFloat("AttackSpeedMultiplier", Mathf.Max(GetStatValue(StatType.AttackSpeed)/3, 1f));
                 Animator.SetTrigger("2_Attack");
             }
             else

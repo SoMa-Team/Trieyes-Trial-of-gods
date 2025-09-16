@@ -29,8 +29,6 @@ namespace CharacterSystem
         {
             base.Start();
             pawnName = "마법사";
-            spawnID = 2;
-            CenterOffset = new Vector3(0, 0.4f, 0);
         }
 
         public override void Update()

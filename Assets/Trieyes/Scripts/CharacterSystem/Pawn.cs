@@ -63,16 +63,13 @@ namespace CharacterSystem
         protected string currentAnimationState;
         
         // ===== [프로퍼티] =====
-        public int? enemyID;
+        [HideInInspector] public int objectID;
+        [HideInInspector] public int? enemyID;
         public bool isEnemy => enemyID is not null; 
-        
         public string pawnName { get; protected set; }
-        
         public int level { get; protected set; }
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
-
         public Dictionary<PawnStatusType, object> statuses = new();
-        
         public int gold { get; set; }
 
         // ===== [기능별 필드] =====
@@ -140,8 +137,6 @@ namespace CharacterSystem
             }
         }
 
-        public int objectID;
-
         // ===== [Unity 생명주기] =====
         protected virtual void Start()
         {
@@ -163,6 +158,7 @@ namespace CharacterSystem
             if (BattleStage.now is null) return;
             if (isEnemy)
             {
+                // TODO : 다른 클래스 간의 순서 종료 보장이 안되어 EnemyFactory.Instance가 null인 상황 발생
                 EnemyFactory.Instance.Deactivate(this as Enemy);
             }
             else

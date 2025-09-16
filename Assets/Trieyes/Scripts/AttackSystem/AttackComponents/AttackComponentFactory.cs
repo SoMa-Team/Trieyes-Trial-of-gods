@@ -65,10 +65,9 @@ namespace AttackComponents
         /// <param name="attack"></param>
         /// <param name="direction"></param>
         /// <returns>생성된 gameObject에 부착된 AttackComponent 객체</returns>
-        public AttackComponent Create(AttackComponentID id, int relicLevel, Attack attack, Vector2 direction)
+        public AttackComponent Create(AttackComponentID id, Attack attack, Vector2 direction)
         {
             var attackComponent = ClonePrefab(id);
-            attackComponent.SetLevel(relicLevel);
             return attackComponent;
         }
         

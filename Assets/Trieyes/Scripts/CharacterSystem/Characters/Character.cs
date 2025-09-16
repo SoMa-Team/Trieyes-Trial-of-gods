@@ -27,11 +27,6 @@ namespace CharacterSystem
             rb.bodyType = RigidbodyType2D.Kinematic;
         }
 
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-        }
-
         public override void Update()
         {
             base.Update();
@@ -47,11 +42,6 @@ namespace CharacterSystem
             this.transform.position = Vector3.zero;
 
             //Debug.Log("Character001 Activated.");
-        }
-
-        public override void Deactivate()
-        {
-            base.Deactivate();
         }
 
         // ===== [이벤트 처리 메서드] =====

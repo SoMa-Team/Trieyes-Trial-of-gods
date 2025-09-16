@@ -147,12 +147,12 @@ namespace CharacterSystem
             }
         }
 
-        protected virtual void OnDisable()
+        protected virtual void OnDestroy()
         {
+            // TODO : 다른 클래스 간의 순서 종료 보장이 안되어 EnemyFactory.Instance가 null인 상황 발생
             if (BattleStage.now is null) return;
-            if (isEnemy)
+            if (this as Enemy && EnemyFactory.Instance is not null)
             {
-                // TODO : 다른 클래스 간의 순서 종료 보장이 안되어 EnemyFactory.Instance가 null인 상황 발생
                 EnemyFactory.Instance.Deactivate(this as Enemy);
             }
             else
@@ -646,11 +646,19 @@ namespace CharacterSystem
                         ChangeAnimationState("ATTACK");
                         return true;
                     case PawnAttackType.Skill1:
+                        if (skill1Attack is null)
+                        {
+                            return false;
+                        }
                         lastSkillAttack1Time = Time.time;
                         ChangeAnimationState("SKILL001");
                         return true;
 
                     case PawnAttackType.Skill2:
+                        if (skill2Attack is null)
+                        {
+                            return false;
+                        }
                         lastSkillAttack2Time = Time.time;
                         ChangeAnimationState("SKILL002");
                         return true;

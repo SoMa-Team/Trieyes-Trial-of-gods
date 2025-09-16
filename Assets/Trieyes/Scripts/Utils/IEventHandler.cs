@@ -50,6 +50,11 @@ namespace Utils
         OnLevelUp,            // 레벨업 이벤트
         OnCardPurchase,       // 상점에서 카드 구매시 발동하는 이벤트
         OnCardRemove,         // 덱에서 카드 제거시 발동하는 이벤트
+        
+        OnRelicAdded,
+        OnRelicRemoved,
+        OnCardAdded,
+        OnCardRemoved,
     }
 
     /// <summary>

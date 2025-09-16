@@ -32,12 +32,25 @@ namespace BattleSystem
         public Dictionary<int, Attack> attacks = new ();
         public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
+        
+        private bool isActivated = false;
 
+        private float ticDuration = 0.5f;
+        private float lastTick = -1;
         public void Update()
         {
+            if (!isActivated)
+                return;
+            
             if (Time.time - startTime >= difficulty.battleLength)
             {
                 OnBattleClear();
+            }
+
+            if (Time.time - lastTick > ticDuration)
+            {
+                mainCharacter.OnEvent(Utils.EventType.OnTick, mainCharacter);
+                lastTick = Time.time;
             }
         }
 
@@ -55,7 +68,9 @@ namespace BattleSystem
             }
             
             startTime = Time.time;
+            lastTick = Time.time;
             now = this;
+            isActivated = true;
             View.gameObject.SetActive(true);
         }
 
@@ -64,6 +79,8 @@ namespace BattleSystem
         public void Deactivate()
         {
             Debug.Log("Deactivating battle stage.");
+            now = null;
+            isActivated = false;
             View.gameObject.SetActive(false);
 
             now = null;

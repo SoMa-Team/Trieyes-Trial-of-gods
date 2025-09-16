@@ -43,7 +43,7 @@ namespace CardSystem
         private Dictionary<Utils.EventType, int> eventTypeCount = new();
         public IReadOnlyDictionary<Utils.EventType, int> EventTypeCount => eventTypeCount;
         
-        public int maxCardCount = 5;
+        public int maxCardCount => (int)owner.statSheet.Get(StatType.DeckSize);
         
         // ===== [기능 3] 카드 호출 순서 관리 =====
         /// <summary>
@@ -135,17 +135,7 @@ namespace CardSystem
             }
         }
 
-        public bool IsDeckFull()//ToDo: ShopSceneManager 이식 끝나면 없애기
-        {
-            if (cards.Count >= maxCardCount) return true;
-            else return false;
-        }
-
-        public bool IsDeckExceed()
-        {
-            if (cards.Count >= maxCardCount+1) return true;
-            else return false;
-        }
+        public bool IsDeckExceed => cards.Count > maxCardCount;
 
         public void EventProcessor(Utils.EventType eventType, object param)
         {
@@ -267,18 +257,6 @@ namespace CardSystem
             return count;
         }
 
-        public int SubstringCount(string str)
-        {
-            int count = 0;
-            foreach (var card in Cards)
-            {
-                if (card == null || string.IsNullOrEmpty(card.cardName)) continue;
-                if (card.cardName.Contains(str))
-                    count++;
-            }
-            return count;
-        }
-
         /// <summary>
         /// 카드 호출 순서를 계산합니다.
         /// 각 카드의 CardActionSO에 CalcActionInitOrder 이벤트를 전파하여 순서를 결정합니다.
@@ -287,30 +265,27 @@ namespace CardSystem
         {
             if (cards.Count == 0) return;
             cardCallCounts = new List<int>(new int[cards.Count]);
-            cardCallOrder ??= new List<int>();
-            cardCallOrder.Clear();
+            cardCallOrder = Enumerable.Range(0, cards.Count).ToList();
             maxIterations = cards.Count * 100;
 
-            int currentCardIndex = 0;
-            int iterationCount = 0;
-
-            while (currentCardIndex < cards.Count && iterationCount < maxIterations)
+            int iteration = 0;
+            int currentIndex = 0;
+            while (iteration < maxIterations && currentIndex < cardCallOrder.Count)
             {
-                cardCallCounts[currentCardIndex]++;
-                cardCallOrder.Add(currentCardIndex);
+                var cardIndex = cardCallOrder[currentIndex];
+                var card = cards[cardIndex];
+                card.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, (cardCallOrder, currentIndex));
 
-                var card = cards[currentCardIndex];
-
-                if (card != null)
-                {
-                    card.TriggerCardEvent(Utils.EventType.CalcActionInitOrder, this, (card, currentCardIndex));
-                }
-
-                currentCardIndex++;
-                iterationCount++;
+                currentIndex++;
+                iteration++;
             }
 
             Debug.Log($"<color=white>[DECK] {owner?.gameObject.name} final call order: [{string.Join("->", cardCallOrder)}]</color>");
+        }
+
+        public int SubstringCount(string str)
+        {
+            return Cards.Count(card => card != null && string.IsNullOrEmpty(card.cardName) && card.cardName.Contains(str));
         }
 
         /// <summary>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AttackComponents;
+using RelicSystem.RelicActions;
 using TagSystem;
 using Unity.VisualScripting;
 using Unity.VisualScripting.FullSerializer;
@@ -16,8 +17,6 @@ namespace RelicSystem
         public static Relic Create(RelicID relicID)
         {
             var relic = new Relic();
-            
-            Debug.Log($"Relic ID: {relicID}");
 
             RelicDataSO data = RelicDataBase.GetRelicDataSO(relicID);
             if (data == null)
@@ -26,26 +25,23 @@ namespace RelicSystem
             }
             relic.relicID = relicID;
             relic.name = data.name;
+            relic.icon = data.icon;
             relic.description = data.description;
             relic.filterAttackIDs = data.filterAttackIDs;
-            relic.filterAttackTag = AttackTagManager.GetAttackTagByName(data.filterTag);
             relic.attackComponentIDs = data.attackComponentIDs;
 
-            relic.randomOptions = new List<RandomOption>();
-            
-            for (int i = 0; i < getRandomOptionCount(relicID); i++)
+            relic.relicAction = relicID switch
             {
-                var randomOption = RandomOptionGenerator.Create(relicID);
-                relic.randomOptions.Add(randomOption);
-            }
-            
+                101 => new Relic0101_SummonPet(),
+                102 => new Relic0102_Perfectionist(),
+                103 => new Relic0103_Stop(),
+                104 => new Relic0104_HeroSword(),
+                105 => new Relic0105_HeroShield(),
+                _ => null
+            };
+            relic.relicAction?.AttachTo(relic);
+        
             return relic;
-        }
-
-        private static int getRandomOptionCount(RelicID id)
-        {
-            // TODO: 랜덤 옵션의 줄 수가 유동적일 경우 수정
-            return 2;
         }
     }
 } 

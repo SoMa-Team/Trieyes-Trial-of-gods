@@ -121,12 +121,6 @@ namespace CharacterSystem
         }
 
         // ===== [이벤트 필터링 시스템] =====
-        /// <summary>
-        /// 이 Pawn이 받을 이벤트들
-        /// </summary>
-        protected HashSet<Utils.EventType> acceptedEvents = new HashSet<Utils.EventType>();
-        
-        protected Dictionary<Utils.EventType, int> relicAcceptedEvents = new Dictionary<Utils.EventType, int>();
         public bool isDead { get; protected set; }
         public bool isAutoAttack {
             get
@@ -201,20 +195,6 @@ namespace CharacterSystem
                 }
             }
             Controller.Activate(this);
-            
-            // 기본 이벤트 등록
-            // TODO: 폰에서는 이벤트 필터 안하기
-            RegisterAcceptedEvents(
-                Utils.EventType.OnAttackHit,
-                Utils.EventType.OnDamageHit,
-                Utils.EventType.OnAttack,
-                Utils.EventType.OnDamaged,
-                Utils.EventType.OnEvaded,
-                Utils.EventType.OnAttackMiss,
-                Utils.EventType.OnDeath,
-                Utils.EventType.OnKilled,
-                Utils.EventType.OnHPUpdated
-            );
 
             ApplyRelic();
 
@@ -442,102 +422,6 @@ namespace CharacterSystem
             return statSheet.GetRaw(statType);
         }
 
-        // ===== [기능 1] 캐릭터 기본 정보 =====
-        public Dictionary<Utils.EventType, int> GetRelicAcceptedEvents()
-        {
-            return relicAcceptedEvents;
-        }
-        
-        public HashSet<Utils.EventType> GetAcceptedEvents()
-        {
-            return acceptedEvents;
-        }
-
-        /// <summary>
-        /// 이 Pawn이 받을 이벤트를 등록합니다.
-        /// </summary>
-        /// <param name="eventTypes">등록할 이벤트 타입들</param>
-        protected virtual void RegisterAcceptedEvents(params Utils.EventType[] eventTypes)
-        {
-            foreach (var eventType in eventTypes)
-            {
-                acceptedEvents.Add(eventType);
-            }
-        }
-
-        /// <summary>
-        /// 유물들이 받을 이벤트를 등록합니다. (카운트 관리)
-        /// </summary>
-        /// <param name="eventTypes">등록할 이벤트 타입들</param>
-        protected virtual void RegisterRelicAcceptedEvents(params Utils.EventType[] eventTypes)
-        {
-            foreach (var eventType in eventTypes)
-            {
-                if (relicAcceptedEvents.ContainsKey(eventType))
-                    relicAcceptedEvents[eventType]++;
-                else
-                    relicAcceptedEvents[eventType] = 1;
-            }
-        }
-
-        /// <summary>
-        /// 유물들이 받을 이벤트를 해제합니다. (카운트 관리)
-        /// </summary>
-        /// <param name="eventTypes">해제할 이벤트 타입들</param>
-        protected virtual void UnregisterRelicAcceptedEvents(params Utils.EventType[] eventTypes)
-        {
-            foreach (var eventType in eventTypes)
-            {
-                if (relicAcceptedEvents.ContainsKey(eventType))
-                {
-                    relicAcceptedEvents[eventType]--;
-                    if (relicAcceptedEvents[eventType] <= 0)
-                        relicAcceptedEvents.Remove(eventType);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 이벤트가 허용되는지 확인합니다.
-        /// </summary>
-        /// <param name="eventType">확인할 이벤트 타입</param>
-        /// <returns>허용되면 true, 아니면 false</returns>
-        protected virtual bool IsEventAccepted(Utils.EventType eventType)
-        {
-            return acceptedEvents.Contains(eventType);
-        }
-
-        /// <summary>
-        /// 카드 이벤트가 허용되는지 확인합니다. (카운트 기반)
-        /// </summary>
-        /// <param name="eventType">확인할 이벤트 타입</param>
-        /// <returns>허용되면 true, 아니면 false</returns>
-        protected virtual bool IsCardEventAccepted(Utils.EventType eventType)
-        {
-            return deck.EventTypeCount.ContainsKey(eventType) && deck.EventTypeCount[eventType] > 0;
-        }
-
-        /// <summary>
-        /// 유물 이벤트가 허용되는지 확인합니다. (카운트 기반)
-        /// </summary>
-        /// <param name="eventType">확인할 이벤트 타입</param>
-        /// <returns>허용되면 true, 아니면 false</returns>
-        protected virtual bool IsRelicEventAccepted(Utils.EventType eventType)
-        {
-            return relicAcceptedEvents.ContainsKey(eventType) && relicAcceptedEvents[eventType] > 0;
-        }
-
-        // 각 이벤트 Clear 함수
-        public void ClearAcceptedEvents()
-        {
-            acceptedEvents.Clear();
-        }
-
-        public void ClearRelicAcceptedEvents()
-        {
-            relicAcceptedEvents.Clear();
-        }
-
         // ===== [기능 8] HP 및 골드 관리 =====
         
         /// <summary>
@@ -578,20 +462,9 @@ namespace CharacterSystem
         /// <param name="relic">추가할 유물</param>
         public void AddRelic(Relic relic)
         {
-            relic.owner = this;
+            relic.AttachTo(this);
             relics.Add(relic);
-            
-            var relicEvents = relic.GetAcceptedEvents();
-            if (relicEvents != null)
-            {
-                foreach (var eventType in relicEvents)
-                {
-                    if (relicAcceptedEvents.ContainsKey(eventType))
-                        relicAcceptedEvents[eventType]++;
-                    else
-                        relicAcceptedEvents[eventType] = 1;
-                }
-            }
+            this.OnEvent(Utils.EventType.OnRelicAdded, relic); // TODO : 이벤트 전파 수정
         }
 
         /// <summary>
@@ -600,27 +473,11 @@ namespace CharacterSystem
         /// <param name="relic">제거할 유물</param>
         public void RemoveRelic(Relic relic)
         {
-            if (relic != null && relics.Contains(relic))
-            {
-                relics.Remove(relic);
-
-                // 유물의 이벤트 셋을 Pawn의 relicAcceptedEvents에서 제거 (카운트 관리)
-                var relicEvents = relic.GetAcceptedEvents();
-                if (relicEvents != null)
-                {
-                    foreach (var eventType in relicEvents)
-                    {
-                        if (relicAcceptedEvents.ContainsKey(eventType))
-                        {
-                            relicAcceptedEvents[eventType]--;
-                            if (relicAcceptedEvents[eventType] <= 0)
-                                relicAcceptedEvents.Remove(eventType);
-                        }
-                    }
-                }
-
-                //Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
-            }
+            if (relic is null || !relics.Contains(relic))
+                return;
+            
+            relics.Remove(relic);
+            //Debug.Log($"<color=purple>[RELIC] {gameObject.name} lost relic: {relic.GetInfo().name}</color>");
         }
 
         // ===== [기능 10] 상태 관리 =====
@@ -651,7 +508,7 @@ namespace CharacterSystem
         public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
             // 유물들의 이벤트 처리 (필터링 적용)
-            if (relics != null && IsRelicEventAccepted(eventType))
+            if (relics != null)
             {
                 foreach (var relic in relics)
                 {
@@ -662,9 +519,8 @@ namespace CharacterSystem
                 }
             }
             // 덱의 카드 액션들 처리 (필터링 적용)
-            if (deck != null && IsCardEventAccepted(eventType))
+            if (deck != null)
             {
-                Debug.Log($"<color=cyan>[EVENT] {gameObject.name} ({GetType().Name}) -> Deck processing {eventType}</color>");
                 var result = deck.OnEvent(eventType, param);
             }
             

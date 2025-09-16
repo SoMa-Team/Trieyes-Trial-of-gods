@@ -209,10 +209,5 @@ namespace AttackComponents
             // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
             return true;
         }
-
-        public void SetLevel(int level)
-        {
-            this.level = level;
-        }
     }
 } 

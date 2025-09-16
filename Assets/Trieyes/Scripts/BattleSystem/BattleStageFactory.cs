@@ -7,6 +7,7 @@ using UnityEngine;
 using Utils;
 using System.Linq;
 using VFXSystem;
+using EventType = Utils.EventType;
 using Object = System.Object;
 
 namespace BattleSystem
@@ -102,6 +103,8 @@ namespace BattleSystem
 
             BattleOverlayCanvasController.Instance.Activate();
             BattleWorldCanvasController.Instance.Activate();
+
+            mainCharacter.OnEvent(EventType.OnBattleStart, null);
         }   
 
         /// <summary>

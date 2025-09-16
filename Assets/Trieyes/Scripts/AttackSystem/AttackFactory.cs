@@ -82,10 +82,13 @@ namespace AttackSystem
             return id;
         }
 
-        public void DeregisterAttack(AttackData basicAttack)
+        public void DeregisterAttack(AttackData attackData)
         {
-            var attackID = basicAttack.attackId;
-            attackPrefab.Remove(attackID);
+            if (attackData is not null)
+            {
+                var attackID = attackData.attackId;
+                attackPrefab.Remove(attackID);
+            }
         }
         
         // ===== 공격 생성 =====

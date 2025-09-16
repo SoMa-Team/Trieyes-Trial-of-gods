@@ -43,7 +43,6 @@ namespace GameFramework
                     stageRound++;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBattleDifficulty());
                     break;
-                }
                 case StageType.Boss:
                     stageRound++;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());

@@ -54,7 +54,7 @@ namespace AttackComponents
             attackTimer = 0f;
             attackDirection = direction.normalized;
             attackSpeed = attack.attacker.GetStatValue(StatType.AttackSpeed);
-            attackRadius = attack.attacker.GetStatValue(StatType.AttackRange) / 20f;
+            attackRadius = attack.attacker.GetStatValue(StatType.AttackRange) / 10f;
             
             // 공격 시작
             StartAttack();

@@ -25,9 +25,14 @@ namespace GameFramework
             Instance = this;
         }
         
-        private Difficulty GetCurrentDifficulty()
+        private Difficulty GetCurrentBattleDifficulty()
         {
             return Difficulty.GetByStageRound(stageRound);
+        }
+        
+        private Difficulty GetCurrentBossDifficulty()
+        {
+            return Difficulty.GetByStageRound(stageRound, true);
         }
 
         public void StartNextStage(StageType stageType, Character mainCharacter)
@@ -36,22 +41,23 @@ namespace GameFramework
             {
                 case StageType.Battle:
                     stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBattleDifficulty());
                     break;
+                }
                 case StageType.Boss:
                     stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
                     break;
                 case StageType.Elite:
                     stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentDifficulty());
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
                     break;
                 case StageType.StartCard:
                     StartCardStage.Instance.Activate(mainCharacter);
                     break;
-                // case StageType.StartRelic:
-                //     StartRelicStage.Instance.Activate(mainCharacter);
-                //     break;
+                case StageType.StartRelic:
+                    StartRelicStage.Instance.Activate(mainCharacter);
+                    break;
                 case StageType.CampFire:
                     CampfireStage.Instance.Activate(mainCharacter);
                     break;
@@ -59,7 +65,7 @@ namespace GameFramework
                     CardEnhancementStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.Shop:
-                    ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
+                    ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentBattleDifficulty());
                     break;
                 case StageType.BattleReward:
                     BattleStageFactory.Instance.Deactivate(BattleStage.now);

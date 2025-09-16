@@ -27,7 +27,6 @@ namespace NodeStage
         public virtual void Activate(Character mainCharacter)
         {
             this.mainCharacter = mainCharacter;
-            gameObject.SetActive(true);
 
             // 덱 보기 버튼 바인딩(중복 방지)
             if (openDeckButton != null)
@@ -37,6 +36,7 @@ namespace NodeStage
             }
 
             OnActivated();
+            gameObject.SetActive(true);
         }
 
         // 파생에서 초기화/세팅

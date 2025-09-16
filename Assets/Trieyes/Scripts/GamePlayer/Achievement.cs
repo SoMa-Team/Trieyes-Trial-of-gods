@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using CardSystem;
+using RelicSystem;
 using UnityEngine;
 
 namespace GamePlayer
@@ -84,6 +87,18 @@ namespace GamePlayer
                 
                 Debug.Log($"업적 진행도 업데이트: {achievement.achievementName} - {achievement.achievementProgressCurrent}/{achievement.achievementProgressMax}");
             }
+        }
+
+        public List<int> GetAvailableRelicIDs()
+        {
+            // TODO : 업적 구현 시 수정 필요
+            return RelicDataBase.GetAllRelicIDs().Where(x => x is >= 100 and <= 200).ToList();
+        }
+        
+        public List<Card> GetAvailableCards()
+        {
+            // TODO : 카드 풀 가져오기
+            return null;
         }
     }
 } 

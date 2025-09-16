@@ -138,8 +138,7 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
     // ============= [모드 전환/잠금] =============
     private void SetGlobalUIInteractable(bool enabled)
     {
-        
-        bool isExceed = mainCharacter != null && mainCharacter.deck.IsDeckExceed();
+        bool isExceed = mainCharacter != null && mainCharacter.deck.IsDeckExceed;
 
         rerollButton.interactable     = enabled && !isExceed;
         nextBattleButton.interactable = enabled && !isExceed;
@@ -269,7 +268,7 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
 
     private void UpdateButtonState()
     {
-        bool isExceed = mainCharacter.deck.IsDeckExceed();
+        bool isExceed = mainCharacter.deck.IsDeckExceed;
         rerollButton.interactable = !isExceed;
         nextBattleButton.interactable = !isExceed;
         deckCountText.color = isExceed ? Color.red : Color.white;

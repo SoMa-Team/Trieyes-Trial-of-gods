@@ -8,9 +8,9 @@ namespace RelicSystem
     {
         public int id;
         public string name; // 화염검
+        public Sprite? icon;
         public string description; // "검이 화염으로 변합니다."
-        public List<int>? attackComponentIDs; // "[0]"
         public List<int>? filterAttackIDs; // "[1, 2]"
-        public string? filterTag; // fire
+        public List<int>? attackComponentIDs; // "[0]"
     }
 }

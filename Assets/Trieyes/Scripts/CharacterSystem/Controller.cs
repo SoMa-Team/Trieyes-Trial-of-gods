@@ -11,7 +11,7 @@ namespace CharacterSystem
         // ===== [필드] =====
         public Pawn owner;
 
-        public bool lockMovement;
+        protected bool lockMovement;
         
         public enum EnemyType
         {
@@ -55,12 +55,17 @@ namespace CharacterSystem
 
         public virtual void Update()
         {
-            owner.UpdateCooldown();
+            owner.CalculateBasicAttackCooldown();
         }
 
         public void Deactivate()
         {
             enabled = false;
+        }
+
+        public void SetLockMovement(bool lockMovement)
+        {
+            this.lockMovement = lockMovement;
         }
     }
 }

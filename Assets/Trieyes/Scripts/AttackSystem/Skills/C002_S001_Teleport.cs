@@ -50,7 +50,7 @@ namespace AttackComponents
                 return;
             }
             
-            character.SetLockMovement(true);
+            character.Controller.SetLockMovement(true);
             teleportPosition = character.transform.position;
             teleportDirection = direction;
             teleportParticle.transform.localPosition = character.CenterOffset;
@@ -130,7 +130,7 @@ namespace AttackComponents
         public override void Deactivate()
         {
             base.Deactivate();
-            character.SetLockMovement(false);
+            character.Controller.SetLockMovement(false);
             teleportParticle.transform.localPosition = Vector3.zero;
             teleportTimer = 0f;
         }

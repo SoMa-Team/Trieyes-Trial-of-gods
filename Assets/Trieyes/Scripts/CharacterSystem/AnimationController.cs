@@ -22,7 +22,7 @@ namespace AnimationSystem
             }
         }
 
-        public void BasicAttackOnAnimationStart()
+        public virtual void BasicAttackOnAnimationStart()
         {
             if (owner is Character character)
             {
@@ -34,7 +34,7 @@ namespace AnimationSystem
             }
         }
 
-        public void Skill1OnAnimationStart()
+        public virtual void Skill1OnAnimationStart()
         {
             if (owner is Character character)
             {
@@ -46,7 +46,7 @@ namespace AnimationSystem
             }
         }
 
-        public void Skill2OnAnimationStart()
+        public virtual void Skill2OnAnimationStart()
         {
             if (owner is Character character)
             {

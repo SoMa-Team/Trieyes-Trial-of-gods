@@ -59,7 +59,7 @@ namespace CharacterSystem
         protected override void OnSelfDeath(AttackResult result)
         {
             var sequence = Sequence.Create();
-            Controller.lockMovement = true;
+            Controller.SetLockMovement(true);
             
             for (int i = 0; i < dropGold; i++)
             {

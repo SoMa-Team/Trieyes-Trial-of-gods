@@ -6,6 +6,8 @@ namespace RelicSystem.RelicActions
 {
     public class Relic0105_HeroShield: RelicAction
     {
+        // Relic 105
+        // 방어력이 10% 증가합니다. [용사의 검] 유물과 같이 장착될 경우, 방어력이 100% 더 증가합니다.
         private int pairRelicId = 104;
 
         public override bool OnEvent(EventType eventType, object param)

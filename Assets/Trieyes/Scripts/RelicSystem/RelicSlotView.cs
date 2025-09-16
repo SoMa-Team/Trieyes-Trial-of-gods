@@ -15,7 +15,7 @@ namespace RelicSystem
 
         [SerializeField] private RectTransform innerTransform;
 
-        bool selected = false;
+        private bool selected = false;
         public Relic Relic;
         [CanBeNull] private Action _onClickAction = null;
 

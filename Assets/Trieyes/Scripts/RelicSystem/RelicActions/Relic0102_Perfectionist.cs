@@ -5,6 +5,8 @@ namespace RelicSystem.RelicActions
 {
     public class Relic0102_Perfectionist: RelicAction
     {
+        // Relic 102    
+        // 체력이 100%일 경우, 공격력이 지속적으로 증가합니다. 체력이 100%미만일 경우, 증가한 공격력이 초기화됩니다. 이 효과는 전투 종료시 초기화됩니다.
         private int stackCount = 0;
         public override bool OnEvent(EventType eventType, object param)
         {

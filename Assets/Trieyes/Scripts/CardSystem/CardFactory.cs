@@ -89,24 +89,40 @@ namespace CardSystem
             // Common: 53%, Uncommon: 33%, Legendary: 13%, Exceed: 1%
             float rand = UnityEngine.Random.Range(0f, 100f);
 
-            List<int> pool;
+            Rarity rarity;
             
             if (rand < COMMON_PROB) // Common
             {
-                pool = CommonCards;
+                rarity = Rarity.Common;
             }
             else if (rand < COMMON_PROB+UNCOMMON_PROB) // Uncommon
             {
-                pool = UncommonCards;
+                rarity = Rarity.Uncommon;
             }
             else if (rand < COMMON_PROB+UNCOMMON_PROB+LEGENDARY_PROB) // Legendary
             {
-                pool = LegendaryCards;
+                rarity = Rarity.Legendary;
             }
             else // Exceed
             {
-                pool = ExceedCards;
+                rarity = Rarity.Exceed;
             }
+
+            return RandomCreateByRarity(rarity, level);
+        }
+        
+        
+        public Card RandomCreateByRarity(Rarity rarity, int level = 1)
+        {
+            List<int> pool = rarity switch
+            {
+                Rarity.Common => CommonCards,
+                Rarity.Uncommon => UncommonCards,
+                Rarity.Legendary => LegendaryCards,
+                Rarity.Exceed => ExceedCards,
+                Rarity.Gimmick => GimmickCards,
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
             if (pool == null || pool.Count == 0)
             {
@@ -116,7 +132,6 @@ namespace CardSystem
 
             int idx = UnityEngine.Random.Range(0, pool.Count);
             int cardID = pool[idx];
-
             return CreateByID(cardID);
         }
 

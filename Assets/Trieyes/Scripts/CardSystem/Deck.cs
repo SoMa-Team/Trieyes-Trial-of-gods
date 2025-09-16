@@ -285,14 +285,7 @@ namespace CardSystem
 
         public int SubstringCount(string str)
         {
-            int count = 0;
-            foreach (var card in Cards)
-            {
-                if (card == null || string.IsNullOrEmpty(card.cardName)) continue;
-                if (card.cardName.Contains(str))
-                    count++;
-            }
-            return count;
+            return Cards.Count(card => card != null && string.IsNullOrEmpty(card.cardName) && card.cardName.Contains(str));
         }
 
         /// <summary>

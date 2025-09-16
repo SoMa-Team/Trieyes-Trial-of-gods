@@ -5,7 +5,6 @@ using TMPro;
 using CardSystem;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using StickerSystem;
 using Utils;
 

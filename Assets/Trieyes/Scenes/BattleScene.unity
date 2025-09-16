@@ -5882,7 +5882,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6532286262807758729, guid: 530657bb8bc5041aa87dbe20bb96167d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1220.0009
+      value: 1220.0012
       objectReference: {fileID: 0}
     - target: {fileID: 6928119157154243233, guid: 530657bb8bc5041aa87dbe20bb96167d, type: 3}
       propertyPath: m_Size
@@ -25297,6 +25297,12 @@ MonoBehaviour:
     attackData: {fileID: 11400000, guid: c36be7ff14a6646f2b115832cbb39858, type: 2}
   - id: 1002
     attackData: {fileID: 11400000, guid: 2e9377349ac234cfd91e6ba87103369a, type: 2}
+  - id: 1101
+    attackData: {fileID: 11400000, guid: 2ad47a798602a034e8c4d5a188b84eec, type: 2}
+  - id: 1102
+    attackData: {fileID: 11400000, guid: fd00fdba210caf74c9ee59c412878f6b, type: 2}
+  - id: 1103
+    attackData: {fileID: 11400000, guid: 1a0463e6c87537d458a14bb144b7f0b0, type: 2}
   rewardContainer: {fileID: 1721910346}
   nextButton: {fileID: 1943846462}
   skillChoiceCount: 3
@@ -31703,7 +31709,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3120115679059456073, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.000056128458
+      value: -0.000023061482
       objectReference: {fileID: 0}
     - target: {fileID: 3214882910904577171, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_Value
@@ -31859,7 +31865,7 @@ PrefabInstance:
       objectReference: {fileID: 1824400633}
     - target: {fileID: 6596087777759807577, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.000056128458
+      value: -0.000023061482
       objectReference: {fileID: 0}
     - target: {fileID: 6913855767558527846, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -34455,7 +34461,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7498770762397179744, guid: be83ee25564c9984082a195bb48c8ac0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0004074654
+      value: 0.0006888269
       objectReference: {fileID: 0}
     - target: {fileID: 7507929920772440758, guid: be83ee25564c9984082a195bb48c8ac0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

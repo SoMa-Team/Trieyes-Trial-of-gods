@@ -56,11 +56,7 @@ MonoBehaviour:
   statPresetSO: {fileID: 11400000, guid: a8325b89043a44679bb742f702748708, type: 2}
   basicAttack: {fileID: 11400000, guid: c80959e9e2a294ebba9106bad507c163, type: 2}
   skill1Attack: {fileID: 0}
-  skillAttack1Cooldown: 0
-  lastSkillAttack1Time: -999
   skill2Attack: {fileID: 0}
-  skillAttack2Cooldown: 0
-  lastSkillAttack2Time: -999
   objectID: 0
   lastPosition: {x: 0, y: 0, z: 0}
   spawnID: 0
@@ -93,7 +89,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
-  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
   character: {fileID: 519565357092245493}
@@ -161,8 +156,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.57, y: 0.96}
+  m_Offset: {x: 0, y: -0.2}
+  m_Size: {x: 0.3, y: 0.4}
   m_Direction: 0
 --- !u!1001 &628914021589051112
 PrefabInstance:

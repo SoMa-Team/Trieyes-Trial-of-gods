@@ -48,8 +48,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d8b9a2a76b326f409ffd2734527d10f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 0
-  currentHp: 0
+  maxHp: 80
+  currentHp: 80
   rb: {fileID: -7081958898591838822}
   Controller: {fileID: 55800501933275295}
   Animator: {fileID: 7968761885346731546}
@@ -81,7 +81,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
-  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
   character: {fileID: 4546322792894642916}
@@ -149,7 +148,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.2}
+  m_Offset: {x: 0, y: -0.2}
   m_Size: {x: 0.3, y: 0.4}
   m_Direction: 0
 --- !u!1001 &283405598066157122
@@ -226,7 +225,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 553303962893441446, guid: 00982426a0dee7a49ae21e88495e264b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 553303962893441446, guid: 00982426a0dee7a49ae21e88495e264b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

@@ -177,10 +177,10 @@ MonoBehaviour:
   Controller: {fileID: -1423779297242688908}
   Animator: {fileID: 356517923465032212}
   statPresetSO: {fileID: 11400000, guid: 61f39897e20fa4e8f85c18bdc68a6c3e, type: 2}
+  objectID: 0
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 0}
   skill2Attack: {fileID: 0}
-  objectID: 0
   dropGold: 0
   playerTarget: {fileID: 0}
   material: {fileID: 0}
@@ -198,10 +198,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: -6176388359033023032}
-  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
-  minFollowDistance: 1
+  minFollowDistance: 0
   minRunDistance: 1
   enemyType: 0
 --- !u!50 &2880572157098302278

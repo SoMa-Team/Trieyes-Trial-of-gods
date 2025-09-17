@@ -7,8 +7,8 @@ using UnityEngine;
 using Utils;
 using System.Linq;
 using VFXSystem;
+using EventType = Utils.EventType;
 using Object = System.Object;
-using UISystem;
 
 namespace BattleSystem
 {
@@ -58,7 +58,6 @@ namespace BattleSystem
             var battleStageView = battleStageGameObject.GetComponent<BattleStageView>();
             var battleStage = new BattleStage();
             battleStageView.BattleStage = battleStage;
-            //battleStage update disable시키기
             
             onBattleStartPopupView.Activate((Character)mainCharacter, difficulty, battleStage);
 
@@ -104,6 +103,8 @@ namespace BattleSystem
 
             BattleOverlayCanvasController.Instance.Activate();
             BattleWorldCanvasController.Instance.Activate();
+
+            mainCharacter.OnEvent(EventType.OnBattleStart, null);
         }   
 
         /// <summary>
@@ -115,33 +116,32 @@ namespace BattleSystem
             
             battleStage.mainCharacter.transform.SetParent(null);
             
-            // 캐릭터 정리
-            foreach (var character in battleStage.characters)
+            foreach (var golds in battleStage.golds.Values.ToList())
             {
-                CharacterFactory.Instance.Deactivate(character);
+                DropFactory.Instance.Deactivate(golds);
             }
-
-            // 적 정리
-            foreach (var enemy in battleStage.enemies.Values.ToList())
-            {
-                // TODO : Enemy가 관리되지 않는 오류
-                EnemyFactory.Instance.Deactivate(enemy);
-            }
+            DropFactory.Instance.ClearPool();
             
             // 공격 정리
             foreach (var attack in battleStage.attacks.Values.ToList())
             {
                 AttackFactory.Instance.Deactivate(attack);
             }
-
-            foreach (var golds in battleStage.golds.Values.ToList())
-            {
-                DropFactory.Instance.Deactivate(golds);
-            }
-
             AttackFactory.Instance.ClearPool();
+            
+            // 적 정리
+            foreach (var enemy in battleStage.enemies.Values.ToList())
+            {
+                // TODO : Enemy가 관리되지 않는 오류
+                EnemyFactory.Instance.Deactivate(enemy);
+            }
             EnemyFactory.Instance.ClearPool();
-            DropFactory.Instance.ClearPool();
+            
+            // 캐릭터 정리
+            foreach (var character in battleStage.characters)
+            {
+                CharacterFactory.Instance.Deactivate(character);
+            }
             
             battleStage.spawnManager.Deactivate();
             battleStage.Deactivate();

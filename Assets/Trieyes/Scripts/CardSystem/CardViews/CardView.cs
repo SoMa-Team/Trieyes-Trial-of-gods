@@ -151,8 +151,7 @@ namespace CardViews
             activeStickerOverlays.Clear();
 
             // 2. 파라미터별 오버레이 생성
-            descriptionText.ForceMeshUpdate();
-            var textInfo = descriptionText.textInfo;
+            var textInfo = descriptionText.GetTextInfo(descriptionText.text);
 
             for (int paramIdx = 0; paramIdx < card.paramCharRanges.Count; paramIdx++)
             {
@@ -183,6 +182,8 @@ namespace CardViews
         private Action<CardView> onClicked;
         public void SetOnClicked(Action<CardView> handler)
         {
+            SetCanInteract(true);
+            SetSelected(false);
             onClicked = handler;
         }
 

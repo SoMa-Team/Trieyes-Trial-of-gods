@@ -393,7 +393,7 @@ namespace AttackComponents
             }
         }
         
-        protected override void OnDestroy()
+        protected void OnDestroy()
         {
             // PrimeTween 정리 작업
             foreach (var tween in activeTweens.Values)

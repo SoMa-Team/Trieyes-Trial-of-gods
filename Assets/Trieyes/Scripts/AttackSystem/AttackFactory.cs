@@ -57,8 +57,6 @@ namespace AttackSystem
             // 유물 메인 옵션 적용
             foreach (var relic in owner.relics)
             {
-                if (relic.filterAttackTag is not null && attackData.tags is not null && !attackData.tags.Contains(relic.filterAttackTag.Value))
-                    continue;
                 if (relic.filterAttackIDs is not null && !relic.filterAttackIDs.Contains(attackData.attackId))
                     continue;
                 
@@ -68,21 +66,8 @@ namespace AttackSystem
                 
                 foreach (var attackComponentID in relic.attackComponentIDs)
                 {
-                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, relic.level, attack, Vector2.zero);
+                    var attackComponent = AttackComponentFactory.Instance.Create(attackComponentID, attack, Vector2.zero);
                     attack.AddAttackComponent(attackComponent);
-                }
-            }
-
-            // 유물 랜덤 옵션 적용
-            foreach (var relic in owner.relics)
-            {
-                foreach (var randomOption in relic.randomOptions)
-                {
-                    if (attackData.tags is null || !attackData.tags.Contains(randomOption.FilterTag))
-                        continue;
-                    
-                    // RandomOption이 Attack의 Tag를 포함함
-                    attack.ApplyRelicStat(randomOption.RelicStatType, randomOption.value);
                 }
             }
 
@@ -233,9 +218,12 @@ namespace AttackSystem
         private Attack GetPrefabById(AttackID id)
         {
             if (!attackPrefab.ContainsKey(id))
+            {
                 throw new Exception($"Attack (id : {id}) is not exist.");
+            }
+
             return attackPrefab[id];
-            
+                    
             // return id switch
             // {
             //     0 => attackPrefab[0],

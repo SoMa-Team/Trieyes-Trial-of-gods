@@ -33,16 +33,24 @@ namespace BattleSystem
         public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
         
-        private bool canUpdate = false;
+        private bool isActivated = false;
 
+        private float ticDuration = 0.5f;
+        private float lastTick = -1;
         public void Update()
         {
-            if (canUpdate)
+            if (!isActivated)
+                return;
+            
+            if (Time.time - startTime >= difficulty.battleLength)
             {
-                if (Time.time - startTime >= difficulty.battleLength)
-                {
-                    OnBattleClear();
-                }
+                OnBattleClear();
+            }
+
+            if (Time.time - lastTick > ticDuration)
+            {
+                mainCharacter.OnEvent(Utils.EventType.OnTick, mainCharacter);
+                lastTick = Time.time;
             }
         }
 
@@ -60,9 +68,10 @@ namespace BattleSystem
             }
             
             startTime = Time.time;
+            lastTick = Time.time;
             now = this;
+            isActivated = true;
             View.gameObject.SetActive(true);
-            canUpdate = true;
         }
 
         /// <summary>
@@ -71,8 +80,11 @@ namespace BattleSystem
         {
             Debug.Log("Deactivating battle stage.");
             now = null;
+            isActivated = false;
             View.gameObject.SetActive(false);
-            canUpdate = false;
+
+            now = null;
+            difficulty = null; // difficulty를 null로 설정하여 Update에서 오류 방지
         }
 
         // ===== 적 관리 =====

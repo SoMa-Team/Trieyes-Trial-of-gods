@@ -27,5 +27,6 @@ namespace Stats
         ItemMagnet,         // 자기력 (아이템 획득 반경)
         GoldDropRate,       // 골드 드랍율
         SkillCooldownReduction, // 스킬 쿨타임 감소
+        DeckSize,
     }
 }

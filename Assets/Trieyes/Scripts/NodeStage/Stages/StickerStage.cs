@@ -13,8 +13,6 @@ namespace NodeStage
     {
         [SerializeField] private ShopStickerSlot stickerPrefab;
         [SerializeField] private Transform stickerContainer;
-        
-        [SerializeField] private DeckView deckView;
         [SerializeField] private StickerApplyPopup stickerApplyPopup;
 
         private Sticker pendingSticker;

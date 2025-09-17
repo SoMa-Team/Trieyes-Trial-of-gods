@@ -85,7 +85,6 @@ namespace GameFramework
 
             CharacterFactory.Instance.Deactivate(mainCharacter);
             NextStageSelectPopup.Instance.SetNextStage(null, (Character)mainCharacter, true);
-            ShopSceneManager.Instance.Deactivate();
         }
     }
 }

@@ -17,55 +17,29 @@ namespace RelicSystem
         // ===== [기능 1] 유물 정보 및 생성 =====
         public int relicID;
         public string name;
-        public string description;
-        public int level;
-        public int exp;
-        public List<int> filterAttackIDs;
-        public AttackTag? filterAttackTag;
-        public List<int> attackComponentIDs;
         public Sprite icon = null;
-
-        public List<RandomOption> randomOptions;
+        public string description;
+        
+        public RelicAction relicAction;
+        // Relic의 이벤트 Handler
+        public List<int> filterAttackIDs;
+        // 유물이 적용되는 공격 대상
+        public List<int> attackComponentIDs;
+        // 유물이 적용되는 공격에 부착되는 AttackComponent
         
         // ===== [기능 3] 이벤트 처리 =====
         [CanBeNull] public Pawn owner; // 유물의 소유자 (Pawn)
-        public List<Utils.EventType> acceptedEvents = new List<Utils.EventType>();
+
+        public void AttachTo(Pawn owner)
+        {
+            this.owner = owner;
+        }
 
         public virtual bool OnEvent(Utils.EventType eventType, object param)
         {
-        // owner 참조가 없으면 에러 발생
-        if (owner == null)
-        {
-            Debug.LogError($"<color=red>[Relic] {name ?? "Unknown"} has no owner reference! Ensure SetOwner() is called before using this relic.</color>");
-            return false;
-        }
-        
-        Debug.Log($"<color=purple>[Relic] {name ?? "Unknown"} received event: {eventType} (accepted events: {string.Join(", ", acceptedEvents)})</color>");
-        
-        // 하위 클래스에서 이 메서드를 오버라이드하여
-        // 개별 이벤트에 대한 구체적인 로직을 구현합니다.
-        return false;
-        }
-
-        public List<Utils.EventType> GetEventType()
-        {
-            return acceptedEvents;
-        }
-
-        // ===== [기능 6] 이벤트 필터링 =====
-
-        /// <summary>
-        /// 이 유물이 받을 이벤트 목록을 반환합니다.
-        /// 기본적으로는 빈 HashSet을 반환하며, 하위 클래스에서 오버라이드하여 구현합니다.
-        /// </summary>
-        /// <returns>받을 이벤트들의 HashSet</returns>
-        public virtual HashSet<Utils.EventType> GetAcceptedEvents()
-        {
-            if (acceptedEvents != null)
-            {
-                return new HashSet<Utils.EventType>(acceptedEvents);
-            }
-            return new HashSet<Utils.EventType>(); // 기본적으로는 모든 이벤트를 받지 않음
+            if (relicAction is null)
+                return false;
+            return relicAction.OnEvent(eventType, param);
         }
     }
 } 

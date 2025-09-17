@@ -41,8 +41,7 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
     // ========= [정책 상수] =========
     private const int CARD_SELL_PRICE = 30;      // TODO: 레어별 가격 반영
     private const int INIT_REROLL_PRICE = 10;
-    private const int CARD_PROB = 85;
-    private const int STICKER_PROB = 15;
+    private const int CARD_PROB = 100;
     private const int SLOT_COUNT = 4;
 
     private int rerollPrice;
@@ -118,10 +117,9 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
         SetMode(ShopMode.Normal);
     }
 
-    public override void Deactivate()
+    protected override void OnDeactivated()
     {
         shopScenePrefab.SetActive(false);
-        base.Deactivate();
     }
 
     // ============= [프레임 동기화] =============
@@ -140,8 +138,7 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
     // ============= [모드 전환/잠금] =============
     private void SetGlobalUIInteractable(bool enabled)
     {
-        
-        bool isExceed = mainCharacter != null && mainCharacter.deck.IsDeckExceed();
+        bool isExceed = mainCharacter != null && mainCharacter.deck.IsDeckExceed;
 
         rerollButton.interactable     = enabled && !isExceed;
         nextBattleButton.interactable = enabled && !isExceed;
@@ -271,7 +268,7 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
 
     private void UpdateButtonState()
     {
-        bool isExceed = mainCharacter.deck.IsDeckExceed();
+        bool isExceed = mainCharacter.deck.IsDeckExceed;
         rerollButton.interactable = !isExceed;
         nextBattleButton.interactable = !isExceed;
         deckCountText.color = isExceed ? Color.red : Color.white;

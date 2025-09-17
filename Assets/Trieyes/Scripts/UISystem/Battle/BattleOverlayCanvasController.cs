@@ -48,6 +48,7 @@ namespace UISystem
         
         public void Activate()
         {
+            Debug.LogWarning($"Activate: {BattleStage.now.mainCharacter}, \n Attack : {BattleStage.now.mainCharacter.basicAttack}, \n Skill1 : {BattleStage.now.mainCharacter.skill1Attack}, \n Skill2 : {BattleStage.now.mainCharacter.skill2Attack}");
             var basicAttackAddress = buildAttackIconAddress(BattleStage.now.mainCharacter.basicAttack.attackIcon);
             Addressables.LoadAssetAsync<Sprite>(basicAttackAddress).Completed += (AsyncOperationHandle<Sprite> handle) =>
             {

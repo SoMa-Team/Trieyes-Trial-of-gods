@@ -18,7 +18,7 @@ namespace CharacterSystem
         protected int dropGold; // 드랍할 골드 양
         public Character playerTarget;
 
-        public override Vector2 CenterOffset { get { return Vector2.zero; } }
+        public override Vector2 CenterOffset { get; set; } = Vector2.zero;
    
         // ===== [기능 2] 초기화 =====
         protected override void Start()
@@ -70,44 +70,21 @@ namespace CharacterSystem
         }
         
         // TODO
-        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        public void CreateAttack(PawnAttackType attackType)
         {
-            var direction = (playerTarget.transform.position - transform.position).normalized;
             switch (attackType)
             {
                 case PawnAttackType.BasicAttack:
-                    if (Time.time - lastAttackTime >= attackCooldown)
-                    {
-                        CalculateAttackCooldown();
-                        lastAttackTime = Time.time;
-                        AttackFactory.Instance.Create(basicAttack, this, null, direction); 
-                        return true;
-                    }
-                    return false;
+                    AttackFactory.Instance.Create(basicAttack, this, null, LastMoveDirection); 
+                    break;
                 case PawnAttackType.Skill1:
-                    if (CheckSkillCooldown(PawnAttackType.Skill1))
-                    {
-                        lastSkillAttack1Time = Time.time;
-                        Attack temp = AttackFactory.Instance.Create(skill1Attack, this, null, direction);
-                        Debug.Log($"<color=yellow>[SKILL1] {temp.gameObject.name} skill1Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
-                        return true;
-                    }
-                    Debug.Log($"<color=yellow>[SKILL1] {gameObject.name} skillAttack1Cooldown: {skillAttack1Cooldown}, lastSkillAttack1Time: {lastSkillAttack1Time}</color>");
-                    return false;
-
+                    AttackFactory.Instance.Create(skill1Attack, this, null, LastMoveDirection);
+                    break;
                 case PawnAttackType.Skill2:
-                    if (CheckSkillCooldown(PawnAttackType.Skill2))
-                    {
-                        lastSkillAttack2Time = Time.time;
-                        Attack temp = AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
-                        Debug.Log($"<color=yellow>[SKILL2] {temp.gameObject.name} skill2Attack: {temp.attackData.attackId}, attacker: {temp.attacker.gameObject.name}</color>");
-                        return true;
-                    }
-                    Debug.Log($"<color=yellow>[SKILL2] {gameObject.name} skillAttack2Cooldown: {skillAttack2Cooldown}, lastSkillAttack2Time: {lastSkillAttack2Time}</color>");
-                    return false;
-                    
+                    AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
+                    break;
                 default:
-                    return false;
+                    break;
             }
         }
 

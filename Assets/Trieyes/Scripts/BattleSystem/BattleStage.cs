@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.PlayerLoop;
 using Utils;
 using EventType = UnityEngine.EventType;
+using System.Linq;
 
 namespace BattleSystem
 {
@@ -29,6 +30,8 @@ namespace BattleSystem
         public Character mainCharacter;
         public List<Pawn> characters = new ();
         public Dictionary<int, Enemy> enemies = new ();
+
+        private Dictionary<int, Enemy> liveEnemies => enemies.Where(e => e.Value as Enemy is not null && !e.Value.isDead).ToDictionary(e => e.Key, e => e.Value as Enemy);
         public Dictionary<int, Attack> attacks = new ();
         public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
@@ -137,7 +140,7 @@ namespace BattleSystem
         public void OnPlayerDeath()
         {
             BattleStageFactory.Instance.Deactivate(this);
-            SceneChangeManager.Instance.ChangeBattleToGameOver();
+            InGameManager.Instance.StartNextStage(StageType.GameOver, mainCharacter);
         }
         
         // ===== 시간 관리 관련 =====
@@ -156,7 +159,7 @@ namespace BattleSystem
         public List<Enemy> GetEnemiesInRectRange(Vector2 start, Vector2 end)
         {
             List<Enemy> enemiesInRange = new List<Enemy>();
-            foreach (var enemy in enemies)
+            foreach (var enemy in liveEnemies)
             {
                 // 파괴된 객체 체크
                 if (enemy.Value is null || enemy.Value.transform == null)
@@ -173,10 +176,68 @@ namespace BattleSystem
             return enemiesInRange;
         }
 
+        public List<Enemy> GetEnemiesInRectRangeFromTarget(Pawn target, Vector2 start, Vector2 end)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in liveEnemies)
+            {
+                if (enemy.Value is null || enemy.Value.transform == null)
+                {
+                    continue;
+                }
+                
+                if (enemy.Value.transform.position.x > start.x && enemy.Value.transform.position.x < end.x &&
+                    enemy.Value.transform.position.y > start.y && enemy.Value.transform.position.y < end.y)
+                {
+                    enemiesInRange.Add(enemy.Value as Enemy);
+                }
+            }
+            return enemiesInRange;
+        }
+
+        public List<Enemy> GetEnemiesInRectRangeFromTargetOrderByDistance(Pawn target, Vector2 start, Vector2 end)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in liveEnemies)
+            {
+                if (enemy.Value is null || enemy.Value.transform == null)
+                {
+                    continue;
+                }
+                
+                if (enemy.Value.transform.position.x > start.x && enemy.Value.transform.position.x < end.x &&
+                    enemy.Value.transform.position.y > start.y && enemy.Value.transform.position.y < end.y)
+                {
+                    enemiesInRange.Add(enemy.Value as Enemy);
+                }
+            }
+            enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, target.transform.position).CompareTo(Vector2.Distance(b.transform.position, target.transform.position)));
+            return enemiesInRange;
+        }
+
+        public List<Enemy> GetEnemiesInCircleRangeFromTargetOrderByDistance(Pawn target, float radius)
+        {
+            List<Enemy> enemiesInRange = new List<Enemy>();
+            foreach (var enemy in liveEnemies)
+            {
+                if (enemy.Value is null || enemy.Value.transform == null)
+                {
+                    continue;
+                }
+                
+                if (Vector2.Distance(enemy.Value.transform.position, target.transform.position) < radius)
+                {
+                    enemiesInRange.Add(enemy.Value as Enemy);
+                }
+            }
+            enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, target.transform.position).CompareTo(Vector2.Distance(b.transform.position, target.transform.position)));
+            return enemiesInRange;
+        }
+
         public List<Enemy> GetEnemiesInRectRangeOrderByDistance(Vector2 start, Vector2 end)
         {
             List<Enemy> enemiesInRange = new List<Enemy>();
-            foreach (var enemy in enemies)
+            foreach (var enemy in liveEnemies)
             {
                 // 파괴된 객체 체크
                 if (enemy.Value is null || enemy.Value.transform == null)
@@ -197,7 +258,7 @@ namespace BattleSystem
         public List<Enemy> GetEnemiesInCircleRange(Vector2 start, float radius)
         {
             List<Enemy> enemiesInRange = new List<Enemy>();
-            foreach (var enemy in enemies)
+            foreach (var enemy in liveEnemies)
             {
                 // 파괴된 객체 체크
                 if (enemy.Value is null || enemy.Value.transform == null)
@@ -216,7 +277,7 @@ namespace BattleSystem
         public List<Enemy> GetEnemiesInCircleRangeOrderByDistance(Vector2 start, float radius, int count)
         {
             List<Enemy> enemiesInRange = new List<Enemy>();
-            foreach (var enemy in enemies)
+            foreach (var enemy in liveEnemies)
             {
                 // 파괴된 객체 체크
                 if (enemy.Value is null || enemy.Value.transform == null)

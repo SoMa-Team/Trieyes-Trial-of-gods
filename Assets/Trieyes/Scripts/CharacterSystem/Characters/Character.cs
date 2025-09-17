@@ -1,10 +1,8 @@
-using System;
 using UnityEngine;
-using System.Linq;
 using AttackSystem;
-using Stats;
 using BattleSystem;
-using UnityEngine.EventSystems;
+using Stats;
+using System;
 
 namespace CharacterSystem
 {
@@ -13,14 +11,11 @@ namespace CharacterSystem
         // ===== [필드] =====
         
         // Pawn의 추상 멤버 구현
-        public Vector3 lastPosition;
-
-        public int spawnID;
         
         protected float lastTriggerEnterTime = 0f;
-        public float collisionDamageInterval = 0.5f;
+        [HideInInspector] public float collisionDamageInterval = 0.5f;
 
-        public override Vector2 CenterOffset { get { return Vector2.zero; } }
+        public override Vector2 CenterOffset { get; set; } = Vector2.zero;
         
         // ===== [Unity 생명주기] =====
         protected override void Start()
@@ -29,11 +24,7 @@ namespace CharacterSystem
             
             // Collision Layer를 Character로 설정
             gameObject.layer = LayerMask.NameToLayer("Character");
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
+            rb.bodyType = RigidbodyType2D.Kinematic;
         }
 
         public override void Update()
@@ -41,7 +32,6 @@ namespace CharacterSystem
             base.Update();
             
             Controller?.ProcessInputActions();
-            lastPosition = transform.position;
         }
 
         // ===== [커스텀 메서드] =====
@@ -52,11 +42,6 @@ namespace CharacterSystem
             this.transform.position = Vector3.zero;
 
             //Debug.Log("Character001 Activated.");
-        }
-
-        public override void Deactivate()
-        {
-            base.Deactivate();
         }
 
         // ===== [이벤트 처리 메서드] =====
@@ -88,16 +73,20 @@ namespace CharacterSystem
             return false;
         }
 
-        protected override void OnTriggerEnter2D(Collider2D other)
+        protected override void OnCollisionEnter2D(Collision2D other)
         {
-            base.OnTriggerEnter2D(other);
+            base.OnCollisionEnter2D(other);
             if(other.gameObject.CompareTag("Enemy"))
             {
                 lastTriggerEnterTime = Time.time;
+
+                var enemy = other.gameObject.GetComponent<Enemy>();
+                enemy.ExecuteAttack();
+                DamageProcessor.ProcessHit(enemy, this);
             }
         }
 
-        protected virtual void OnTriggerStay2D(Collider2D other)
+        protected virtual void OnCollisionStay2D(Collision2D other)
         {
             if(!other.gameObject.CompareTag("Enemy"))
             {
@@ -108,17 +97,31 @@ namespace CharacterSystem
             if(currentTime - lastTriggerEnterTime >= collisionDamageInterval)
             {
                 var enemy = other.gameObject.GetComponent<Enemy>();
+                enemy.ExecuteAttack();
                 DamageProcessor.ProcessHit(enemy, this);
                 lastTriggerEnterTime = currentTime;
             }
         }
 
-        protected override void OnTriggerExit2D(Collider2D other)
+        protected override void OnCollisionExit2D(Collision2D other)
         {
-            base.OnTriggerExit2D(other);
+            base.OnCollisionExit2D(other);
             if(other.gameObject.CompareTag("Enemy"))
             {
                 lastTriggerEnterTime = 0f;
+            }
+        }
+
+        protected override void ChangeAnimationState(string newState)
+        {
+            if (Animator != null && Animator.HasState(0, Animator.StringToHash(newState)) && newState == "ATTACK")
+            {
+                Animator.SetFloat("AttackSpeedMultiplier", Mathf.Max(GetStatValue(StatType.AttackSpeed)/3, 1f));
+                Animator.SetTrigger("2_Attack");
+            }
+            else
+            {
+                base.ChangeAnimationState(newState);
             }
         }
 
@@ -135,42 +138,6 @@ namespace CharacterSystem
                 case PawnAttackType.Skill2:
                     AttackFactory.Instance.Create(skill2Attack, this, null, LastMoveDirection);
                     break;
-            }
-        }
-
-        public override bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
-        {
-            switch (attackType)
-            {
-                case PawnAttackType.BasicAttack:
-                    if (Time.time - lastAttackTime >= attackCooldown)
-                    {
-                        CalculateAttackCooldown();
-                        lastAttackTime = Time.time;
-                        ChangeAnimationState("ATTACK");
-                        return true;
-                    }
-                    return false;
-                case PawnAttackType.Skill1:
-                    if (CheckSkillCooldown(PawnAttackType.Skill1))
-                    {
-                        lastSkillAttack1Time = Time.time;
-                        ChangeAnimationState("SKILL001");
-                        return true;
-                    }
-                    return false;
-
-                case PawnAttackType.Skill2:
-                    if (CheckSkillCooldown(PawnAttackType.Skill2))
-                    {
-                        lastSkillAttack2Time = Time.time;
-                        ChangeAnimationState("SKILL002");
-                        return true;
-                    }
-                    return false;
-                    
-                default:
-                    return false;
             }
         }
     }

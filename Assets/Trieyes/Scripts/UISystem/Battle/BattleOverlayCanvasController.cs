@@ -16,13 +16,16 @@ namespace UISystem
 
         private void Awake()
         {
-            if (Instance is not null)
+            if (Instance != null)
             {
                 Destroy(gameObject);
                 return;
             }
-            
             Instance = this;
+        }
+        private void OnDestroy()
+        {
+            Instance = null;
         }
         
         [Header("========== Joysticks ==========")]
@@ -45,37 +48,44 @@ namespace UISystem
         [Header("========== Auto Attack ==========")]
         [SerializeField] private GameObject[] AutoBasicAttackOnViews;
         [SerializeField] private GameObject[] AutoBasicAttackOffViews;
-        
+
         public void Activate()
         {
             Debug.LogWarning($"Activate: {BattleStage.now.mainCharacter}, \n Attack : {BattleStage.now.mainCharacter.basicAttack}, \n Skill1 : {BattleStage.now.mainCharacter.skill1Attack}, \n Skill2 : {BattleStage.now.mainCharacter.skill2Attack}");
             var basicAttackAddress = buildAttackIconAddress(BattleStage.now.mainCharacter.basicAttack.attackIcon);
-            Addressables.LoadAssetAsync<Sprite>(basicAttackAddress).Completed += (AsyncOperationHandle<Sprite> handle) =>
-            {
-                if (handle.Status != AsyncOperationStatus.Succeeded)
-                    throw new Exception($"Failed to load Basic Attack Icon {basicAttackAddress}");
-                SetBasicAttackIcon(handle.Result);
-            };
-            
-            var skill1Address = buildAttackIconAddress(BattleStage.now.mainCharacter.skill1Attack.attackIcon);
-            Addressables.LoadAssetAsync<Sprite>(skill1Address).Completed += (AsyncOperationHandle<Sprite> handle) =>
-            {
-                if (handle.Status != AsyncOperationStatus.Succeeded)
-                    throw new Exception($"Failed to load Skill1 Icon {skill1Address}");
-                SetSkill1AttackIcon(handle.Result);
-            };
-            
-            var skill2Address = buildAttackIconAddress(BattleStage.now.mainCharacter.skill2Attack.attackIcon);
-            Addressables.LoadAssetAsync<Sprite>(skill2Address).Completed += (AsyncOperationHandle<Sprite> handle) =>
-            {
-                if (handle.Status != AsyncOperationStatus.Succeeded)
-                    throw new Exception($"Failed to load Skill2 Icon {skill2Address}");
-                SetSkill2AttackIcon(handle.Result);
-            };
+            Addressables.LoadAssetAsync<Sprite>(basicAttackAddress).Completed +=
+                (AsyncOperationHandle<Sprite> handle) =>
+                {
+                    if (handle.Status != AsyncOperationStatus.Succeeded)
+                        throw new Exception($"Failed to load Basic Attack Icon {basicAttackAddress}");
+                    SetBasicAttackIcon(handle.Result);
+                };
 
+            // TODO: 스킬이 없을 때도 고려
+            var skill1Address = buildAttackIconAddress(BattleStage.now.mainCharacter.skill1Attack?.attackIcon);
+            if (skill1Address != "")
+            {
+                Addressables.LoadAssetAsync<Sprite>(skill1Address).Completed += (AsyncOperationHandle<Sprite> handle) =>
+                {
+                    if (handle.Status != AsyncOperationStatus.Succeeded)
+                        throw new Exception($"Failed to load Skill1 Icon {skill1Address}");
+                    SetSkill1AttackIcon(handle.Result);
+                };
+            }
+
+            var skill2Address = buildAttackIconAddress(BattleStage.now.mainCharacter.skill2Attack?.attackIcon);
+            if (skill2Address != "")
+            {
+                Addressables.LoadAssetAsync<Sprite>(skill2Address).Completed += (AsyncOperationHandle<Sprite> handle) =>
+                {
+                    if (handle.Status != AsyncOperationStatus.Succeeded)
+                        throw new Exception($"Failed to load Skill2 Icon {skill2Address}");
+                    SetSkill2AttackIcon(handle.Result);
+                };
+            }
+            
             SetStageNumber();
             InitAutoAttackToggle();
-            testPanel.gameObject.SetActive(false);
             gameObject.SetActive(true);
         }
 
@@ -89,12 +99,12 @@ namespace UISystem
         {
             foreach (var view in AutoBasicAttackOnViews)
             {
-                view.SetActive(isAuto);
+                if (view != null) view.SetActive(isAuto);
             }
             
             foreach (var view in AutoBasicAttackOffViews)
             {
-                view.SetActive(!isAuto);
+                if (view != null) view.SetActive(!isAuto);
             }
         }
 
@@ -105,6 +115,8 @@ namespace UISystem
 
         private string buildAttackIconAddress(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                return "";
             return $"Assets/Trieyes/Addressable/Icons/Skills/{name}";
         }
 
@@ -131,21 +143,23 @@ namespace UISystem
 
         private void SetBasicAttackIcon(Sprite sprite)
         {
-            BasicAttackIconView.sprite = sprite;
+            if (BasicAttackIconView != null) BasicAttackIconView.sprite = sprite;
         }
 
         private void SetSkill1AttackIcon(Sprite sprite)
         {
-            Skill1IconView.sprite = sprite;
+            if (Skill1IconView != null) Skill1IconView.sprite = sprite;
         }
 
         private void SetSkill2AttackIcon(Sprite sprite)
         {
-            Skill2IconView.sprite = sprite;
+            if (Skill2IconView != null) Skill2IconView.sprite = sprite;
         }
 
         private void SetBasicAttackCoolDown(float rate)
         {
+            if (BasicAttackCoolDown == null) return;
+            
             if (BattleStage.now.mainCharacter.isAutoAttack)
             {
                 BasicAttackCoolDown.fillAmount = 1;
@@ -157,12 +171,12 @@ namespace UISystem
 
         private void SetSkill1CoolDown(float rate)
         {
-            Skill1CoolDown.fillAmount = rate;
+            if (Skill1CoolDown != null) Skill1CoolDown.fillAmount = rate;
         }
 
         private void SetSkill2CoolDown(float rate)
         {
-            Skill2CoolDown.fillAmount = rate;
+            if (Skill2CoolDown != null) Skill2CoolDown.fillAmount = rate;
         }
 
         public void OnClickBasicAttack()
@@ -190,26 +204,6 @@ namespace UISystem
         public void Deactivate()
         {
             gameObject.SetActive(false);
-        }
-        
-        // ===== Test Panel Buttons =====
-        [Header("========== Test Panel ==========")]
-        [SerializeField] RectTransform testPanel;
-        public void OnClickTestPause()
-        {
-            var isActivate = testPanel.gameObject.activeSelf;
-            testPanel.anchoredPosition = Vector2.zero;
-            testPanel.gameObject.SetActive(!isActivate);
-        }
-        
-        public void Test_OnClickSkipStage()
-        {
-            BattleStage.now.OnBattleClear();
-        }
-
-        public void Test_OnClickAddTime()
-        {
-            BattleStage.now.AddTime(9999f);
         }
     }
 }

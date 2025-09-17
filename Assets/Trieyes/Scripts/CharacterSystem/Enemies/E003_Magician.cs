@@ -1,9 +1,5 @@
 using AttackSystem;
 using UnityEngine;
-using Utils;
-using System.Linq;
-using BattleSystem;
-using Stats;
 
 namespace CharacterSystem
 {
@@ -156,11 +152,6 @@ namespace CharacterSystem
         {
             if (material != null)
                 material.SetTextureOffset("_MainTex", offset);
-        }
-
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            base.OnTriggerEnter2D(other);
         }
 
         /// <summary>

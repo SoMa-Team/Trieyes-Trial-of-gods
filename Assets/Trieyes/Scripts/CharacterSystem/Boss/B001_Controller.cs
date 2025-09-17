@@ -1,8 +1,9 @@
 using UnityEngine;
+using CharacterSystem;
 using BattleSystem;
 using Stats;
 
-namespace CharacterSystem.Enemies
+namespace Enemies
 {
     public enum BossState
     {
@@ -31,17 +32,7 @@ namespace CharacterSystem.Enemies
             currentState = BossState.Idle;
         }
 
-        private void Update()
-        {
-            if (bossOwner == null || Target == null || bossOwner.isDead)
-            {
-                return;
-            }
-
-            Behaviour();
-        }
-
-        private void Behaviour()
+        protected override void Behaviour()
         {
             var attackRange = bossOwner.statSheet[StatType.AttackRange];
             var playerPos = Target.transform.position;
@@ -54,7 +45,7 @@ namespace CharacterSystem.Enemies
                 {
                     bossOwner.Move(toPlayer.normalized);
                 }
-                else if (bossOwner.CheckSkillCooldown(PawnAttackType.Skill1))
+                else if (bossOwner.CheckCooldown(PawnAttackType.Skill1))
                 {
                     bossOwner.ExecuteAttack(PawnAttackType.Skill1);
                 }

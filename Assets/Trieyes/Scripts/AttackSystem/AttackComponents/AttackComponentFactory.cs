@@ -39,11 +39,7 @@ namespace AttackComponents
         /// </summary>
         void Awake()
         {
-            if (Instance is not null)
-            {
-                Destroy(gameObject);
-                return;
-            }
+
 
             InitAttackComponentPrefabs();
             DontDestroyOnLoad(gameObject);

@@ -42,12 +42,6 @@ namespace CharacterSystem
             dropGold = 10; // 기본값으로 초기화
             
             base.Deactivate();
-            ////Debug.Log("Enemy001 Deactivated.");
-        }
-
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            base.OnTriggerEnter2D(other);
         }
 
         /// <summary>

@@ -50,7 +50,6 @@ namespace CharacterSystem
         {
             base.Start();
             pawnName = "용사";
-            spawnID = 1;
         }
 
         // ===== [커스텀 메서드] =====

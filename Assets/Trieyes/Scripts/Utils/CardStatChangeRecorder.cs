@@ -13,8 +13,11 @@ namespace Utils
     public class TriggerInfo
     {
         public TriggerType type;
+        
+        #nullable enable
         public CardTriggerInfo? cardTriggerInfo;
         public StatTriggerInfo? statTriggerInfo;
+        #nullable disable
 
         public static TriggerInfo MakeCardInfo(int index, Card card)
         {

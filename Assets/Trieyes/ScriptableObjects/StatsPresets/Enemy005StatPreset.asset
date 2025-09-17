@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6115cf4dfee9ba64580c95a6be0e3200, type: 3}
-  m_Name: Enemy005StatPreset
+  m_Name: C002_MagicianStatPreset
   m_EditorClassIdentifier: 
-  characterName: Enemy005
+  characterName: Magician
   stats:
   - type: 0
-    value: 10
+    value: 20
   - type: 1
-    value: 500
+    value: 200
   - type: 2
     value: 10
   - type: 3
@@ -27,18 +27,31 @@ MonoBehaviour:
   - type: 5
     value: 0
   - type: 6
-    value: 5
+    value: 10
   - type: 7
     value: 0
   - type: 8
     value: 0
   - type: 9
-    value: 100
+    value: 140
   - type: 10
+<<<<<<<< HEAD:Assets/Trieyes/ScriptableObjects/StatsPresets/Enemy005StatPreset.asset
     value: 80
   - type: 11
     value: 0
+========
+    value: 0
+  - type: 11
+    value: 200
+>>>>>>>> origin/dev:Assets/Trieyes/ScriptableObjects/StatsPresets/C002_MagicianStatPreset.asset
   - type: 12
     value: 0
   - type: 13
     value: 0
+<<<<<<<< HEAD:Assets/Trieyes/ScriptableObjects/StatsPresets/Enemy005StatPreset.asset
+========
+  - type: 14
+    value: 0
+  - type: 15
+    value: 5
+>>>>>>>> origin/dev:Assets/Trieyes/ScriptableObjects/StatsPresets/C002_MagicianStatPreset.asset

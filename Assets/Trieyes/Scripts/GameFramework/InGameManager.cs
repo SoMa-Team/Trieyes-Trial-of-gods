@@ -12,7 +12,6 @@ namespace GameFramework
     {
         private Player player;
         private int stageRound;
-        
         public static InGameManager Instance { get; private set; }
         
         private void Awake()
@@ -38,29 +37,29 @@ namespace GameFramework
 
         public void StartNextStage(StageType stageType, Character mainCharacter)
         {
-            stageRound++;
             switch (stageType)
-            { 
+            {
                 case StageType.Battle:
-                {
+                    stageRound++;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBattleDifficulty());
                     break;
-                }
                 case StageType.Boss:
-                case StageType.Elite:
-                {
+                    stageRound++;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
                     break;
-                }
+                case StageType.Elite:
+                    stageRound++;
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
+                    break;
                 case StageType.StartCard:
                     StartCardStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.StartRelic:
                     StartRelicStage.Instance.Activate(mainCharacter);
                     break;
-                // case StageType.CampFire:
-                //     CampFireStage.Instance.Activate(mainCharacter);
-                //     break;
+                case StageType.CampFire:
+                    CampfireStage.Instance.Activate(mainCharacter);
+                    break;
                 case StageType.CardEnhancement:
                     CardEnhancementStage.Instance.Activate(mainCharacter);
                     break;
@@ -71,8 +70,15 @@ namespace GameFramework
                     BattleStageFactory.Instance.Deactivate(BattleStage.now);
                     BattleRewardStage.Instance.Activate(mainCharacter);
                     break;
+                case StageType.SkillReward:
+                    SkillRewardStage.Instance.Activate(mainCharacter);
+                    break;
                 case StageType.StickerEvent:
                     StickerStage.Instance.Activate(mainCharacter);
+                    break;
+                case StageType.GameOver:
+                    Time.timeScale = 0;
+                    GameOverStage.Instance.Activate(mainCharacter);
                     break;
             }
         }

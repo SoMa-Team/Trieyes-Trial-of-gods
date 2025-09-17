@@ -1,17 +1,10 @@
 using UnityEngine;
 using BattleSystem;
+using CharacterSystem;
 using Stats;
 
-namespace CharacterSystem.Enemies
+namespace Enemies
 {
-    public enum EnemyType
-    {
-        Follow,
-        RangeAttackRun,
-        RangeAttackOnly,
-        Block,
-        Boss
-    }
 
     /// <summary>
     /// 적 전용 컨트롤러. 플레이어를 추적해서 Pawn.Move로 이동시킴.
@@ -19,24 +12,26 @@ namespace CharacterSystem.Enemies
     [RequireComponent(typeof(Pawn))]
     public class EnemyController : Controller
     {
-        public float minFollowDistance = 0.1f; // 너무 가까우면 멈춤
-
-        public float minRunDistance = 1f;
-
         public EnemyType enemyType;
-        private Transform playerTarget;
 
-        private Enemy enemy;
+        protected Transform playerTarget;
 
-        private Vector3 targetCollisionOffset;
+        protected Enemy enemy;
 
-        private void Update()
+        protected float minFollowDistance = 0.1f; // 너무 가까우면 멈춤
+
+        protected float minRunDistance = 1f;
+
+        protected Vector3 targetCollisionOffset;
+
+        public override void Update()
         {
             if (owner == null || playerTarget == null || enemy.isDead)
             {
                 return;
             }
 
+            base.Update();
             Behaviour();
         }
 
@@ -54,7 +49,7 @@ namespace CharacterSystem.Enemies
             enemy = pawn as Enemy;
         }
 
-        private void Behaviour()
+        protected virtual void Behaviour()
         {
             var attackRange = enemy.statSheet[StatType.AttackRange];
             var playerPos = playerTarget.position;
@@ -73,6 +68,7 @@ namespace CharacterSystem.Enemies
                         }
                         else
                         {
+                            enemy.ExecuteAttack();
                             enemy.Move(Vector2.zero); // 너무 가까우면 멈춤
                         }
                         break;

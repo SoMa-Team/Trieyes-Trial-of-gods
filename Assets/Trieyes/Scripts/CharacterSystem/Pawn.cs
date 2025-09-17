@@ -6,7 +6,8 @@ using RelicSystem;
 using UnityEngine;
 using CardSystem;
 using System;
-using BattleSystem; 
+using BattleSystem;
+using GamePlayer;
 
 namespace CharacterSystem
 {
@@ -47,9 +48,9 @@ namespace CharacterSystem
         public Rigidbody2D rb;
 
         [SerializeField] public Controller Controller; // TODO : 테스트 컨트롤러를 위한 임시 접근데어자 변경
-        [SerializeField] protected Animator Animator;
+        [SerializeField] public Animator Animator;
 
-        public abstract Vector2 CenterOffset { get; }
+        public abstract Vector2 CenterOffset { get; set; }
 
         public AllIn1SpriteShaderHandler allIn1SpriteShaderHandler = new AllIn1SpriteShaderHandler();
         
@@ -60,22 +61,15 @@ namespace CharacterSystem
 
         private List<object> eventHandlers = new List<object>();
         protected string currentAnimationState;
-
-        protected float lastAttackTime = 0f;
-
-        protected float attackCooldown = 0f;
         
         // ===== [프로퍼티] =====
-        public int? enemyID;
+        [HideInInspector] public int objectID;
+        [HideInInspector] public int? enemyID;
         public bool isEnemy => enemyID is not null; 
-        
         public string pawnName { get; protected set; }
-        
         public int level { get; protected set; }
         public Vector2 LastMoveDirection => Controller.lastMoveDir;
-
         public Dictionary<PawnStatusType, object> statuses = new();
-        
         public int gold { get; set; }
 
         // ===== [기능별 필드] =====
@@ -85,15 +79,19 @@ namespace CharacterSystem
         public AttackData basicAttack;
         private AttackData backupBasicAttack;
 
+        protected float lastAttackTime = 0f;
+
+        protected float attackCooldown = 0f;
+
         public AttackData skill1Attack;
         private AttackData backupSkill1Attack;
-        public float skillAttack1Cooldown = 0f;
-        public float lastSkillAttack1Time = -999f;
+        [HideInInspector] protected float skillAttack1Cooldown = 0f;
+        [HideInInspector] protected float lastSkillAttack1Time = 0f;
         
         public AttackData skill2Attack;
         private AttackData backupSkill2Attack;
-        public float skillAttack2Cooldown = 0f;
-        public float lastSkillAttack2Time = -999f;
+        [HideInInspector] protected float skillAttack2Cooldown = 0f;
+        [HideInInspector] protected float lastSkillAttack2Time = 0f;
         
         public float BasicAttackCoolDownRate => Mathf.Max(1 - (Time.time - lastAttackTime) / attackCooldown, 0);
         public float Skill1CoolDownRate => Mathf.Max(1 - (Time.time - lastSkillAttack1Time) / skillAttack1Cooldown, 0);
@@ -133,13 +131,10 @@ namespace CharacterSystem
             }
         }
 
-        public int objectID;
-
         // ===== [Unity 생명주기] =====
         protected virtual void Start()
         {
             if(rb is null) rb = GetComponent<Rigidbody2D>();
-            allIn1SpriteShaderHandler.SetObject(gameObject);
             
             pawnPrefab = transform.GetChild(0).gameObject;
             if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
@@ -154,8 +149,9 @@ namespace CharacterSystem
 
         protected virtual void OnDestroy()
         {
+            // TODO : 다른 클래스 간의 순서 종료 보장이 안되어 EnemyFactory.Instance가 null인 상황 발생
             if (BattleStage.now is null) return;
-            if (isEnemy)
+            if (this as Enemy && EnemyFactory.Instance is not null)
             {
                 EnemyFactory.Instance.Deactivate(this as Enemy);
             }
@@ -206,7 +202,6 @@ namespace CharacterSystem
             SyncHP();
             
             gameObject.SetActive(true);
-            
             Controller.Activate(this);
         }
 
@@ -261,11 +256,11 @@ namespace CharacterSystem
             currentHp = maxHp;
         }
 
-        protected virtual void OnTriggerEnter2D(Collider2D other)
+        protected virtual void OnCollisionEnter2D(Collision2D other)
         {
         }
 
-        protected virtual void OnTriggerExit2D(Collider2D other)
+        protected virtual void OnCollisionExit2D(Collision2D other)
         {
         }
         
@@ -286,14 +281,21 @@ namespace CharacterSystem
             
             if (relics.Count > 0)
             {
-                basicAttack = basicAttack.Copy();
-                basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
-                
-                skill1Attack = skill1Attack.Copy();
-                skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
-                
-                skill2Attack = skill2Attack.Copy();
-                skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+                if (basicAttack is not null)
+                {
+                    basicAttack = basicAttack.Copy();
+                    basicAttack = AttackFactory.Instance.RegisterRelicAppliedAttack(basicAttack, this);
+                }
+                if (skill1Attack is not null)
+                {
+                    skill1Attack = skill1Attack.Copy();
+                    skill1Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill1Attack, this);
+                }
+                if (skill2Attack is not null)
+                {
+                    skill2Attack = skill2Attack.Copy();
+                    skill2Attack = AttackFactory.Instance.RegisterRelicAppliedAttack(skill2Attack, this);
+                }
             }
         }
 
@@ -354,7 +356,6 @@ namespace CharacterSystem
                         ? Quaternion.Euler(0, 180, 0)
                         : Quaternion.identity;
                 }
-
                 ChangeAnimationState("MOVE");
             }
             else
@@ -370,10 +371,8 @@ namespace CharacterSystem
         /// <param name="newState">새로운 애니메이션 상태</param>
         protected virtual void ChangeAnimationState(string newState)
         {          
-            if (Animator != null && currentAnimationState != newState && Animator.HasState(0, Animator.StringToHash(newState)))
+            if (Animator != null && Animator.HasState(0, Animator.StringToHash(newState)))
             {
-                Animator.speed = 1f;
-                // switch로 각 newStat에 대한 Parameter 값을 변경
                 switch (newState)
                 {
                     case "MOVE":
@@ -383,9 +382,6 @@ namespace CharacterSystem
                         Animator.SetBool("1_Move", false);
                         break;
                     case "ATTACK":
-                        float attackSpeed = GetStatValue(StatType.AttackSpeed);
-                        // TODO: StatManager에서 공속 값 가져와서 연동하기
-                        Animator.speed = Mathf.Max(0f, attackSpeed / 10f);
                         Animator.SetTrigger("2_Attack");
                         break;
                     case "DAMAGED":
@@ -447,6 +443,7 @@ namespace CharacterSystem
         {
             int preGold = gold;
             gold = Mathf.Max(0, gold + amount);
+            Player.Instance.gameScoreRecoder.goldScore += amount;
             
             if (preGold != gold)
             {
@@ -542,9 +539,6 @@ namespace CharacterSystem
                     return false;
             }
         }
-
-        public abstract bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack);
-
         public void ApplyDamage(AttackResult result)
         {
             // 여러번 OnDeath 이벤트가 발생되지 않기 위한 예외문
@@ -560,6 +554,7 @@ namespace CharacterSystem
             
             if (currentHp <= 0)
             {
+                Player.Instance.gameScoreRecoder.killScore++;
                 result.attack?.OnEvent(Utils.EventType.OnKilled, result);
                 result.attacker.OnEvent(Utils.EventType.OnKilled, result);
 
@@ -596,16 +591,10 @@ namespace CharacterSystem
         // ===== [기능 12] 자동공격 시스템 =====
         /// <summary>
         /// 공격속도 스탯을 기반으로 공격 쿨다운을 계산합니다.
-        /// 공격속도 10 = 60fps 기준 1초에 1개 발사
         /// </summary>
-        protected virtual void CalculateAttackCooldown()
+        public void CalculateBasicAttackCooldown()
         {
-            float attackSpeed = GetStatValue(StatType.AttackSpeed);
-            // 공격속도 10을 기준으로 1초에 1개 발사
-            // 공격속도가 높을수록 쿨다운이 짧아짐
-            attackCooldown = 1f / (attackSpeed / 10f);
-            
-            //Debug.Log($"<color=yellow>[AUTO_ATTACK] {gameObject.name} attack speed: {attackSpeed}, cooldown: {attackCooldown:F2}s</color>");
+            attackCooldown = 1f / (GetStatValue(StatType.AttackSpeed) / 3f);
         }
 
         /// <summary>
@@ -613,22 +602,72 @@ namespace CharacterSystem
         /// </summary>
         /// <param name="skillType">스킬 타입</param>
         /// <returns>쿨타임이 지났으면 true, 아니면 false</returns>
-        public bool CheckSkillCooldown(PawnAttackType skillType)
+        public bool CheckCooldown(PawnAttackType skillType)
         {
             switch (skillType)
             {
+                case PawnAttackType.BasicAttack:
+                    return lastAttackTime + attackCooldown <= Time.time;
                 case PawnAttackType.Skill1:
-                    return Time.time - lastSkillAttack1Time >= skillAttack1Cooldown;
+                    return lastSkillAttack1Time + skillAttack1Cooldown <= Time.time;
                 case PawnAttackType.Skill2:
-                    return Time.time - lastSkillAttack2Time >= skillAttack2Cooldown;
+                    return lastSkillAttack2Time + skillAttack2Cooldown <= Time.time;
                 default:
                     return false;
             }
         }
 
-        public void SetLockMovement(bool lockMovement)
+        public void SetSkillCooldown(PawnAttackType skillType, float cooldown)
         {
-            Controller.lockMovement = lockMovement;
+            switch (skillType)
+            {
+                case PawnAttackType.Skill1:
+                    skillAttack1Cooldown = cooldown;
+                    break;
+                case PawnAttackType.Skill2:
+                    skillAttack2Cooldown = cooldown;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        {
+            if(CheckCooldown(attackType))
+            {
+                switch (attackType)
+                {
+                    case PawnAttackType.BasicAttack:
+                        // t2 = t1;
+                        // t1 = Time.time;
+                        // Debug.LogError($"delta time : {t1 - t2}");
+                        lastAttackTime = Time.time;
+                        ChangeAnimationState("ATTACK");
+                        return true;
+                    case PawnAttackType.Skill1:
+                        if (skill1Attack is null)
+                        {
+                            return false;
+                        }
+                        lastSkillAttack1Time = Time.time;
+                        ChangeAnimationState("SKILL001");
+                        return true;
+
+                    case PawnAttackType.Skill2:
+                        if (skill2Attack is null)
+                        {
+                            return false;
+                        }
+                        lastSkillAttack2Time = Time.time;
+                        ChangeAnimationState("SKILL002");
+                        return true;
+                        
+                    default:
+                        return false;
+                }
+            }
+            return false;
         }
 
         public void ClearStatModifier()

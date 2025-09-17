@@ -38,12 +38,11 @@ namespace BattleSystem
         /// </summary>
         void Awake()
         {
-            if (Instance is not null)
+            if (Instance != null)
             {
                 Destroy(gameObject);
                 return;
             }
-
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }

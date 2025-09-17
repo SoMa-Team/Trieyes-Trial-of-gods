@@ -11,7 +11,16 @@ namespace CharacterSystem
         // ===== [필드] =====
         public Pawn owner;
 
-        public bool lockMovement;
+        protected bool lockMovement;
+        
+        public enum EnemyType
+        {
+            Follow,
+            RangeAttackRun,
+            RangeAttackOnly,
+            Block,
+            Boss
+        }
 
         /// <summary>
         /// 현재 이동 방향
@@ -44,9 +53,19 @@ namespace CharacterSystem
             
         }
 
+        public virtual void Update()
+        {
+            owner.CalculateBasicAttackCooldown();
+        }
+
         public void Deactivate()
         {
             enabled = false;
+        }
+
+        public void SetLockMovement(bool lockMovement)
+        {
+            this.lockMovement = lockMovement;
         }
     }
 }

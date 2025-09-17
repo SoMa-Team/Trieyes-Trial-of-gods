@@ -9,13 +9,17 @@ public class BattleWorldCanvasController : MonoBehaviour
     
     private void Awake()
     {
-        if (Instance is not null)
+        if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
-        
         Instance = this;        
+    }
+
+    private void OnDestroy()
+    {
+        Instance = null;
     }
 
     [SerializeField]
@@ -46,6 +50,6 @@ public class BattleWorldCanvasController : MonoBehaviour
 
     public void Deactivate()
     {
-        //Instance = null;
+        hpBarSliderView.gameObject.SetActive(false);
     }
 }

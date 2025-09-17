@@ -1,13 +1,11 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BattleSystem;
-using CharacterSystem.Enemies;
+using CharacterSystem;
 using UnityEngine;
 using Utils;
 
-namespace CharacterSystem
+namespace Enemies
 {
     public class B002_Controller : Controller
     {

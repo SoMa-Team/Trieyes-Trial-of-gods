@@ -34,6 +34,11 @@ namespace UISystem
             gameObject.SetActive(false);
         }
 
+        private void OnDestroy()
+        {
+            Instance = null;
+        }
+
         private int lastScreenWidth;
         private int lastScreenHeight;
         private Character mainCharacter;

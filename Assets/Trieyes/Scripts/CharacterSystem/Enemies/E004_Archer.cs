@@ -26,11 +26,6 @@ namespace CharacterSystem
         {
             base.Activate();
             dropGold = 10;
-            // TODO: AttackComponent 할당
-            ////Debug.Log("Enemy001 Activated.");
-
-            // 이런 느낌으로 각 적마다 커스터마이징 
-            // boxCollider = Collider as BoxCollider2D;
         }
 
         /// <summary>
@@ -38,16 +33,9 @@ namespace CharacterSystem
         /// </summary>
         public override void Deactivate()
         {
-            // Enemy001 고유 정리 로직
             dropGold = 10; // 기본값으로 초기화
             
             base.Deactivate();
-            ////Debug.Log("Enemy001 Deactivated.");
-        }
-
-        protected override void OnTriggerEnter2D(Collider2D other)
-        {
-            base.OnTriggerEnter2D(other);
         }
 
         /// <summary>

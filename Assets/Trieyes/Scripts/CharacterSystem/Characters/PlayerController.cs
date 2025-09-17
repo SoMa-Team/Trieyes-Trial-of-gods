@@ -66,10 +66,11 @@ namespace CharacterSystem
             }
         }
 
-        private void Update()
+        public override void Update()
         {
             if (character is not null && isAutoAttack)
             {
+                base.Update();
                 character.ExecuteAttack(PawnAttackType.BasicAttack);
             }
         }

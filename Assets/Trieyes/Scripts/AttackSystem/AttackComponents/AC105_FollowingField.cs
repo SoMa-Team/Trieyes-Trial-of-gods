@@ -1,6 +1,6 @@
 using AttackSystem;
 using CharacterSystem;
-using CharacterSystem.Enemies;
+using Enemies;
 using Stats;
 using UnityEngine;
 using System.Collections.Generic;

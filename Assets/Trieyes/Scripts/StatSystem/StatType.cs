@@ -7,6 +7,7 @@ namespace Stats
     {
         // 공격 관련 스탯
         AttackPower,        // 공격력
+        MagicPower,         // 마법 공격력
         AttackSpeed,        // 공격속도
         AttackRange,        // 공격 범위
         CriticalRate,       // 치명타 확률
@@ -20,7 +21,6 @@ namespace Stats
 
         // 생명 관련 스탯
         Health,             // 체력
-        HealthRegen,        // 자연 회복
 
         // 유틸리티 스탯
         MoveSpeed,          // 이동속도

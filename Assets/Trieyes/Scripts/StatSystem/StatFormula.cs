@@ -38,17 +38,7 @@ namespace Stats
             { StatType.SkillCooldownReduction, ctx =>
                 Mathf.Clamp(1000f / (1000f + ctx.Raw), 0.25f, 1f)
             },
-            { StatType.MoveSpeed, ctx =>
-            {
-                const float sensitivity = 1.448f;
-                const float initialValue = 0f;
-                float logValue = Mathf.Log(1f + Mathf.Max((float)ctx.Raw/100, 0f))*sensitivity;
-                float finalValue = Mathf.Clamp(logValue + initialValue, 0f, 20f);
-                return finalValue;
-            }},
-            { StatType.HealthRegen, ctx =>
-                Mathf.Clamp(ctx.Raw, 0f, 100f)
-            },
+            { StatType.MoveSpeed, ctx =>  ctx.Raw },
             { StatType.LifeSteal, ctx =>
                 Mathf.Clamp(ctx.Raw * (1f/100f), 0f, 10f)
             },

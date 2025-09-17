@@ -6,6 +6,16 @@ namespace StickerSystem
 {
     public static class StickerFactory
     {
+        private static readonly StatType[] StickerStats = new[]
+        {
+            StatType.AttackPower,
+            StatType.MagicPower,
+            StatType.Health,
+            StatType.CriticalDamage,
+            StatType.Defense,
+            StatType.AttackSpeed,
+            StatType.SkillCooldownReduction,
+        };
         public static Sticker CreateNumberSticker(int value, int lifeTime = 1)
         {
             var sticker = new Sticker();
@@ -59,8 +69,7 @@ namespace StickerSystem
                 case StickerType.Probability:
                     return CreateProbabilitySticker(Random.Range(minProb, maxProb), Random.Range(minLifeTime, maxLifeTime));
                 case StickerType.StatType:
-                    var statValues = System.Enum.GetValues(typeof(StatType));
-                    var stat = (StatType)statValues.GetValue(Random.Range(0, statValues.Length));
+                    var stat = StickerStats[Random.Range(0, StickerStats.Length)];
                     return CreateStatTypeSticker((StatType)stat, Random.Range(minLifeTime, maxLifeTime));
                 default:
                     Debug.LogError("Unknown sticker type");

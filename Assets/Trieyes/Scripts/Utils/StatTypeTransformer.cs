@@ -11,6 +11,7 @@ namespace Utils
         private static readonly Dictionary<StatType, string> StatTypeToKor = new()
         {
             { StatType.AttackPower, "공격력" },
+            { StatType.MagicPower, "마법 공격력" },
             { StatType.AttackSpeed, "공격속도" },
             { StatType.AttackRange, "사정거리" },
             { StatType.CriticalRate, "치명타 확률" },
@@ -22,7 +23,6 @@ namespace Utils
             { StatType.Reflect, "반사" },
 
             { StatType.Health, "체력" },
-            { StatType.HealthRegen, "자연 회복" },
 
             { StatType.MoveSpeed, "이동속도" },
             { StatType.ItemMagnet, "자기력" },
@@ -34,6 +34,7 @@ namespace Utils
         private static readonly Dictionary<string, StatType> KorToStatType = new()
         {
             { "공격력", StatType.AttackPower },
+            { "마법 공격력", StatType.MagicPower },
             { "공격속도", StatType.AttackSpeed },
             { "사정거리", StatType.AttackRange },
             { "치명타 확률", StatType.CriticalRate },
@@ -45,7 +46,6 @@ namespace Utils
             { "반사", StatType.Reflect },
 
             { "체력", StatType.Health },
-            { "자연 회복", StatType.HealthRegen },
 
             { "이동속도", StatType.MoveSpeed },
             { "자기력", StatType.ItemMagnet },

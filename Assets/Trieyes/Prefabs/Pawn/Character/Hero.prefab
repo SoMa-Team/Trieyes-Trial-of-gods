@@ -53,7 +53,7 @@ MonoBehaviour:
   rb: {fileID: -7081958898591838822}
   Controller: {fileID: 0}
   Animator: {fileID: 6833888907546521165}
-  statPresetSO: {fileID: 11400000, guid: a8325b89043a44679bb742f702748708, type: 2}
+  statPresetSO: {fileID: 11400000, guid: a4cc8ec234aba4678aa19a0d72505971, type: 2}
   basicAttack: {fileID: 11400000, guid: c80959e9e2a294ebba9106bad507c163, type: 2}
   skill1Attack: {fileID: 11400000, guid: c36be7ff14a6646f2b115832cbb39858, type: 2}
   skillAttack1Cooldown: 0
@@ -63,6 +63,7 @@ MonoBehaviour:
   lastSkillAttack2Time: -999
   objectID: 0
   lastPosition: {x: 0, y: 0, z: 0}
+  spawnID: 0
   collisionDamageInterval: 0.5
   weaponElementState: 0
   activateLight: 0
@@ -209,10 +210,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 232341036140875247, guid: 416c809be9d1eea4aaa72970edae6b1a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 232341036140875247, guid: 416c809be9d1eea4aaa72970edae6b1a, type: 3}
-      propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 232341036140875247, guid: 416c809be9d1eea4aaa72970edae6b1a, type: 3}

@@ -151,7 +151,6 @@ namespace UISystem
             StatType.Reflect,
             StatType.Health,
             StatType.Defense,
-            StatType.HealthRegen,
             StatType.LifeSteal,
             StatType.Evasion,
             StatType.MoveSpeed,

@@ -17,11 +17,9 @@ public class ShopStickerSlot : MonoBehaviour
     public Image backGround;
     public TMP_Text valueText;
     public TMP_Text titleText;
-    public TMP_Text priceText;
     public GameObject disableOverlay;
 
     // ====== 가격 및 색상 상수 ======
-    private static readonly int STICKER_PRICE = 50;
     [SerializeField] private readonly Color STAT_TYPE_STICKER_COLOR = new Color(239f / 255, 171f / 255, 205f / 255, 1f);
     [SerializeField] private readonly Color NUMBER_STICKER_COLOR    = new Color(171f / 255, 205f / 255, 239f / 255, 1f);
     [SerializeField] private readonly Color PROB_STICKER_COLOR    = new Color(171f / 255, 239f / 255, 198f / 255, 1f);
@@ -32,7 +30,6 @@ public class ShopStickerSlot : MonoBehaviour
     private void Awake()
     {
         disableOverlay.SetActive(false);
-        priceText.text = STICKER_PRICE.ToString();
         SetRandomSticker(); // 초기 랜덤 스티커 설정
     }
 
@@ -97,8 +94,6 @@ public class ShopStickerSlot : MonoBehaviour
     private bool TryCommitPurchase(Pawn buyer)
     {
         if (!isReserved) return false;
-        if(buyer is null || buyer.gold < STICKER_PRICE) return false;
-        buyer.gold-=STICKER_PRICE;
         isReserved = false;
         return true;
     }
@@ -112,12 +107,6 @@ public class ShopStickerSlot : MonoBehaviour
         Pawn mainCharacter = shopManager.mainCharacter;
 
         if (shopManager.CurrentMode != ShopSceneManager.ShopMode.Normal) return;
-
-        if (mainCharacter.gold < STICKER_PRICE)
-        {
-            Debug.LogError("Not enough gold");
-            return;
-        }
         
         Reserve();
 

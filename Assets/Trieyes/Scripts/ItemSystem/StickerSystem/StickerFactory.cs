@@ -9,7 +9,6 @@ namespace StickerSystem
         private static readonly StatType[] StickerStats = new[]
         {
             StatType.AttackPower,
-            StatType.MagicPower,
             StatType.Health,
             StatType.CriticalDamage,
             StatType.Defense,

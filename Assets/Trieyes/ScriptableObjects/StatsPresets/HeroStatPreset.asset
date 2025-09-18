@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6115cf4dfee9ba64580c95a6be0e3200, type: 3}
-  m_Name: C001_HeroStatPreset
+  m_Name: HeroStatPreset
   m_EditorClassIdentifier: 
   characterName: Hero
   stats:
   - type: 0
     value: 20
   - type: 1
-    value: 200
+    value: 500
   - type: 2
     value: 10
   - type: 3
@@ -35,10 +35,12 @@ MonoBehaviour:
   - type: 9
     value: 200
   - type: 10
-    value: 200
+    value: 8
   - type: 11
     value: 0
   - type: 12
     value: 0
   - type: 13
     value: 0
+  - type: 14
+    value: 5

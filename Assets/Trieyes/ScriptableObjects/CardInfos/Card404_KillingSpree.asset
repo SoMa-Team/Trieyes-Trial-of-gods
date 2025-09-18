@@ -18,19 +18,19 @@ MonoBehaviour:
   cardName: "\uD559\uC0B4"
   illustration: {fileID: -462202922245005373, guid: 1c9fabed257d442ea8c4e376c62e2f86, type: 3}
   cardDescription: "<size=35><b>\uC801 \uCC98\uCE58 \uC2DC</b></size>\n{0}    {1}
-    % \uC99D\uAC00, {2}    {3} % \uC99D\uAC00"
+    \uC99D\uAC00, {2}    {3} \uC99D\uAC00"
   eventTypes: 030000000f000000
   baseParams:
   - "\uC774\uB3D9\uC18D\uB3C4"
-  - 20
+  - 20%
   - "\uACF5\uACA9\uC18D\uB3C4"
-  - 20
+  - 20%
   paramCharRanges:
   - start: 7
     end: 10
   - start: 15
-    end: 16
-  - start: 24
-    end: 27
-  - start: 32
+    end: 17
+  - start: 23
+    end: 26
+  - start: 31
     end: 33

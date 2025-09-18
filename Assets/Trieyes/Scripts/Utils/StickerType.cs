@@ -4,7 +4,7 @@ namespace Utils
     {
         None = 0,
         StatType = 1,
-        Number = 2,
-        Probability = 3,
+        Add = 2,
+        Percent = 3,
     }
 }

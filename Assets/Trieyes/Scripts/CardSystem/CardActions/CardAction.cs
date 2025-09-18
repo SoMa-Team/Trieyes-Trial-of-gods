@@ -5,6 +5,7 @@ using CharacterSystem;
 using CardSystem;
 using StickerSystem;
 using Stats;
+using System;
 
 namespace CardActions
 {
@@ -52,12 +53,11 @@ namespace CardActions
             {
                 switch (sticker.type)
                 {
-                    case StickerType.Number:
+                    case StickerType.Add:
+                    case StickerType.Percent:
                         return sticker.numberValue;
                     case StickerType.StatType:
                         return sticker.statTypeValue;
-                    case StickerType.Probability:
-                        return sticker.numberValue;
                 }
             }
             // 2. 오버라이드 없으면 원래 값 반환
@@ -79,6 +79,30 @@ namespace CardActions
         public virtual object GetBaseParam(int index)
         {
             return actionParams[index].getBaseValue(card);
+        }
+        
+        protected (int value, BuffOperationType op) GetBuffFromParamPreferSticker(int index)
+        {
+            var def = actionParams[index];
+
+            if (card.stickerOverrides != null &&
+                card.stickerOverrides.TryGetValue(index, out var st))
+            {
+                return st.type switch
+                {
+                    StickerType.Add     => (st.numberValue, BuffOperationType.Additive),
+                    StickerType.Percent => (st.numberValue, BuffOperationType.Multiplicative),
+                    _ => throw new System.InvalidOperationException($"Numeric sticker expected at param {index}.")
+                };
+            }
+
+            int baseVal = Convert.ToInt32(GetBaseParam(index));
+            return def.kind switch
+            {
+                ParamKind.Add     => (baseVal, BuffOperationType.Additive),
+                ParamKind.Percent => (baseVal, BuffOperationType.Multiplicative),
+                _ => throw new System.InvalidOperationException($"Param {index} is not numeric."),
+            };
         }
 
         /// <summary>

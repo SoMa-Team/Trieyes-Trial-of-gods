@@ -43,7 +43,7 @@ public class ShopStickerSlot : MonoBehaviour
         disableOverlay.SetActive(false);
         switch (sticker.type)
         {
-            case StickerType.Number:
+            case StickerType.Add:
                 valueText.text = sticker.numberValue.ToString();
                 titleText.text = $"{sticker.numberValue} 스티커";
                 backGround.color = NUMBER_STICKER_COLOR;
@@ -56,7 +56,7 @@ public class ShopStickerSlot : MonoBehaviour
                 backGround.color = STAT_TYPE_STICKER_COLOR;
                 break;
             
-            case StickerType.Probability:
+            case StickerType.Percent:
                 valueText.text = $"{sticker.numberValue.ToString()} %";
                 titleText.text = $"{sticker.numberValue}% 스티커";
                 backGround.color = PROB_STICKER_COLOR;
@@ -68,52 +68,8 @@ public class ShopStickerSlot : MonoBehaviour
                 break;
         }
     }
-
-    public void SetSticker(Sticker sticker)
-    {
-        //
-    }
-
     /// <summary>
     /// 현재 슬롯에 배정된 스티커 반환
     /// </summary>
     public Sticker GetCurrentSticker() => sticker;
-
-    private void Reserve()
-    {
-        isReserved = true;
-        disableOverlay.SetActive(true);
-    }
-
-    private void ReleaseReservation()
-    {
-        isReserved = false;
-        disableOverlay.SetActive(false);
-    }
-
-    private bool TryCommitPurchase(Pawn buyer)
-    {
-        if (!isReserved) return false;
-        isReserved = false;
-        return true;
-    }
-
-    /// <summary>
-    /// 스티커 구매 버튼 클릭 시 실행. 골드 차감 및 스티커 선택 반영
-    /// </summary>
-    public void OnClickBuyButton()
-    {
-        var shopManager = ShopSceneManager.Instance;
-        Pawn mainCharacter = shopManager.mainCharacter;
-
-        if (shopManager.CurrentMode != ShopSceneManager.ShopMode.Normal) return;
-        
-        Reserve();
-
-        shopManager.BeginStickerAttachFlow(
-            sticker,
-            commitPurchase: () => TryCommitPurchase(mainCharacter),
-            cancelReservation: ReleaseReservation
-        );
-    }
 }

@@ -19,7 +19,7 @@ namespace CardActions
             actionParams = new List<ActionParam>
             {
                 // [0] 반복 횟수 (CSV 예: 1)
-                ActionParamFactory.Create(ParamKind.Number, card =>
+                ActionParamFactory.Create(ParamKind.Add, card =>
                 {
                     int baseCount = Parser.ParseStrToInt(card.baseParams[repeatCountIndex]);
                     return baseCount * card.cardEnhancement.level.Value;

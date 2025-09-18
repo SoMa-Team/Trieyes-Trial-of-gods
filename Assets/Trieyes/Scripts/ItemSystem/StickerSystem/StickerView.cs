@@ -11,12 +11,11 @@ namespace StickerSystem
         public Image background;
         public TMP_Text valueText;
         public TMP_Text typeText;
-        public TMP_Text lifeText;
 
         [Header("Backgrounds")]
-        public Sprite numberStickerBackground;
+        public Sprite addStickerBackground;
         public Sprite statTypeStickerBackground;
-        public Sprite probabilityStickerBackground;
+        public Sprite percentStickerBackground;
 
         private Sticker sticker;
 
@@ -37,16 +36,15 @@ namespace StickerSystem
             {
                 valueText.text = "";
                 typeText.text = "";
-                lifeText.text = "";
                 background.sprite = null;
                 return;
             }
 
-            if (sticker.type == StickerType.Number)
+            if (sticker.type == StickerType.Add)
             {
                 valueText.text = sticker.numberValue.ToString();
                 typeText.text = "숫자 스티커";
-                background.sprite = numberStickerBackground;
+                background.sprite = addStickerBackground;
             }
             else if (sticker.type == StickerType.StatType)
             {
@@ -54,14 +52,12 @@ namespace StickerSystem
                 typeText.text = "스탯 스티커";
                 background.sprite = statTypeStickerBackground;
             }
-            else if (sticker.type == StickerType.Probability)
+            else if (sticker.type == StickerType.Percent)
             {
                 valueText.text = sticker.numberValue.ToString();
-                typeText.text = "확률 스티커";
-                background.sprite = probabilityStickerBackground;
+                typeText.text = "% 스티커";
+                background.sprite = percentStickerBackground;
             }
-
-            lifeText.text = $"남은 수명 : {sticker.lifeTime}";
         }
     }
 }

@@ -23,6 +23,7 @@ namespace BattleSystem
 
         public float SpawnInterval => 1f / spawnFrequency;
 
+        // TODO : Difficulty를 InGameManager의 멤버처럼 관리하여 레벨과 스테이지 전부를 관리하도록 변경
         public static Difficulty GetByStageRound(int stageRound, bool isBoss = false)
         {
             var difficulty = new Difficulty();

@@ -39,6 +39,7 @@ namespace NodeStage
         그렇지 못하면 일반 전투 노드가 된다.
 	    -C) BattleNodeRate를 통과하지 못하면 해당 노드는 일반 이벤트 노드 중 1개가 된다.
         */
+        // TODO : 연속 전투에 따른 BattleNodeRate가 자동으로 조절되는 로직 필요. 전투 안하면 전투 강요, 전투 많이 하면 전투 안하게
         [SerializeField] private int nodeSelectCount = 3;
         [SerializeField] private float SpecialNodeRate = 0.2f;
 

@@ -133,6 +133,7 @@ namespace BattleSystem
         // 전투 클리어 시 호출
         public void OnBattleClear()
         {
+            BattleStageFactory.Instance.Deactivate(this);
             InGameManager.Instance.StartNextStage(StageType.BattleReward, mainCharacter);
         }
         

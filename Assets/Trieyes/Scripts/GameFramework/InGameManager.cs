@@ -73,7 +73,6 @@ namespace GameFramework
                     ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentBattleDifficulty());
                     break;
                 case StageType.BattleReward:
-                    BattleStageFactory.Instance.Deactivate(BattleStage.now);
                     BattleRewardStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.SkillReward:

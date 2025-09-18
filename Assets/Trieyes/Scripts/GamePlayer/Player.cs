@@ -37,9 +37,16 @@ namespace GamePlayer
 
         public int mainCharacterId;
 
-        [SerializeField] public int bossStageLeftCount = 10;
         public Card selectedCard;
         public AchievementData selectedRelic;
+
+        
+        [Header("스테이지 간 노드 개수 관리")]
+        private int _StageNodeCount = 5;
+        public int bossStageLeftCount = 0;
+
+        private int _nextRoundMinNodeCount = 1;
+        private int _nextRoundMaxNodeCount = 2;
 
         public void Awake()
         {
@@ -53,6 +60,8 @@ namespace GamePlayer
                 return;
             }
 
+            bossStageLeftCount = _StageNodeCount;
+            
             DontDestroyOnLoad(this);
             InitializeAchievement();
         }
@@ -69,6 +78,12 @@ namespace GamePlayer
                 // 폴백으로 CSV에서 로드
                 achievement = new Achievement();
             }
+        }
+
+        public void SetNextStageNodeCount()
+        {
+            _StageNodeCount += Random.Range(_nextRoundMinNodeCount, _nextRoundMaxNodeCount + 1);
+            bossStageLeftCount = _StageNodeCount;
         }
 
         // F12 버튼 누르면 개발자 UI 표시

@@ -1,6 +1,7 @@
+using GamePlayer;
 using UnityEngine;
 
-namespace Utils
+namespace BattleSystem
 {
     public enum SpawnMode
     {
@@ -19,8 +20,6 @@ namespace Utils
         public int spawnFrequency;
         public int enemyHpMultiplier;
         public int enemyAttackMultiplier;
-
-        private int baseHp = 5;
 
         public float SpawnInterval => 1f / spawnFrequency;
 

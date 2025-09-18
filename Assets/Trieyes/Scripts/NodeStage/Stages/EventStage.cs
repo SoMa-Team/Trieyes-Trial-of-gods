@@ -46,6 +46,19 @@ namespace NodeStage
 
         protected virtual void Deactivate()
         {
+            // 해당 스테이지가 Start 스테이지가 아닌 경우
+            if (stageType != StageType.StartCard && stageType != StageType.StartRelic)
+            {
+                if (Player.Instance.bossStageLeftCount > 0)
+                {
+                    Player.Instance.bossStageLeftCount--;
+                }
+                else
+                {
+                    Player.Instance.SetNextStageNodeCount();
+                }
+            }
+
             OnDeactivated();
             gameObject.SetActive(false);
         }

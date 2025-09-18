@@ -2,7 +2,7 @@ using System;
 using CharacterSystem;
 using RelicSystem;
 using UnityEngine;
-using Utils;
+using BattleSystem;
 
 public class TestShopUXShopIniter : MonoBehaviour
 {

@@ -6,12 +6,9 @@ using TMPro;
 using CardSystem;
 using CardViews;
 using CharacterSystem;
-using Stats;
 using StickerSystem;
-using Utils;
-using GameFramework;
 using NodeStage;
-using UISystem;
+using BattleSystem;
 
 public class ShopSceneManager : EventStage<ShopSceneManager>
 {

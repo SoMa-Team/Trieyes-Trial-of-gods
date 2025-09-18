@@ -47,29 +47,23 @@ namespace GameFramework
                     break;
                 case StageType.Battle:
                     stageRound++;
-                    Player.Instance.bossStageLeftCount--;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBattleDifficulty());
                     break;
                 case StageType.Boss:
                     stageRound++;
-                    Player.Instance.bossStageLeftCount = 3;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
                     break;
                 case StageType.Elite:
                     stageRound++;
-                    Player.Instance.bossStageLeftCount--;
                     BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
                     break;
                 case StageType.CampFire:
-                    Player.Instance.bossStageLeftCount--;
                     CampfireStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.CardEnhancement:
-                    Player.Instance.bossStageLeftCount--;
                     CardEnhancementStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.Shop:
-                    Player.Instance.bossStageLeftCount--;
                     ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentBattleDifficulty());
                     break;
                 case StageType.BattleReward:

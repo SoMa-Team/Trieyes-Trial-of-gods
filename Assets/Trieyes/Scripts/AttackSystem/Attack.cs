@@ -112,7 +112,8 @@ namespace AttackSystem
             // TODO: Layer 충돌 적용 필요
             switch (hitObject.tag)
             {
-                case "Player": 
+                case "Player":
+                    return;
                     
                 case "Enemy":
                     if (attacker.gameObject.CompareTag(hitObject.tag))

@@ -131,6 +131,10 @@ namespace NodeStage
         private List<StageInfoSO> GenerateNextStageOptions(StageType? current)
         {
             var options = new List<StageInfoSO>();
+            bool bisEliteAlreadySelected = false;
+            var usedStages = new HashSet<StageType>();
+
+            Debug.Log("GenerateNextStageOptions : cnt : " + bossStageLeftCount);
 
             // 보스 스테이지 조건: bossStageLeftCount가 0이면 모든 노드를 보스로 설정
             if (bossStageLeftCount <= 0)
@@ -162,9 +166,10 @@ namespace NodeStage
                     if (rng.NextDouble() < battleRate)
                     {
                         // EliteNodeRate 테스트
-                        if (rng.NextDouble() < EliteNodeRate)
+                        if (rng.NextDouble() < EliteNodeRate && !bisEliteAlreadySelected)
                         {
                             selectedStage = GetFirstInfoOfType(StageType.Elite);
+                            bisEliteAlreadySelected = true;
                         }
                         else
                         {
@@ -178,8 +183,21 @@ namespace NodeStage
                     }
                 }
 
-                if (selectedStage != null)
+                if (selectedStage != null && !usedStages.Contains(selectedStage.type))
+                {
                     options.Add(selectedStage);
+                    usedStages.Add(selectedStage.type);
+                }
+                else if (selectedStage != null && usedStages.Contains(selectedStage.type))
+                {
+                    // 중복된 경우 대체 노드 선택
+                    var alternativeStage = GetAlternativeStage(usedStages, current);
+                    if (alternativeStage != null)
+                    {
+                        options.Add(alternativeStage);
+                        usedStages.Add(alternativeStage.type);
+                    }
+                }
             }
 
             return options;
@@ -224,6 +242,20 @@ namespace NodeStage
         private bool IsStartStage(StageType? stageType)
         {
             return stageType.HasValue && StartTypes.Contains(stageType.Value);
+        }
+
+        private StageInfoSO GetAlternativeStage(HashSet<StageType> usedStages, StageType? current)
+        {
+            // 사용되지 않은 모든 스테이지 중에서 랜덤 선택
+            var availableStages = allStages
+                .Where(s => s != null && !usedStages.Contains(s.type) && s.type != current && 
+                           !StartTypes.Contains(s.type) && s.type != StageType.Boss && s.type != StageType.GameOver)
+                .ToList();
+
+            if (availableStages.Count == 0) return null;
+
+            int randomIndex = rng.Next(0, availableStages.Count);
+            return availableStages[randomIndex];
         }
 
         private void ShowStartChoices(Character mainCharacter)

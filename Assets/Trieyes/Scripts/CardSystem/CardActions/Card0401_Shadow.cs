@@ -79,7 +79,7 @@ namespace CardActions
                     .Where(x => x != cardIndex))
                 .ToList();
             
-            cardCallOrder.InsertRange(cardIndex + 1, insertCards);
+            cardCallOrder.InsertRange(currentCardIndex + 1, insertCards);
             return true;
         }
     }

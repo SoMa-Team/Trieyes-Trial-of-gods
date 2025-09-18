@@ -7,6 +7,7 @@ using System.Linq;
 using GameFramework;
 using CharacterSystem;
 using CardViews;
+using GamePlayer;
 
 namespace NodeStage
 {
@@ -25,8 +26,25 @@ namespace NodeStage
 
         private readonly List<NextStageSlot> spawnedSlots = new();
         private System.Random rng = new System.Random();
-        
-        private int nodeSelectCount = 3;
+
+        [SerializeField] protected TMP_Text bossStageLeftCountText;
+        [HideInInspector] private int bossStageLeftCount => Player.Instance.bossStageLeftCount;
+
+        [Header("다음 스테이지 고르는 알고리즘")]
+        /*
+        -A) SpecialNodeRate를 nodeSelectCount번 테스트 한다. 
+        1번이라도 통과한다면 해당 노드에 5000번대 enum 중 1개를 할당하며 끝이 난다.
+	    -B) 나머지 노드에 대하여 BattleNodeRate를 nodeSelectCount번 테스트 한다. 
+        통과하면 해당 노드는 전투 노드가 되고, EliteNodeRate를 테스트하여 통과하면 엘리트, 
+        그렇지 못하면 일반 전투 노드가 된다.
+	    -C) BattleNodeRate를 통과하지 못하면 해당 노드는 일반 이벤트 노드 중 1개가 된다.
+        */
+        [SerializeField] private int nodeSelectCount = 3;
+        [SerializeField] private float SpecialNodeRate = 0.2f;
+
+        [SerializeField] private float StartBattleNodeRate = 0.66f; // 시작 노드 다음에 전투 등장 확률
+        [SerializeField] private float BattleNodeRate = 0.66f; // 노드가 전투일 확률
+        [SerializeField] private float EliteNodeRate = 0.3f; // 노드가 전투일 때 엘리트일 확률
 
         private static readonly HashSet<StageType> StartTypes = new()
         {
@@ -42,17 +60,12 @@ namespace NodeStage
             gameObject.SetActive(false);
         }
 
-        private List<T> SampleWithoutReplacement<T>(IList<T> src, int k, System.Random r)
+        private void OnEnable()
         {
-            if (src == null || src.Count == 0 || k <= 0) return new List<T>();
-            k = Mathf.Clamp(k, 0, src.Count);
-            var arr = new List<T>(src);
-            for (int i = 0; i < k; i++)
+            if (bossStageLeftCountText != null)
             {
-                int j = r.Next(i, arr.Count);
-                (arr[i], arr[j]) = (arr[j], arr[i]);
+                bossStageLeftCountText.text = "보스 까지 남은 스테이지 : " + bossStageLeftCount.ToString();
             }
-            return arr.GetRange(0, k);
         }
 
         private StageInfoSO GetFirstInfoOfType(StageType t)
@@ -110,16 +123,107 @@ namespace NodeStage
             }
             else
             {
-                var pool = allStages
-                    .Where(s => s != null)
-                    .GroupBy(s => s.type)
-                    .Select(g => g.First())
-                    .Where(s => s.type != current && !StartTypes.Contains(s.type))
-                    .ToList();
-
-                var options = SampleWithoutReplacement(pool, nodeSelectCount, rng);
+                var options = GenerateNextStageOptions(current);
                 SpawnSlots(options, mainCharacter);
             }
+        }
+
+        private List<StageInfoSO> GenerateNextStageOptions(StageType? current)
+        {
+            var options = new List<StageInfoSO>();
+
+            // 보스 스테이지 조건: bossStageLeftCount가 0이면 모든 노드를 보스로 설정
+            if (bossStageLeftCount <= 0)
+            {
+                for (int i = 0; i < nodeSelectCount; i++)
+                {
+                    var bossStage = GetFirstInfoOfType(StageType.Boss);
+                    if (bossStage != null)
+                        options.Add(bossStage);
+                }
+                return options;
+            }
+
+            // 일반 스테이지 선택 알고리즘
+            for (int i = 0; i < nodeSelectCount; i++)
+            {
+                StageInfoSO selectedStage = null;
+
+                // A) SpecialNodeRate 테스트 (5000번대 노드)
+                if (rng.NextDouble() < SpecialNodeRate)
+                {
+                    selectedStage = GetRandomSpecialEventStage();
+                }
+                else
+                {
+                    // B) BattleNodeRate 테스트 (시작 노드 다음에는 StartBattleNodeRate 사용)
+                    float battleRate = IsStartStage(current) ? StartBattleNodeRate : BattleNodeRate;
+                    
+                    if (rng.NextDouble() < battleRate)
+                    {
+                        // EliteNodeRate 테스트
+                        if (rng.NextDouble() < EliteNodeRate)
+                        {
+                            selectedStage = GetFirstInfoOfType(StageType.Elite);
+                        }
+                        else
+                        {
+                            selectedStage = GetFirstInfoOfType(StageType.Battle);
+                        }
+                    }
+                    else
+                    {
+                        // C) 일반 이벤트 노드
+                        selectedStage = GetRandomNormalEventStage();
+                    }
+                }
+
+                if (selectedStage != null)
+                    options.Add(selectedStage);
+            }
+
+            return options;
+        }
+
+        private StageInfoSO GetRandomSpecialEventStage()
+        {
+            var specialStages = allStages
+                .Where(s => s != null && IsSpecialEventStage(s.type))
+                .ToList();
+
+            if (specialStages.Count == 0) return null;
+
+            int randomIndex = rng.Next(0, specialStages.Count);
+            return specialStages[randomIndex];
+        }
+
+        private StageInfoSO GetRandomNormalEventStage()
+        {
+            var normalStages = allStages
+                .Where(s => s != null && IsNormalEventStage(s.type))
+                .ToList();
+
+            if (normalStages.Count == 0) return null;
+
+            int randomIndex = rng.Next(0, normalStages.Count);
+            return normalStages[randomIndex];
+        }
+
+        private bool IsSpecialEventStage(StageType stageType)
+        {
+            // 5000번대: 특별 이벤트 보상 노드
+            return (int)stageType >= 5000 && (int)stageType < 6000;
+        }
+
+        private bool IsNormalEventStage(StageType stageType)
+        {
+            // 1000번대: 일반 이벤트 보상 노드
+            return (int)stageType >= 1000 && (int)stageType < 2000;
+        }
+
+        private bool IsStartStage(StageType? stageType)
+        {
+            return stageType.HasValue && StartTypes.Contains(stageType.Value);
         }
 
         private void ShowStartChoices(Character mainCharacter)

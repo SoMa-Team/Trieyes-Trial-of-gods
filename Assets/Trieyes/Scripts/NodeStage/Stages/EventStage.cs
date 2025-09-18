@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using CharacterSystem;
 using CardViews;
 using GameFramework;
+using GamePlayer;
+using TMPro;
 
 namespace NodeStage
 {

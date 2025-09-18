@@ -147,6 +147,7 @@ public static class CSVToCardInfoSOImporter
                 char nxt = tmp.textInfo.characterInfo[i + 1].character;
                 int paramIdx = Int32.Parse(nxt.ToString());
                 string paramValue = baseParams[paramIdx];
+                Debug.Log($"paramIdx = {paramIdx}, paramValue = {paramValue}");
                 int count = paramValue.Length;
                 int start = i + prefix;
                 int end = start + count - 1;

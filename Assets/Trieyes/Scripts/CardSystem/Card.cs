@@ -179,6 +179,7 @@ namespace CardSystem
                                 result.Add(value.ToString());
                                 break;
                             case ParamKind.Percent:
+                                Debug.Log($"value: {value}");
                                 result.Add(FormatProbability(value));
                                 break;
                         }

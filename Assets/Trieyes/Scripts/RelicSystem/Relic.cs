@@ -8,6 +8,12 @@ using UnityEngine;
 
 namespace RelicSystem
 {
+    public enum RelicType
+    {
+        Normal,
+        Boss,
+        Curse,
+    }
     /// <summary>
     /// 게임 내 유물을 나타내는 클래스입니다.
     /// 유물은 자체적으로 이벤트를 등록하고 처리할 수 있는 IEventHandler를 구현합니다.
@@ -16,6 +22,7 @@ namespace RelicSystem
     {
         // ===== [기능 1] 유물 정보 및 생성 =====
         public int relicID;
+        public RelicType? relicType;
         public string name;
         public Sprite icon = null;
         public string description;

@@ -36,6 +36,8 @@ namespace GamePlayer
         public static Player Instance { get; private set; }
 
         public int mainCharacterId;
+
+        [SerializeField] public int bossStageLeftCount = 10;
         public Card selectedCard;
         public AchievementData selectedRelic;
 

@@ -5882,7 +5882,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6532286262807758729, guid: 530657bb8bc5041aa87dbe20bb96167d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1220.0012
+      value: 1220.0001
       objectReference: {fileID: 0}
     - target: {fileID: 6928119157154243233, guid: 530657bb8bc5041aa87dbe20bb96167d, type: 3}
       propertyPath: m_Size
@@ -6095,7 +6095,7 @@ MonoBehaviour:
   rectTransform: {fileID: 434271550}
   openDeckButton: {fileID: 699399319}
   deckView: {fileID: 231562455}
-  stageType: 10
+  stageType: 10001
   mainCharacter: {fileID: 0}
   cardPrefab: {fileID: 5173740652284747469, guid: 57117521023954de2a4709ce6555217c, type: 3}
   rewardContainer: {fileID: 187410190}
@@ -8663,7 +8663,7 @@ MonoBehaviour:
   rectTransform: {fileID: 577513088}
   openDeckButton: {fileID: 770863062}
   deckView: {fileID: 231562455}
-  stageType: 5
+  stageType: 5001
   mainCharacter: {fileID: 0}
   stickerPrefab: {fileID: 3747578483239600252, guid: 52954f236b5744ce9abec4ce4d3670fd, type: 3}
   stickerContainer: {fileID: 747362337}
@@ -9611,7 +9611,7 @@ MonoBehaviour:
   rectTransform: {fileID: 624065017}
   openDeckButton: {fileID: 0}
   deckView: {fileID: 0}
-  stageType: 0
+  stageType: 2
   mainCharacter: {fileID: 0}
   relicSlotViewPrefab: {fileID: 4365383322630651119, guid: 224067d9d8d5c47508c58fd8c792c7f2, type: 3}
   RelicListView: {fileID: 1383486118}
@@ -9817,7 +9817,7 @@ MonoBehaviour:
   rectTransform: {fileID: 638542662}
   openDeckButton: {fileID: 1699671178}
   deckView: {fileID: 231562455}
-  stageType: 0
+  stageType: 1002
   mainCharacter: {fileID: 0}
   Background: {fileID: 686538920}
   btnOption1: {fileID: 1208105496}
@@ -10138,6 +10138,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 686538920}
   m_CullTransparentMesh: 1
+--- !u!1 &687977579
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 687977580}
+  m_Layer: 5
+  m_Name: BossStageLeftCount
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &687977580
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687977579}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1172213004}
+  m_Father: {fileID: 1433359719}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -300, y: -175}
+  m_SizeDelta: {x: 500, y: 55}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &688819469
 GameObject:
   m_ObjectHideFlags: 0
@@ -17800,6 +17836,142 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1160847697}
   m_CullTransparentMesh: 1
+--- !u!1 &1172213003
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1172213004}
+  - component: {fileID: 1172213006}
+  - component: {fileID: 1172213005}
+  m_Layer: 5
+  m_Name: CountText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1172213004
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172213003}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 687977580}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1172213005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172213003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: "\uBCF4\uC2A4 \uAE4C\uC9C0 \uB0A8\uC740 \uC2A4\uD14C\uC774\uC9C0 : 999"
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 31f37646edbca4065beca55c7c87e709, type: 2}
+  m_sharedMaterial: {fileID: -2728784955049040623, guid: 31f37646edbca4065beca55c7c87e709, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 36
+  m_fontSizeBase: 36
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1172213006
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172213003}
+  m_CullTransparentMesh: 1
 --- !u!1 &1172953284
 GameObject:
   m_ObjectHideFlags: 0
@@ -21232,6 +21404,7 @@ RectTransform:
   - {fileID: 1664134507}
   - {fileID: 875333212}
   - {fileID: 886332307}
+  - {fileID: 687977580}
   m_Father: {fileID: 2119943541}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -21276,6 +21449,12 @@ MonoBehaviour:
   rectTransform: {fileID: 1433359719}
   deckView: {fileID: 231562455}
   openDeckButton: {fileID: 886332308}
+  bossStageLeftCountText: {fileID: 1172213005}
+  nodeSelectCount: 3
+  SpecialNodeRate: 0.2
+  StartBattleNodeRate: 1
+  BattleNodeRate: 0.5
+  EliteNodeRate: 0.3
 --- !u!1001 &1443033326
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21705,7 +21884,7 @@ MonoBehaviour:
   rectTransform: {fileID: 1481289083}
   openDeckButton: {fileID: 1985100529}
   deckView: {fileID: 231562455}
-  stageType: 13
+  stageType: 1
   mainCharacter: {fileID: 0}
   cardPrefab: {fileID: 5173740652284747469, guid: 57117521023954de2a4709ce6555217c, type: 3}
   cardContainer: {fileID: 918294595}
@@ -25289,7 +25468,7 @@ MonoBehaviour:
   rectTransform: {fileID: 1689989995}
   openDeckButton: {fileID: 1484578295}
   deckView: {fileID: 231562455}
-  stageType: 0
+  stageType: 5004
   mainCharacter: {fileID: 0}
   skillRewardPrefab: {fileID: 261965669831646976, guid: 8e1ed899fb8bf174ba464d2bb28cf184, type: 3}
   skillAttackData:
@@ -31389,7 +31568,7 @@ MonoBehaviour:
   rectTransform: {fileID: 2046508585}
   openDeckButton: {fileID: 0}
   deckView: {fileID: 0}
-  stageType: 0
+  stageType: 65535
   mainCharacter: {fileID: 0}
   killScoreText: {fileID: 1255823562}
   roundScoreText: {fileID: 1762835656}
@@ -31709,7 +31888,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3120115679059456073, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.000023061482
+      value: 0.0006245365
       objectReference: {fileID: 0}
     - target: {fileID: 3214882910904577171, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_Value
@@ -31865,7 +32044,7 @@ PrefabInstance:
       objectReference: {fileID: 1824400633}
     - target: {fileID: 6596087777759807577, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0.000023061482
+      value: 0.0006245365
       objectReference: {fileID: 0}
     - target: {fileID: 6913855767558527846, guid: c80fcb9749e45427bb27549a6d16886f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -32173,7 +32352,7 @@ MonoBehaviour:
   rectTransform: {fileID: 2083368173}
   openDeckButton: {fileID: 1665102999}
   deckView: {fileID: 231562455}
-  stageType: 8
+  stageType: 1004
   mainCharacter: {fileID: 0}
   btnEnhance: {fileID: 975481055}
   btnSwap: {fileID: 1815755143}
@@ -34461,7 +34640,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7498770762397179744, guid: be83ee25564c9984082a195bb48c8ac0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0006888269
+      value: 0.000007878411
       objectReference: {fileID: 0}
     - target: {fileID: 7507929920772440758, guid: be83ee25564c9984082a195bb48c8ac0, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

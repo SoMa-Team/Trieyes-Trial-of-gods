@@ -39,31 +39,37 @@ namespace GameFramework
         {
             switch (stageType)
             {
-                case StageType.Battle:
-                    stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBattleDifficulty());
-                    break;
-                case StageType.Boss:
-                    stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
-                    break;
-                case StageType.Elite:
-                    stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
-                    break;
                 case StageType.StartCard:
                     StartCardStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.StartRelic:
                     StartRelicStage.Instance.Activate(mainCharacter);
                     break;
+                case StageType.Battle:
+                    stageRound++;
+                    Player.Instance.bossStageLeftCount--;
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBattleDifficulty());
+                    break;
+                case StageType.Boss:
+                    stageRound++;
+                    Player.Instance.bossStageLeftCount = 3;
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
+                    break;
+                case StageType.Elite:
+                    stageRound++;
+                    Player.Instance.bossStageLeftCount--;
+                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
+                    break;
                 case StageType.CampFire:
+                    Player.Instance.bossStageLeftCount--;
                     CampfireStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.CardEnhancement:
+                    Player.Instance.bossStageLeftCount--;
                     CardEnhancementStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.Shop:
+                    Player.Instance.bossStageLeftCount--;
                     ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentBattleDifficulty());
                     break;
                 case StageType.BattleReward:

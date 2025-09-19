@@ -66,6 +66,9 @@ namespace AttackSystem
         private static AttackResult calcAttackResultByStatSheet(AttackResult attackResult, StatSheet attackStat,
             StatSheet targetStat)
         {
+            Debug.Log($"AttackPower: {attackStat.Get(StatType.AttackPower)}, MagicPower: {attackStat.Get(StatType.MagicPower)}");
+            if(attackResult.type==Type.Attack) Debug.Log($"Type is Attack");
+            else Debug.Log($"Type is Magic");
             attackResult.isEvaded = Random.Range(0f, 100f) < targetStat.Get(StatType.Evasion);
             if (attackResult.isEvaded) return attackResult;
 

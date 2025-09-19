@@ -30,6 +30,7 @@ namespace AttackSystem
             copy.cooldown = cooldown;
             copy.damageMultiplier = damageMultiplier;
             copy.attackIcon = attackIcon;
+            copy.type = type;
             return copy;
         }
 

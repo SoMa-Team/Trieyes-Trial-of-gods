@@ -199,8 +199,6 @@ namespace CharacterSystem
 
             deck.Activate(this, true);
             
-            SyncHP();
-            
             gameObject.SetActive(true);
             Controller.Activate(this);
         }

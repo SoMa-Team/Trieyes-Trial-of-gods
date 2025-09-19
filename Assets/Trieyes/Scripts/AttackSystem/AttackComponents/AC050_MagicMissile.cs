@@ -45,6 +45,8 @@ namespace AttackComponents
 
         public override void Activate(Attack attack, Vector2 direction)
         {
+            // Debug.Log("Activating magic missile");
+            // Debug.Log($"attack: {attack.attackData.type}");
             base.Activate(attack, direction);
             
             // 초기 상태 설정

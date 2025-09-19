@@ -5,14 +5,26 @@ using NodeStage;
 using BattleSystem;
 using Utils;
 using UISystem;
+using UnityEngine.SceneManagement;
 
 namespace GameFramework
 {
     public class InGameManager : MonoBehaviour
     {
         private Player player;
-        private int stageRound;
+
+        private Difficulty currentDifficulty = new Difficulty();
         public static InGameManager Instance { get; private set; }
+        
+        // ===== 스테이지 간 노드 개수 관리 =====
+        [Header("스테이지 간 노드 개수 관리")]
+
+        private const int _startLevelNodeCount = 5;
+        private int _stageNodeCount;
+        public int bossStageLeftCount = 0;
+
+        private int _nextRoundMinNodeCount = 1;
+        private int _nextRoundMaxNodeCount = 2;
         
         private void Awake()
         {
@@ -21,18 +33,32 @@ namespace GameFramework
                 Destroy(this);
                 return;
             }
+
+            _stageNodeCount = _startLevelNodeCount;
+            bossStageLeftCount = _stageNodeCount;
+
             DontDestroyOnLoad(gameObject);
             Instance = this;
         }
         
-        private Difficulty GetCurrentBattleDifficulty()
+        public Difficulty GetCurrentDifficulty()
         {
-            return Difficulty.GetByStageRound(stageRound);
+            return currentDifficulty;
         }
-        
-        private Difficulty GetCurrentBossDifficulty()
+
+        public void ResetStageNodeCount()
         {
-            return Difficulty.GetByStageRound(stageRound, true);
+            _stageNodeCount = _startLevelNodeCount;
+            bossStageLeftCount = _stageNodeCount;
+        }
+
+        /// <summary>
+        /// 다음 스테이지 노드 개수를 설정합니다.
+        /// </summary>
+        public void SetNextStageNodeCount()
+        {
+            _stageNodeCount += Random.Range(_nextRoundMinNodeCount, _nextRoundMaxNodeCount + 1);
+            bossStageLeftCount = _stageNodeCount;
         }
 
         public void StartNextStage(StageType stageType, Character mainCharacter)
@@ -45,17 +71,20 @@ namespace GameFramework
                 case StageType.StartRelic:
                     StartRelicStage.Instance.Activate(mainCharacter);
                     break;
-                case StageType.Battle:
-                    stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBattleDifficulty());
+                case StageType.BattleTimer:
+                    BattleStageFactory.Instance.Create(mainCharacter, BattleMode.Timer);
+                    break;
+                case StageType.BattleBreakThrough:
+                    BattleStageFactory.Instance.Create(mainCharacter, BattleMode.BreakThrough);
+                    break;
+                case StageType.BattleEscape:
+                    BattleStageFactory.Instance.Create(mainCharacter, BattleMode.Escape);
                     break;
                 case StageType.Boss:
-                    stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
+                    BattleStageFactory.Instance.Create(mainCharacter, BattleMode.Boss);
                     break;
                 case StageType.Elite:
-                    stageRound++;
-                    BattleStageFactory.Instance.Create(mainCharacter, GetCurrentBossDifficulty());
+                    BattleStageFactory.Instance.Create(mainCharacter, BattleMode.BreakThrough);
                     break;
                 case StageType.CampFire:
                     CampfireStage.Instance.Activate(mainCharacter);
@@ -64,7 +93,7 @@ namespace GameFramework
                     CardEnhancementStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.Shop:
-                    ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentBattleDifficulty());
+                    ShopSceneManager.Instance.Activate(mainCharacter, GetCurrentDifficulty());
                     break;
                 case StageType.BattleReward:
                     BattleRewardStage.Instance.Activate(mainCharacter);
@@ -78,6 +107,9 @@ namespace GameFramework
                 case StageType.GameOver:
                     Time.timeScale = 0;
                     GameOverStage.Instance.Activate(mainCharacter);
+                    break;
+                default:
+                    Debug.LogError($"StageType {stageType} is not supported");
                     break;
             }
         }

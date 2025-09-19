@@ -8,7 +8,7 @@ using CardViews;
 using CharacterSystem;
 using StickerSystem;
 using NodeStage;
-using BattleSystem;
+using GameFramework;
 
 public class ShopSceneManager : EventStage<ShopSceneManager>
 {

@@ -13,18 +13,9 @@ namespace CardActions
     /// </summary>
     public class Card0401_Shadow : CardAction
     {
-        private const int repeatCountIndex = 0;
         public Card0401_Shadow()
         {
-            actionParams = new List<ActionParam>
-            {
-                // [0] 반복 횟수 (CSV 예: 1)
-                ActionParamFactory.Create(ParamKind.Add, card =>
-                {
-                    int baseCount = Parser.ParseStrToInt(card.baseParams[repeatCountIndex]);
-                    return baseCount * card.cardEnhancement.level.Value;
-                })
-            };
+            
         }
 
         /// <summary>
@@ -41,16 +32,13 @@ namespace CardActions
 
             if (eventType == Utils.EventType.CalcActionInitOrder)
             {
-                // param: (Card, int) 튜플에서 자신의 카드 인덱스를 가져옴
                 if (param is ValueTuple<List<int>, int> tuple)
                 {
                     int currentCardIndex = tuple.Item2;
-                    int repeatCount = Convert.ToInt32(GetEffectiveParam(repeatCountIndex));
+                    int repeatCount = 1;
                     var cardCallOrder = tuple.Item1;
                     return HandleCalcActionInitOrder(deck, cardCallOrder, repeatCount, currentCardIndex);
                 }
-                
-                Debug.LogError("[Shadow] param 형식이 잘못되었습니다. (ValueTuple<Card, int>이어야 함)");
                 return false;
             }
 

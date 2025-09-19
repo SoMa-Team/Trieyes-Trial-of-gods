@@ -34,6 +34,7 @@ namespace UISystem
         [Header("========== StageInfos ==========")]
         [SerializeField] private TextMeshProUGUI StageNumberText;
         [SerializeField] private TextMeshProUGUI StageRemainTimeText;
+        [SerializeField] private TextMeshProUGUI EnemyRemainCountText;
         [SerializeField] private Slider StageRemainTimeSlider;
 
         [Header("========== Skills ==========")]
@@ -130,9 +131,19 @@ namespace UISystem
             SetSkill1CoolDown(character.Skill1CoolDownRate);
             SetSkill2CoolDown(character.Skill2CoolDownRate);
 
-            float elapsedTime = BattleStage.now.elapsedTime;
-            float totalTime = BattleStage.now.difficulty.battleLength;
-            SetRemainTime(elapsedTime, totalTime);
+            if (BattleStage.now is BattleBreakThrough)
+            {
+                StageRemainTimeText.text = $"-s";
+                var breakThrough = BattleStage.now as BattleBreakThrough;
+                EnemyRemainCountText.text = $"{breakThrough.GetBreakThroughCount()}";
+            }
+            if (BattleStage.now is BattleTimer)
+            {
+                EnemyRemainCountText.text = $"0";
+                float elapsedTime = BattleStage.now.elapsedTime;
+                float totalTime = BattleStage.now.difficulty.battleLength;
+                SetRemainTime(elapsedTime, totalTime);
+            }
         }
 
         private void SetRemainTime(float elapsedTime, float totalTime)

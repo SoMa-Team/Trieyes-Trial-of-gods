@@ -3,25 +3,20 @@ using CharacterSystem;
 using System.Collections.Generic;
 using AttackSystem;
 using GameFramework;
-using JetBrains.Annotations;
 using NodeStage;
-using Stats;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using Utils;
-using EventType = UnityEngine.EventType;
 using System.Linq;
 
 namespace BattleSystem
 {
     /// <summary>
-    /// 전투 스테이지의 핵심 데이터와 상태를 관리하는 클래스
+    /// 전투 스테이지의 핵심 데이터와 상태를 관리하는 추상 클래스
     /// 현재 활성화된 전투 스테이지의 정보를 담고 있습니다.
     /// </summary>
-    public class BattleStage //TODO: 안정화 시 NodeStage 시스템과 통합 요망
+    public abstract class BattleStage //TODO: 안정화 시 NodeStage 시스템과 통합 요망
     {
         // ===== 전역 스테이지 관리 =====
-        public static BattleStage now;
+        public static BattleStage now => BattleStageFactory.GetCurrentInstance();
         public BattleStageView View { set; get; }
         public float elapsedTime => Time.time - startTime;
 
@@ -36,26 +31,14 @@ namespace BattleSystem
         public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
         
-        private bool isActivated = false;
+        public bool isActivated = false;
 
-        private float ticDuration = 0.5f;
-        private float lastTick = -1;
-        public void Update()
-        {
-            if (!isActivated)
-                return;
-            
-            if (Time.time - startTime >= difficulty.battleLength)
-            {
-                OnBattleClear();
-            }
+        // ===== 시간 관리 관련 =====
+        protected float startTime;
 
-            if (Time.time - lastTick > ticDuration)
-            {
-                mainCharacter.OnEvent(Utils.EventType.OnTick, mainCharacter);
-                lastTick = Time.time;
-            }
-        }
+        protected float ticDuration = 0.5f;
+        protected float lastTick = -1;
+        public abstract void Update();
 
         // ===== 스테이지 활성화, 비활성화 =====
 
@@ -63,32 +46,38 @@ namespace BattleSystem
         /// 전투 스테이지를 활성화합니다.
         /// 동시에 하나의 스테이지만 활성화될 수 있습니다.
         /// </summary>
-        public void Activate()
+        public virtual void Activate(Difficulty difficulty)
         {
             if (now is not null)
             {
                 throw new Exception("There must be exactly one BattleStage.");
             }
             
+            this.difficulty = difficulty;
             startTime = Time.time;
             lastTick = Time.time;
-            now = this;
             isActivated = true;
             View.gameObject.SetActive(true);
+            
+            OnActivated();
         }
 
         /// <summary>
         /// 전투 스테이지를 비활성화합니다.</summary>
-        public void Deactivate()
+        public virtual void Deactivate()
         {
+            OnDeactivated();
+            
             Debug.Log("Deactivating battle stage.");
-            now = null;
             isActivated = false;
             View.gameObject.SetActive(false);
 
-            now = null;
             difficulty = null; // difficulty를 null로 설정하여 Update에서 오류 방지
         }
+
+        // 파생 클래스에서 구현할 추상 메서드들
+        protected virtual void OnActivated() { }
+        protected virtual void OnDeactivated() { }
 
         // ===== 적 관리 =====
         
@@ -131,7 +120,7 @@ namespace BattleSystem
         }
 
         // 전투 클리어 시 호출
-        public void OnBattleClear()
+        public virtual void OnBattleClear()
         {
             BattleStageFactory.Instance.Deactivate(this);
             InGameManager.Instance.StartNextStage(StageType.BattleReward, mainCharacter);
@@ -143,9 +132,6 @@ namespace BattleSystem
             BattleStageFactory.Instance.Deactivate(this);
             InGameManager.Instance.StartNextStage(StageType.GameOver, mainCharacter);
         }
-        
-        // ===== 시간 관리 관련 =====
-        private float startTime;
 
         public float GetTime()
         {
@@ -293,6 +279,21 @@ namespace BattleSystem
             }
             enemiesInRange.Sort((a, b) => Vector2.Distance(a.transform.position, start).CompareTo(Vector2.Distance(b.transform.position, start)));
             return enemiesInRange;
+        }
+    }
+
+    public abstract class BattleStage<T> : BattleStage where T : BattleStage<T>
+    {
+        public static T Instance { get; private set; }
+
+        protected BattleStage()
+        {
+            Instance = (T)this;
+        }
+
+        ~BattleStage()
+        {
+            if (Instance == (T)this) Instance = null;
         }
     }
 } 

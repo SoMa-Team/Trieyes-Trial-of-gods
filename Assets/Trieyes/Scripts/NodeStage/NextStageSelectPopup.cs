@@ -28,7 +28,7 @@ namespace NodeStage
         private System.Random rng = new System.Random();
 
         [SerializeField] protected TMP_Text bossStageLeftCountText;
-        [HideInInspector] private int bossStageLeftCount => Player.Instance.bossStageLeftCount;
+        [HideInInspector] private int bossStageLeftCount => InGameManager.Instance.bossStageLeftCount;
 
         [Header("다음 스테이지 고르는 알고리즘")]
         /*
@@ -45,7 +45,7 @@ namespace NodeStage
 
         [SerializeField] private float StartBattleNodeRate = 0.66f; // 시작 노드 다음에 전투 등장 확률
         [SerializeField] private float BattleNodeRate = 0.66f; // 노드가 전투일 확률
-        [SerializeField] private float EliteNodeRate = 0.3f; // 노드가 전투일 때 엘리트일 확률
+        [SerializeField] private float EliteNodeRate = 0.66f; // 노드가 전투일 때 엘리트일 확률
 
         private static readonly HashSet<StageType> StartTypes = new()
         {
@@ -57,6 +57,7 @@ namespace NodeStage
         {
             if (Instance != null) { Destroy(gameObject); return; }
             Instance = this;
+            InGameManager.Instance.ResetStageNodeCount();
             rectTransform.anchoredPosition = Vector2.zero;
             gameObject.SetActive(false);
         }
@@ -169,12 +170,12 @@ namespace NodeStage
                         // EliteNodeRate 테스트
                         if (rng.NextDouble() < EliteNodeRate && !bisEliteAlreadySelected)
                         {
-                            selectedStage = GetFirstInfoOfType(StageType.Elite);
+                            selectedStage = GetFirstInfoOfType(StageType.BattleBreakThrough);
                             bisEliteAlreadySelected = true;
                         }
                         else
                         {
-                            selectedStage = GetFirstInfoOfType(StageType.Battle);
+                            selectedStage = GetFirstInfoOfType(StageType.BattleTimer);
                         }
                     }
                     else

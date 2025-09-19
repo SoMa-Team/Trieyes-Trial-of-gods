@@ -49,14 +49,20 @@ namespace NodeStage
             // 해당 스테이지가 Start 스테이지가 아닌 경우
             if (stageType != StageType.StartCard && stageType != StageType.StartRelic)
             {
-                if (Player.Instance.bossStageLeftCount > 0)
+                if (InGameManager.Instance.bossStageLeftCount > 0)
                 {
-                    Player.Instance.bossStageLeftCount--;
+                    InGameManager.Instance.GetCurrentDifficulty().RoundCountUp();
+                    InGameManager.Instance.bossStageLeftCount--;
                 }
                 else
                 {
-                    Player.Instance.SetNextStageNodeCount();
+                    InGameManager.Instance.SetNextStageNodeCount();
+                    InGameManager.Instance.GetCurrentDifficulty().LevelCountUp();
                 }
+            }
+            else
+            {
+                InGameManager.Instance.GetCurrentDifficulty().GameStart();
             }
 
             OnDeactivated();

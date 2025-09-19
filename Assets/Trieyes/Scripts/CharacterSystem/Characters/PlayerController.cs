@@ -50,17 +50,17 @@ namespace CharacterSystem
             Vector2 moveDir = new Vector2(joystick.Horizontal, joystick.Vertical);
             this.moveDir = moveDir.normalized;
 
-            if (!lockMovement && isJoystickActive)
+            if (enabled && !lockMovement && isJoystickActive)
             {
                 character.Move(moveDir);
             }
 
             // 스킬 확인
-            if (skillAction001.action.triggered)
+            if (enabled && skillAction001.action.triggered)
             {
                 character.ExecuteAttack(PawnAttackType.Skill1);
             }
-            if (skillAction002.action.triggered)
+            if (enabled && skillAction002.action.triggered)
             {
                 character.ExecuteAttack(PawnAttackType.Skill2);
             }
@@ -68,7 +68,7 @@ namespace CharacterSystem
 
         public override void Update()
         {
-            if (character is not null && isAutoAttack)
+            if (enabled &&character is not null && isAutoAttack)
             {
                 base.Update();
                 character.ExecuteAttack(PawnAttackType.BasicAttack);

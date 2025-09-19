@@ -7,6 +7,7 @@ namespace Stats
     {
         // 공격 관련 스탯
         AttackPower,        // 공격력
+        MagicPower,         // 주문력
         AttackSpeed,        // 공격속도
         AttackRange,        // 공격 범위
         CriticalRate,       // 치명타 확률

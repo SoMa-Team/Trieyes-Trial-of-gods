@@ -11,6 +11,7 @@ namespace Utils
         private static readonly Dictionary<StatType, string> StatTypeToKor = new()
         {
             { StatType.AttackPower, "공격력" },
+            { StatType.MagicPower, "주문력" },
             { StatType.AttackSpeed, "공격속도" },
             { StatType.AttackRange, "사정거리" },
             { StatType.CriticalRate, "치명타 확률" },
@@ -33,6 +34,7 @@ namespace Utils
         private static readonly Dictionary<string, StatType> KorToStatType = new()
         {
             { "공격력", StatType.AttackPower },
+            { "주문력", StatType.MagicPower }, 
             { "공격속도", StatType.AttackSpeed },
             { "사정거리", StatType.AttackRange },
             { "치명타 확률", StatType.CriticalRate },

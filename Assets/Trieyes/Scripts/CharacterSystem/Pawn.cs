@@ -592,7 +592,7 @@ namespace CharacterSystem
         /// </summary>
         public void CalculateBasicAttackCooldown()
         {
-            attackCooldown = 1f / (GetStatValue(StatType.AttackSpeed) / 3f);
+            attackCooldown = 200f / (100 + GetStatValue(StatType.AttackSpeed));
         }
 
         /// <summary>

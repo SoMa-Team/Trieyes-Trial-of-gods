@@ -32,13 +32,9 @@ namespace Stats
             { StatType.GoldDropRate, ctx => ctx.Raw },
 
             // 2) 정규화/비선형 공식
-            { StatType.AttackSpeed, ctx =>
-                Mathf.Clamp(ctx.Raw * (1f/100f), 0.01f, 10f)
-            },
-            { StatType.SkillCooldownReduction, ctx =>
-                Mathf.Clamp(1000f / (1000f + ctx.Raw), 0.25f, 1f)
-            },
-            { StatType.MoveSpeed, ctx =>  ctx.Raw },
+            { StatType.AttackSpeed, ctx => ctx.Raw },
+            { StatType.SkillCooldownReduction, ctx => ctx.Raw },
+            { StatType.MoveSpeed, ctx =>  (float)ctx.Raw/100 },
             { StatType.LifeSteal, ctx =>
                 Mathf.Clamp(ctx.Raw * (1f/100f), 0f, 10f)
             },

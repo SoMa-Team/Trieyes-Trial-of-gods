@@ -19,6 +19,7 @@ namespace BattleSystem
     /// </summary>
     public enum BattleMode
     {
+        None,
         Timer,          // 타이머 기반 전투
         BreakThrough,   // 돌파형 전투
         Escape,         // 탈출형 전투

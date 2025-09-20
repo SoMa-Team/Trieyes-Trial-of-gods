@@ -113,6 +113,10 @@ namespace AttackSystem
             switch (hitObject.tag)
             {
                 case "Player":
+                    if (attacker.gameObject.CompareTag(hitObject.tag))
+                        return;
+
+                    ProcessAttackCollision(hitObject.GetComponent<Pawn>());
                     return;
                     
                 case "Enemy":

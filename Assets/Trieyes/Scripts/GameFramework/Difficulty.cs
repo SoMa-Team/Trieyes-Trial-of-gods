@@ -13,7 +13,7 @@ namespace GameFramework
     {
         public float battleLength = 60; // 초단위
 
-        private int[] enemyIDs = { 0, 1, 2, 3, 4 };
+        private int[] enemyIDs = { 0, 1, 2 };
 
         private const int BOSS_ENEMY_ID_START = 2;
         public int EnemyID => getEnemyID();

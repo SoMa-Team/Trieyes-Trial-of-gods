@@ -17,6 +17,8 @@ namespace AttackSystem
         public float cooldown; // Type이 Basic일 경우, 값은 무시됨.
         public float damageMultiplier = 1;
         public string attackIcon;
+
+        public Type type;
         // TODO : attackIcon을 string이 아닌 Sprite 타입으로 변경
 
         public AttackData Copy()
@@ -28,6 +30,7 @@ namespace AttackSystem
             copy.cooldown = cooldown;
             copy.damageMultiplier = damageMultiplier;
             copy.attackIcon = attackIcon;
+            copy.type = type;
             return copy;
         }
 

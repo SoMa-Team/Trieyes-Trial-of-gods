@@ -56,6 +56,7 @@ namespace BattleSystem
 
         public void Deactivate(Gold gold)
         {
+            if (gold == null) return;
             gold.gameObject.SetActive(false);
             gold.Deactivate();
             BattleStage.now.RemoveGold(gold);

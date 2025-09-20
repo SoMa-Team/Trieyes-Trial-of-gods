@@ -10,7 +10,6 @@ namespace StickerSystem
         public StickerType type;
         public int numberValue;
         public StatType statTypeValue;
-        public int lifeTime;
         
         public Sticker DeepCopy()
         {

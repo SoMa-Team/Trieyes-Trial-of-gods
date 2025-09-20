@@ -15,6 +15,7 @@ namespace BattleSystem
         /// <param name="targetPawn">피격당한 Pawn</param>
         public static void ProcessHit(Attack attack, Pawn targetPawn)
         {
+            Debug.Log($"Attack Type : {attack.attackData.type}");
             var result = AttackResult.Create(attack, targetPawn);
             
             if (!attack.attacker.isEnemy)

@@ -15,64 +15,46 @@ namespace CardActions
     /// </summary>
     public class Card1001_GenericPositiveOnlyOnBattleStart : CardAction
     {
-        private readonly bool isMultiplicative;
         private readonly int pairCount;
 
-        /// <param name="numPairs">몇 쌍의 (스탯, 값) 세트인지 (ex. 1, 2, 3, ...)</param>
-        /// <param name="isMultiplicative">곱연산 여부(기본 true, false면 합연산)</param>
-        public Card1001_GenericPositiveOnlyOnBattleStart(int numPairs, bool isMultiplicative = true)
+        // 모든 (스탯, 값) 쌍에 대해 값 파라미터의 '기본' Kind를 지정 (스티커가 있으면 덮어씀)
+        public Card1001_GenericPositiveOnlyOnBattleStart(int numPairs, ParamKind numericKindDefault = ParamKind.Percent)
         {
-            this.isMultiplicative = isMultiplicative;
-            this.pairCount = numPairs;
+            if (numericKindDefault == ParamKind.StatType)
+                throw new ArgumentException("numericKindDefault cannot be StatType.");
+
+            pairCount = numPairs;
             actionParams = new List<ActionParam>();
 
             for (int i = 0; i < numPairs; i++)
             {
-                int statIdx = i * 2;
+                int statIdx  = i * 2;
                 int valueIdx = i * 2 + 1;
-                // [0] 스탯 타입
+
                 actionParams.Add(ActionParamFactory.Create(ParamKind.StatType, card =>
-                    StatTypeTransformer.KoreanToStatType(card.baseParams[statIdx])
-                ));
-                // [1] 수치(레벨 곱 적용)
-                actionParams.Add(ActionParamFactory.Create(ParamKind.Number, card =>
+                    StatTypeTransformer.KoreanToStatType(card.baseParams[statIdx])));
+
+                actionParams.Add(ActionParamFactory.Create(numericKindDefault, card =>
                 {
                     int baseValue = Parser.ParseStrToInt(card.baseParams[valueIdx]);
-                    return baseValue * card.cardEnhancement.level.Value;
+                    return baseValue * card.cardEnhancement.level.Value; // 기본값은 레벨 스케일
                 }));
             }
         }
 
         public override bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
-            if (owner == null || deck == null)
+            if (eventType != Utils.EventType.OnBattleSceneChange) return false;
+            if (owner == null || deck == null) return false;
+
+            for (int i = 0; i < pairCount; i++)
             {
-                Debug.LogWarning($"[GenericStatBuffOnBattleStartAction] owner 또는 deck이 정의되지 않았습니다.");
-                return false;
+                StatType stat = (StatType)GetEffectiveParam(i * 2);
+                var (val, op) = GetBuffFromParamPreferSticker(i * 2 + 1);
+                owner.statSheet[stat].AddBuff(new StatModifier(val, op));
             }
-
-            if (eventType == Utils.EventType.OnBattleSceneChange)
-            {
-                if (owner == null || deck == null)
-                {
-                    Debug.LogWarning("[GenericStatBuffOnBattleStartAction] owner 또는 deck이 정의되지 않았습니다.");
-                    return false;
-                }
-                for (int i = 0; i < pairCount; i++)
-                {
-                    // StatType과 Value를 각각 치환 적용
-                    var statType = (StatType)GetEffectiveParam(i * 2);
-                    int value = Convert.ToInt32(GetEffectiveParam(i * 2 + 1));
-
-                    BuffOperationType op = isMultiplicative ? BuffOperationType.Multiplicative : BuffOperationType.Additive;
-                    owner.statSheet[statType].AddBuff(new StatModifier(value, op));
-
-                    string opStr = isMultiplicative ? "Multiplicative(곱연산)" : "Additive(합연산)";
-                    Debug.Log($"[GenericStatBuff] {statType} {(isMultiplicative ? "×" : "+")}{value} ({opStr}), 현재값: {owner.statSheet[statType].Value}");
-                }
-                return true;
-            }
-            return false;
+            return true;
         }
     }
+
 }

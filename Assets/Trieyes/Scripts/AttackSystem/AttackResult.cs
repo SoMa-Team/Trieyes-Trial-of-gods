@@ -24,6 +24,7 @@ namespace AttackSystem
         public int totalDamage;
         public int attackerHealed;
         public int attackerReflectDamage;
+        public Type type;
         
         public static AttackResult Create(Attack attack, Pawn target)
         {
@@ -32,7 +33,8 @@ namespace AttackSystem
                 damageType = DamageType.DamagedByProjectile,
                 attack = attack,
                 attacker = attack.attacker,
-                target = target
+                target = target,
+                type = attack.attackData.type,
             };
 
             var attackStat = attack.statSheet;
@@ -49,7 +51,8 @@ namespace AttackSystem
                 damageType = DamageType.DamagedByEnemyCollision,
                 attack = null,
                 attacker = attacker,
-                target = target
+                target = target,
+                type = Type.Attack,
             };
 
             var attackStat = attacker.statSheet;
@@ -63,21 +66,28 @@ namespace AttackSystem
         private static AttackResult calcAttackResultByStatSheet(AttackResult attackResult, StatSheet attackStat,
             StatSheet targetStat)
         {
+            Debug.Log($"AttackPower: {attackStat.Get(StatType.AttackPower)}, MagicPower: {attackStat.Get(StatType.MagicPower)}");
+            if(attackResult.type==Type.Attack) Debug.Log($"Type is Attack");
+            else Debug.Log($"Type is Magic");
             attackResult.isEvaded = Random.Range(0f, 100f) < targetStat.Get(StatType.Evasion);
+            if (attackResult.isEvaded) return attackResult;
 
-            if (attackResult.isEvaded)
-                return attackResult;
-            
             attackResult.isCritical = Random.Range(0f, 100f) < attackStat.Get(StatType.CriticalRate);
-            
-            var attackDamageIncreasement = attackResult.attack?.getRelicStat(RelicStatType.DamageIncreasement) ?? 0;
-            var pureDamage = attackStat.Get(StatType.AttackPower) * (attackResult.attack?.attackData?.damageMultiplier ?? 1) *
-                (100 + attackDamageIncreasement) / 100;
-            var baseDamage = (int)(pureDamage / (1 + 8.9e-6 * targetStat.Get(StatType.Defense)));
-            
-            attackResult.totalDamage = attackResult.isCritical ? baseDamage * (100 + (int)attackStat.Get(StatType.CriticalRate)) / 100 : baseDamage;
-            attackResult.attackerHealed = (int)(attackResult.totalDamage * attackStat.Get(StatType.LifeSteal) / 100);
-            attackResult.attackerReflectDamage = (int)(attackResult.totalDamage * targetStat.Get(StatType.Reflect) / 100);
+
+            var attackDamageBonus = attackResult.attack?.getRelicStat(RelicStatType.DamageIncreasement) ?? 0;
+            var pureDamage =
+                (attackResult.type == Type.Attack ? attackStat.Get(StatType.AttackPower) : attackStat.Get(StatType.MagicPower))
+                * (attackResult.attack?.attackData?.damageMultiplier ?? 1f)
+                * (100f + attackDamageBonus) / 100f;
+
+            var baseDamage = (int)(pureDamage / (1f + 8.9e-6f * targetStat.Get(StatType.Defense)));
+
+            attackResult.totalDamage = attackResult.isCritical
+                ? baseDamage * (100 + (int)attackStat.Get(StatType.CriticalRate)) / 100
+                : baseDamage;
+
+            attackResult.attackerHealed = (int)(attackResult.totalDamage * attackStat.Get(StatType.LifeSteal) / 100f);
+            attackResult.attackerReflectDamage = (int)(attackResult.totalDamage * targetStat.Get(StatType.Reflect) / 100f);
             return attackResult;
         }
     }

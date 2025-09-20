@@ -202,19 +202,13 @@ MonoBehaviour:
   maxHp: 0
   currentHp: 0
   rb: {fileID: 7661104193838161178}
-  Collider: {fileID: 9097963647980026422}
   Controller: {fileID: 0}
   Animator: {fileID: 0}
-  statPresetSO: {fileID: 11400000, guid: ef54bad6cea704c268643701179ece6a, type: 2}
-  lastestDirection: {x: 0, y: 0}
+  statPresetSO: {fileID: 11400000, guid: 2e6a074a25f194ef7b1ec86363ccd257, type: 2}
+  objectID: 0
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 11400000, guid: fd6de742b896fd743add08f2cd3f7875, type: 2}
-  skillAttack1Cooldown: 11
-  lastSkillAttack1Time: -999
   skill2Attack: {fileID: 0}
-  skillAttack2Cooldown: 0
-  lastSkillAttack2Time: -999
-  objectID: 0
   dropGold: 0
   playerTarget: {fileID: 0}
   dashRange: 5
@@ -231,9 +225,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 6018798884900384306}
-  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
-  minFollowDistance: 0.1
-  minRunDistance: 1
   enemyType: 4

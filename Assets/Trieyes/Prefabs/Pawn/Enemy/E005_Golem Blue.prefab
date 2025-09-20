@@ -176,7 +176,7 @@ MonoBehaviour:
   rb: {fileID: 2880572157098302278}
   Controller: {fileID: -1423779297242688908}
   Animator: {fileID: 356517923465032212}
-  statPresetSO: {fileID: 11400000, guid: 61f39897e20fa4e8f85c18bdc68a6c3e, type: 2}
+  statPresetSO: {fileID: 11400000, guid: 1ab43c99d3f5d4e588c506e7092a1d0e, type: 2}
   objectID: 0
   basicAttack: {fileID: 11400000, guid: 506c3c065d1d04b6a9719fb29db70688, type: 2}
   skill1Attack: {fileID: 0}
@@ -200,8 +200,6 @@ MonoBehaviour:
   owner: {fileID: -6176388359033023032}
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
-  minFollowDistance: 0
-  minRunDistance: 1
   enemyType: 0
 --- !u!50 &2880572157098302278
 Rigidbody2D:

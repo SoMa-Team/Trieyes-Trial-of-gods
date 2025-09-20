@@ -149,6 +149,7 @@ namespace UISystem
         private static readonly StatType[] applyStatLists =
         {
             StatType.AttackPower,
+            StatType.MagicPower,
             StatType.CriticalRate,
             StatType.CriticalDamage,
             StatType.AttackSpeed,
@@ -156,7 +157,6 @@ namespace UISystem
             StatType.Reflect,
             StatType.Health,
             StatType.Defense,
-            StatType.HealthRegen,
             StatType.LifeSteal,
             StatType.Evasion,
             StatType.MoveSpeed,

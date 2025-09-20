@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using CharacterSystem;
 using CardViews;
 using GameFramework;
+using GamePlayer;
+using TMPro;
 
 namespace NodeStage
 {
@@ -44,6 +46,25 @@ namespace NodeStage
 
         protected virtual void Deactivate()
         {
+            // 해당 스테이지가 Start 스테이지가 아닌 경우
+            if (stageType != StageType.StartCard && stageType != StageType.StartRelic)
+            {
+                if (InGameManager.Instance.bossStageLeftCount > 0)
+                {
+                    InGameManager.Instance.GetCurrentDifficulty().RoundCountUp();
+                    InGameManager.Instance.bossStageLeftCount--;
+                }
+                else
+                {
+                    InGameManager.Instance.SetNextStageNodeCount();
+                    InGameManager.Instance.GetCurrentDifficulty().LevelCountUp();
+                }
+            }
+            else
+            {
+                InGameManager.Instance.GetCurrentDifficulty().GameStart();
+            }
+
             OnDeactivated();
             gameObject.SetActive(false);
         }

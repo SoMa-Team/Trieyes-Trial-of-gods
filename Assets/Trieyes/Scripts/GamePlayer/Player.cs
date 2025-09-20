@@ -36,6 +36,7 @@ namespace GamePlayer
         public static Player Instance { get; private set; }
 
         public int mainCharacterId;
+
         public Card selectedCard;
         public AchievementData selectedRelic;
 
@@ -51,6 +52,7 @@ namespace GamePlayer
                 return;
             }
 
+            
             DontDestroyOnLoad(this);
             InitializeAchievement();
         }
@@ -68,6 +70,7 @@ namespace GamePlayer
                 achievement = new Achievement();
             }
         }
+
 
         // F12 버튼 누르면 개발자 UI 표시
         private void Update()

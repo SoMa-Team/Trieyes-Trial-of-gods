@@ -109,6 +109,12 @@ namespace CharacterSystem
                 
                 Debug.Log($"<color=yellow>{gameObject.name} dropped {dropGold} gold to {result.attacker.gameObject.name}</color>");
                 Debug.Log($"Player Gold: {result.attacker.gold}");
+
+                // BattleStage가 BreakThrough 모드인 경우
+                if (BattleStage.now is BattleBreakThroughStage)
+                {
+                    (BattleStage.now as BattleBreakThroughStage).BreakThroughCountDown();
+                }
             }
         }
     }

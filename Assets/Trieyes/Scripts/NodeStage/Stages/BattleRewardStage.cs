@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using CardSystem;
 using CardViews;
+using GamePlayer;
 
 namespace NodeStage
 {

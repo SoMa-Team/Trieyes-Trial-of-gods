@@ -131,13 +131,13 @@ namespace UISystem
             SetSkill1CoolDown(character.Skill1CoolDownRate);
             SetSkill2CoolDown(character.Skill2CoolDownRate);
 
-            if (BattleStage.now is BattleBreakThrough)
+            if (BattleStage.now is BattleBreakThroughStage)
             {
                 StageRemainTimeText.text = $"-s";
-                var breakThrough = BattleStage.now as BattleBreakThrough;
+                var breakThrough = BattleStage.now as BattleBreakThroughStage;
                 EnemyRemainCountText.text = $"{breakThrough.GetBreakThroughCount()}";
             }
-            if (BattleStage.now is BattleTimer)
+            if (BattleStage.now is BattleTimerStage)
             {
                 EnemyRemainCountText.text = $"0";
                 float elapsedTime = BattleStage.now.elapsedTime;

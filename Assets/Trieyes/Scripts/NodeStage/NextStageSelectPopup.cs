@@ -170,12 +170,12 @@ namespace NodeStage
                         // EliteNodeRate 테스트
                         if (rng.NextDouble() < EliteNodeRate && !bisEliteAlreadySelected)
                         {
-                            selectedStage = GetFirstInfoOfType(StageType.BattleBreakThrough);
+                            selectedStage = GetFirstInfoOfType(StageType.BattleBreakThroughStage);
                             bisEliteAlreadySelected = true;
                         }
                         else
                         {
-                            selectedStage = GetFirstInfoOfType(StageType.BattleTimer);
+                            selectedStage = GetFirstInfoOfType(StageType.BattleTimerStage);
                         }
                     }
                     else

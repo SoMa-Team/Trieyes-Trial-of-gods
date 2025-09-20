@@ -70,6 +70,11 @@ namespace CharacterSystem
                 sequence.Insert(0.01f * i, DropFactory.Instance.AnimationDrop(gold));
                 BattleStage.now.AttachGold(gold);
             }
+
+            if (BattleStage.now is BattleBossStage)
+            {
+                (BattleStage.now as BattleBossStage).isBossDead = true;
+            }
             
             sequence.OnComplete(() =>
             {

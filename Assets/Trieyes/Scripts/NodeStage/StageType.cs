@@ -4,9 +4,9 @@ namespace NodeStage
     {
         StartCard = 1,
         StartRelic = 2,
-        BattleTimer = 10,
-        BattleBreakThrough = 11,
-        BattleEscape = 12,
+        BattleTimerStage = 10,
+        BattleBreakThroughStage = 11,
+        BattleEscapeStage = 12,
         Elite = 13,
         Boss = 100,
         Shop = 1001,

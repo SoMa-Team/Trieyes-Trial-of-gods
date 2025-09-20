@@ -70,8 +70,6 @@ namespace BattleSystem
             
             Debug.Log("Deactivating battle stage.");
             isActivated = false;
-            View.gameObject.SetActive(false);
-
             difficulty = null; // difficulty를 null로 설정하여 Update에서 오류 방지
         }
 
@@ -289,11 +287,6 @@ namespace BattleSystem
         protected BattleStage()
         {
             Instance = (T)this;
-        }
-
-        ~BattleStage()
-        {
-            if (Instance == (T)this) Instance = null;
         }
     }
 } 

@@ -107,11 +107,11 @@ namespace BattleSystem
         {
             return battleMode switch
             {
-                BattleMode.Timer => new BattleTimer(),
-                BattleMode.BreakThrough => new BattleBreakThrough(),
-                BattleMode.Escape => new BattleEscape(),
-                BattleMode.Boss => new BattleBoss(),
-                _ => new BattleTimer() // 기본값
+                BattleMode.Timer => new BattleTimerStage(),
+                BattleMode.BreakThrough => new BattleBreakThroughStage(),
+                BattleMode.Escape => new BattleEscapeStage(),
+                BattleMode.Boss => new BattleBossStage(),
+                _ => new BattleTimerStage() // 기본값
             };
         }
         
@@ -124,14 +124,19 @@ namespace BattleSystem
         {
             BattleStage currentInstance = currentBattleMode switch
             {
-                BattleMode.Timer => BattleTimer.Instance,
-                BattleMode.BreakThrough => BattleBreakThrough.Instance,
-                BattleMode.Escape => BattleEscape.Instance,
-                BattleMode.Boss => BattleBoss.Instance,
+                BattleMode.Timer => BattleTimerStage.Instance,
+                BattleMode.BreakThrough => BattleBreakThroughStage.Instance,
+                BattleMode.Escape => BattleEscapeStage.Instance,
+                BattleMode.Boss => BattleBossStage.Instance,
                 _ => null // 기본값
             };
 
-            if (currentInstance is null || !currentInstance.isActivated)
+            if (currentInstance is null)
+            {
+                return null;
+            }
+            
+            if (!currentInstance.isActivated)
             {
                 return null;
             }
@@ -213,12 +218,13 @@ namespace BattleSystem
             }
             
             battleStage.spawnManager.Deactivate();
-            battleStage.Deactivate();
-
+            
             BattleOverlayCanvasController.Instance.Deactivate();
             BattleWorldCanvasController.Instance.Deactivate();
             DamageNumberViewFactory.Instance.OnBattleEnded();
             
+            // View.gameObject를 파괴하기 전에 battleStage.Deactivate() 호출
+            battleStage.Deactivate();
             Destroy(battleStage.View.gameObject);
             
             // BattleMode 초기화

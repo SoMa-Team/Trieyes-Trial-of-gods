@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace GameFramework
 {
@@ -11,7 +12,11 @@ namespace GameFramework
     public class Difficulty
     {
         public float battleLength = 60; // 초단위
-        public int EnemyID = 0;
+
+        private int[] enemyIDs = { 0, 1, 2, 3, 4 };
+
+        private const int BOSS_ENEMY_ID_START = 2;
+        public int EnemyID => getEnemyID();
         public int shopLevel = 1;
 
         private int LevelCount { get; set; }
@@ -50,7 +55,22 @@ namespace GameFramework
         public void LevelCountUp()
         {
             LevelCount++;
+            RoundCount = 0;
             UpdateDifficultyByLevelCount();
+        }
+
+        private int getEnemyID()
+        {
+            if (spawnMode == SpawnMode.Once)
+            {
+                // BOSS_ENEMY_ID_START이상 enemyIDs.Length 미만 사이의 랜덤 숫자 생성
+                return enemyIDs[Random.Range(BOSS_ENEMY_ID_START, enemyIDs.Length)];
+            }
+            else
+            {
+                // 0 이상 BOSS_ENEMY_ID_START 미만 사이의 랜덤 숫자 생성
+                return enemyIDs[Random.Range(0, BOSS_ENEMY_ID_START)];
+            }
         }
 
         private void UpdateDifficultyByLevelCount()

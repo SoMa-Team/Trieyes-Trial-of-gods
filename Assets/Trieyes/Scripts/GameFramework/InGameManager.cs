@@ -3,9 +3,6 @@ using CharacterSystem;
 using GamePlayer;
 using NodeStage;
 using BattleSystem;
-using Utils;
-using UISystem;
-using UnityEngine.SceneManagement;
 
 namespace GameFramework
 {
@@ -71,13 +68,13 @@ namespace GameFramework
                 case StageType.StartRelic:
                     StartRelicStage.Instance.Activate(mainCharacter);
                     break;
-                case StageType.BattleTimer:
+                case StageType.BattleTimerStage:
                     BattleStageFactory.Instance.Create(mainCharacter, BattleMode.Timer);
                     break;
-                case StageType.BattleBreakThrough:
+                case StageType.BattleBreakThroughStage:
                     BattleStageFactory.Instance.Create(mainCharacter, BattleMode.BreakThrough);
                     break;
-                case StageType.BattleEscape:
+                case StageType.BattleEscapeStage:
                     BattleStageFactory.Instance.Create(mainCharacter, BattleMode.Escape);
                     break;
                 case StageType.Boss:

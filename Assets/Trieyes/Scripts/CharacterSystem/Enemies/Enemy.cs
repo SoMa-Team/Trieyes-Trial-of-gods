@@ -111,9 +111,9 @@ namespace CharacterSystem
                 Debug.Log($"Player Gold: {result.attacker.gold}");
 
                 // BattleStage가 BreakThrough 모드인 경우
-                if (BattleStage.now is BattleBreakThrough)
+                if (BattleStage.now is BattleBreakThroughStage)
                 {
-                    (BattleStage.now as BattleBreakThrough).BreakThroughCountDown();
+                    (BattleStage.now as BattleBreakThroughStage).BreakThroughCountDown();
                 }
             }
         }

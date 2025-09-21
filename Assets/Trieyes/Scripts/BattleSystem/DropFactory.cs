@@ -106,10 +106,12 @@ namespace BattleSystem
                 position.x = Mathf.Lerp(startPosition.x, targetPosition.x, t);
                 position.y = Mathf.Lerp(startPosition.y, targetPosition.y, t);
                 position.y += 5 * t * (1 - t);
-                gold.transform.position = position;
+                if (gold != null)
+                    gold.transform.position = position;
             }).OnComplete(() =>
             {
-                gold.isActive = true;
+                if (gold != null)
+                    gold.isActive = true;
             });
         }
     }

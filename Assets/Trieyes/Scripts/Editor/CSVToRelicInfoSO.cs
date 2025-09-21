@@ -34,6 +34,7 @@ public static class CSVToRelicInfoSOImporter
         int idx_description = Array.IndexOf(headers, "description");
         int idx_attackComponentIDs = Array.IndexOf(headers, "attackComponentIDs");
         int idx_filterAttackIDs = Array.IndexOf(headers, "filterAttackIDs");
+        int idx_type = Array.IndexOf(headers, "type");
 
         for (int i = 1; i < lines.Length; i++)
         {
@@ -64,6 +65,15 @@ public static class CSVToRelicInfoSOImporter
 
             // name
             relic.name = values[idx_name];
+            
+            // type
+            relic.relicType = values[idx_type] switch
+            {
+                "normal" => RelicType.Normal,
+                "boss" => RelicType.Boss,
+                "curse" => RelicType.Curse,
+                _ => null
+            };
 
             // icon
             Addressables.LoadAssetAsync<Sprite>($"Assets/Trieyes/Addressable/Icons/Relics/{values[idx_icon]}")

@@ -24,6 +24,7 @@ namespace RelicSystem
                 Debug.LogError($"Relic ID: {relicID} not found");
             }
             relic.relicID = relicID;
+            relic.relicType = data.relicType;
             relic.name = data.name;
             relic.icon = data.icon;
             relic.description = data.description;
@@ -37,6 +38,11 @@ namespace RelicSystem
                 103 => new Relic0103_Stop(),
                 104 => new Relic0104_HeroSword(),
                 105 => new Relic0105_HeroShield(),
+                106 => new Relic0106_SnipersEye(),
+                107 => new Relic0107_FlagOfBattleField(),
+                108 => new Relic0108_MirrorOfCurse(),
+                109 => new Relic0109_GoldenLeaf(),
+                110 => new Relic0110_JudgesSword(),
                 _ => null
             };
             relic.relicAction?.AttachTo(relic);

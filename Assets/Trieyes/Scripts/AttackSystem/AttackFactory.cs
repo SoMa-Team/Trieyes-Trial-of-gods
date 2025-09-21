@@ -231,5 +231,15 @@ namespace AttackSystem
             //     _ => null
             // };
         }
+
+        public Attack CreateByID(int id, Pawn attacker, [CanBeNull] Attack parent, Vector2 direction,
+            [CanBeNull] Dictionary<RelicStatType, int> baseRelicStat = null,
+            bool autoDirectional = false)
+        {
+            var attackData = ScriptableObject.CreateInstance<AttackData>();
+            attackData.attackId = id;
+            attackData.attackName = $"CreateByID({id})";
+            return Create(attackData, attacker, parent, direction, baseRelicStat, autoDirectional);
+        }
     }
 }

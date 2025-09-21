@@ -14,6 +14,11 @@ namespace RelicSystem.RelicActions
             switch (eventType)
             {
                 case EventType.OnRelicAdded:
+                    if (param is not Relic relic)
+                        return false;
+                    if (relic != _relic)
+                        return false;
+                    
                     OnRelicAdded();
                     return true;
             }

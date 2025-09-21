@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using GamePlayer;
 using OutGame;
 using AttackSystem;
+using Random = UnityEngine.Random;
 
 namespace NodeStage
 {
@@ -74,7 +76,7 @@ namespace NodeStage
 
         private List<IAchievementObject> GetAvailableSkills()
         {
-            var allSkills = jsonToAchivement.GetAchievementsByType(JsonToAchivement.SKILL_TYPE);
+            var allSkills = jsonToAchivement.GetUnlockedAchievementByIdByType(JsonToAchivement.SKILL_TYPE, Player.Instance.mainCharacterId);
             var availableSkills = new List<IAchievementObject>();
 
             foreach (var skill in allSkills)
@@ -94,7 +96,7 @@ namespace NodeStage
             var selectedSkills = new List<IAchievementObject>();
             var tempList = new List<IAchievementObject>(availableSkills);
 
-            for (int i = 0; i < count && tempList.Count > 0; i++)
+            for (int i = 0; i < count && Math.Min(count, tempList.Count) > 0; i++)
             {
                 int randomIndex = Random.Range(0, tempList.Count);
                 selectedSkills.Add(tempList[randomIndex]);

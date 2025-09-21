@@ -148,10 +148,10 @@ namespace CardSystem
                         case StickerType.StatType:
                             result.Add(StatTypeTransformer.StatTypeToKorean(sticker.statTypeValue));
                             break;
-                        case StickerType.Number:
+                        case StickerType.Add:
                             result.Add(sticker.numberValue.ToString());
                             break;
-                        case StickerType.Probability:
+                        case StickerType.Percent:
                             result.Add(FormatProbability(sticker.numberValue));
                             break;
                         default:
@@ -175,10 +175,11 @@ namespace CardSystem
                             case ParamKind.StatType:
                                 result.Add(StatTypeTransformer.StatTypeToKorean((StatType)value));
                                 break;
-                            case ParamKind.Number:
+                            case ParamKind.Add:
                                 result.Add(value.ToString());
                                 break;
-                            case ParamKind.Probability:
+                            case ParamKind.Percent:
+                                Debug.Log($"value: {value}");
                                 result.Add(FormatProbability(value));
                                 break;
                         }
@@ -237,43 +238,17 @@ namespace CardSystem
 
 
             var paramKind = cardAction.GetParamDef(paramIdx).kind;
-            bool typeMatch =
-                (paramKind == ParamKind.Number && sticker.type == StickerType.Number) ||
+            bool match =
                 (paramKind == ParamKind.StatType && sticker.type == StickerType.StatType) ||
-                (paramKind == ParamKind.Probability && sticker.type == StickerType.Probability);
+                (paramKind != ParamKind.StatType && (sticker.type == StickerType.Add || sticker.type == StickerType.Percent));
 
 
-            if (!typeMatch) return false;
+            if (!match) return false;
 
 
             stickerOverrides[paramIdx] = sticker.DeepCopy();
             RefreshParamCharRanges();
             return true;
-        }
-
-        /// <summary>
-        /// descriptionText의 특정 글자 인덱스에 스티커를 적용
-        /// </summary>
-        public bool TryApplyStickerOverrideAtCharIndex(int paramCharIndex, Sticker sticker)
-        {
-            if (paramCharRanges == null || paramCharRanges.Count == 0)
-                return false;
-            // paramCharIndex(글자 인덱스)가 어느 파라미터 범위에 속하는지 탐색
-            int baseParamIdx = FindParamIndexByCharIndex(paramCharIndex);
-            if (baseParamIdx == -1) return false;
-
-            return TryApplyStickerOverrideAtParamIndex(baseParamIdx, sticker);
-        }
-        
-        public bool RemoveStickerOverrideAtParamIndex(int paramIdx)
-        {
-            if (stickerOverrides == null) return false;
-            if (stickerOverrides.Remove(paramIdx))
-            {
-                RefreshParamCharRanges();
-                return true;
-            }
-            return false;
         }
         
         public int RemoveStickerOverridesByInstance(Sticker sticker)

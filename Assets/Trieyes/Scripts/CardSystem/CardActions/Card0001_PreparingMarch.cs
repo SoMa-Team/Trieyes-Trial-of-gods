@@ -5,7 +5,7 @@ namespace CardActions
         /// <summary>
         /// desc: 전투가 시작할 때, 공격력을 10 증가시킵니다.
         /// </summary>
-        public Card0001_PreparingMarch() : base(1, false)
+        public Card0001_PreparingMarch() : base(1, ParamKind.Add)
         {
             
         }

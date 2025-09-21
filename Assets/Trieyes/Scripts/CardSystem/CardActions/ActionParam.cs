@@ -3,7 +3,12 @@ using System;
 
 namespace CardActions
 {
-    public enum ParamKind {Number,StatType,Probability}
+    public enum ParamKind
+    {
+        StatType,
+        Add,
+        Percent,
+    }
     public class ActionParam
     {
         public ParamKind kind;

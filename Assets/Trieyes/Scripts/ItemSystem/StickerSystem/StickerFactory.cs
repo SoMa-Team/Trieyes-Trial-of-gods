@@ -6,64 +6,57 @@ namespace StickerSystem
 {
     public static class StickerFactory
     {
-        public static Sticker CreateNumberSticker(int value, int lifeTime = 1)
+        private static readonly StatType[] StickerStats = new[]
         {
-            var sticker = new Sticker();
-            ActivateNumberSticker(sticker, value, lifeTime);
-            return sticker;
-        }
-
-        public static Sticker CreateStatTypeSticker(StatType statType, int lifeTime = 1)
+            StatType.AttackPower,
+            StatType.MagicPower,
+            StatType.Health,
+            StatType.CriticalDamage,
+            StatType.Defense,
+            StatType.AttackSpeed,
+            StatType.SkillCooldownReduction,
+        };
+        public static Sticker CreateAddSticker(int value)
         {
-            var sticker = new Sticker();
-            ActivateStatTypeSticker(sticker, statType, lifeTime);
-            return sticker;
+            var s = new Sticker();
+            s.type = StickerType.Add;
+            s.numberValue = value;
+            return s;
         }
 
-        public static Sticker CreateProbabilitySticker(int probability, int lifeTime = 1)
-        {   
-            var sticker = new Sticker();
-            ActivateProbabilitySticker(sticker, probability, lifeTime);
-            return sticker;
-        }
-
-        private static void ActivateNumberSticker(Sticker sticker, int value, int lifeTime)
+        public static Sticker CreatePercentSticker(int percent)
         {
-            sticker.type = StickerType.Number;
-            sticker.numberValue = value;
-            sticker.lifeTime = lifeTime;
+            var s = new Sticker();
+            s.type = StickerType.Percent;
+            s.numberValue = percent; // 100 => +100%
+            return s;
         }
 
-        private static void ActivateProbabilitySticker(Sticker sticker, int value, int lifeTime)
+        public static Sticker CreateStatTypeSticker(StatType statType)
         {
-            sticker.type = StickerType.Probability;
-            sticker.numberValue = value;
-            sticker.lifeTime = lifeTime;
+            var s = new Sticker();
+            s.type = StickerType.StatType;
+            s.statTypeValue = statType;
+            return s;
         }
 
-        private static void ActivateStatTypeSticker(Sticker sticker, StatType statType, int lifeTime)
-        {
-            sticker.type = StickerType.StatType;
-            sticker.statTypeValue = statType;
-            sticker.lifeTime = lifeTime;
-        }
-
-        public static Sticker CreateRandomSticker(int minVal = 1, int maxVal = 101, int minLifeTime = 1, int maxLifeTime = 10, int minProb = 1, int maxProb = 40)
+        public static Sticker CreateRandomSticker(
+            int minVal = 1, int maxVal = 100,
+            int minPercent = 1, int maxPercent = 100)
         {
             var types = System.Enum.GetValues(typeof(StickerType));
-            var type = (StickerType)types.GetValue(Random.Range(1, types.Length));
+            var type = (StickerType)types.GetValue(UnityEngine.Random.Range(1, types.Length));
             switch (type)
             {
-                case StickerType.Number:
-                    return CreateNumberSticker(Random.Range(minVal, maxVal), Random.Range(minLifeTime, maxLifeTime));
-                case StickerType.Probability:
-                    return CreateProbabilitySticker(Random.Range(minProb, maxProb), Random.Range(minLifeTime, maxLifeTime));
+                case StickerType.Add:
+                    return CreateAddSticker(UnityEngine.Random.Range(minVal, maxVal));
+                case StickerType.Percent:
+                    return CreatePercentSticker(UnityEngine.Random.Range(minPercent, maxPercent));
                 case StickerType.StatType:
-                    var statValues = System.Enum.GetValues(typeof(StatType));
-                    var stat = (StatType)statValues.GetValue(Random.Range(0, statValues.Length));
-                    return CreateStatTypeSticker((StatType)stat, Random.Range(minLifeTime, maxLifeTime));
+                    var stat = StickerStats[UnityEngine.Random.Range(0, StickerStats.Length)];
+                    return CreateStatTypeSticker(stat);
                 default:
-                    Debug.LogError("Unknown sticker type");
+                    UnityEngine.Debug.LogError("Unknown sticker type");
                     return null;
             }
         }

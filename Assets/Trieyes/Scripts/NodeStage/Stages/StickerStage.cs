@@ -48,7 +48,7 @@ namespace NodeStage
             for (int i = 0; i < STICKER_COUNT; i++)
             {
                 var stickerSlot = Instantiate(stickerPrefab, stickerContainer);
-                stickerSlot.SetSticker();
+                stickerSlot.SetRandomSticker();
                 
                 var btn = stickerSlot.gameObject.AddComponent<Button>();
                 btn.onClick.AddListener(() => OnStickerClicked(stickerSlot.GetCurrentSticker()));

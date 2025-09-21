@@ -21,17 +21,23 @@ public class RAC3002_GuidedMissile : AttackComponent
     {
         base.Activate(attack, direction);
 
+        SetTarget();
+        
+        trailRenderer.Clear();
+    }
+
+    private bool SetTarget()
+    {
         var enemies =
             BattleStage.now.GetEnemiesInCircleRangeOrderByDistance(attack.transform.position, attackRadius, 1);
         if (enemies.Count == 0)
         {
             AttackFactory.Instance.Deactivate(attack);
-            return;
+            return false;
         }
 
         target = enemies[0];
-        
-        trailRenderer.Clear();
+        return true;
     }
 
     public override void Deactivate()
@@ -45,6 +51,12 @@ public class RAC3002_GuidedMissile : AttackComponent
     {
         base.Update();
 
+        if (target == null && !SetTarget())
+        {
+            AttackFactory.Instance.Deactivate(attack);
+            return;
+        }
+        
         var distance = Vector2.Distance(target.transform.position, attack.transform.position);
         if (distance < explodeRadius)
         {

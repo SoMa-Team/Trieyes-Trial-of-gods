@@ -593,6 +593,7 @@ namespace CharacterSystem
         public void CalculateBasicAttackCooldown()
         {
             attackCooldown = 200f / (100 + GetStatValue(StatType.AttackSpeed));
+            //TODO: 공속 관련 VFX 적용
         }
 
         /// <summary>

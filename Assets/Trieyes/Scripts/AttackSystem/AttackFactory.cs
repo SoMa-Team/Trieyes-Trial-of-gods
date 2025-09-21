@@ -97,8 +97,6 @@ namespace AttackSystem
             bool autoDirectional = false
             )
         {
-            // Debug.Log("In Attack Factory Create");
-            // Debug.Log($"attackType : {attackData.type}");
             // attackData 변조를 막기 위한 Copy 생성
             attackData = attackData.Copy();
 

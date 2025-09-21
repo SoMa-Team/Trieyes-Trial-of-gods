@@ -54,7 +54,7 @@ public class RAC3002_GuidedMissile : AttackComponent
             foreach (var targetCollider in colliders)
             {
                 if (!targetCollider.CompareTag("Enemy"))
-                    return;
+                    continue;
                 
                 var enemy = targetCollider.gameObject.GetComponent<Enemy>();
                 DamageProcessor.ProcessHit(attack, enemy);

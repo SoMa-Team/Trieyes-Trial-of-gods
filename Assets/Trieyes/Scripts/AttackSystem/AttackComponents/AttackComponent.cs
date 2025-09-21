@@ -153,12 +153,12 @@ namespace AttackComponents
         protected virtual void SetVFXSpeed(GameObject vfx, float speed)
         {
             // ParticleSystem의 Simulation Speed 설정
-            ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
-            foreach (var ps in particleSystems)
-            {
-                var main = ps.main;
-                main.simulationSpeed = speed;
-            }
+            // ParticleSystem[] particleSystems = vfx.GetComponentsInChildren<ParticleSystem>();
+            // foreach (var ps in particleSystems)
+            // {
+            //     var main = ps.main;
+            //     main.simulationSpeed = speed;
+            // }
         }
 
         /// <summary>

@@ -70,15 +70,14 @@ namespace CharacterSystem
                 sequence.Insert(0.01f * i, DropFactory.Instance.AnimationDrop(gold));
                 BattleStage.now.AttachGold(gold);
             }
-
-            if (BattleStage.now is BattleBossStage)
-            {
-                (BattleStage.now as BattleBossStage).isBossDead = true;
-            }
             
             sequence.OnComplete(() =>
             {
                 EnemyFactory.Instance.Deactivate(this);
+                if (BattleStage.now is BattleBossStage)
+                {
+                    Tween.Delay(10f).OnComplete(() => BattleStage.now.OnBattleClear());
+                }
             });
         }
     }

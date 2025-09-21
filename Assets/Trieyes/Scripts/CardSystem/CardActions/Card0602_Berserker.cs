@@ -10,13 +10,12 @@ namespace CardActions
 {
     public class Card0602_Berserker : CardAction
     {
-        /// <summary>
-        /// desc: 피해를 입을 때마다, 해당 전투 동안 공격력이/가 1 상승합니다.
-        /// </summary>
-        private const int upStatTypeIdx = 0;
+        private const int upStatTypeIdx  = 0;
         private const int upValueCoefIdx = 1;
 
-        private StatModifier stat1Modifier;
+        private StatModifier stat1Modifier;   // 같은 인스턴스 재사용(중첩 방지)
+        private int perHitValue;              // 타격당 증가치(스티커/레벨 반영 후 고정)
+        private BuffOperationType op;         // Additive 또는 Multiplicative
 
         public Card0602_Berserker()
         {
@@ -24,33 +23,44 @@ namespace CardActions
             {
                 ActionParamFactory.Create(ParamKind.StatType, card =>
                     StatTypeTransformer.KoreanToStatType(card.baseParams[upStatTypeIdx])),
-                ActionParamFactory.Create(ParamKind.Number, card =>
+
+                // 기본은 Add(정수 +N). Percent 스티커 붙이면 실행 시 자동으로 곱연산으로 전환됨.
+                ActionParamFactory.Create(ParamKind.Add, card =>
                 {
                     int baseValue = Parser.ParseStrToInt(card.baseParams[upValueCoefIdx]);
                     return baseValue * card.cardEnhancement.level.Value;
                 }),
             };
         }
+
         public override bool OnEvent(Pawn owner, Deck deck, Utils.EventType eventType, object param)
         {
             if (owner == null || deck == null)
             {
-                Debug.LogWarning($"[GenericStatBuffOnBattleStartAction] owner 또는 deck이 정의되지 않았습니다.");
+                Debug.LogWarning("[Berserker] owner 또는 deck이 정의되지 않았습니다.");
                 return false;
             }
 
             if (eventType == Utils.EventType.OnBattleSceneChange)
             {
-                stat1Modifier = new StatModifier(0, BuffOperationType.Additive, false);
+                // 스티커가 있으면 그 타입(Add/Percent) 우선, 없으면 ParamKind(Add)
+                (perHitValue, op) = GetBuffFromParamPreferSticker(upValueCoefIdx);
+
+                // 같은 StatModifier 인스턴스를 재사용하여 누적/중첩 관리
+                // 전투 동안 지속(영구 취급), canStack: false 로 중첩 방지
+                stat1Modifier = new StatModifier(0, op, canStack: false, duration: -1f);
+
                 return true;
             }
 
             if (eventType == Utils.EventType.OnDamaged)
             {
                 var statType = (StatType)GetEffectiveParam(upStatTypeIdx);
-                
-                stat1Modifier.value+=(int)GetEffectiveParam(upValueCoefIdx);
-                
+
+                // 누적치 갱신 (+N 또는 +N%를 누적)
+                stat1Modifier.value += perHitValue;
+
+                // 같은 인스턴스를 계속 추가 → 내부에서 중복 허용 안 하도록 구현되어 있으면 갱신 효과
                 owner.statSheet[statType].AddBuff(stat1Modifier);
                 return true;
             }

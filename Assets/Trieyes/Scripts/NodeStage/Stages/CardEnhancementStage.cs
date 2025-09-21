@@ -26,6 +26,16 @@ namespace NodeStage
 
             btnEnhance?.onClick.AddListener(() => OpenDeckFor(Mode.Enhance));
             btnSwap?.onClick.AddListener(() => OpenDeckFor(Mode.Swap));
+
+            if (mainCharacter.deck.cards.Count < 2)
+            {
+                btnSwap.interactable = false;
+            }
+
+            if (mainCharacter.deck.cards.Count < 1)
+            {
+                btnEnhance.interactable = false;
+            }
         }
 
         private void OpenDeckFor(Mode mode)

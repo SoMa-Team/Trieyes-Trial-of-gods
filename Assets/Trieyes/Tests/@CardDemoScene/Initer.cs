@@ -17,7 +17,7 @@ public class Initer : MonoBehaviour
     private void Start()
     {
         Sticker sticker = new Sticker();
-        sticker.type = StickerType.Number;
+        sticker.type = StickerType.Add;
         sticker.numberValue = 67;
     }
 }

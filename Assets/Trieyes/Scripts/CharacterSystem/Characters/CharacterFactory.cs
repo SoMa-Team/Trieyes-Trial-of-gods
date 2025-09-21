@@ -49,6 +49,7 @@ namespace CharacterSystem
             var pawn = ClonePrefab(id);
             pawn.initBaseStat();
             Activate(pawn);
+            pawn.SyncHP();
             return pawn;
         }
         

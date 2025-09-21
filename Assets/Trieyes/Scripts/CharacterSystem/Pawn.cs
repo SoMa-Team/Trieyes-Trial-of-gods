@@ -199,8 +199,6 @@ namespace CharacterSystem
 
             deck.Activate(this, true);
             
-            SyncHP();
-            
             gameObject.SetActive(true);
             Controller.Activate(this);
         }
@@ -594,7 +592,8 @@ namespace CharacterSystem
         /// </summary>
         public void CalculateBasicAttackCooldown()
         {
-            attackCooldown = 1f / (GetStatValue(StatType.AttackSpeed) / 3f);
+            attackCooldown = 200f / (100 + GetStatValue(StatType.AttackSpeed));
+            //TODO: 공속 관련 VFX 적용
         }
 
         /// <summary>

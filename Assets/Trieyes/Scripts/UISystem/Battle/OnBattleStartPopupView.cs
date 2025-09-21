@@ -9,10 +9,8 @@ using UnityEngine.UI;
 using Utils;
 using CharacterSystem;
 using GameFramework;
-using NodeStage;
-using BattleSystem;
-using Stats;
 using TMPro;
+using BattleSystem;
 
 namespace UISystem
 {
@@ -42,7 +40,6 @@ namespace UISystem
         private int lastScreenWidth;
         private int lastScreenHeight;
         private Character mainCharacter;
-        private Difficulty difficulty;
         private BattleStage battleStage;
         private void Update()
         {
@@ -55,12 +52,11 @@ namespace UISystem
             
         }
 
-        public void Activate(Character mainCharacter, Difficulty difficulty, BattleStage battleStage)
+        public void Activate(Character mainCharacter, BattleStage battleStage)
         {
             gameObject.SetActive(true);
             
             this.mainCharacter = mainCharacter;
-            this.difficulty = difficulty;
             this.battleStage = battleStage;
 
             nextRoundButton.interactable = false;
@@ -149,6 +145,7 @@ namespace UISystem
         private static readonly StatType[] applyStatLists =
         {
             StatType.AttackPower,
+            StatType.MagicPower,
             StatType.CriticalRate,
             StatType.CriticalDamage,
             StatType.AttackSpeed,
@@ -156,7 +153,6 @@ namespace UISystem
             StatType.Reflect,
             StatType.Health,
             StatType.Defense,
-            StatType.HealthRegen,
             StatType.LifeSteal,
             StatType.Evasion,
             StatType.MoveSpeed,
@@ -313,7 +309,7 @@ namespace UISystem
 
         public void OnClickNextRound()
         {
-            BattleStageFactory.Instance.Activate(battleStage, mainCharacter, difficulty);
+            BattleStageFactory.Instance.Activate(battleStage, mainCharacter);
             Deactivate();
         }
     }

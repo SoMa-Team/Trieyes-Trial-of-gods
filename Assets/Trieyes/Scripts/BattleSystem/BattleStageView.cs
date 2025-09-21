@@ -1,8 +1,5 @@
-using System;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using CharacterSystem;
-using Utils;
 
 namespace BattleSystem
 {
@@ -10,7 +7,7 @@ namespace BattleSystem
     /// 전투 스테이지의 뷰 컴포넌트
     /// BattleStage 데이터와 Unity GameObject를 연결하는 역할을 합니다.
     /// </summary>
-    public class BattleStageView : MonoBehaviour
+    public abstract class BattleStageView : MonoBehaviour
     {
         // ===== 뷰 데이터 =====
         private BattleStage _battleStage;

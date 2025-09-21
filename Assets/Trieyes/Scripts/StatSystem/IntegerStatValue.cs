@@ -111,6 +111,8 @@ namespace Stats
         private int GetCurrentValue()
         {
             float currentTime;
+
+            // TODO: now 검증이 필요한가?
             if (BattleStage.now == null)
             {
                 currentTime = 0;

@@ -74,6 +74,10 @@ namespace CharacterSystem
             sequence.OnComplete(() =>
             {
                 EnemyFactory.Instance.Deactivate(this);
+                if (BattleStage.now is BattleBossStage)
+                {
+                    Tween.Delay(10f).OnComplete(() => BattleStage.now.OnBattleClear());
+                }
             });
         }
     }

@@ -58,7 +58,7 @@ namespace CharacterSystem
             owner.CalculateBasicAttackCooldown();
         }
 
-        public void Deactivate()
+        public virtual void Deactivate()
         {
             enabled = false;
             gameObject.SetActive(false);

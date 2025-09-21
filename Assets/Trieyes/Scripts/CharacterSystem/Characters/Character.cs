@@ -24,7 +24,6 @@ namespace CharacterSystem
             
             // Collision Layer를 Character로 설정
             gameObject.layer = LayerMask.NameToLayer("Character");
-            rb.bodyType = RigidbodyType2D.Kinematic;
         }
 
         public override void Update()

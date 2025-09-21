@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4248532462427451020}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -45,4 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleStagePrefabs:
-  - {fileID: 6405400953864103545, guid: da7c9a4c013ade641a7db984a1acba0d, type: 3}
+  - battleMode: 1
+    prefab: {fileID: 6405400953864103545, guid: 45a1fdd9629f04be4b340335f5c646da, type: 3}
+  - battleMode: 2
+    prefab: {fileID: 6405400953864103545, guid: 7d3f1fc8e17eeb44e886d6f04e56abcd, type: 3}
+  - battleMode: 3
+    prefab: {fileID: 6405400953864103545, guid: 1623d1b589f6cbd49b0fe71ee8e7ad5e, type: 3}
+  - battleMode: 4
+    prefab: {fileID: 6405400953864103545, guid: 67f03fc468b4bd5428c49483be94a4d1, type: 3}
+  onBattleStartPopupView: {fileID: 0}

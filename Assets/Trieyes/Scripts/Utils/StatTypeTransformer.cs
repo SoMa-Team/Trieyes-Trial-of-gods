@@ -51,6 +51,7 @@ namespace Utils
             { "자기력", StatType.ItemMagnet },
             { "골드 드랍율", StatType.GoldDropRate },
             { "스킬 쿨타임 감소", StatType.SkillCooldownReduction },
+            { "덱 크기", StatType.DeckSize },
         };
 
         // 영문 문자열 → StatType (enum 이름과 매칭)

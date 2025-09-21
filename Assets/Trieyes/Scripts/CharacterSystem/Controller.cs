@@ -61,6 +61,7 @@ namespace CharacterSystem
         public void Deactivate()
         {
             enabled = false;
+            gameObject.SetActive(false);
         }
 
         public void SetLockMovement(bool lockMovement)

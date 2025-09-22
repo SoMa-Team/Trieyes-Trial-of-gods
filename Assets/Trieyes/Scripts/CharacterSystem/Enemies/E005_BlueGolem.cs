@@ -7,7 +7,9 @@ namespace CharacterSystem
     /// 사망 시 골드를 드랍하는 기본 적 캐릭터
     /// </summary>
     public class E005_BlueGolem : Enemy
-    {        
+    {
+        private static readonly int AnimatorKey_Horizontal = Animator.StringToHash("Horizontal");
+
         [Header("Material Control")]
         [SerializeField] private Material material;
         [SerializeField] private SpriteRenderer spriteRenderer;
@@ -18,6 +20,7 @@ namespace CharacterSystem
             base.Start();
             
             // 머티리얼 초기화
+            Animator.SetFloat(AnimatorKey_Horizontal,  -1);
             if (spriteRenderer == null)
                 spriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
             if (material == null)

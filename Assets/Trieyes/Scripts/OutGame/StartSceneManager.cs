@@ -145,14 +145,5 @@ namespace OutGame{
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
         }
-
-        private void OnDestroy()
-        {
-            var cg = TitlePanel.GetComponent<CanvasGroup>();
-            Destroy(cg.gameObject);
-
-            cg = CharacterSelectPanel.GetComponent<CanvasGroup>();
-            Destroy(cg.gameObject);
-        }
     }
 }

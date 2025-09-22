@@ -137,7 +137,6 @@ namespace CharacterSystem
             if(rb is null) rb = GetComponent<Rigidbody2D>();
             
             pawnPrefab = transform.GetChild(0).gameObject;
-            if(Animator is null) Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
             
             deck.Activate(this, true);
 

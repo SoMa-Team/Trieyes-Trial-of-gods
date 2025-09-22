@@ -22,6 +22,11 @@ namespace CharacterSystem
         {
             base.Start();
             
+            if (Animator is null)
+            {
+                Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            }
+            
             // Collision Layer를 Character로 설정
             gameObject.layer = LayerMask.NameToLayer("Character");
         }

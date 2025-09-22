@@ -51,7 +51,6 @@ namespace GamePlayer
                 Destroy(gameObject);
                 return;
             }
-
             
             DontDestroyOnLoad(this);
             InitializeAchievement();

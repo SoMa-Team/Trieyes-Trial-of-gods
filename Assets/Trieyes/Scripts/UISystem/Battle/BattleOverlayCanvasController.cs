@@ -21,6 +21,8 @@ namespace UISystem
                 Destroy(gameObject);
                 return;
             }
+
+            gameObject.SetActive(false);
             Instance = this;
         }
         private void OnDestroy()

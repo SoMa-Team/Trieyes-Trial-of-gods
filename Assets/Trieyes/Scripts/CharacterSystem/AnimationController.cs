@@ -22,42 +22,6 @@ namespace AnimationSystem
             }
         }
 
-        public virtual void BasicAttackOnAnimationStart()
-        {
-            if (owner is Character character)
-            {
-                character.CreateAttack(PawnAttackType.BasicAttack);
-            }
-            if (owner is Enemy enemy)
-            {
-                enemy.CreateAttack(PawnAttackType.BasicAttack);
-            }
-        }
-
-        public virtual void Skill1OnAnimationStart()
-        {
-            if (owner is Character character)
-            {
-                character.CreateAttack(PawnAttackType.Skill1);
-            }
-            if (owner is Enemy enemy)
-            {
-                enemy.CreateAttack(PawnAttackType.Skill1);
-            }
-        }
-
-        public virtual void Skill2OnAnimationStart()
-        {
-            if (owner is Character character)
-            {
-                character.CreateAttack(PawnAttackType.Skill2);
-            }
-            if (owner is Enemy enemy)
-            {
-                enemy.CreateAttack(PawnAttackType.Skill2);
-            }
-        }
-
         public virtual void AttackOnAnimationEnd()
         {
         }

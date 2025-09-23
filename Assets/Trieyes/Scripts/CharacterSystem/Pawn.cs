@@ -630,44 +630,6 @@ namespace CharacterSystem
             }
         }
 
-        public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
-        {
-            if(CheckCooldown(attackType))
-            {
-                switch (attackType)
-                {
-                    case PawnAttackType.BasicAttack:
-                        // t2 = t1;
-                        // t1 = Time.time;
-                        // Debug.LogError($"delta time : {t1 - t2}");
-                        lastAttackTime = Time.time;
-                        ChangeAnimationState("ATTACK");
-                        return true;
-                    case PawnAttackType.Skill1:
-                        if (skill1Attack is null)
-                        {
-                            return false;
-                        }
-                        lastSkillAttack1Time = Time.time;
-                        ChangeAnimationState("SKILL001");
-                        return true;
-
-                    case PawnAttackType.Skill2:
-                        if (skill2Attack is null)
-                        {
-                            return false;
-                        }
-                        lastSkillAttack2Time = Time.time;
-                        ChangeAnimationState("SKILL002");
-                        return true;
-                        
-                    default:
-                        return false;
-                }
-            }
-            return false;
-        }
-
         public void ClearStatModifier()
         {
             statSheet.ClearBuffs();

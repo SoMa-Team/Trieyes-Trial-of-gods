@@ -31,7 +31,7 @@ namespace AttackComponents
         public float missileTravelTime = 0.5f; // 미사일이 적에게 도달하는 시간 (고정)
         public float bounceChance = 0.5f; // 50% 도탄 확률
         public int maxBounces = 1; // 최대 도탄 횟수
-        public float attackRadius = 5f;
+        private float attackRadius = 5f;
         public LayerMask targetLayerMask = -1;
 
         private Enemy targetEnemy;

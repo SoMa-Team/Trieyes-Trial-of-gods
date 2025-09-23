@@ -54,14 +54,10 @@ MonoBehaviour:
   Controller: {fileID: 4252146179524799073}
   Animator: {fileID: 0}
   statPresetSO: {fileID: 11400000, guid: 2e6a074a25f194ef7b1ec86363ccd257, type: 2}
-  basicAttack: {fileID: 0}
-  skill1Attack: {fileID: 0}
-  skillAttack1Cooldown: 0
-  lastSkillAttack1Time: -999
-  skill2Attack: {fileID: 0}
-  skillAttack2Cooldown: 0
-  lastSkillAttack2Time: -999
   objectID: 0
+  basicAttack: {fileID: 11400000, guid: e3f8f43aa657a467c9f9ddf99deb3389, type: 2}
+  skill1Attack: {fileID: 0}
+  skill2Attack: {fileID: 0}
   dropGold: 100
   playerTarget: {fileID: 0}
   attackDefault: {fileID: 11400000, guid: e3f8f43aa657a467c9f9ddf99deb3389, type: 2}
@@ -80,7 +76,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
-  lockMovement: 0
   lastMoveDir: {x: 0, y: 0}
   isAutoAttack: 0
   moveTime: 1

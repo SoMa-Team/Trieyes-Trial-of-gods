@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using CardSystem;
+using JetBrains.Annotations;
+using TMPro;
 
 namespace CardViews
 {
@@ -18,7 +20,9 @@ namespace CardViews
         [SerializeField] private CardView cardPrefab;   
         
         [SerializeField] private RectTransform rectTransform;
-        [SerializeField] private float cardHeightPercent = 0.8f; 
+        [SerializeField] private float cardHeightPercent = 0.8f;
+        
+        [SerializeField] private TMP_Text instructionText;
 
         private readonly List<CardView> spawned = new();
         private readonly HashSet<CardView> selected = new();
@@ -36,7 +40,7 @@ namespace CardViews
             gameObject.SetActive(false);
         }
 
-        public void Activate(Deck deck, int requiredCount, Action<List<Card>> onConfirm, Action onCancel)
+        public void Activate(Deck deck, int requiredCount, Action<List<Card>> onConfirm, Action onCancel, [CanBeNull] string instructionText=null)
         {
             gameObject.SetActive(true);
             this.requiredSelectCount = requiredCount;
@@ -47,6 +51,13 @@ namespace CardViews
 
             gameObject.SetActive(true);
             if (panelRoot) panelRoot.SetActive(true);
+
+            if (instructionText == null) this.instructionText.gameObject.SetActive(false);
+            else
+            {
+                this.instructionText.text = instructionText;
+                this.instructionText.gameObject.SetActive(true);
+            }
 
             Build(deck);
             SetNextInteractable();
@@ -61,6 +72,7 @@ namespace CardViews
         {
             HookButtons(false);
             Clear();
+            if (instructionText) instructionText.gameObject.SetActive(false);
             if (panelRoot) panelRoot.SetActive(false);
             gameObject.SetActive(false);
         }

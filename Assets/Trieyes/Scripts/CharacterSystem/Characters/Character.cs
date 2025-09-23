@@ -22,6 +22,11 @@ namespace CharacterSystem
         {
             base.Start();
             
+            if (Animator is null)
+            {
+                Animator = pawnPrefab.transform.Find("UnitRoot").GetComponent<Animator>();
+            }
+            
             // Collision Layer를 Character로 설정
             gameObject.layer = LayerMask.NameToLayer("Character");
         }
@@ -71,6 +76,47 @@ namespace CharacterSystem
             }
             return false;
         }
+        
+        public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
+        {
+            if(CheckCooldown(attackType))
+            {
+                switch (attackType)
+                {
+                    case PawnAttackType.BasicAttack:
+                        // t2 = t1;
+                        // t1 = Time.time;
+                        // Debug.LogError($"delta time : {t1 - t2}");
+                        lastAttackTime = Time.time;
+                        ChangeAnimationState("ATTACK");
+                        CreateAttack(PawnAttackType.BasicAttack);
+                        return true;
+                    case PawnAttackType.Skill1:
+                        if (skill1Attack is null)
+                        {
+                            return false;
+                        }
+                        lastSkillAttack1Time = Time.time;
+                        ChangeAnimationState("SKILL001");
+                        CreateAttack(PawnAttackType.Skill1);
+                        return true;
+
+                    case PawnAttackType.Skill2:
+                        if (skill2Attack is null)
+                        {
+                            return false;
+                        }
+                        lastSkillAttack2Time = Time.time;
+                        ChangeAnimationState("SKILL002");
+                        CreateAttack(PawnAttackType.Skill2);
+                        return true;
+                        
+                    default:
+                        return false;
+                }
+            }
+            return false;
+        }
 
         protected override void OnCollisionEnter2D(Collision2D other)
         {
@@ -111,11 +157,18 @@ namespace CharacterSystem
             }
         }
 
+        private const int MAX_ANIMATION_MULTIPLIER = 3;
+        private const int SKIP_ANIMIATION_MULTIPLIER = 10000;
         protected override void ChangeAnimationState(string newState)
         {
+            float attackSpeedMultiplier = Mathf.Min(MAX_ANIMATION_MULTIPLIER, Mathf.Max(GetStatValue(StatType.AttackSpeed)/3, 1f));
             if (Animator != null && Animator.HasState(0, Animator.StringToHash(newState)) && newState == "ATTACK")
             {
-                Animator.SetFloat("AttackSpeedMultiplier", Mathf.Max(GetStatValue(StatType.AttackSpeed)/3, 1f));
+                if(GetStatValue(StatType.AttackSpeed) >= SKIP_ANIMIATION_MULTIPLIER)
+                {
+                    return;
+                }
+                Animator.SetFloat("AttackSpeedMultiplier", attackSpeedMultiplier);
                 Animator.SetTrigger("2_Attack");
             }
             else

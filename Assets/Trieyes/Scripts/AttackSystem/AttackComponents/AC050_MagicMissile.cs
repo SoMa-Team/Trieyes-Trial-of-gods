@@ -31,6 +31,7 @@ namespace AttackComponents
         public float missileTravelTime = 0.5f; // 미사일이 적에게 도달하는 시간 (고정)
         public float bounceChance = 0.5f; // 50% 도탄 확률
         public int maxBounces = 1; // 최대 도탄 횟수
+        private float attackRadius = 5f;
         public LayerMask targetLayerMask = -1;
 
         private Enemy targetEnemy;
@@ -57,6 +58,12 @@ namespace AttackComponents
            
             // 공격 시작
             StartAttack();
+        }
+
+        public override void OnLockActivate()
+        {
+            base.OnLockActivate();
+            attack.gameObject.SetActive(false);
         }
 
         public override void Deactivate()
@@ -98,6 +105,7 @@ namespace AttackComponents
                         attackState = AttackState.Finishing;
                         return;
                     }
+                    attack.gameObject.SetActive(true);
                     attackTimer = 0f;
                     attackState = AttackState.Preparing;
                     break;
@@ -182,7 +190,7 @@ namespace AttackComponents
                 if (maxBounces > 0 && UnityEngine.Random.Range(0f, 1f) <= bounceChance)
                 {
                     var newTargetList =
-                        BattleStage.now.GetEnemiesInCircleRangeFromTargetOrderByDistance(targetEnemy, 10f);
+                        BattleStage.now.GetEnemiesInCircleRangeFromTargetOrderByDistance(targetEnemy, attackRadius);
                     if (newTargetList.Count > 1)
                     {
                         targetEnemy = newTargetList[1];
@@ -196,7 +204,7 @@ namespace AttackComponents
 
         private bool ChooseEnemyTarget()
         {
-            var targetEnemyList = BattleStage.now.GetEnemiesInCircleRangeOrderByDistance(magician.transform.position, 10f, 1);
+            var targetEnemyList = BattleStage.now.GetEnemiesInCircleRangeOrderByDistance(magician.transform.position, attackRadius, 1);
             if (targetEnemyList.Count > 0)
             {
                 targetEnemy = targetEnemyList[0];

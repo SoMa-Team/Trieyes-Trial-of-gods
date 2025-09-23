@@ -18,15 +18,7 @@ namespace CharacterSystem
         protected override void Start()
         {
             base.Start();
-
-            try
-            {
-                allIn1SpriteShaderHandler.SetObject(sr.material);
-            }
-            catch
-            {
-                Debug.LogError("E002_SkeletonInfantry: SpriteRenderer or Material is not assigned properly." + "all in 1" + allIn1SpriteShaderHandler + " sr : " + sr + ", material : " + sr.material);
-            }
+            allIn1SpriteShaderHandler.SetObject(sr.material);
         }
         
         public override void Activate()

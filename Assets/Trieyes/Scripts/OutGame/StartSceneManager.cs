@@ -119,9 +119,11 @@ namespace OutGame{
             }
 
             // Fade In 애니메이션 실행
-            canvasGroup.alpha = 1f;
-            canvasGroup.interactable = true;
-            canvasGroup.blocksRaycasts = true;
+            Tween.Alpha(canvasGroup, 1f, 0.5f, Ease.OutQuad).OnComplete(
+                () => {
+                    canvasGroup.interactable = true;
+                    canvasGroup.blocksRaycasts = true;
+                });
         }
 
         /// <summary>
@@ -140,10 +142,14 @@ namespace OutGame{
                 panel.SetActive(false);
                 return;
             }
-
-            canvasGroup.alpha = 0f;
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
+            
+            // Fade Out 애니메이션 실행
+            Tween.Alpha(canvasGroup, 0f, 0.5f, Ease.OutQuad).OnComplete(
+                () => {
+                    canvasGroup.interactable = false;
+                    canvasGroup.blocksRaycasts = false;
+                    panel.SetActive(false);
+                });
         }
     }
 }

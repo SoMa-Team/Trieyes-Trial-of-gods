@@ -98,11 +98,13 @@ namespace GameFramework
                 case StageType.SkillReward:
                     SkillRewardStage.Instance.Activate(mainCharacter);
                     break;
+                case StageType.StatEvent:
+                    StatEventStage.Instance.Activate(mainCharacter);
+                    break;
                 case StageType.StickerEvent:
                     StickerStage.Instance.Activate(mainCharacter);
                     break;
                 case StageType.GameOver:
-                    Time.timeScale = 0;
                     GameOverStage.Instance.Activate(mainCharacter);
                     break;
                 default:

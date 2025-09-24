@@ -27,6 +27,9 @@ namespace BattleSystem
         private GameObject _gridObject;
         [SerializeField] protected GameObject backgroundObject;
         private GameObject _backgroundObject;
+
+        [SerializeField] public Vector2 TopLeft;
+        [SerializeField] public Vector2 BottomRight;
         
         /// <summary>
         /// BattleStage 데이터에 대한 접근자

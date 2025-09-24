@@ -117,6 +117,7 @@ namespace BattleSystem
         
         private Vector3 GetRandomPointAround(Pawn pawn, float minDistance, float maxDistance)
         {
+            // TODO : 로직 변경
             Vector2 center = pawn.transform.position;
             ComputeValidAngles(center, maxDistance);
             

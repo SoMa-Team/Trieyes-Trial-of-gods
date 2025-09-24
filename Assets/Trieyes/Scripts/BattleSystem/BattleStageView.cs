@@ -1,5 +1,6 @@
 using UnityEngine;
 using CharacterSystem;
+using System;
 
 namespace BattleSystem
 {
@@ -20,6 +21,12 @@ namespace BattleSystem
         public float cameraFollowDistance = 10f;
         public Vector3 cameraDamping = new Vector3(1f, 1f, 1f);
         public float cameraFieldOfView = 60f;
+
+        [Header("Tiles")]
+        [SerializeField] protected GameObject gridObject;
+        private GameObject _gridObject;
+        [SerializeField] protected GameObject backgroundObject;
+        private GameObject _backgroundObject;
         
         /// <summary>
         /// BattleStage 데이터에 대한 접근자
@@ -33,7 +40,7 @@ namespace BattleSystem
                 _battleStage.View = this;
                 
                 // TODO: 데이터 UI 동기화 로직 구현 필요
-                // CreateTilemap();
+                CreateTilemap();
                 CreateBattleCamera();
             }
 
@@ -42,7 +49,19 @@ namespace BattleSystem
                 return _battleStage;
             }
         }
-        
+
+        private void CreateTilemap()
+        {
+            if (gridObject != null)
+            {
+                _gridObject = Instantiate(gridObject, new Vector3(0, 0, 0), Quaternion.identity);
+            }
+            if (backgroundObject != null)
+            {
+                _backgroundObject = Instantiate(backgroundObject, new Vector3(0, 0, 0), Quaternion.identity);
+            }
+        }
+
         /// <summary>
         /// 전투용 카메라를 생성하고 설정합니다.
         /// </summary>
@@ -94,6 +113,18 @@ namespace BattleSystem
                 return;
             
             _battleStage.Update();
+        }
+
+        public void Deactivate()
+        {
+            if (gridObject != null)
+            {
+                Destroy(_gridObject);
+            }
+            if (backgroundObject != null)
+            {
+                Destroy(_backgroundObject);
+            }
         }
     }
 } 

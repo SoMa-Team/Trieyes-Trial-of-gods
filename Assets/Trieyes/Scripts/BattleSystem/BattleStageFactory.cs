@@ -225,6 +225,7 @@ namespace BattleSystem
             DamageNumberViewFactory.Instance.OnBattleEnded();
             
             // View.gameObject를 파괴하기 전에 battleStage.Deactivate() 호출
+            battleStage.View.Deactivate();
             battleStage.Deactivate();
             Destroy(battleStage.View.gameObject);
             

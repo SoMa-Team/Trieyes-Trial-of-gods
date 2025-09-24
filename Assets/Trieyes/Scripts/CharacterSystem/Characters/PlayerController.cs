@@ -48,6 +48,9 @@ namespace CharacterSystem
             if (joystick != null)
             {
                 joystick.gameObject.SetActive(false);
+
+                // 조이스틱 변수 초기화
+                joystick.OnPointerUp(null);
             }
             base.Deactivate();
         }

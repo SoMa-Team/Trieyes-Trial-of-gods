@@ -25,8 +25,8 @@ namespace GameFramework
         public SpawnMode spawnMode = SpawnMode.Frequency;
         public int stageNumber;
 
-        public int enemyHpMultiplier;
-        public int enemyAttackMultiplier;
+        public int enemyHpMultiplier = 1;
+        public int enemyAttackMultiplier = 1;
 
         public float SpawnInterval => 1f;
 
@@ -47,9 +47,6 @@ namespace GameFramework
             {
                 spawnMode = SpawnMode.Frequency;
             }
-
-            enemyHpMultiplier = 1;
-            enemyAttackMultiplier = 1;
         }
 
         public void LevelCountUp()
@@ -87,7 +84,7 @@ namespace GameFramework
         internal int GetBreakThroughCount()
         {
             // RoundCount와 LevelCount를 이용하여 breakThroughCount를 계산
-            return 10 * RoundCount + 100 * (LevelCount - 1);
+            return 10 * RoundCount + 30 * (LevelCount - 1);
         }
 
         internal void GameStart()

@@ -72,7 +72,10 @@ namespace CharacterSystem
         /// <param name="pawn">비활성화할 캐릭터 Pawn</param>
         public void Deactivate(Pawn pawn)
         {
-            pawn.Deactivate();
+            if (pawn != null)
+            {
+                pawn.Deactivate();
+            }
         }
         
         // ===== 내부 헬퍼 =====

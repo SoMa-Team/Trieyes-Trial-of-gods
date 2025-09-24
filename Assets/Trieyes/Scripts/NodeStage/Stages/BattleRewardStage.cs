@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using CardSystem;
 using CardViews;
 using GamePlayer;
+using Stats;
+using EventType = Utils.EventType;
+using TMPro;
 
 namespace NodeStage
 {
@@ -26,6 +29,9 @@ namespace NodeStage
         private GoldRewardView goldView;
         private CardView selectedCard;
         private bool goldSelected;
+        
+        private Card pendingRewardCard;
+        private bool waitingForDeckChoice;
 
         protected override void OnActivated()
         {
@@ -66,6 +72,10 @@ namespace NodeStage
             if (goldView != null) { Destroy(goldView.gameObject); goldView = null; }
             selectedCard = null;
             goldSelected = false;
+            
+            pendingRewardCard  = null;
+            waitingForDeckChoice = false;
+            
             if (nextButton) nextButton.interactable = false;
         }
 
@@ -98,17 +108,68 @@ namespace NodeStage
 
         public override void NextStage()
         {
+            if (waitingForDeckChoice) return;
+
             if (selectedCard != null)
             {
                 var picked = selectedCard.GetCurrentCard().DeepCopy();
-                mainCharacter.deck.AddCard(picked);
+                var deck = mainCharacter.deck;
+                int maxCnt = (int)mainCharacter.GetStatValue(StatType.DeckSize);
+
+                if (deck.cards.Count < maxCnt)
+                {
+                    deck.OnEvent(EventType.OnCardPurchase, picked);
+                    base.NextStage();
+                    return;
+                }
+                
+                StartReplaceFlow(picked);
+                return;
             }
             else if (goldSelected && goldView != null)
             {
-                mainCharacter.gold += goldView.Amount;
+                mainCharacter.gold += goldAmount;
+                base.NextStage();
+                return;
             }
+        }
 
-            base.NextStage(); // ✅ 공통 전환
+        void StartReplaceFlow(Card picked)
+        {
+            pendingRewardCard = picked;
+            waitingForDeckChoice = true;
+            
+            deckView.Activate(
+                mainCharacter.deck,
+                requiredCount: 1,
+                onConfirm: OnReplaceConfirmed,
+                onCancel: OnReplaceCanceled,
+                instructionText: "파괴할 카드 선택"
+            );
+            
+            if(nextButton) nextButton.interactable = false;
+        }
+
+        void OnReplaceConfirmed(List<Card> cards)
+        {
+            var deck = mainCharacter.deck;
+            var toRemove = cards[0];
+            
+            deck.OnEvent(EventType.OnCardRemove, toRemove);
+            
+            if(pendingRewardCard != null) deck.OnEvent(EventType.OnCardPurchase, pendingRewardCard);
+            
+            pendingRewardCard = null;
+            waitingForDeckChoice = false;
+            
+            base.NextStage();
+        }
+
+        void OnReplaceCanceled()
+        {
+            pendingRewardCard = null;
+            waitingForDeckChoice = false;
+            if(nextButton) nextButton.interactable = (selectedCard != null) || goldSelected;
         }
 
         // 덱 버튼은 부모(OpenDeckInspectOnly)로 처리됨

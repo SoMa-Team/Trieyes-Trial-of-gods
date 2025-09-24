@@ -39,7 +39,17 @@ namespace CharacterSystem
                 joystick = BattleOverlayCanvasController.Instance.joystick;
             }
 
+            joystick.gameObject.SetActive(true);
             gameObject.SetActive(true);
+        }
+
+        public override void Deactivate()
+        {
+            if (joystick != null)
+            {
+                joystick.gameObject.SetActive(false);
+            }
+            base.Deactivate();
         }
 
         public override void ProcessInputActions()

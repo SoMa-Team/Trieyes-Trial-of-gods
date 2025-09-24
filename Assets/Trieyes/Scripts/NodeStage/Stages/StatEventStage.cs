@@ -419,18 +419,32 @@ namespace NodeStage
                     break;
             }
 
-            // 스탯 적용
-            if (option.isPercentage)
-            {
-                // % 연산 적용 (MultiplyToBasicValue 사용)
-                int factor = 100 + valueToApply; // 10% 증가 = 110, -10% 감소 = 90
-                mainCharacter.statSheet[option.statType].MultiplyToBasicValue(factor);
-                mainCharacter.statSheet[option.statType].SetBasicValue(mainCharacter.GetRawStatValue(option.statType) / 100f); // 100으로 나누어 원래 스케일로 복원
+            // 정수 스탯인 경우
+            if (IntegerStats.Contains(option.statType))
+            {     
+                // 스탯 적용
+                if (option.isPercentage)
+                {
+                    // % 연산 적용 (MultiplyToBasicValue 사용)
+                    int factor = 100 + valueToApply; // 10% 증가 = 110, -10% 감소 = 90
+                    mainCharacter.statSheet[option.statType].MultiplyToBasicValue(factor);
+                    mainCharacter.statSheet[option.statType].SetBasicValue(mainCharacter.GetRawStatValue(option.statType) / 100f); // 100으로 나누어 원래 스케일로 복원
+                }
+                else
+                {
+                    // 정수 연산 적용
+                    mainCharacter.statSheet[option.statType].AddToBasicValue(valueToApply);
+                }
             }
+
+            // 퍼센트 스탯인 경우
             else
             {
-                // 정수 연산 적용
-                mainCharacter.statSheet[option.statType].AddToBasicValue(valueToApply);
+                // 스탯 적용
+                if (option.isPercentage)
+                {
+                    mainCharacter.statSheet[option.statType].AddToBasicValue(valueToApply);
+                }
             }
 
             // 변경 후 스탯 값 확인, TODO: 문제 없을 시 주석 혹은 삭제 

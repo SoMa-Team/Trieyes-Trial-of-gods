@@ -22,6 +22,8 @@ namespace BattleSystem
         private bool _isActivate = false;
         private Difficulty _difficulty;
         private bool isBossSpawned = false;
+
+        [Header("스폰 확률")]
         
         [SerializeField] private float _elapsedTime;
         [HideInInspector] private Vector2 TopLeft;
@@ -31,15 +33,18 @@ namespace BattleSystem
 
         [SerializeField] private float spawnPointCheckInterval = 1f;
 
+        [Header("스폰 마릿 수 계수")]
+        [SerializeField] private int SpawnCountMin = 0;
+        [SerializeField] private int SpawnCountMax = 3;
 
-        [Header("좌우 균형 추적 시스템")]
+        [Header("4사분면 균형 추적 시스템")]
         private float lastSpawnPointCheckTime = 0f;
 
         // ex) 3f = 3배 더 빠르게 스폰
         public float SpawnIntervalMultiplier = 1f;
         
-        // ===== 좌우 균형 추적 시스템 =====
-        private float leftSpawnProbability = 0.5f;  // 좌측 스폰 확률
+        // ===== 4사분면 균형 추적 시스템 =====
+        private float[] quadrantSpawnProbabilities = { 0.25f, 0.25f, 0.25f, 0.25f };  // 각 사분면 스폰 확률
 
         // ===== 초기화 =====
         
@@ -66,7 +71,7 @@ namespace BattleSystem
             if (!_isActivate)
                 return;
 
-            // 좌우 균형 체크
+            // 4사분면 균형 체크
             CheckEnemyBalance();
             
             // 스폰 로직 실행
@@ -107,10 +112,10 @@ namespace BattleSystem
         }
         
 
-        // ===== 좌우 균형 추적 시스템 =====
+        // ===== 4사분면 균형 추적 시스템 =====
         
         /// <summary>
-        /// 적들의 좌우 균형을 체크하고 스폰 확률을 업데이트합니다.
+        /// 적들의 4사분면 균형을 체크하고 스폰 확률을 업데이트합니다.
         /// </summary>
         private void CheckEnemyBalance()
         {
@@ -121,31 +126,68 @@ namespace BattleSystem
             
             if (BattleStage.now?.mainCharacter == null)
             {
-                leftSpawnProbability = 0.5f;
+                // 기본 균등 확률로 초기화
+                for (int i = 0; i < 4; i++)
+                    quadrantSpawnProbabilities[i] = 0.25f;
                 return;
             }
             
             // 적 분포 계산 및 확률 업데이트를 한 번에 처리
             Vector3 playerPos = BattleStage.now.mainCharacter.transform.position;
-            int leftCount = 0, rightCount = 0;
+            int[] quadrantCounts = { 0, 0, 0, 0 }; // 1사분면, 2사분면, 3사분면, 4사분면
             
             foreach (var enemyPair in BattleStage.now.enemies)
             {
                 var enemy = enemyPair.Value;
                 if (enemy == null || enemy.isDead) continue;
                 
-                if (enemy.transform.position.x < playerPos.x)
-                    leftCount++;
-                else
-                    rightCount++;
+                Vector3 enemyPos = enemy.transform.position;
+                Vector3 relativePos = enemyPos - playerPos;
+                
+                // 4사분면 분류
+                int quadrant = GetQuadrant(relativePos);
+                quadrantCounts[quadrant]++;
             }
             
-            // 스폰 확률 계산 (적이 많은 쪽의 반대편에 높은 확률)
-            int totalEnemies = leftCount + rightCount;
-            leftSpawnProbability = totalEnemies == 0 ? 0.5f : (float)rightCount / totalEnemies;
+            // 스폰 확률 계산 (적이 적은 사분면에 높은 확률)
+            int totalEnemies = quadrantCounts[0] + quadrantCounts[1] + quadrantCounts[2] + quadrantCounts[3];
             
-            // Debug.Log($"좌우 균형: 좌측 {leftCount}마리, 우측 {rightCount}마리 | " +
-            //          $"좌측 스폰 확률: {leftSpawnProbability:P1}");
+            if (totalEnemies == 0)
+            {
+                // 적이 없으면 균등 확률
+                for (int i = 0; i < 4; i++)
+                    quadrantSpawnProbabilities[i] = 0.25f;
+            }
+            else
+            {
+                // 각 사분면의 적 수에 반비례하는 확률 계산
+                float totalInverse = 0f;
+                float[] inverseCounts = new float[4];
+                
+                for (int i = 0; i < 4; i++)
+                {
+                    inverseCounts[i] = 1f / (quadrantCounts[i] + 1f); // +1로 0으로 나누기 방지
+                    totalInverse += inverseCounts[i];
+                }
+                
+                for (int i = 0; i < 4; i++)
+                {
+                    quadrantSpawnProbabilities[i] = inverseCounts[i] / totalInverse;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 상대 위치를 기반으로 사분면을 반환합니다.
+        /// </summary>
+        /// <param name="relativePos">플레이어를 기준으로 한 상대 위치</param>
+        /// <returns>사분면 인덱스 (0: 1사분면, 1: 2사분면, 2: 3사분면, 3: 4사분면)</returns>
+        private int GetQuadrant(Vector3 relativePos)
+        {
+            if (relativePos.x >= 0 && relativePos.y >= 0) return 0; // 1사분면 (우상)
+            if (relativePos.x < 0 && relativePos.y >= 0) return 1;  // 2사분면 (좌상)
+            if (relativePos.x < 0 && relativePos.y < 0) return 2;   // 3사분면 (좌하)
+            return 3; // 4사분면 (우하)
         }
 
         // ===== 내부 헬퍼 =====
@@ -175,14 +217,12 @@ namespace BattleSystem
         private Vector3 GetRandomPointAround(Pawn pawn, float minDistance, float maxDistance)
         {
             Vector2 center = pawn.transform.position;
-            
-            // TopLeft와 BottomRight 범위 내에서 랜덤 스폰 포인트 생성
             Vector2 spawnPos = GetRandomSpawnPointInBounds(center, minDistance, maxDistance);
             return spawnPos;
         }
         
         /// <summary>
-        /// 좌우 균형을 고려하여 TopLeft와 BottomRight 범위 내에서 랜덤 스폰 포인트를 생성합니다.
+        /// 4사분면 균형을 고려하여 TopLeft와 BottomRight 범위 내에서 랜덤 스폰 포인트를 생성합니다.
         /// </summary>
         private Vector2 GetRandomSpawnPointInBounds(Vector2 center, float minDistance, float maxDistance)
         {
@@ -190,13 +230,11 @@ namespace BattleSystem
             
             for (int attempts = 0; attempts < maxAttempts; attempts++)
             {
-                // 좌우 균형을 고려한 스폰 방향 결정
-                bool spawnOnLeftSide = Random.Range(0f, 1f) < leftSpawnProbability;
+                // 4사분면 균형을 고려한 스폰 방향 결정
+                int selectedQuadrant = SelectQuadrantByProbability();
                 
-                // 좌우 방향에 따른 각도 범위 설정 (최적화)
-                float angle = spawnOnLeftSide 
-                    ? Random.Range(90f, 270f) * Mathf.Deg2Rad  // 좌측 반원
-                    : Random.Range(-90f, 90f) * Mathf.Deg2Rad; // 우측 반원
+                // 선택된 사분면에 따른 각도 범위 설정
+                float angle = GetRandomAngleInQuadrant(selectedQuadrant);
                 
                 float distance = Random.Range(minDistance, maxDistance);
                 Vector2 spawnPos = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
@@ -207,6 +245,47 @@ namespace BattleSystem
             
             // 실패 시 범위 중앙에 스폰
             return new Vector2((TopLeft.x + BottomRight.x) * 0.5f, (TopLeft.y + BottomRight.y) * 0.5f);
+        }
+        
+        /// <summary>
+        /// 확률에 따라 사분면을 선택합니다.
+        /// </summary>
+        /// <returns>선택된 사분면 인덱스</returns>
+        private int SelectQuadrantByProbability()
+        {
+            float randomValue = Random.Range(0f, 1f);
+            float cumulativeProbability = 0f;
+            
+            for (int i = 0; i < 4; i++)
+            {
+                cumulativeProbability += quadrantSpawnProbabilities[i];
+                if (randomValue <= cumulativeProbability)
+                    return i;
+            }
+            
+            return 3; // 기본값 (4사분면)
+        }
+        
+        /// <summary>
+        /// 지정된 사분면 내에서 랜덤 각도를 반환합니다.
+        /// </summary>
+        /// <param name="quadrant">사분면 인덱스 (0: 1사분면, 1: 2사분면, 2: 3사분면, 3: 4사분면)</param>
+        /// <returns>라디안 각도</returns>
+        private float GetRandomAngleInQuadrant(int quadrant)
+        {
+            switch (quadrant)
+            {
+                case 0: // 1사분면 (우상): 0° ~ 90°
+                    return Random.Range(0f, 90f) * Mathf.Deg2Rad;
+                case 1: // 2사분면 (좌상): 90° ~ 180°
+                    return Random.Range(90f, 180f) * Mathf.Deg2Rad;
+                case 2: // 3사분면 (좌하): 180° ~ 270°
+                    return Random.Range(180f, 270f) * Mathf.Deg2Rad;
+                case 3: // 4사분면 (우하): 270° ~ 360°
+                    return Random.Range(270f, 360f) * Mathf.Deg2Rad;
+                default:
+                    return Random.Range(0f, 360f) * Mathf.Deg2Rad;
+            }
         }
         
         /// <summary>
@@ -228,8 +307,7 @@ namespace BattleSystem
                     return false;
                 
                 isBossSpawned = true;
-                var enemy = SpawnEnemy();
-                BattleStage.now.AttachEnemy(enemy, GetRandomSpawnPoint());
+                SpawnEnemy(1);
                 return true;
             }
             
@@ -246,11 +324,7 @@ namespace BattleSystem
                 // 남은 시간 계산 (정확한 시간 관리)
                 _elapsedTime = _elapsedTime % actualSpawnInterval;
 
-                for (int i = 0; i < spawnCount; i++)
-                {
-                    var enemy = SpawnEnemy();
-                    BattleStage.now.AttachEnemy(enemy, GetRandomSpawnPoint());
-                }
+                SpawnEnemy(spawnCount);
 
                 return true;
             }
@@ -260,13 +334,17 @@ namespace BattleSystem
 
         /// <summary>
         /// 난이도에 따라 적을 생성합니다.</summary>
-        private Enemy SpawnEnemy()
+        public void SpawnEnemy(int count=1)
         {
-            var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
-            enemy.statSheet[StatType.AttackPower].MultiplyToBasicValue(_difficulty.enemyAttackMultiplier);
-            enemy.statSheet[StatType.Health].MultiplyToBasicValue(_difficulty.enemyHpMultiplier);
-            enemy.SyncHP();
-            return enemy;
+            for (int i = 0; i < count + Random.Range(SpawnCountMin, SpawnCountMax); i++)
+            {
+                var enemy = EnemyFactory.Instance.Create(_difficulty.EnemyID);
+                enemy.statSheet[StatType.AttackPower].MultiplyToBasicValue(_difficulty.enemyAttackMultiplier);
+                enemy.statSheet[StatType.Health].MultiplyToBasicValue(_difficulty.enemyHpMultiplier);
+                enemy.SyncHP();
+
+                BattleStage.now.AttachEnemy(enemy, GetRandomSpawnPoint());
+            }
         }
     }
 } 

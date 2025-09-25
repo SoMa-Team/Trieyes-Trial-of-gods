@@ -26,6 +26,13 @@ namespace BattleSystem
 
         private float Phase3Time = 10f;
 
+        private float StempedeChance = 3f;
+
+        private bool isStempede = false;
+
+        private int StempedeCountMin = 10;
+        private int StempedeCountMax = 20;
+
         protected override void OnActivated()
         {
             difficulty.spawnMode = SpawnMode.Frequency;
@@ -40,6 +47,12 @@ namespace BattleSystem
 
             if (Time.time - lastTick > ticDuration)
             {
+                if (UnityEngine.Random.Range(0, 100) < StempedeChance)
+                {
+                    isStempede = true;
+                    spawnManager.SpawnEnemy(UnityEngine.Random.Range(StempedeCountMin, StempedeCountMax));
+                }
+
                 mainCharacter.OnEvent(Utils.EventType.OnTick, mainCharacter);
                 lastTick = Time.time;
             }

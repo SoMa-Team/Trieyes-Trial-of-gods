@@ -79,8 +79,6 @@ namespace Enemies
             randomTargetPosition = playerTarget.position + (Vector3)(randomDirection * randomDistance);
             hasRandomTarget = true;
             lastRandomTargetUpdateTime = Time.time;
-            
-            Debug.Log($"랜덤 타겟 생성: {randomTargetPosition} (플레이어: {playerTarget.position})");
         }
         
         /// <summary>

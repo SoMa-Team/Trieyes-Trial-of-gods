@@ -144,8 +144,8 @@ namespace BattleSystem
             int totalEnemies = leftCount + rightCount;
             leftSpawnProbability = totalEnemies == 0 ? 0.5f : (float)rightCount / totalEnemies;
             
-            Debug.Log($"좌우 균형: 좌측 {leftCount}마리, 우측 {rightCount}마리 | " +
-                     $"좌측 스폰 확률: {leftSpawnProbability:P1}");
+            // Debug.Log($"좌우 균형: 좌측 {leftCount}마리, 우측 {rightCount}마리 | " +
+            //          $"좌측 스폰 확률: {leftSpawnProbability:P1}");
         }
 
         // ===== 내부 헬퍼 =====

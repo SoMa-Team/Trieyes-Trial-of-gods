@@ -13,7 +13,7 @@ namespace CharacterSystem
         // Pawn의 추상 멤버 구현
         
         protected float lastTriggerEnterTime = 0f;
-        [HideInInspector] public float collisionDamageInterval = 0.5f;
+        [HideInInspector] public float collisionDamageInterval = 1f;
 
         public override Vector2 CenterOffset { get; set; } = Vector2.zero;
         

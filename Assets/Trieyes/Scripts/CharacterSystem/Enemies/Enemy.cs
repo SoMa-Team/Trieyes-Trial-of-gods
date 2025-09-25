@@ -58,8 +58,10 @@ namespace CharacterSystem
             base.OnEvent(eventType, param);
             switch (eventType)
             {
+                case Utils.EventType.OnDamaged:
+                    Knockback(param as AttackResult);
+                    return true;
                 case Utils.EventType.OnDeath:
-                    Debug.Log("OnDeath Event Activated");
                     OnSelfDeath(param as AttackResult);
                     return true;
 
@@ -68,7 +70,14 @@ namespace CharacterSystem
                     return false;
             }
         }
-        
+
+        private float knockbackForceMultiplier = 10f;
+        private void Knockback(AttackResult attackResult)
+        {
+            var force = (attackResult.attacker.transform.position - transform.position).normalized * knockbackForceMultiplier;
+            rb.AddForce(-force, ForceMode2D.Impulse);
+        }
+
         public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)
         {
             if(CheckCooldown(attackType))

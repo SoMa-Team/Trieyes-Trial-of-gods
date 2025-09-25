@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1255636038724771311}
   - component: {fileID: 3296816956946410235}
-  - component: {fileID: 7512047315080172475}
+  - component: {fileID: 2294172487440916776}
   m_Layer: 0
   m_Name: blueshrine
   m_TagString: Untagged
@@ -88,8 +88,8 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &7512047315080172475
-BoxCollider2D:
+--- !u!70 &2294172487440916776
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -123,17 +123,8 @@ BoxCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.87, y: 4.23}
-    newSize: {x: 3.87, y: 4.23}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 3.5, y: 4}
-  m_EdgeRadius: 0
+  m_Size: {x: 3.55, y: 3.99}
+  m_Direction: 0
 --- !u!1 &4932088507883938021
 GameObject:
   m_ObjectHideFlags: 0
@@ -164,7 +155,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5052240120113588670}

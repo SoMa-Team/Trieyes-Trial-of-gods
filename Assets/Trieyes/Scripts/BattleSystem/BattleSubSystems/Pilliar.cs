@@ -15,6 +15,9 @@ namespace BattleSystem
 
     /// <summary>
     /// 기둥 오브젝트 - 캐릭터가 1초 이상 머물면 특별한 효과를 발동하는 컴포넌트
+    /// 빨간 기둥: 최대 체력의 10% 회복
+    /// 파란 기둥: 이동속도 20% 증가
+    /// 노란 기둥: 공격력의 15% 데미지 장판 설치
     /// </summary>
     public class Pilliar : MonoBehaviour
     {
@@ -114,14 +117,12 @@ namespace BattleSystem
         private void SetRandomPilliarType()
         {
             float randomValue = UnityEngine.Random.Range(0f, 1f);
-            // if (randomValue < 0.333f)
-            //     pilliarType = PilliarType.Red;
-            // else if (randomValue < 0.666f)
-            //     pilliarType = PilliarType.Blue;
-            // else
-            //     pilliarType = PilliarType.Yellow;
-
-            pilliarType = PilliarType.Yellow;
+            if (randomValue < 0.333f)
+                pilliarType = PilliarType.Red;
+            else if (randomValue < 0.666f)
+                pilliarType = PilliarType.Blue;
+            else
+                pilliarType = PilliarType.Yellow;
             
             GetComponent<SpriteRenderer>().sprite = pilliarImages[(int)pilliarType];
         }
@@ -155,8 +156,6 @@ namespace BattleSystem
             // 최대 체력의 10% 회복
             int healAmount = Mathf.RoundToInt(currentCharacter.maxHp * healPercentage);
             currentCharacter.ChangeHP(healAmount);
-            
-            Debug.LogWarning($"[Pilliar] 빨간 기둥 발동! {currentCharacter.pawnName}이(가) {healAmount} HP 회복");
         }
 
         private void ActivateBluePilliar()
@@ -174,8 +173,6 @@ namespace BattleSystem
 
             var buff = new BUFF();
             buff.Activate(buffInfo);
-            
-            Debug.LogWarning($"[Pilliar] 파란 기둥 발동! {currentCharacter.pawnName}이(가) {speedBuffDuration}초간 이동속도 {speedBuffMultiplier:F0}% 증가");
         }
 
         private void ActivateYellowPilliar()
@@ -185,8 +182,6 @@ namespace BattleSystem
             
             // AC100 장판 생성
             CreateAC100Field(fieldDamage);
-            
-            Debug.LogWarning($"[Pilliar] 노란 기둥 발동! {currentCharacter.pawnName}이(가) {fieldDuration}초간 {fieldRadius}반경에 {fieldDamage} 데미지 장판 설치");
         }
 
         private void CreateAC100Field(int damage)

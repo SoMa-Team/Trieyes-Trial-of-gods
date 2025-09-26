@@ -12,6 +12,10 @@ namespace BattleSystem
 
         [SerializeField] private GameObject beaconPrefab;
         private GameObject _beacon;
+
+        [SerializeField] private GameObject _PilliarPrefab;
+        private GameObject _pillar;
+
         private float duration = 999f;
         private float beaconEdgeOffset = 11f;
 
@@ -25,7 +29,7 @@ namespace BattleSystem
         {
             _beacon = Instantiate(beaconPrefab);
             _beacon.gameObject.SetActive(false);
-            _beacon.transform.position = GetBeaconPosition();
+            _beacon.transform.position = GetSubsystemPosition();
 
             // Particlesystem duration, startLifetime 설정
             var particleSystem = _beacon.GetComponentInChildren<ParticleSystem>();
@@ -45,11 +49,17 @@ namespace BattleSystem
             }
 
             _beacon.gameObject.SetActive(true);
+
             // vfx play
             particleSystem.Play();
         }
-        
-        private Vector2 GetBeaconPosition()
+
+        internal void CreatePilliar()
+        {
+            Instantiate(_PilliarPrefab, GetSubsystemPosition(), Quaternion.identity);
+        }
+
+        private Vector2 GetSubsystemPosition()
         {
             var spawnPos = new Vector2(
                 Random.Range(TopLeft.x + beaconEdgeOffset, 
@@ -58,7 +68,6 @@ namespace BattleSystem
                 Random.Range(BottomRight.y + beaconEdgeOffset, 
                 TopLeft.y - beaconEdgeOffset));
 
-            Debug.Log($"Beacon spawn position: {spawnPos}");
             return spawnPos;
         }
     }

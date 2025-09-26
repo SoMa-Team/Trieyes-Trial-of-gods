@@ -26,12 +26,21 @@ namespace BattleSystem
 
         private float Phase3Time = 10f;
 
-        private float StempedeChance = 3f;
+        [Header("대규모 스폰 관련")]
+        private float StempedeChance = 2f;
 
         private bool isStempede = false;
 
         private int StempedeCountMin = 10;
         private int StempedeCountMax = 20;
+
+        private float StempedeMinDist = 5f;
+        private float StempedeMaxDist = 10f;
+
+        [Header("기둥 관련")]
+        private float PilliarChance = 4f;
+        private float PilliarMinDist = 5f;
+        private float PilliarMaxDist = 10f;
 
         protected override void OnActivated()
         {
@@ -50,7 +59,12 @@ namespace BattleSystem
                 if (UnityEngine.Random.Range(0, 100) < StempedeChance)
                 {
                     isStempede = true;
-                    spawnManager.SpawnEnemy(UnityEngine.Random.Range(StempedeCountMin, StempedeCountMax));
+                    spawnManager.SpawnEnemy(UnityEngine.Random.Range(StempedeCountMin, StempedeCountMax), StempedeMinDist, StempedeMaxDist);
+                }
+
+                if (UnityEngine.Random.Range(0, 100) < PilliarChance)
+                {
+                    (View as BattleTimerStageView)?.CreatePilliar();
                 }
 
                 mainCharacter.OnEvent(Utils.EventType.OnTick, mainCharacter);

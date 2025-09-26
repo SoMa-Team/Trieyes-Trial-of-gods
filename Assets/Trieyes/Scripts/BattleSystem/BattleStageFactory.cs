@@ -189,6 +189,9 @@ namespace BattleSystem
         {
             Debug.Log("BattleStageFactory Deactivate Called");
             
+            var mainCharacter = battleStage.mainCharacter;
+            mainCharacter.OnEvent(EventType.OnBattleEnd, null);
+            
             battleStage.mainCharacter.transform.SetParent(null);
             
             foreach (var golds in battleStage.golds.Values.ToList())

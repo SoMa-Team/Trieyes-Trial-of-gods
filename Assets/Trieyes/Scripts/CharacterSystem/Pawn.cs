@@ -6,6 +6,7 @@ using RelicSystem;
 using UnityEngine;
 using CardSystem;
 using System;
+using System.Linq;
 using BattleSystem;
 using GamePlayer;
 
@@ -342,6 +343,10 @@ namespace CharacterSystem
         /// <param name="direction">이동할 방향</param>
         public virtual void Move(Vector2 direction)
         {
+            var moveSpeed = this.moveSpeed;
+            if (relics.Any(relic => relic.relicID == 112))
+                moveSpeed *= -1f;
+            
             if (direction.magnitude > 0.1f)
             {
                 // 360도 자연스러운 이동

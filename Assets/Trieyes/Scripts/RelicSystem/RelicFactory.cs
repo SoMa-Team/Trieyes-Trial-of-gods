@@ -43,6 +43,16 @@ namespace RelicSystem
                 108 => new Relic0108_MirrorOfCurse(),
                 109 => new Relic0109_GoldenLeaf(),
                 110 => new Relic0110_JudgesSword(),
+                111 => new Relic0111_Swiftheart(),
+                112 => new Relic0112_TwistedBoots(),
+                113 => new Relic0113_FountainOfLife(),
+                114 => new Relic0114_WingedBoots(),
+                115 => new Relic0115_HuntersInstinct(),
+                116 => new Relic0116_ChaliceOfReversal(),
+                117 => new Relic0117_BloodOath(),
+                118 => new Relic0118_ChainsOfEndurance(),
+                119 => new Relic0119_CrystalOrb(),
+                120 => new Relic0120_Pinball(),
                 _ => null
             };
             relic.relicAction?.AttachTo(relic);

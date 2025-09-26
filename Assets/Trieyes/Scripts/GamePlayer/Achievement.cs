@@ -92,7 +92,7 @@ namespace GamePlayer
         public List<int> GetAvailableRelicIDs()
         {
             // TODO : 업적 구현 시 수정 필요
-            return RelicDataBase.GetAllRelicIDs().Where(x => x is >= 101 and <= 110).ToList();
+            return RelicDataBase.GetAllRelicIDs().Where(x => x is >= 101 and <= 120).ToList();
         }
         
         public List<Card> GetAvailableCards()

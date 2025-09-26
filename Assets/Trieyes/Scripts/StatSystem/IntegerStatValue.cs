@@ -62,6 +62,12 @@ namespace Stats
             basicValue *= factor;
             basicValueChanged = true;
         }
+
+        public int GetBasicValue()
+        {
+            return basicValue;
+        }
+        
         /// 스탯 값을 직접 설정합니다.
         public void SetBasicValue(float newValue)
         {

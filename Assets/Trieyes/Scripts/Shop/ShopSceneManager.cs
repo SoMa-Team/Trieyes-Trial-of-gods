@@ -189,7 +189,7 @@ public class ShopSceneManager : EventStage<ShopSceneManager>
         for (int i = 0; i < mainCharacter.relics.Count; i++)
         {
             if (i >= imageRelics.Count)
-                throw new Exception($"ShopSceneManager : Relic 아이콘 공간 부족.");
+                return;
             var relic = mainCharacter.relics[i];
             var relicView = imageRelics[i];
             if (relic.icon is null)

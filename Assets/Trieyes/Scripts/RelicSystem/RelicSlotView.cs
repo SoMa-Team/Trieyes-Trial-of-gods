@@ -47,9 +47,12 @@ namespace RelicSystem
             _onClickAction?.Invoke();
         }
 
-        public void SetSelected(bool selected)
+        public void SetSelected(bool selected, bool useTween = true)
         {
-            AnimateScaleChange(selected);
+            if (useTween)
+                AnimateScaleChange(selected);
+            else
+                NonAnimateScaleChange(selected);
             this.selected = selected;
         }
 
@@ -62,6 +65,16 @@ namespace RelicSystem
             var endScale = selected ? selectScale : 1f;
             
             return Tween.Scale(innerTransform, startScale * Vector3.one, endScale * Vector3.one, animationDuration);
+        }
+
+        private void NonAnimateScaleChange(bool selected)
+        {
+            float animationDuration = 0.2f;
+            float selectScale = 1.3f;
+            
+            var endScale = selected ? selectScale : 1f;
+            
+            innerTransform.localScale = endScale * Vector3.one;
         }
     }
 }

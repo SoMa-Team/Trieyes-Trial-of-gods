@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 using BattleSystem; 
 using UnityEngine.UI;
 using Stats;
+using TestOnly;
 
-namespace CharacterSystem
+namespace Utils
 {
     public class DevUI : MonoBehaviour
     {
@@ -16,6 +18,8 @@ namespace CharacterSystem
         public Button addSpeed10000Button;
 
         public Button gameOverButton;
+        
+        public Button relicChangeButton;
 
         void Start()
         {
@@ -25,6 +29,18 @@ namespace CharacterSystem
             addAttackSpeed10000Button.onClick.AddListener(() => { if (BattleStage.now != null) BattleStage.now.mainCharacter.statSheet[StatType.AttackSpeed].SetBasicValue(BattleStage.now.mainCharacter.statSheet.GetRaw(StatType.AttackSpeed) + 10000); });
             addSpeed10000Button.onClick.AddListener(() => { if (BattleStage.now != null) BattleStage.now.mainCharacter.statSheet[StatType.MoveSpeed].SetBasicValue(BattleStage.now.mainCharacter.statSheet.GetRaw(StatType.MoveSpeed) + 10000); });
             gameOverButton.onClick.AddListener(() => { if (BattleStage.now != null) BattleStage.now.OnPlayerDeath(); });
+            
+            relicChangeButton.onClick.AddListener(async () =>
+            {
+                try
+                {
+                    await DevUIRelicChangePopup.Instance.Create();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+            });
         }
     }
 } 

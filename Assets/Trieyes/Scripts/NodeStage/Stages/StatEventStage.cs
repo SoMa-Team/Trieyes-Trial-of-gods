@@ -14,12 +14,8 @@ namespace NodeStage
     {
         [Header("UI")]
         [SerializeField] private GameObject Background;
-        [SerializeField] private Button btnOption1;
-        [SerializeField] private Button btnOption2;
-        [SerializeField] private Button btnOption3;
-        [SerializeField] private TextMeshProUGUI txtOption1;
-        [SerializeField] private TextMeshProUGUI txtOption2;
-        [SerializeField] private TextMeshProUGUI txtOption3;
+        [SerializeField] private Button[] optionButtons = new Button[3];
+        [SerializeField] private TextMeshProUGUI[] optionTexts = new TextMeshProUGUI[3];
 
         [Header("Popup")]
         [SerializeField] private DeckView deckViewLocal; // 부모의 deckView와 같다면 생략 가능
@@ -41,6 +37,9 @@ namespace NodeStage
             public int maxValue;
             public bool isPercentage;
             public string description;
+            // RandomStatRandomValue 옵션용 추가 필드
+            public int negativeValue;
+            public int positiveValue;
         }
 
         // 정수형 스탯 (+, % 연산 모두 가능)
@@ -64,36 +63,47 @@ namespace NodeStage
         private StatOption[] selectedOptions = new StatOption[3];
         private AllIn1SpriteShaderHandler shaderHandler;
 
-        // 스탯 증가 값 상수 정의
-        private const int FIXED_INTEGER_VALUE = 20;           // opt1. 지정된 정수 값
-        private const int FIXED_PERCENTAGE_VALUE = 10;        // opt1. 지정된 % 값
-        private const int RANDOM_INTEGER_MIN = -10;           // opt2. 랜덤 정수 최소값
-        private const int RANDOM_INTEGER_MAX = 20;            // opt2. 랜덤 정수 최대값
-        private const int RANDOM_PERCENTAGE_MIN = -5;         // opt2. 랜덤 % 최소값
-        private const int RANDOM_PERCENTAGE_MAX = 10;         // opt2. 랜덤 % 최대값
-        
-        // 랜덤 스탯 옵션용 더 큰 값들
-        private const int RANDOM_FIXED_INTEGER_VALUE = 30;    // opt3, 4. 랜덤 스탯 지정된 정수 값
-        private const int RANDOM_FIXED_PERCENTAGE_VALUE = 15; // opt3, 4. 랜덤 스탯 지정된 % 값
-        private const int RANDOM_RANGE_INTEGER_MIN = -15;     // opt3, 4. 랜덤 스탯 정수 최소값
-        private const int RANDOM_RANGE_INTEGER_MAX = 30;      // opt3, 4. 랜덤 스탯 정수 최대값
-        private const int RANDOM_RANGE_PERCENTAGE_MIN = -8;   // opt3, 4. 랜덤 스탯 % 최소값
-        private const int RANDOM_RANGE_PERCENTAGE_MAX = 15;   // opt3, 4. 랜덤 스탯 % 최대값
+        // 스탯 값 상수 정의
+        private static readonly StatValues FixedValues = new StatValues(20, 10);
+        private static readonly StatValues RandomValues = new StatValues(-10, 20, -5, 10);
+        private static readonly StatValues RandomFixedValues = new StatValues(30, 15);
+        private static readonly StatValues RandomRangeValues = new StatValues(-15, 30, -8, 15);
+
+        private struct StatValues
+        {
+            public readonly int IntegerValue;
+            public readonly int PercentageValue;
+            public readonly int IntegerMin;
+            public readonly int IntegerMax;
+            public readonly int PercentageMin;
+            public readonly int PercentageMax;
+
+            public StatValues(int intVal, int pctVal) : this(intVal, pctVal, 0, 0, 0, 0) { }
+            public StatValues(int intMin, int intMax, int pctMin, int pctMax) : this(0, 0, intMin, intMax, pctMin, pctMax) { }
+            public StatValues(int intVal, int pctVal, int intMin, int intMax, int pctMin, int pctMax)
+            {
+                IntegerValue = intVal;
+                PercentageValue = pctVal;
+                IntegerMin = intMin;
+                IntegerMax = intMax;
+                PercentageMin = pctMin;
+                PercentageMax = pctMax;
+            }
+        }
 
         protected override void OnActivated()
         {
-            btnOption1?.onClick.RemoveAllListeners();
-            btnOption2?.onClick.RemoveAllListeners();
-            btnOption3?.onClick.RemoveAllListeners();
+            // 버튼 이벤트 초기화 및 등록
+            for (int i = 0; i < optionButtons.Length; i++)
+            {
+                optionButtons[i]?.onClick.RemoveAllListeners();
+                int index = i; // 클로저를 위한 로컬 변수
+                optionButtons[i]?.onClick.AddListener(() => ExecuteOption(index));
+            }
 
             // 3개의 랜덤 옵션 생성
             GenerateRandomOptions();
             
-            // 버튼 이벤트 등록
-            btnOption1?.onClick.AddListener(() => ExecuteOption(0));
-            btnOption2?.onClick.AddListener(() => ExecuteOption(1));
-            btnOption3?.onClick.AddListener(() => ExecuteOption(2));
-
             // UI 텍스트 업데이트
             UpdateOptionTexts();
 
@@ -165,208 +175,80 @@ namespace NodeStage
         /// </summary>
         private StatOption CreateStatOption(StatOptionType type)
         {
-            StatOption option = new StatOption();
-            option.type = type;
+            var option = new StatOption { type = type };
+            var (statType, isPercentage) = SelectRandomStatAndType();
+            option.statType = statType;
+            option.isPercentage = isPercentage;
 
             switch (type)
             {
                 case StatOptionType.FixedStatFixedValue:
-                    option = CreateFixedStatFixedValueOption();
+                    option.fixedValue = isPercentage ? FixedValues.PercentageValue : FixedValues.IntegerValue;
                     break;
                 case StatOptionType.FixedStatRandomValue:
-                    option = CreateFixedStatRandomValueOption();
+                    if (isPercentage)
+                    {
+                        option.minValue = RandomValues.PercentageMin;
+                        option.maxValue = RandomValues.PercentageMax;
+                    }
+                    else
+                    {
+                        option.minValue = RandomValues.IntegerMin;
+                        option.maxValue = RandomValues.IntegerMax;
+                    }
                     break;
                 case StatOptionType.RandomStatFixedValue:
-                    option = CreateRandomStatFixedValueOption();
+                    option.fixedValue = isPercentage ? RandomFixedValues.PercentageValue : RandomFixedValues.IntegerValue;
                     break;
                 case StatOptionType.RandomStatRandomValue:
-                    option = CreateRandomStatRandomValueOption();
+                    if (isPercentage)
+                    {
+                        option.negativeValue = Random.Range(RandomRangeValues.PercentageMin, 0);
+                        option.positiveValue = Random.Range(1, RandomRangeValues.PercentageMax + 1);
+                    }
+                    else
+                    {
+                        option.negativeValue = Random.Range(RandomRangeValues.IntegerMin, 0);
+                        option.positiveValue = Random.Range(1, RandomRangeValues.IntegerMax + 1);
+                    }
                     break;
             }
 
-            return option;
-        }
-
-        /// <summary>
-        /// 지정된 스탯 + 지정된 값 옵션 생성
-        /// </summary>
-        private StatOption CreateFixedStatFixedValueOption()
-        {
-            var option = new StatOption();
-            option.type = StatOptionType.FixedStatFixedValue;
-            
-            // ??? 선택
-            var allStats = IntegerStats.Concat(PercentageStats).ToArray();
-            option.statType = allStats[Random.Range(0, allStats.Length)];
-            
-            // 정수형 스탯인지 확인
-            bool isIntegerStat = IntegerStats.Contains(option.statType);
-            
-            if (isIntegerStat)
-            {
-                // 50% 확률로 정수 또는 % 연산 선택
-                option.isPercentage = Random.value < 0.5f;
-                option.fixedValue = option.isPercentage ? FIXED_PERCENTAGE_VALUE : FIXED_INTEGER_VALUE;
-            }
-            else
-            {
-                // %형 스탯은 % 연산만 가능
-                option.isPercentage = true;
-                option.fixedValue = FIXED_PERCENTAGE_VALUE;
-            }
-
             option.description = GenerateDescription(option);
             return option;
         }
 
         /// <summary>
-        /// 지정된 스탯 + 랜덤 범위 옵션 생성
+        /// 랜덤 스탯과 연산 타입을 선택합니다.
         /// </summary>
-        private StatOption CreateFixedStatRandomValueOption()
+        private (StatType statType, bool isPercentage) SelectRandomStatAndType()
         {
-            var option = new StatOption();
-            option.type = StatOptionType.FixedStatRandomValue;
-            
-            // ??? 선택
             var allStats = IntegerStats.Concat(PercentageStats).ToArray();
-            option.statType = allStats[Random.Range(0, allStats.Length)];
+            var statType = allStats[Random.Range(0, allStats.Length)];
+            var isIntegerStat = IntegerStats.Contains(statType);
             
-            // 정수형 스탯인지 확인
-            bool isIntegerStat = IntegerStats.Contains(option.statType);
-            
-            if (isIntegerStat)
-            {
-                // 50% 확률로 정수 또는 % 연산 선택
-                option.isPercentage = Random.value < 0.5f;
-                if (option.isPercentage)
-                {
-                    option.minValue = RANDOM_PERCENTAGE_MIN;
-                    option.maxValue = RANDOM_PERCENTAGE_MAX;
-                }
-                else
-                {
-                    option.minValue = RANDOM_INTEGER_MIN;
-                    option.maxValue = RANDOM_INTEGER_MAX;
-                }
-            }
-            else
-            {
-                // %형 스탯은 % 연산만 가능
-                option.isPercentage = true;
-                option.minValue = RANDOM_PERCENTAGE_MIN;
-                option.maxValue = RANDOM_PERCENTAGE_MAX;
-            }
-
-            option.description = GenerateDescription(option);
-            return option;
+            bool isPercentage = isIntegerStat ? Random.value < 0.5f : true;
+            return (statType, isPercentage);
         }
 
-        /// <summary>
-        /// ??? + 지정된 값 옵션 생성 (더 큰 값)
-        /// </summary>
-        private StatOption CreateRandomStatFixedValueOption()
-        {
-            var option = new StatOption();
-            option.type = StatOptionType.RandomStatFixedValue;
-            
-            // ??? 선택
-            var allStats = IntegerStats.Concat(PercentageStats).ToArray();
-            option.statType = allStats[Random.Range(0, allStats.Length)];
-            
-            // 정수형 스탯인지 확인
-            bool isIntegerStat = IntegerStats.Contains(option.statType);
-            
-            if (isIntegerStat)
-            {
-                // 50% 확률로 정수 또는 % 연산 선택
-                option.isPercentage = Random.value < 0.5f;
-                option.fixedValue = option.isPercentage ? RANDOM_FIXED_PERCENTAGE_VALUE : RANDOM_FIXED_INTEGER_VALUE;
-            }
-            else
-            {
-                // %형 스탯은 % 연산만 가능
-                option.isPercentage = true;
-                option.fixedValue = RANDOM_FIXED_PERCENTAGE_VALUE;
-            }
-
-            option.description = GenerateDescription(option);
-            return option;
-        }
-
-        /// <summary>
-        /// ??? + 랜덤 범위 옵션 생성 (더 큰 범위)
-        /// </summary>
-        private StatOption CreateRandomStatRandomValueOption()
-        {
-            var option = new StatOption();
-            option.type = StatOptionType.RandomStatRandomValue;
-            
-            // ??? 선택
-            var allStats = IntegerStats.Concat(PercentageStats).ToArray();
-            option.statType = allStats[Random.Range(0, allStats.Length)];
-            
-            // 정수형 스탯인지 확인
-            bool isIntegerStat = IntegerStats.Contains(option.statType);
-            
-            if (isIntegerStat)
-            {
-                // 50% 확률로 정수 또는 % 연산 선택
-                option.isPercentage = Random.value < 0.5f;
-                if (option.isPercentage)
-                {
-                    option.minValue = RANDOM_RANGE_PERCENTAGE_MIN;
-                    option.maxValue = RANDOM_RANGE_PERCENTAGE_MAX;
-                }
-                else
-                {
-                    option.minValue = RANDOM_RANGE_INTEGER_MIN;
-                    option.maxValue = RANDOM_RANGE_INTEGER_MAX;
-                }
-            }
-            else
-            {
-                // %형 스탯은 % 연산만 가능
-                option.isPercentage = true;
-                option.minValue = RANDOM_RANGE_PERCENTAGE_MIN;
-                option.maxValue = RANDOM_RANGE_PERCENTAGE_MAX;
-            }
-
-            option.description = GenerateDescription(option);
-            return option;
-        }
 
         /// <summary>
         /// 스탯 옵션에 대한 설명 텍스트를 생성합니다.
         /// </summary>
         private string GenerateDescription(StatOption option)
         {
-            switch (option.type)
+            string suffix = option.isPercentage ? "%" : "";
+            string statName = option.type == StatOptionType.FixedStatFixedValue || option.type == StatOptionType.FixedStatRandomValue
+                ? StatTypeTransformer.StatTypeToKorean(option.statType) : "???";
+            
+            return option.type switch
             {
-                case StatOptionType.FixedStatFixedValue:
-                    string statName1 = StatTypeTransformer.StatTypeToKorean(option.statType);
-                    string valueText1 = option.isPercentage ? $"{option.fixedValue}%" : $"{option.fixedValue}";
-                    return $"[{statName1}]을 [{valueText1}] 올립니다.";
-                    
-                case StatOptionType.FixedStatRandomValue:
-                    string statName2 = StatTypeTransformer.StatTypeToKorean(option.statType);
-                    string rangeText2 = option.isPercentage ? 
-                        $"{option.minValue}% ~ {option.maxValue}%" : 
-                        $"{option.minValue} ~ {option.maxValue}";
-                    return $"[{statName2}]을 [{rangeText2}] 사이로 올립니다.";
-                    
-                case StatOptionType.RandomStatFixedValue:
-                    string valueText3 = option.isPercentage ? $"{option.fixedValue}%" : $"{option.fixedValue}";
-                    return $"???을 [{valueText3}] 올립니다.";
-                    
-                case StatOptionType.RandomStatRandomValue:
-                    string rangeText4 = option.isPercentage ? 
-                        $"{option.minValue}% ~ {option.maxValue}%" : 
-                        $"{option.minValue} ~ {option.maxValue}";
-                    return $"???을 [{rangeText4}] 사이로 올립니다.";
-                    
-                default:
-                    return "알 수 없는 옵션";
-            }
+                StatOptionType.FixedStatFixedValue => $"{statName}이(가) {option.fixedValue}{suffix}만큼 증가합니다.",
+                StatOptionType.FixedStatRandomValue => $"{statName}이(가) {option.minValue}{suffix} ~ {option.maxValue}{suffix}만큼 증가합니다.",
+                StatOptionType.RandomStatFixedValue => $"{statName}이(가) {option.fixedValue}{suffix}만큼 증가합니다.",
+                StatOptionType.RandomStatRandomValue => $"{statName}이(가) {option.negativeValue}{suffix} 또는 {option.positiveValue}{suffix}만큼 변화합니다.",
+                _ => "알 수 없는 옵션"
+            };
         }
 
         /// <summary>
@@ -374,9 +256,10 @@ namespace NodeStage
         /// </summary>
         private void UpdateOptionTexts()
         {
-            if (txtOption1 != null) txtOption1.text = selectedOptions[0].description;
-            if (txtOption2 != null) txtOption2.text = selectedOptions[1].description;
-            if (txtOption3 != null) txtOption3.text = selectedOptions[2].description;
+            for (int i = 0; i < optionTexts.Length; i++)
+            {
+                optionTexts[i]?.SetText(selectedOptions[i].description);
+            }
         }
 
         /// <summary>
@@ -414,8 +297,12 @@ namespace NodeStage
                     break;
                     
                 case StatOptionType.FixedStatRandomValue:
-                case StatOptionType.RandomStatRandomValue:
                     valueToApply = Random.Range(option.minValue, option.maxValue + 1);
+                    break;
+                    
+                case StatOptionType.RandomStatRandomValue:
+                    // 50% 확률로 음수 또는 양수 값 선택
+                    valueToApply = Random.value < 0.5f ? option.negativeValue : option.positiveValue;
                     break;
             }
 
@@ -447,29 +334,6 @@ namespace NodeStage
                 }
             }
 
-            // 변경 후 스탯 값 확인, TODO: 문제 없을 시 주석 혹은 삭제 
-            int afterValue = mainCharacter.GetRawStatValue(option.statType);
-            int actualChange = afterValue - beforeValue;
-            
-            // 로그 출력
-            string valueType = option.isPercentage ? "%" : "";
-            string optionTypeName = GetOptionTypeName(option.type);
-            
-            Debug.LogWarning($"[StatEventStage] {optionTypeName} - {statName}: {beforeValue} → {afterValue} (변화량: {actualChange:+0;-0;0}{valueType})");
-        }
-
-
-        // 변경 후 스탯 값 확인, TODO: 문제 없을 시 주석 혹은 삭제 
-        private string GetOptionTypeName(StatOptionType type)
-        {
-            switch (type)
-            {
-                case StatOptionType.FixedStatFixedValue: return "지정된 스탯 + 지정된 값";
-                case StatOptionType.FixedStatRandomValue: return "지정된 스탯 + 랜덤 범위";
-                case StatOptionType.RandomStatFixedValue: return "??? + 지정된 값";
-                case StatOptionType.RandomStatRandomValue: return "??? + 랜덤 범위";
-                default: return "알 수 없는 옵션";
-            }
         }
     }
 }

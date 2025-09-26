@@ -213,6 +213,11 @@ namespace BattleSystem
         {
             return GetRandomPointAround(BattleStage.now.mainCharacter, minDistance, maxDistance);
         }
+
+        private Vector3 GetRandomSpawnPoint(float minDist, float maxDist)
+        {
+            return GetRandomPointAround(BattleStage.now.mainCharacter, minDist, maxDist);
+        }
         
         private Vector3 GetRandomPointAround(Pawn pawn, float minDistance, float maxDistance)
         {
@@ -334,7 +339,7 @@ namespace BattleSystem
 
         /// <summary>
         /// 난이도에 따라 적을 생성합니다.</summary>
-        public void SpawnEnemy(int count=1)
+        public void SpawnEnemy(int count=1, float minDist=0f, float maxDist=0f)
         {
             for (int i = 0; i < count + Random.Range(SpawnCountMin, SpawnCountMax); i++)
             {
@@ -343,7 +348,14 @@ namespace BattleSystem
                 enemy.statSheet[StatType.Health].MultiplyToBasicValue(_difficulty.enemyHpMultiplier);
                 enemy.SyncHP();
 
-                BattleStage.now.AttachEnemy(enemy, GetRandomSpawnPoint());
+                if (minDist != 0f && maxDist != 0f)
+                {
+                    BattleStage.now.AttachEnemy(enemy, GetRandomSpawnPoint(minDist, maxDist));
+                }
+                else
+                {
+                    BattleStage.now.AttachEnemy(enemy, GetRandomSpawnPoint());
+                }
             }
         }
     }

@@ -22,18 +22,19 @@ namespace AttackSystem
         AC007_HeroFireMeteor = 7,
         AC008_IceStorm = 8,
         AC009_LightningField = 9,
+
+        AC050_MagicMissile = 50,
         
         // AOE 및 DOT 컴포넌트
         AC100_AOE = 100,
         AC101_DOT = 101,
-        
-        // 특수 공격 컴포넌트
         AC102_CHAIN = 102,
         AC103_FALL = 103,
         AC104_GLOBAL = 104,
         AC105_FollowingField = 105,
         AC106_Projectile = 106,
         AC107_OrbitingElement = 107,
+        AC108_OrbitingManager = 108,
         AC109_Dash = 109,
         
         // Relic Attack Components

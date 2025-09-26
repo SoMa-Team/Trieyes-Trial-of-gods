@@ -96,7 +96,7 @@ namespace BattleSystem
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            Pawn character = other.GetComponent<Pawn>();
+            Character character = other.GetComponent<Character>();
             if (character != null && !character.isEnemy)
             {
                 currentCharacter = character;
@@ -106,7 +106,7 @@ namespace BattleSystem
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            Pawn character = other.GetComponent<Pawn>();
+            Character character = other.GetComponent<Character>();
             if (character == currentCharacter)
             {
                 currentCharacter = null;
@@ -117,9 +117,9 @@ namespace BattleSystem
         private void SetRandomPilliarType()
         {
             float randomValue = UnityEngine.Random.Range(0f, 1f);
-            if (randomValue < 0.333f)
+            if (randomValue < 0.3f)
                 pilliarType = PilliarType.Red;
-            else if (randomValue < 0.666f)
+            else if (randomValue < 0.6f)
                 pilliarType = PilliarType.Blue;
             else
                 pilliarType = PilliarType.Yellow;

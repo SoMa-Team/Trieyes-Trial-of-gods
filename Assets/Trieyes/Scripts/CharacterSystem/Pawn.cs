@@ -193,8 +193,8 @@ namespace CharacterSystem
 
             ApplyRelic();
 
-            skillAttack1Cooldown = skill1Attack?.cooldown ?? 0f;
-            skillAttack2Cooldown = skill2Attack?.cooldown ?? 0f;
+            skillAttack1Cooldown = skill1Attack?.cooldown * (100 - GetStatValue(StatType.SkillCooldownReduction) / 100f) ?? 0f;
+            skillAttack2Cooldown = skill2Attack?.cooldown * (100 - GetStatValue(StatType.SkillCooldownReduction) / 100f) ?? 0f;
 
             deck.Activate(this, true);
             

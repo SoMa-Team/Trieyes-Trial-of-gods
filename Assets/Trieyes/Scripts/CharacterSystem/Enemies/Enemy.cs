@@ -71,7 +71,7 @@ namespace CharacterSystem
             }
         }
 
-        private float knockbackForceMultiplier = 10f;
+        private float knockbackForceMultiplier = 20f;
         private void Knockback(AttackResult attackResult)
         {
             var force = (attackResult.attacker.transform.position - transform.position).normalized * knockbackForceMultiplier;

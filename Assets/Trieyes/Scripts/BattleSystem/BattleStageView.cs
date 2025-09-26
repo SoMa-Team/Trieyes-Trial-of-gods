@@ -13,7 +13,7 @@ namespace BattleSystem
         private BattleStage _battleStage;
         
         // ===== 카메라 관련 =====
-        private CameraController _cameraController;
+        public CameraController CameraController { private set; get; }
         private Pawn _mainCharacter;
         [Header("Camera Settings")]
         public Vector3 cameraOffset = new Vector3(0, 0, -7);
@@ -49,9 +49,9 @@ namespace BattleSystem
         private void CreateBattleCamera()
         {
             // 기존 카메라가 있다면 제거
-            if (_cameraController != null)
+            if (CameraController != null)
             {
-                DestroyImmediate(_cameraController.gameObject);
+                DestroyImmediate(CameraController.gameObject);
             }
             
             // 새로운 카메라 게임오브젝트 생성
@@ -60,13 +60,13 @@ namespace BattleSystem
             cameraGO.transform.position = new Vector3(0, 0, -5.5f);
             
             // CameraController 컴포넌트 추가
-            _cameraController = cameraGO.AddComponent<CameraController>();
-            _cameraController.Initialize();
+            CameraController = cameraGO.AddComponent<CameraController>();
+            CameraController.Initialize();
             
             // 카메라 설정
-            _cameraController.SetFollowOffset(cameraOffset);
-            _cameraController.fieldOfView = cameraFieldOfView;
-            _cameraController.UpdateLensSettings();
+            CameraController.SetFollowOffset(cameraOffset);
+            CameraController.fieldOfView = cameraFieldOfView;
+            CameraController.UpdateLensSettings();
             
             Debug.Log("전투 카메라가 생성되었습니다.");
         }
@@ -76,13 +76,13 @@ namespace BattleSystem
         /// </summary>
         public void SetMainCharacter()
         {
-            if (_battleStage?.mainCharacter != null && _cameraController != null)
+            if (_battleStage?.mainCharacter != null && CameraController != null)
             {
                 _mainCharacter = _battleStage.mainCharacter;
                 
                 // 카메라가 캐릭터를 따라다니도록 설정
-                _cameraController.SetTarget(_mainCharacter.transform);
-                _cameraController.SetPriority(10);
+                CameraController.SetTarget(_mainCharacter.transform);
+                CameraController.SetPriority(10);
                 
                 Debug.Log($"카메라가 {_mainCharacter.name}를 팔로우하도록 설정되었습니다.");
             }

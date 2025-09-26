@@ -26,8 +26,6 @@ namespace AttackSystem
 
         private void Awake()
         {
-
-
             Instance = this;
             InitAttackPrefab();
             DontDestroyOnLoad(gameObject);

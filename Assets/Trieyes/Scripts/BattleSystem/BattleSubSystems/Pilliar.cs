@@ -3,6 +3,9 @@ using CharacterSystem;
 using AttackSystem;
 using AttackComponents;
 using Stats;
+using HUDIndicator;
+using UISystem;
+using PrimeTween;
 
 namespace BattleSystem
 {
@@ -24,6 +27,7 @@ namespace BattleSystem
         [Header("기둥 설정")]
         [SerializeField] private PilliarType pilliarType;
         [SerializeField] private Sprite[] pilliarImages;
+        [SerializeField] private Color[] pilliarColors;
         [SerializeField] private float activationTime = 1f;      // 발동까지 필요한 시간
         [SerializeField] private float lifetime = 10f;           // 기둥 수명
         
@@ -34,30 +38,72 @@ namespace BattleSystem
         [SerializeField] private float fieldDuration = 10f;      // 노란 기둥: 장판 지속시간
         [SerializeField] private float fieldRadius = 3f;         // 노란 기둥: 장판 반경
         [SerializeField] private float fieldDamagePercentage = 0.15f; // 노란 기둥: 공격력의 15%
+        private bool bIsFieldActive = false;
 
         [SerializeField] private GameObject fieldDamageVFX;
+
+        [Header("Indicator")]
+        [SerializeField] private GameObject indicator;
+        [SerializeField] private Texture2D[] indicatorIcons;
+
+        [Header("Floor")]
+        [SerializeField] private GameObject floor;
 
         private float activationTimer = 0f;
         private float lifetimeTimer = 0f;
         private float fieldTimer = 0f; // 노란 기둥 장판 지속시간 타이머
         private bool isActivated = false;
         private Pawn currentCharacter = null;
-        private BoxCollider2D boxCollider;
+        private CircleCollider2D boxCollider;
+        
+        // RadialClip 애니메이션 관련
+        private SpriteRenderer floorSpriteRenderer;
+        private Material floorMaterial;
+        private Tween radialClipTween;
 
         private void Start()
         {
-            boxCollider = GetComponent<BoxCollider2D>();
+            boxCollider = GetComponent<CircleCollider2D>();
             if (boxCollider == null)
             {
-                Debug.LogError($"[Pilliar] {pilliarType} 기둥에 BoxCollider2D가 없습니다!");
+                Debug.LogError($"[Pilliar] {pilliarType} 기둥에 CircleCollider2D가 없습니다!");
             }
             else
             {
                 boxCollider.isTrigger = true;
             }
             
+            // Floor SpriteRenderer와 Material 초기화
+            if (floor != null)
+            {
+                floorSpriteRenderer = floor.GetComponent<SpriteRenderer>();
+                if (floorSpriteRenderer != null)
+                {
+                    floorMaterial = floorSpriteRenderer.material;
+                    // RadialClip 초기값을 0으로 설정
+                    if (floorMaterial != null && floorMaterial.HasProperty("_RadialClip"))
+                    {
+                        floorMaterial.SetFloat("_RadialClip", 0f);
+                    }
+                }
+            }
+            
             // 랜덤하게 기둥 타입 설정 (33.33% 확률)
             SetRandomPilliarType();
+
+            if(indicator != null)
+            {
+                var componentInScreen = indicator.GetComponent<IndicatorOnScreen>();
+                IndicatorRenderer renderer = BattleOverlayCanvasController.Instance.GetComponent<IndicatorRenderer>();
+                componentInScreen.SetRenderer(renderer);
+
+                componentInScreen.style.texture = indicatorIcons[(int)pilliarType];
+
+                var componentOffScreen = indicator.GetComponent<IndicatorOffScreen>();
+                componentOffScreen.SetRenderer(renderer);
+
+                componentOffScreen.style.texture = indicatorIcons[(int)pilliarType];
+            }
         }
 
         private void Update()
@@ -101,6 +147,14 @@ namespace BattleSystem
             {
                 currentCharacter = character;
                 activationTimer = 0f;
+                
+                if (bIsFieldActive)
+                {
+                    return;
+                }
+
+                // RadialClip 애니메이션 시작 (1초 동안 360도로)
+                StartRadialClipAnimation(360f, 1f);
             }
         }
 
@@ -111,6 +165,14 @@ namespace BattleSystem
             {
                 currentCharacter = null;
                 activationTimer = 0f;
+
+                if (bIsFieldActive)
+                {
+                    return;
+                }
+                
+                // RadialClip을 0도로 되돌리기
+                ResetRadialClipAnimation();
             }
         }
 
@@ -125,8 +187,8 @@ namespace BattleSystem
                 pilliarType = PilliarType.Yellow;
             
             GetComponent<SpriteRenderer>().sprite = pilliarImages[(int)pilliarType];
+            floor.GetComponent<SpriteRenderer>().material.color = pilliarColors[(int)pilliarType];
         }
-
         private void ActivatePilliar()
         {
             if (isActivated || currentCharacter == null) return;
@@ -207,10 +269,49 @@ namespace BattleSystem
             }
 
             ac100.Activate(aoeAttack, Vector2.zero);
+            bIsFieldActive = true;
+        }
+
+        private void StartRadialClipAnimation(float targetValue, float duration)
+        {
+            if (floorMaterial == null || !floorMaterial.HasProperty("_RadialClip"))
+                return;
+                
+            // 기존 애니메이션 중지
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
+            
+            // 현재 RadialClip 값에서 목표값으로 애니메이션
+            float startValue = floorMaterial.GetFloat("_RadialClip");
+            radialClipTween = Tween.Custom(startValue, targetValue, duration, 
+                value => floorMaterial.SetFloat("_RadialClip", value));
+        }
+        
+        private void ResetRadialClipAnimation()
+        {
+            if (floorMaterial == null || !floorMaterial.HasProperty("_RadialClip"))
+                return;
+                
+            // 기존 애니메이션 중지
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
+            
+            // 즉시 0으로 설정
+            floorMaterial.SetFloat("_RadialClip", 0f);
         }
 
         private void DestroyPilliar()
         {
+            // 애니메이션 정리
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
+            
             Destroy(gameObject);
         }
     }

@@ -21,8 +21,8 @@ namespace BattleSystem
 
         public void Awake()
         {
-            TopLeft = new Vector2(-20f, 16f);
-            BottomRight = new Vector2(20f, -16f);
+            TopLeft = new Vector2(-11f, 11f);
+            BottomRight = new Vector2(11f, -11f);
         }
 
         public void CreateBeacon()

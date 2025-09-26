@@ -14,8 +14,8 @@ namespace BattleSystem
         // 추가적인 구현이 필요한 경우 OnActivated() 또는 OnDeactivated()를 오버라이드
 
         // 페이즈 증가 마다 SpawnIntervalMultiplier 증가
-        private float Phase1SpawnIntervalMultiplier = 1.5f;
-        private float Phase2SpawnIntervalMultiplier = 2.25f;
+        private float Phase1SpawnIntervalMultiplier = 1.25f;
+        private float Phase2SpawnIntervalMultiplier = 1.75f;
 
         private float Phase1Time = 15f;
         private bool bisPhase1 = false;
@@ -24,15 +24,15 @@ namespace BattleSystem
         private bool bisPhase2 = false;
         private bool bisPhase2Ended = false;
 
-        private float Phase3Time = 10f;
+        private float Phase3Time = 1f;
 
         [Header("대규모 스폰 관련")]
         private float StempedeChance = 2f;
 
         private bool isStempede = false;
 
-        private int StempedeCountMin = 10;
-        private int StempedeCountMax = 20;
+        private int StempedeCountMin = 5;
+        private int StempedeCountMax = 10;
 
         private float StempedeMinDist = 5f;
         private float StempedeMaxDist = 10f;

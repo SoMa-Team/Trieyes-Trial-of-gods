@@ -1,6 +1,9 @@
 using UnityEngine;
 using CharacterSystem;
 using System;
+using HUDIndicator;
+using UISystem;
+using PrimeTween;
 
 namespace BattleSystem
 {
@@ -17,6 +20,13 @@ namespace BattleSystem
         [SerializeField] private bool isCharacterInside = false;
         [SerializeField] private float currentTimer = 0f;
         [SerializeField] private float lastExitTime = 0f;
+
+        [Header("Indicator")]
+        [SerializeField] private GameObject indicator;
+        [SerializeField] private Texture2D indicatorIcon;
+
+        [Header("Fill")]
+        [SerializeField] private GameObject fill;
         
         // 콜백 이벤트
         public Action<Beacon> OnBeaconActivated;
@@ -32,6 +42,11 @@ namespace BattleSystem
     
         private Color startColor;
         private Color triggerColor = Color.red;
+        
+        // RadialClip 애니메이션 관련
+        private SpriteRenderer fillSpriteRenderer;
+        private Material fillMaterial;
+        private Tween radialClipTween;
 
         private void Awake()
         {
@@ -50,6 +65,35 @@ namespace BattleSystem
              {
                  startColor = particleSystem.main.startColor.color;
              }
+
+            if(indicator != null)
+            {
+                var componentInScreen = indicator.GetComponent<IndicatorOnScreen>();
+                IndicatorRenderer renderer = BattleOverlayCanvasController.Instance.GetComponent<IndicatorRenderer>();
+                componentInScreen.SetRenderer(renderer);
+
+                componentInScreen.style.texture = indicatorIcon;
+
+                var componentOffScreen = indicator.GetComponent<IndicatorOffScreen>();
+                componentOffScreen.SetRenderer(renderer);
+
+                componentOffScreen.style.texture = indicatorIcon;
+            }
+            
+            // Fill SpriteRenderer와 Material 초기화
+            if (fill != null)
+            {
+                fillSpriteRenderer = fill.GetComponent<SpriteRenderer>();
+                if (fillSpriteRenderer != null)
+                {
+                    fillMaterial = fillSpriteRenderer.material;
+                    // RadialClip 초기값을 360도로 설정 (Beacon은 360도에서 시작해서 0도로 감소)
+                    if (fillMaterial != null && fillMaterial.HasProperty("_RadialClip"))
+                    {
+                        fillMaterial.SetFloat("_RadialClip", 360f);
+                    }
+                }
+            }
         }
         
         private void Update()
@@ -97,19 +141,28 @@ namespace BattleSystem
                  var main = particleSystem.main;
                  main.startColor = triggerColor;
              }
-
-             // 캐릭터가 나간 후 durationCharacterReEnterTolerance 시간 내에 다시 들어온 경우
-             if (Time.time - lastExitTime <= durationCharacterReEnterTolerance && lastExitTime > 0f)
-             {
-                 // 기존 타이머를 그대로 유지
-                 Debug.Log($"Character re-entered within durationCharacterReEnterTolerance. Timer continues: {currentTimer:F2}s");
-             }
-             else
-             {
-                 // durationCharacterReEnterTolerance 시간이 지났으면 타이머 초기화
-                 ResetTimer();
-                 Debug.Log("Character entered after durationCharacterReEnterTolerance. Timer reset.");
-             }
+             
+              // 캐릭터가 나간 후 durationCharacterReEnterTolerance 시간 내에 다시 들어온 경우
+              if (Time.time - lastExitTime <= durationCharacterReEnterTolerance && lastExitTime > 0f)
+              {
+                  // 기존 타이머를 그대로 유지하고 애니메이션을 중지
+                  StopRadialClipAnimation();
+                  // 남은 시간 동안 현재 진행률에서 0도까지 애니메이션
+                  float remainingTime = durationCharacterStay - currentTimer;
+                  if (remainingTime > 0f)
+                  {
+                      StartRadialClipAnimationFromProgress(0f, remainingTime);
+                  }
+                  Debug.Log($"Character re-entered within durationCharacterReEnterTolerance. Timer continues: {currentTimer:F2}s");
+              }
+              else
+              {
+                  // durationCharacterReEnterTolerance 시간이 지났으면 타이머 초기화
+                  ResetTimer();
+                  // RadialClip 애니메이션 시작 (durationCharacterStay와 동기화)
+                  StartRadialClipAnimationFromProgress(0f, durationCharacterStay);
+                  Debug.Log("Character entered after durationCharacterReEnterTolerance. Timer reset.");
+              }
              
              Debug.Log($"Character entered beacon. Current timer: {currentTimer:F2}s / {durationCharacterStay:F2}s");
          }
@@ -131,6 +184,9 @@ namespace BattleSystem
              isCharacterInside = false;
              lastExitTime = Time.time;
              
+              // RadialClip을 durationCharacterReEnterTolerance 시간 동안 360도로 애니메이션 (다시 채워짐)
+              StartRadialClipAnimation(360f, durationCharacterReEnterTolerance);
+             
              Debug.Log($"Character exited beacon. Timer paused at: {currentTimer:F2}s / {durationCharacterStay:F2}s");
          }
         
@@ -141,6 +197,12 @@ namespace BattleSystem
                 
             isActivated = true;
             Debug.Log($"Beacon activated! Duration: {currentTimer:F2}s");
+            
+            // 애니메이션 정리
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
             
             // BattleTimerStage에 콜백 전송
             OnBeaconActivated?.Invoke(this);
@@ -159,6 +221,51 @@ namespace BattleSystem
             this.durationCharacterStay = durationCharacterStay;
             this.durationCharacterReEnterTolerance = durationCharacterReEnterTolerance;
             ResetTimer();
+        }
+        
+        private void StartRadialClipAnimation(float targetValue, float duration)
+        {
+            if (fillMaterial == null || !fillMaterial.HasProperty("_RadialClip"))
+                return;
+                
+            // 기존 애니메이션 중지
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
+            
+            // 현재 RadialClip 값에서 목표값으로 애니메이션
+            float startValue = fillMaterial.GetFloat("_RadialClip");
+            radialClipTween = Tween.Custom(startValue, targetValue, duration, 
+                value => fillMaterial.SetFloat("_RadialClip", value));
+        }
+        
+        private void StartRadialClipAnimationFromProgress(float targetValue, float duration)
+        {
+            if (fillMaterial == null || !fillMaterial.HasProperty("_RadialClip"))
+                return;
+                
+            // 기존 애니메이션 중지
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
+            
+            // 현재 타이머 진행률에 따른 RadialClip 값 계산 (Beacon은 360도에서 시작해서 0도로 감소)
+            float currentProgress = 360f - (currentTimer / durationCharacterStay) * 360f;
+            fillMaterial.SetFloat("_RadialClip", currentProgress);
+            
+            // 현재 진행률에서 목표값으로 애니메이션
+            radialClipTween = Tween.Custom(currentProgress, targetValue, duration, 
+                value => fillMaterial.SetFloat("_RadialClip", value));
+        }
+        
+        private void StopRadialClipAnimation()
+        {
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
         }
     }
 }

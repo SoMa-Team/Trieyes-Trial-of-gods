@@ -72,10 +72,15 @@ namespace CharacterSystem
         }
 
         private float knockbackForceMultiplier = 20f;
+        private const float knockbackminX = -0.5f;
+        private const float knockbackminY = -0.5f;
         private void Knockback(AttackResult attackResult)
         {
-            var force = (attackResult.attacker.transform.position - transform.position).normalized * knockbackForceMultiplier;
-            rb.AddForce(-force, ForceMode2D.Impulse);
+            Vector2 direction = new Vector2(
+                Mathf.Max(knockbackminX, transform.position.x - attackResult.attacker.transform.position.x), 
+                Mathf.Max(knockbackminY, transform.position.y - attackResult.attacker.transform.position.y)
+                ).normalized;
+            rb.AddForce(direction * knockbackForceMultiplier, ForceMode2D.Impulse);
         }
 
         public virtual bool ExecuteAttack(PawnAttackType attackType = PawnAttackType.BasicAttack)

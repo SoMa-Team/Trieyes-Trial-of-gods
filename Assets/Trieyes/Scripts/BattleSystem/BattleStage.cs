@@ -30,6 +30,8 @@ namespace BattleSystem
         public Dictionary<int, Attack> attacks = new ();
         public Dictionary<int, Gold> golds = new ();
         public SpawnManager spawnManager;
+
+        public List<BattleSubsystem> subsystems = new List<BattleSubsystem>();
         
         public bool isActivated = false;
 
@@ -69,6 +71,13 @@ namespace BattleSystem
             OnDeactivated();
             
             Debug.Log("Deactivating battle stage.");
+
+            foreach (var subsystem in subsystems)
+            {
+                subsystem.Deactivate();
+            }
+            subsystems.Clear();
+
             isActivated = false;
             difficulty = null; // difficulty를 null로 설정하여 Update에서 오류 방지
         }

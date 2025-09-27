@@ -10,7 +10,7 @@ namespace BattleSystem
     /// <summary>
     /// 비콘 오브젝트 - 캐릭터가 일정 시간 동안 머물면 BattleTimerStage에 콜백을 보내는 컴포넌트
     /// </summary>
-    public class Beacon : MonoBehaviour
+    public class Beacon : BattleSubsystem
     {
         [Header("Beacon Settings")]
         [SerializeField] private float durationCharacterStay = 3f;        // 캐릭터가 머물어야 하는 시간
@@ -48,8 +48,10 @@ namespace BattleSystem
         private Material fillMaterial;
         private Tween radialClipTween;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             circleCollider = GetComponent<CircleCollider2D>();
             if (circleCollider == null)
             {
@@ -208,7 +210,7 @@ namespace BattleSystem
             OnBeaconActivated?.Invoke(this);
             
             // 비콘 파괴
-            Destroy(gameObject);
+            Deactivate();
         }
         
         private void ResetTimer()

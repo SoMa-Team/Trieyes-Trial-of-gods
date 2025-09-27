@@ -118,7 +118,7 @@ namespace BattleSystem
             _battleStage.Update();
         }
 
-        public void Deactivate()
+        public virtual void Deactivate()
         {
             if (gridObject != null)
             {

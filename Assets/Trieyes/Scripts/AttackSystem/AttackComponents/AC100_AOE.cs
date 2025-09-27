@@ -235,8 +235,6 @@ namespace AttackComponents
             // AOE VFX 생성 및 시작
             spawnedVFX = CreateAndSetupVFX(aoeVFXPrefab, aoePosition, Vector2.zero);
             PlayVFX(spawnedVFX);
-            
-            //Debug.Log("<color=green>[AC100] 좌표 기반 AOE 공격 활성화!</color>");
         }
 
         private void FinishAC100Attack()
@@ -247,8 +245,6 @@ namespace AttackComponents
                 StopAndDestroyVFX(spawnedVFX);
                 spawnedVFX = null;
             }
-            
-            //Debug.Log("<color=orange>[AC100] 좌표 기반 AOE 공격 종료!</color>");
         }
 
         /// <summary>
@@ -281,6 +277,13 @@ namespace AttackComponents
         public override void Deactivate()
         {
             base.Deactivate();
+            
+            // VFX 정리
+            if (spawnedVFX != null)
+            {
+                StopAndDestroyVFX(spawnedVFX);
+                spawnedVFX = null;
+            }
         }
     }
 }

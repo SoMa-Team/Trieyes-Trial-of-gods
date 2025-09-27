@@ -22,7 +22,7 @@ namespace BattleSystem
     /// 파란 기둥: 이동속도 20% 증가
     /// 노란 기둥: 공격력의 15% 데미지 장판 설치
     /// </summary>
-    public class Pilliar : MonoBehaviour
+    public class Pilliar : BattleSubsystem
     {
         [Header("기둥 설정")]
         [SerializeField] private PilliarType pilliarType;
@@ -312,7 +312,7 @@ namespace BattleSystem
                 radialClipTween.Stop();
             }
             
-            Destroy(gameObject);
+            Deactivate();
         }
     }
 }

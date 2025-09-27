@@ -53,6 +53,7 @@ namespace RelicSystem
                 118 => new Relic0118_ChainsOfEndurance(),
                 119 => new Relic0119_CrystalOrb(),
                 120 => new Relic0120_Pinball(),
+                121 => new Relic0121_MultiShot(),
                 _ => null
             };
             relic.relicAction?.AttachTo(relic);

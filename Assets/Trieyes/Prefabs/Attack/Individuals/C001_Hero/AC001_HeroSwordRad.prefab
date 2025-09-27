@@ -45,14 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vfxList: []
-  aoeWidth: 0.5
-  aoeHeight: 0.5
-  aoeDuration: 0.2
-  aoeInterval: 0.2
   attackRadius: 1.5
   attackSpeed: 1
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   vfxPrefab: {fileID: 4748681987041982144, guid: 5d980b4774a8ec943a952cd7a59c97b6, type: 3}
-  aoeAttackData: {fileID: 11400000, guid: ab99c9f503ae744a6893a923c9d737e4, type: 2}
 --- !u!1 &7855106370752616202
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,6 +149,7 @@ GameObject:
   - component: {fileID: 1553043495906535806}
   - component: {fileID: 2257760205768175811}
   - component: {fileID: 1513669799599300590}
+  - component: {fileID: 7145551780229488056}
   m_Layer: 0
   m_Name: AC001_HeroSwordRad
   m_TagString: Attack
@@ -193,8 +192,8 @@ MonoBehaviour:
   children: []
   components:
   - {fileID: 2451361506874016655}
-  rb: {fileID: 0}
-  attackCollider: {fileID: 0}
+  rb: {fileID: 1513669799599300590}
+  attackCollider: {fileID: 7145551780229488056}
   objectID: 0
 --- !u!50 &1513669799599300590
 Rigidbody2D:
@@ -223,3 +222,49 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!61 &7145551780229488056
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9211212146730400434}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.7, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 3, y: 2}
+  m_EdgeRadius: 0

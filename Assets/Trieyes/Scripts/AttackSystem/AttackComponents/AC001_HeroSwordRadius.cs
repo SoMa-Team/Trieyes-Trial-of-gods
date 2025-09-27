@@ -57,6 +57,12 @@ namespace AttackComponents
             attackRadius = attack.attacker.GetStatValue(StatType.AttackRange) / 10f;
             
             // 공격 시작
+            if (direction.x < 0)
+            {
+                var scale = transform.localScale;
+                scale.x *= -1;
+                transform.localScale = scale;
+            }
             StartAttack();
         }
 
@@ -81,8 +87,8 @@ namespace AttackComponents
             // 공격 중심점과 크기 계산
             // TODO : 공통적으로 적용되도록 수정
             float characterXLength = 1f;
-            attackCenter = spawnedVFX.transform.position + (attackDirection.x >= 0 ? -new Vector3(characterXLength * 0.5f, 0, 0) : new Vector3(characterXLength * 0.5f, 0, 0));
-            attackSize = new Vector2(attackRadius * 2f + 0.5f * characterXLength, attackRadius * 2f);
+            attackCenter = spawnedVFX.transform.position + (attackDirection.x >= 0 ? -new Vector3(0.7f, 0, 0) : new Vector3(0.7f, 0, 0));
+            attackSize = new Vector2(1.5f, 1f);
         }
 
         protected override void Update()
@@ -146,8 +152,10 @@ namespace AttackComponents
         private void DetectCollisions()
         {
             // Physics.OverlapBox을 사용하여 충돌 감지
-            Collider2D[] hitColliders = Physics2D.OverlapBoxAll(attackCenter, attackSize, 0f, targetLayerMask);
-
+            // Collider2D[] hitColliders = Physics2D.OverlapBoxAll(attackCenter, attackSize, 0f, targetLayerMask);
+            List<Collider2D> hitColliders = new();
+            attack.attackCollider.Overlap(hitColliders);
+            
             foreach (Collider2D hitCollider in hitColliders)
             {
                 // 공격자 자신은 제외

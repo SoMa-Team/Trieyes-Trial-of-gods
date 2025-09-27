@@ -288,7 +288,11 @@ namespace AttackComponents
         /// </summary>
         private void CleanupVFX()
         {
-            Destroy(spawnedVFX);
+            if (spawnedVFX != null)
+            {
+                StopAndDestroyVFX(spawnedVFX);
+                spawnedVFX = null;
+            }
         }
 
         /// <summary>

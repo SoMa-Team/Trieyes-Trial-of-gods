@@ -2122,6 +2122,7 @@ GameObject:
   - component: {fileID: 4121958097238747820}
   - component: {fileID: 7531667878109530944}
   - component: {fileID: 2825173752874819193}
+  - component: {fileID: 6142402970077618074}
   m_Layer: 5
   m_Name: BattleOverlayCanvas
   m_TagString: Untagged
@@ -2243,6 +2244,22 @@ MonoBehaviour:
   - {fileID: 200473432828838988}
   AutoBasicAttackOffViews:
   - {fileID: 2562983278040192034}
+--- !u!114 &6142402970077618074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3917499004485017549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7021516d04f61c349bc023298c6edded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visible: 1
+  margin: 32
+  canvasColor: {r: 0, g: 0.8117647, b: 1, a: 0.105882354}
+  camera: {fileID: 0}
 --- !u!1 &3925025541410231776
 GameObject:
   m_ObjectHideFlags: 0
@@ -3826,7 +3843,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.0000515721}
+  m_AnchoredPosition: {x: 0, y: -0.00007136631}
   m_SizeDelta: {x: 0, y: 1023.412}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &8292284615395625485
@@ -4340,7 +4357,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 5356468457229423785}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.60548574
+  m_Size: 0.60548073
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

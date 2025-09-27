@@ -405,5 +405,33 @@ namespace AttackComponents
             }
             activeTweens.Clear();
         }
+        
+        public override void Deactivate()
+        {
+            base.Deactivate();
+            
+            // 모든 공전 객체 비활성화
+            foreach (var orbitingObject in orbitingObjects)
+            {
+                if (orbitingObject != null)
+                {
+                    AttackFactory.Instance.Deactivate(orbitingObject);
+                }
+            }
+            orbitingObjects.Clear();
+            
+            // 오브젝트 풀 정리
+            while (objectPool.Count > 0)
+            {
+                var pooledObject = objectPool.Dequeue();
+                if (pooledObject != null)
+                {
+                    AttackFactory.Instance.Deactivate(pooledObject);
+                }
+            }
+            
+            // 모든 트윈 정리
+            Tween.StopAll(activeTweens.Values);
+        }
     }
 } 

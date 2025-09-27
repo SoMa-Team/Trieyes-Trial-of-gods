@@ -1,0 +1,318 @@
+using UnityEngine;
+using CharacterSystem;
+using AttackSystem;
+using AttackComponents;
+using Stats;
+using HUDIndicator;
+using UISystem;
+using PrimeTween;
+
+namespace BattleSystem
+{
+    public enum PilliarType
+    {
+        Red = 0,    // 체력 회복
+        Blue,   // 이동속도 증가 버프
+        Yellow  // 공격력 기반 장판 설치
+    }
+
+    /// <summary>
+    /// 기둥 오브젝트 - 캐릭터가 1초 이상 머물면 특별한 효과를 발동하는 컴포넌트
+    /// 빨간 기둥: 최대 체력의 10% 회복
+    /// 파란 기둥: 이동속도 20% 증가
+    /// 노란 기둥: 공격력의 15% 데미지 장판 설치
+    /// </summary>
+    public class Pilliar : BattleSubsystem
+    {
+        [Header("기둥 설정")]
+        [SerializeField] private PilliarType pilliarType;
+        [SerializeField] private Sprite[] pilliarImages;
+        [SerializeField] private Color[] pilliarColors;
+        [SerializeField] private float activationTime = 1f;      // 발동까지 필요한 시간
+        [SerializeField] private float lifetime = 10f;           // 기둥 수명
+        
+        [Header("효과 설정")]
+        [SerializeField] private float healPercentage = 0.1f;    // 빨간 기둥: 최대 체력의 10%
+        [SerializeField] private float speedBuffMultiplier = 20f; // 파란 기둥: 이동속도 20% 증가
+        [SerializeField] private float speedBuffDuration = 20f;   // 파란 기둥: 버프 지속시간
+        [SerializeField] private float fieldDuration = 10f;      // 노란 기둥: 장판 지속시간
+        [SerializeField] private float fieldRadius = 3f;         // 노란 기둥: 장판 반경
+        [SerializeField] private float fieldDamagePercentage = 0.15f; // 노란 기둥: 공격력의 15%
+        private bool bIsFieldActive = false;
+
+        [SerializeField] private GameObject fieldDamageVFX;
+
+        [Header("Indicator")]
+        [SerializeField] private GameObject indicator;
+        [SerializeField] private Texture2D[] indicatorIcons;
+
+        [Header("Floor")]
+        [SerializeField] private GameObject floor;
+
+        private float activationTimer = 0f;
+        private float lifetimeTimer = 0f;
+        private float fieldTimer = 0f; // 노란 기둥 장판 지속시간 타이머
+        private bool isActivated = false;
+        private Pawn currentCharacter = null;
+        private CircleCollider2D boxCollider;
+        
+        // RadialClip 애니메이션 관련
+        private SpriteRenderer floorSpriteRenderer;
+        private Material floorMaterial;
+        private Tween radialClipTween;
+
+        private void Start()
+        {
+            boxCollider = GetComponent<CircleCollider2D>();
+            if (boxCollider == null)
+            {
+                Debug.LogError($"[Pilliar] {pilliarType} 기둥에 CircleCollider2D가 없습니다!");
+            }
+            else
+            {
+                boxCollider.isTrigger = true;
+            }
+            
+            // Floor SpriteRenderer와 Material 초기화
+            if (floor != null)
+            {
+                floorSpriteRenderer = floor.GetComponent<SpriteRenderer>();
+                if (floorSpriteRenderer != null)
+                {
+                    floorMaterial = floorSpriteRenderer.material;
+                    // RadialClip 초기값을 0으로 설정
+                    if (floorMaterial != null && floorMaterial.HasProperty("_RadialClip"))
+                    {
+                        floorMaterial.SetFloat("_RadialClip", 0f);
+                    }
+                }
+            }
+            
+            // 랜덤하게 기둥 타입 설정 (33.33% 확률)
+            SetRandomPilliarType();
+
+            if(indicator != null)
+            {
+                var componentInScreen = indicator.GetComponent<IndicatorOnScreen>();
+                IndicatorRenderer renderer = BattleOverlayCanvasController.Instance.GetComponent<IndicatorRenderer>();
+                componentInScreen.SetRenderer(renderer);
+
+                componentInScreen.style.texture = indicatorIcons[(int)pilliarType];
+
+                var componentOffScreen = indicator.GetComponent<IndicatorOffScreen>();
+                componentOffScreen.SetRenderer(renderer);
+
+                componentOffScreen.style.texture = indicatorIcons[(int)pilliarType];
+            }
+        }
+
+        private void Update()
+        {
+            // 수명 관리 (발동되지 않은 경우에만)
+            if (!isActivated)
+            {
+                lifetimeTimer += Time.deltaTime;
+                if (lifetimeTimer >= lifetime)
+                {
+                    DestroyPilliar();
+                    return;
+                }
+            }
+
+            // 발동 타이머 관리
+            if (currentCharacter != null && !isActivated)
+            {
+                activationTimer += Time.deltaTime;
+                if (activationTimer >= activationTime)
+                {
+                    ActivatePilliar();
+                }
+            }
+
+            // 노란 기둥의 경우 장판 지속시간 후에 사라짐
+            if (isActivated && pilliarType == PilliarType.Yellow)
+            {
+                fieldTimer += Time.deltaTime;
+                if (fieldTimer >= fieldDuration)
+                {
+                    DestroyPilliar();
+                }
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            Character character = other.GetComponent<Character>();
+            if (character != null && !character.isEnemy)
+            {
+                currentCharacter = character;
+                activationTimer = 0f;
+                
+                if (bIsFieldActive)
+                {
+                    return;
+                }
+
+                // RadialClip 애니메이션 시작 (1초 동안 360도로)
+                StartRadialClipAnimation(360f, 1f);
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            Character character = other.GetComponent<Character>();
+            if (character == currentCharacter)
+            {
+                currentCharacter = null;
+                activationTimer = 0f;
+
+                if (bIsFieldActive)
+                {
+                    return;
+                }
+                
+                // RadialClip을 0도로 되돌리기
+                ResetRadialClipAnimation();
+            }
+        }
+
+        private void SetRandomPilliarType()
+        {
+            float randomValue = UnityEngine.Random.Range(0f, 1f);
+            if (randomValue < 0.3f)
+                pilliarType = PilliarType.Red;
+            else if (randomValue < 0.6f)
+                pilliarType = PilliarType.Blue;
+            else
+                pilliarType = PilliarType.Yellow;
+            
+            GetComponent<SpriteRenderer>().sprite = pilliarImages[(int)pilliarType];
+            floor.GetComponent<SpriteRenderer>().material.color = pilliarColors[(int)pilliarType];
+        }
+        private void ActivatePilliar()
+        {
+            if (isActivated || currentCharacter == null) return;
+
+            isActivated = true;
+
+            switch (pilliarType)
+            {
+                case PilliarType.Red:
+                    ActivateRedPilliar();
+                    DestroyPilliar(); // 빨간 기둥은 즉시 사라짐
+                    break;
+                case PilliarType.Blue:
+                    ActivateBluePilliar();
+                    DestroyPilliar(); // 파란 기둥은 즉시 사라짐
+                    break;
+                case PilliarType.Yellow:
+                    ActivateYellowPilliar();
+                    fieldTimer = 0f; // 장판 지속시간 타이머 초기화
+                    // 노란 기둥은 장판 지속시간 후에 사라짐 (DestroyPilliar 호출하지 않음)
+                    break;
+            }
+        }
+
+        private void ActivateRedPilliar()
+        {
+            // 최대 체력의 10% 회복
+            int healAmount = Mathf.RoundToInt(currentCharacter.maxHp * healPercentage);
+            currentCharacter.ChangeHP(healAmount);
+        }
+
+        private void ActivateBluePilliar()
+        {
+            // 20초간 이동속도 20% 증가 버프
+            var buffInfo = new BuffInfo
+            {
+                buffType = BUFFType.IncreaseMoveSpeed,
+                attack = null, // 기둥은 공격이 아니므로 null
+                target = currentCharacter,
+                buffMultiplier = speedBuffMultiplier,
+                buffDuration = speedBuffDuration,
+                buffInterval = 1f,
+            };
+
+            var buff = new BUFF();
+            buff.Activate(buffInfo);
+        }
+
+        private void ActivateYellowPilliar()
+        {
+            // 10초간 3radius 범위에 공격력의 15% 데미지 장판 설치
+            int fieldDamage = Mathf.RoundToInt(currentCharacter.GetStatValue(StatType.AttackPower) * fieldDamagePercentage);
+            
+            // AC100 장판 생성
+            CreateAC100Field(fieldDamage);
+        }
+
+        private void CreateAC100Field(int damage)
+        {
+            // AttackFactory를 사용하여 AC100 공격 생성
+            var aoeAttack = AttackFactory.Instance.CreateByID(
+                (int)AttackComponentID.AC100_AOE, 
+                currentCharacter, 
+                null, 
+                Vector2.zero
+            );
+
+            // AC100 컴포넌트 설정
+            var ac100 = aoeAttack.components[0].GetComponent<AC100_AOE>();
+            if (ac100 != null)
+            {
+                ac100.aoeDamage = damage;
+                ac100.aoeDuration = fieldDuration;
+                ac100.aoeInterval = 1f; // 1초마다 발동
+                ac100.aoeRadius = fieldRadius;
+                ac100.aoeVFXPrefab = fieldDamageVFX;
+                ac100.SetAOEPosition(transform.position); // 기둥 위치에 장판 설치
+            }
+
+            ac100.Activate(aoeAttack, Vector2.zero);
+            bIsFieldActive = true;
+        }
+
+        private void StartRadialClipAnimation(float targetValue, float duration)
+        {
+            if (floorMaterial == null || !floorMaterial.HasProperty("_RadialClip"))
+                return;
+                
+            // 기존 애니메이션 중지
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
+            
+            // 현재 RadialClip 값에서 목표값으로 애니메이션
+            float startValue = floorMaterial.GetFloat("_RadialClip");
+            radialClipTween = Tween.Custom(startValue, targetValue, duration, 
+                value => floorMaterial.SetFloat("_RadialClip", value));
+        }
+        
+        private void ResetRadialClipAnimation()
+        {
+            if (floorMaterial == null || !floorMaterial.HasProperty("_RadialClip"))
+                return;
+                
+            // 기존 애니메이션 중지
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
+            
+            // 즉시 0으로 설정
+            floorMaterial.SetFloat("_RadialClip", 0f);
+        }
+
+        private void DestroyPilliar()
+        {
+            // 애니메이션 정리
+            if (radialClipTween.isAlive)
+            {
+                radialClipTween.Stop();
+            }
+            
+            Deactivate();
+        }
+    }
+}

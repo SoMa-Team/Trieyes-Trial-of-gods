@@ -105,6 +105,9 @@ namespace GameFramework
                     Time.timeScale = 0;
                     GameOverStage.Instance.Activate(mainCharacter);
                     break;
+                case StageType.RelicEvent:
+                    RelicStage.Instance.Activate(mainCharacter);
+                    break;
                 default:
                     Debug.LogError($"StageType {stageType} is not supported");
                     break;

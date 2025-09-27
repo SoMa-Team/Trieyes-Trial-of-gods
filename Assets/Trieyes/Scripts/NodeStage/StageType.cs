@@ -16,9 +16,10 @@ namespace NodeStage
         CardSelect = 1005,
         StickerEvent = 5001,
         StatEvent = 5002,
-        RelicReward = 5003,
+        RelicEvent = 5003,
         SkillReward = 5004,
         BattleReward = 10001,
+        RelicReward = 10002,
         GameOver = 65535,
     }
 }
